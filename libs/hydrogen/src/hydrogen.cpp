@@ -68,7 +68,7 @@
 #include "IO/AlsaMidiDriver.h"
 #include "IO/PortMidiDriver.h"
 #include "IO/CoreAudioDriver.h"
-
+#include "IO/JackMidiDriver.h"
 
 namespace H2Core
 {
@@ -695,6 +695,10 @@ inline void audioEngine_process_clearAudioBuffers( uint32_t nFrames )
 int audioEngine_process( uint32_t nframes, void *arg )
 {
 	UNUSED( arg );
+
+	// Hook for MIDI in-process callbacks.  It calls its own locks
+	// on the audioengine
+	if (m_pMidiDriver) m_pMidiDriver->processAudio(nframes);
 
 	if ( AudioEngine::get_instance()->try_lock( "audioEngine_process" ) == false ) {
 		return 0;
@@ -1522,6 +1526,12 @@ void audioEngine_startAudioDrivers()
 		m_pMidiDriver->open();
 		m_pMidiDriver->setActive( true );
 #endif
+	} else if ( preferencesMng->m_sMidiDriver == "JackMidi" ) {
+#ifdef JACK_MIDI_SUPPORT
+	    m_pMidiDriver = new JackMidiDriver();
+	    m_pMidiDriver->open();
+	    m_pMidiDriver->setActive( true );
+#endif
 	}
 
 	// change the current audio engine state
@@ -1584,6 +1594,8 @@ void audioEngine_stopAudioDrivers()
 {
 	_INFOLOG( "[audioEngine_stopAudioDrivers]" );
 
+	AudioEngine::get_instance()->lock( "audioEngine_stopAudioDrivers" );
+
 	// check current state
 	if ( m_audioEngineState == STATE_PLAYING ) {
 		audioEngine_stop();
@@ -1611,7 +1623,6 @@ void audioEngine_stopAudioDrivers()
 	}
 
 
-	AudioEngine::get_instance()->lock( "audioEngine_stopAudioDrivers" );
 	// change the current audio engine state
 	m_audioEngineState = STATE_INITIALIZED;
 	EventQueue::get_instance()->push_event( EVENT_STATE, STATE_INITIALIZED );
@@ -1741,9 +1752,7 @@ void Hydrogen::midi_noteOff( Note *note )
 	audioEngine_noteOff( note );
 }
 
-
-
-void Hydrogen::addRealtimeNote( int instrument, float velocity, float pan_L, float pan_R, float pitch, bool forcePlay )
+void Hydrogen::addRealtimeNote( int instrument, float velocity, float pan_L, float pan_R, float pitch, bool forcePlay, bool use_frame, uint32_t frame )
 {
 	UNUSED( pitch );
 
@@ -1765,9 +1774,8 @@ void Hydrogen::addRealtimeNote( int instrument, float velocity, float pan_L, flo
 		return;
 	}
 
-	unsigned int column = getTickPosition();
-
-	realcolumn = getRealtimeTickPosition();
+	realcolumn = (use_frame) ? getRealtimeTickPosition(frame) : getRealtimeTickPosition();
+	unsigned int column = (use_frame) ? realcolumn : getTickPosition();
 
 	// quantize it to scale
 	int qcolumn = ( int )::round( column / ( double )scalar ) * scalar;
@@ -1865,10 +1873,10 @@ unsigned long Hydrogen::getTickPosition()
 
 
 
-unsigned long Hydrogen::getRealtimeTickPosition()
+unsigned long Hydrogen::getRealtimeTickPosition(unsigned long offset)
 {
 	//unsigned long initTick = audioEngine_getTickPosition();
-	unsigned int initTick = ( unsigned int )( m_nRealtimeFrames / m_pAudioDriver->m_transport.m_nTickSize );
+	unsigned int initTick = ( unsigned int )( (m_nRealtimeFrames+offset) / m_pAudioDriver->m_transport.m_nTickSize );
 	unsigned long retTick;
 
 	struct timeval currtime;
@@ -2711,6 +2719,15 @@ void Hydrogen::togglePlaysSelected() {
 	AudioEngine::get_instance()->unlock();
 	
 }
+
+#ifdef JACK_MIDI_SUPPORT
+int jackMidiFallbackProcess(jack_nframes_t nframes, void* /*arg*/)
+{
+    JackMidiDriver* instance =
+	dynamic_cast<JackMidiDriver*>(m_pMidiDriver);
+    return instance->processNonAudio(nframes);
+}
+#endif
 
 };
 

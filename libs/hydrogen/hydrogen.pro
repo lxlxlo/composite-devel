@@ -93,6 +93,8 @@ HEADERS += \
 		src/IO/PortMidiDriver.h \
 		src/IO/PortAudioDriver.h \
 		src/IO/CoreAudioDriver.h \
+		src/IO/JackClient.h \
+                src/IO/JackMidiDriver.h \
 		src/flac_file.h \
 
 
@@ -107,6 +109,7 @@ SOURCES += \
 		src/IO/alsa_midi_driver.cpp \
 		src/IO/disk_writer_driver.cpp \
 		src/IO/fake_driver.cpp \
+		src/IO/jack_client.cpp \
 		src/IO/jack_output.cpp \
 		src/IO/null_driver.cpp \
 		src/IO/oss_driver.cpp \
@@ -117,6 +120,7 @@ SOURCES += \
 		src/IO/portaudio_driver.cpp \
 		src/IO/coreaudio_driver.cpp \
 		src/IO/coremidi_driver.cpp \
+                src/IO/jack_midi_driver.cpp \
 		\
 		src/fx/effects.cpp \
 		src/fx/ladspa_fx.cpp \

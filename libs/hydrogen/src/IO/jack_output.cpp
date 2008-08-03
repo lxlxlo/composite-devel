@@ -20,6 +20,7 @@
  *
  */
 
+#include "JackClient.h"
 #include <hydrogen/IO/JackOutput.h>
 #ifdef JACK_SUPPORT
 
@@ -60,7 +61,7 @@ void jackDriverShutdown( void *arg )
 {
 	UNUSED( arg );
 //	jackDriverInstance->deactivate();
-	jackDriverInstance->client = NULL;
+	JackClient::get_instance(false)->clearAudioProcessCallback();
 	Hydrogen::get_instance()->raiseError( Hydrogen::JACK_SERVER_SHUTDOWN );
 }
 
@@ -99,8 +100,10 @@ JackOutput::~JackOutput()
 int JackOutput::connect()
 {
 	INFOLOG( "connect" );
+	jack_client_t* client = JackClient::get_instance()->ref();
 
-	if ( jack_activate ( client ) ) {
+	JackClient::get_instance()->subscribe((void*)this);
+	if ( !client ) {
 		Hydrogen::get_instance()->raiseError( Hydrogen::JACK_CANNOT_ACTIVATE_CLIENT );
 		return 1;
 	}
@@ -110,18 +113,12 @@ int JackOutput::connect()
 	
 #ifdef LASH_SUPPORT
 	LashClient* lashClient = LashClient::getInstance();
-	if (lashClient && lashClient->isConnected())
+	if (lashClient && !lashClient->isNewProject())
 	{
-//		infoLog("[LASH] Sending Jack client name to LASH server");
-		lashClient->sendJackClientName();
-		
-		if (!lashClient->isNewProject())
-		{
-			connect_output_ports = false;
-		}
+		connect_output_ports = false;
 	}
 #endif
-	
+
 	if ( connect_output_ports ) {
 //	if ( connect_out_flag ) {
 		// connect the ports
@@ -155,19 +152,24 @@ int JackOutput::connect()
 void JackOutput::disconnect()
 {
 	INFOLOG( "disconnect" );
+	jack_client_t* client;
+	client = JackClient::get_instance(false)->ref();
 
 	deactivate();
-	jack_client_t *oldClient = client;
-	client = NULL;
-	if ( oldClient ) {
-		INFOLOG( "calling jack_client_close" );
-		int res = jack_client_close( oldClient );
-		if ( res ) {
-			ERRORLOG( "Error in jack_client_close" );
-			// FIXME: raise exception
+
+	if (client) {
+		if (output_port_1)
+			jack_port_unregister(client, output_port_1);
+		if (output_port_2)
+			jack_port_unregister(client, output_port_2);
+		for (int j=0; j<track_port_count; ++j) {
+			if (track_output_ports_L[j])
+				jack_port_unregister(client, track_output_ports_L[j]);
+			if (track_output_ports_R[j])
+				jack_port_unregister(client, track_output_ports_R[j]);
 		}
 	}
-	client = NULL;
+	JackClient::get_instance(false)->unsubscribe((void*)this);
 }
 
 
@@ -176,13 +178,7 @@ void JackOutput::disconnect()
 void JackOutput::deactivate()
 {
 	INFOLOG( "[deactivate]" );
-	if ( client ) {
-		INFOLOG( "calling jack_deactivate" );
-		int res = jack_deactivate( client );
-		if ( res ) {
-			ERRORLOG( "Error in jack_deactivate" );
-		}
-	}
+	JackClient::get_instance(false)->clearAudioProcessCallback();
 }
 
 
@@ -270,7 +266,7 @@ void JackOutput::updateTransportInfo()
 {
 
 	if ( Preferences::getInstance()->m_bJackTransportMode ==  Preferences::USE_JACK_TRANSPORT   ) {
-		m_JackTransportState = jack_transport_query( client, &m_JackTransportPos );
+		m_JackTransportState = jack_transport_query( JackClient::get_instance()->ref(), &m_JackTransportPos );
 
 
 		// update m_transport with jack-transport data
@@ -403,63 +399,7 @@ int JackOutput::init( unsigned nBufferSize )
 	output_port_name_1 = Preferences::getInstance()->m_sJackPortName1;
 	output_port_name_2 = Preferences::getInstance()->m_sJackPortName2;
 
-
-// test!!!
-	if ( ( client = jack_client_open( "hydrogen", JackNullOption, NULL ) ) == NULL ) {
-		WARNINGLOG( "Error: can't start JACK server" );
-		return 3;
-	}
-
-	// check if another hydrogen instance is connected to jack
-	if ( ( client = jack_client_new( "hydrogen-tmp" ) ) == 0 ) {
-		WARNINGLOG( "Jack server not running?" );
-		return 3;
-	}
-
-	std::vector<QString> clientList;
-	const char **readports = jack_get_ports( client, NULL, NULL, JackPortIsOutput );
-	int nPort = 0;
-	while ( readports && readports[nPort] ) {
-		QString sPort = readports[nPort];
-		int nColonPos = sPort.indexOf( ":" );
-		QString sClient = sPort.mid( 0, nColonPos );
-		bool bClientExist = false;
-		for ( int j = 0; j < ( int )clientList.size(); j++ ) {
-			if ( sClient == clientList[ j ] ) {
-				bClientExist = true;
-				break;
-			}
-		}
-		if ( !bClientExist ) {
-			clientList.push_back( sClient );
-		}
-		nPort++;
-	}
-	jack_client_close( client );
-
-	QString sClientName = "";
-	for ( int nInstance = 1; nInstance < 16; nInstance++ ) {
-//		sprintf( clientName, "Hydrogen-%d", nInstance );
-		//	sprintf( clientName, "Hydrogen-%d", getpid() );
-		sClientName = QString( "Hydrogen-%1" ).arg( nInstance );
-		bool bExist = false;
-		for ( int i = 0; i < ( int )clientList.size(); i++ ) {
-			if ( sClientName == clientList[ i ] ) {
-				bExist = true;
-				break;
-			}
-		}
-		if ( !bExist ) {
-			break;
-		}
-	}
-
-
-	// try to become a client of the JACK server
-	if ( ( client = jack_client_new( sClientName.toAscii() ) ) == 0 ) {
-		ERRORLOG( "Jack server not running? (jack_client_new). Using " + sClientName + " as client name"  );
-		return 3;
-	}
+	jack_client_t* client = JackClient::get_instance()->ref();
 
 	jack_server_sampleRate = jack_get_sample_rate ( client );
 	jack_server_bufferSize = jack_get_buffer_size ( client );
@@ -468,7 +408,7 @@ int JackOutput::init( unsigned nBufferSize )
 	/* tell the JACK server to call `process()' whenever
 	   there is work to be done.
 	*/
-	jack_set_process_callback ( client, this->processCallback, 0 );
+	JackClient::get_instance()->setAudioProcessCallback(this->processCallback);
 
 
 	/* tell the JACK server to call `srate()' whenever
@@ -500,14 +440,6 @@ int JackOutput::init( unsigned nBufferSize )
 //	memset( out_L, 0, nBufferSize * sizeof( float ) );
 //	memset( out_R, 0, nBufferSize * sizeof( float ) );
 
-#ifdef LASH_SUPPORT
-	LashClient* lashClient = LashClient::getInstance();
-	if (lashClient->isConnected())
-	{
-		lashClient->setJackClientName(sClientName.toStdString());
-	}
-#endif
-
 	return 0;
 }
 
@@ -535,9 +467,12 @@ void JackOutput::makeTrackOutputs( Song * song )
 		setTrackOutput( n, instr );
 	}
 	// clean up unused ports
+	jack_client_t* client = JackClient::get_instance()->ref();
 	for ( int n = nInstruments; n < track_port_count; n++ ) {
-		jack_port_unregister( client, track_output_ports_L[n] );
-		jack_port_unregister( client, track_output_ports_R[n] );
+		if (track_output_ports_L[n])
+			jack_port_unregister( client, track_output_ports_L[n] );
+		if (track_output_ports_R[n])
+			jack_port_unregister( client, track_output_ports_R[n] );
 		track_output_ports_L[n] = NULL;
 		track_output_ports_R[n] = NULL;
 	}
@@ -553,6 +488,7 @@ void JackOutput::setTrackOutput( int n, Instrument * instr )
 {
 
 	QString chName;
+	jack_client_t* client = JackClient::get_instance()->ref();
 
 	if ( track_port_count <= n ) { // need to create more ports
 		for ( int m = track_port_count; m <= n; m++ ) {
@@ -574,6 +510,7 @@ void JackOutput::setTrackOutput( int n, Instrument * instr )
 
 void JackOutput::play()
 {
+	jack_client_t* client = JackClient::get_instance()->ref();
 	if ( ( Preferences::getInstance() )->m_bJackTransportMode ==  Preferences::USE_JACK_TRANSPORT || Preferences::getInstance()->m_bJackMasterMode == Preferences::USE_JACK_TIME_MASTER ) {
 		if ( client ) {
 			INFOLOG( "jack_transport_start()" );
@@ -588,6 +525,7 @@ void JackOutput::play()
 
 void JackOutput::stop()
 {
+	jack_client_t* client = JackClient::get_instance()->ref();
 	if ( ( Preferences::getInstance() )->m_bJackTransportMode ==  Preferences::USE_JACK_TRANSPORT || Preferences::getInstance()->m_bJackMasterMode == Preferences::USE_JACK_TIME_MASTER ) {
 		if ( client ) {
 			INFOLOG( "jack_transport_stop()" );
@@ -602,6 +540,7 @@ void JackOutput::stop()
 
 void JackOutput::locate( unsigned long nFrame )
 {
+	jack_client_t* client = JackClient::get_instance()->ref();
 	if ( ( Preferences::getInstance() )->m_bJackTransportMode ==  Preferences::USE_JACK_TRANSPORT || Preferences::getInstance()->m_bJackMasterMode == Preferences::USE_JACK_TIME_MASTER ) {
 		if ( client ) {
 			WARNINGLOG( QString( "Calling jack_transport_locate(%1)" ).arg( nFrame ) );
@@ -647,6 +586,7 @@ int JackOutput::getNumTracks()
 
 void JackOutput::initTimeMaster(void)
 {
+	jack_client_t* client = JackClient::get_instance()->ref();
 	if ( client == NULL) return;
 
 	bool cond = false;
@@ -671,6 +611,7 @@ void JackOutput::initTimeMaster(void)
 
 void JackOutput::com_release()
 {
+	jack_client_t* client = JackClient::get_instance(false)->ref();
 	if ( client == NULL) return;
 
 	jack_release_timebase(client);

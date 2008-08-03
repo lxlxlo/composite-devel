@@ -74,7 +74,8 @@ public:
 	Song* getSong();
 	void removeSong();
 
-	void addRealtimeNote ( int instrument, float velocity, float pan_L=1.0, float pan_R=1.0, float pitch=0.0, bool forcePlay=false );
+	void addRealtimeNote ( int instrument, float velocity, float pan_L=1.0, float pan_R=1.0, float pitch=0.0, bool forcePlay=false, bool use_frame = false, uint32_t frame = 0 );
+
 
 	float getMasterPeak_L();
 	void setMasterPeak_L( float value );
@@ -87,7 +88,7 @@ public:
 
 
 	unsigned long getTickPosition();
-	unsigned long getRealtimeTickPosition();
+	unsigned long getRealtimeTickPosition(unsigned long offset = 0);
 	unsigned long getTotalFrames();
 	unsigned long getRealtimeFrames();
 
