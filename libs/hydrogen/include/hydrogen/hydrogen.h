@@ -93,7 +93,6 @@ public:
 	unsigned long getRealtimeFrames();
 
 
-
 	PatternList * getCurrentPatternList();
 	void setCurrentPatternList( PatternList * pPatternList );
 
@@ -120,6 +119,7 @@ public:
 	float getMaxProcessTime();
 
 	int loadDrumkit( Drumkit *drumkitInfo );
+	void functionDeleteInstrument( int instrumentnumber);
 
 	//return the name of the current drumkit
 	QString m_currentDrumkit;
@@ -158,7 +158,9 @@ public:
 
 	int getSelectedInstrumentNumber();
 	void setSelectedInstrumentNumber( int nInstrument );
+#ifdef JACK_SUPPORT
 	void renameJackPorts();
+#endif
 
 	///playlist vector
 	struct HPlayListNode

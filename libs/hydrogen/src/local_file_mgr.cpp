@@ -189,13 +189,9 @@ int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString&
 	switch ( mode ){
 		case 1: //save
 			sPatternXmlFilename = sPatternDir + "/" + QString( patternname + QString( ".h2pattern" ));
-			WARNINGLOG( "Patternfile" + sPatternXmlFilename );
-			//TiXmlDocument doc( sPatternXmlFilename.c_str() );
 			break;
 		case 2: //save as
 			sPatternXmlFilename = patternname;
-			WARNINGLOG( "Patternfile" + sPatternXmlFilename );
-			//TiXmlDocument doc( sPatternXmlFilename.c_str() );
 			break;
 		default:
 			WARNINGLOG( "Pattern Save unknown status");
@@ -289,7 +285,7 @@ void LocalFileMng::fileCopy( const QString& sOrigFilename, const QString& sDestF
 std::vector<QString> LocalFileMng::getSongList()
 {
 	std::vector<QString> list;
-	QString sDirectory = Preferences::getInstance()->getDataDirectory()  + "/songs";
+	QString sDirectory = Preferences::getInstance()->getDataDirectory()  + "/songs/";
 
 	QDir dir( sDirectory );
 
@@ -315,12 +311,12 @@ std::vector<QString> LocalFileMng::getSongList()
 std::vector<QString> LocalFileMng::getPatternList()
 {
 	std::vector<QString> list;
-	QString sDirectory = Preferences::getInstance()->getDataDirectory()  + "/patterns";
+	QString sDirectory = Preferences::getInstance()->getDataDirectory()  + "/patterns/";
 
 	QDir dir( sDirectory );
 
 	if ( !dir.exists() ) {
-		ERRORLOG( QString( "[getPatternList] Directory %1 not found" ).arg( sDirectory ) );
+		ERRORLOG( QString( "[getPatternList] Directory %1patterns not found" ).arg( sDirectory ) );
 	} else {
 		dir.setFilter( QDir::Files );
 		QFileInfoList fileList = dir.entryInfoList();
@@ -345,7 +341,7 @@ std::vector<QString> LocalFileMng::getPatternsForDrumkit( const QString& sDrumki
 	QDir dir( Preferences::getInstance()->getDataDirectory() + "/patterns/" + sDrumkit );
 
 	if ( !dir.exists() ) {
-		ERRORLOG( QString( "[getPatternList] Directory %1 not found" ).arg( sDrumkit ) );
+		INFOLOG( QString( "No patterns for drumkit '%1'." ).arg( sDrumkit ) );
 	} else {
 		QFileInfoList fileList = dir.entryInfoList();
 		dir.setFilter( QDir::Dirs );
@@ -474,7 +470,12 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 	//INFOLOG( directory );
 
 	// che if the drumkit.xml file exists
+	
 	QString drumkitInfoFile = directory + "/drumkit.xml";
+	QFileInfo fInfo( directory );
+
+	if( fInfo.isFile() ) 
+		return NULL;
 
 	if ( QFile( drumkitInfoFile ).exists() == false ) {
 		ERRORLOG( "Load Instrument: Data file " + drumkitInfoFile + " not found." );
