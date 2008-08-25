@@ -34,6 +34,8 @@
 #include <jack/transport.h>
 
 #include <hydrogen/globals.h>
+#include <hydrogen/hydrogen.h>
+
 
 
 namespace H2Core
@@ -65,12 +67,6 @@ public:
 		return m_JackTransportPos;
 	}
 
-//jack timebase callback
-	void initTimeMaster(void);
-	friend void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes, 
-                                       jack_position_t *pos, int new_pos, void *arg);
- 	void com_release();
-//~ jack timebase callback
 
 	void setPortName( int nPort, bool bLeftChannel, const QString& sName );
 	void makeTrackOutputs( Song * );
@@ -96,11 +92,34 @@ public:
 	virtual void updateTransportInfo();
 	virtual void setBpm( float fBPM );
 	void calculateFrameOffset();
+	void locateInNCycles( unsigned long frame, int cycles_to_wait = 2 );
+
+//jack timebase callback
+	void initTimeMaster();
+ 	void com_release();
+//~ jack timebase callback
+
+protected:
+//jack timebase callback
+	static void jack_timebase_callback(jack_transport_state_t state,
+                                           jack_nframes_t nframes,
+                                           jack_position_t *pos,
+                                           int new_pos,
+                                           void *arg);
+
+	void jack_timebase_callback_impl(jack_transport_state_t state,
+                                         jack_nframes_t nframes,
+                                         jack_position_t *pos,
+                                         int new_pos);
+//~ jack timebase callback
 
 private:
+	H2Core::Hydrogen *m_pEngine;
 	void relocateBBT();
 	long long bbt_frame_offset;
-	int must_relocate;
+	int must_relocate;         	// A countdown to wait for valid information from another Time Master.
+	int locate_countdown;      	// (Unrelated) countdown, for postponing a call to 'locate'.
+	unsigned long locate_frame;	// The frame to locate to (used in 'locateInNCycles'.)
 
 	JackProcessCallback processCallback;
 	jack_port_t *output_port_1;
@@ -128,12 +147,6 @@ private:
 //~ jack timebase callback
 
 };
-
-//this must be fixed to a valid c++ callback as a member of JackOutput
-//jack timebase callback
-	void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes, 
-                            jack_position_t *pos, int new_pos, void *arg);
-//~jack timebase callback
 
 #else
 

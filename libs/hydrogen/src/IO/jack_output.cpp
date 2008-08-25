@@ -78,6 +78,7 @@ JackOutput::JackOutput( JackProcessCallback processCallback )
 	this->processCallback = processCallback;
 
 	must_relocate = 0;
+	locate_countdown = 0;
 	bbt_frame_offset = 0;
 	track_port_count = 0;
 }
@@ -206,13 +207,17 @@ void JackOutput::calculateFrameOffset()
 int oldpo = 0;
 //int changer = 0;
 
+void JackOutput::locateInNCycles( unsigned long frame, int cycles_to_wait )
+{
+	locate_countdown = cycles_to_wait;
+	locate_frame = frame;
+}
+
 /// Take beat-bar-tick info from the Jack system, and translate it to a new internal frame position and ticksize.
 void JackOutput::relocateBBT()
 {
 	//wolke if hydrogen is jack time master this is not relevant
-	if( Preferences::getInstance()->m_bJackMasterMode == Preferences::USE_JACK_TIME_MASTER ) {
-		//Hydrogen::get_instance()->setHumantimeFrames(m_JackTransportPos.frame );
-		if ( m_transport.m_status != TransportInfo::ROLLING )
+	if( Preferences::getInstance()->m_bJackMasterMode == Preferences::USE_JACK_TIME_MASTER &&  m_transport.m_status != TransportInfo::ROLLING) {
 		m_transport.m_nFrames = Hydrogen::get_instance()->getHumantimeFrames() - getBufferSize();
 		WARNINGLOG( "Relocate: Call it off" );
 		calculateFrameOffset();
@@ -236,8 +241,7 @@ void JackOutput::relocateBBT()
 		}
 		float hydrogen_ticks_to_locate =  bar_ticks + ( m_JackTransportPos.beat-1 )*hydrogen_TPB + m_JackTransportPos.tick *( hydrogen_TPB/m_JackTransportPos.ticks_per_beat ) ;
 	
-// 		char bbt[30];
-// 		sprintf( bbt, "Locating BBT: [%d,%d,%d]", m_JackTransportPos.bar, m_JackTransportPos.beat, m_JackTransportPos.tick );
+// 		INFOLOG( QString( "Position from Time Master: BBT [%1,%2,%3]" ) . arg( m_JackTransportPos.bar ) . arg( m_JackTransportPos.beat ) . arg( m_JackTransportPos.tick ) );
 // 		WARNINGLOG( QString(bbt) + " -- Tx/Beat = "+to_string(m_JackTransportPos.ticks_per_beat)+", Meter "+to_string(m_JackTransportPos.beats_per_bar)+"/"+to_string(m_JackTransportPos.beat_type)+" =>tick " + to_string( hydrogen_ticks_to_locate ) );
 	
 		float fNewTickSize = getSampleRate() * 60.0 /  m_transport.m_nBPM / S->__resolution;
@@ -266,6 +270,10 @@ void JackOutput::relocateBBT()
 
 void JackOutput::updateTransportInfo()
 {
+	if ( locate_countdown == 1 )
+		locate( locate_frame );
+	if ( locate_countdown > 0 )
+		locate_countdown--;
 
 	if ( Preferences::getInstance()->m_bJackTransportMode ==  Preferences::USE_JACK_TRANSPORT   ) {
 		m_JackTransportState = jack_transport_query( JackClient::get_instance()->ref(), &m_JackTransportPos );
@@ -332,9 +340,21 @@ void JackOutput::updateTransportInfo()
 				must_relocate = 2;
 			} else {
 				if ( Preferences::getInstance()->m_bJackMasterMode == Preferences::NO_JACK_TIME_MASTER ) {
-					// NOTE There's no timebase_master. If audioEngine_process_checkBPMChanged handled a tempo change during last cycle, the offset doesn't match.
+					// If There's no timebase_master, and audioEngine_process_checkBPMChanged handled a tempo change during last cycle, the offset doesn't match, but hopefully it was calculated correctly:
+
+					//this perform Jakobs mod in pattern mode, but both m_transport.m_nFrames works with the same result in pattern Mode
+					// in songmode the first case dont work. 
+					//so we can remove this "if query" and only use this old mod: m_transport.m_nFrames = H->getHumantimeFrames() - getBufferSize();
+					//because to get the songmode we have to add this "H2Core::Hydrogen *m_pEngine" to the header file
+					//if we remove this we also can remove *m_pEngine from header
+					if ( m_pEngine->getSong()->get_mode() == Song::PATTERN_MODE  ){
+						m_transport.m_nFrames = m_JackTransportPos.frame - bbt_frame_offset;
+					}
+					else
+					{
+						m_transport.m_nFrames = H->getHumantimeFrames() - getBufferSize();
+					}
 					// In jack 'slave' mode, if there's no master, the following line is needed to be able to relocate by clicking the song ruler (wierd corner case, but still...)
-					m_transport.m_nFrames = m_JackTransportPos.frame - bbt_frame_offset;
 					if ( m_transport.m_status == TransportInfo::ROLLING )
 							H->triggerRelocateDuringPlay();
 				} else {
@@ -342,7 +362,6 @@ void JackOutput::updateTransportInfo()
 					// ... will this actually happen? keeping it for now ( jakob lund )
 					m_transport.m_nFrames = H->getHumantimeFrames() - getBufferSize();
 				}
-// 				bbt_frame_offset = 0;
 			}
 		}
 		
@@ -543,7 +562,7 @@ void JackOutput::stop()
 void JackOutput::locate( unsigned long nFrame )
 {
 	jack_client_t* client = JackClient::get_instance()->ref();
-	if ( ( Preferences::getInstance() )->m_bJackTransportMode ==  Preferences::USE_JACK_TRANSPORT || Preferences::getInstance()->m_bJackMasterMode == Preferences::USE_JACK_TIME_MASTER ) {
+	if ( ( Preferences::getInstance() )->m_bJackTransportMode ==  Preferences::USE_JACK_TRANSPORT /*|| Preferences::getInstance()->m_bJackMasterMode == Preferences::USE_JACK_TIME_MASTER*/ ) {
 		if ( client ) {
 			WARNINGLOG( QString( "Calling jack_transport_locate(%1)" ).arg( nFrame ) );
 			jack_transport_locate( client, nFrame );
@@ -585,8 +604,8 @@ int JackOutput::getNumTracks()
 }
 
 
-
-void JackOutput::initTimeMaster(void)
+//beginn jack time master
+void JackOutput::initTimeMaster()
 {
 	jack_client_t* client = JackClient::get_instance()->ref();
 	if ( client == NULL) return;
@@ -620,9 +639,22 @@ void JackOutput::com_release()
 }
 
 
-///this must be fixed to a valid c++ callback as a member of JackOutput
-void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes,
-	      jack_position_t *pos, int new_pos, void *arg)
+void JackOutput::jack_timebase_callback(jack_transport_state_t state,
+					jack_nframes_t nframes,
+              				jack_position_t *pos,
+					int new_pos, void *arg)
+{
+	JackOutput *me = static_cast<JackOutput*>(arg);
+	if(me) {
+		me->jack_timebase_callback_impl(state, nframes, pos, new_pos);
+	}
+}
+
+
+void JackOutput::jack_timebase_callback_impl(jack_transport_state_t
+					     state, jack_nframes_t nframes,
+                                             jack_position_t *pos, int
+					     new_pos)
 {
 	Hydrogen * H = Hydrogen::get_instance();	
 
@@ -635,9 +667,6 @@ void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes
 	
 	state_current = state;
 	
-	//JackOutput *p = (JackOutput *) arg;
-	//current_frame = H->getTotalFrames();
-	//current_frame = H->getHumantimeFrames();
 	current_frame = H->getTimeMasterFrames();
 	nframes = current_frame;
 	int posi =  H->getPatternPos();
@@ -680,9 +709,7 @@ void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes
 		pos->tick = 0;
 	}
 
-
-state_last = state_current;
-	
+	state_last = state_current;	
 }
 
 };

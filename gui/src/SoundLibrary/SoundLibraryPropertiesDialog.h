@@ -20,49 +20,32 @@
  *
  */
 
-#ifndef LADSPA_FX_SELECTOR_H
-#define LADSPA_FX_SELECTOR_H
+#ifndef SOUND_LIBRARY_PROPERTIES_DIALOG_H
+#define SOUND_LIBRARY_PROPERTIES_DIALOG_H
 
 #include "config.h"
-
-#include "ui_LadspaFXSelector_UI.h"
-
+#include "ui_SoundLibraryPropertiesDialog_UI.h"
 #include <hydrogen/Object.h>
-#include <hydrogen/fx/LadspaFX.h>
 
-#include <string>
-#include <vector>
+///
+///
+namespace H2Core
+{
 
+class Drumkit;
 
-class LadspaFXSelector : public QDialog, public Ui_LadspaFXSelector_UI, public Object
+class SoundLibraryPropertiesDialog : public QDialog, public Ui_SoundLibraryPropertiesDialog_UI, public Object
 {
 	Q_OBJECT
-
 	public:
-		LadspaFXSelector(int nLadspaFX);
-		~LadspaFXSelector();
-
-		QString getSelectedFX();
+		SoundLibraryPropertiesDialog( QWidget* pParent , Drumkit *drumkitInfo, Drumkit *preDrumKit );
+		~SoundLibraryPropertiesDialog();
 
 	private slots:
-		void on_m_pGroupsListView_currentItemChanged( QTreeWidgetItem * current, QTreeWidgetItem * previous );
-		void pluginSelected();
+			void on_saveBtn_clicked();
 
 	private:
-		QTreeWidgetItem* m_pCurrentItem;
-		QString m_sSelectedPluginName;
-		void buildLadspaGroups();
-
-#ifdef LADSPA_SUPPORT
-		void addGroup(QTreeWidgetItem *parent, H2Core::LadspaFXGroup *pGroup);
-		void addGroup( QTreeWidget *parent, H2Core::LadspaFXGroup *pGroup );
-		void buildGroup(QTreeWidgetItem *pNewItem, H2Core::LadspaFXGroup *pGroup);
-
-		std::vector<H2Core::LadspaFXInfo*> findPluginsInGroup( const QString& sSelectedGroup, H2Core::LadspaFXGroup *pGroup );
-#endif
-
 };
 
-
+}
 #endif
-

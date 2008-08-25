@@ -408,11 +408,11 @@ std::vector<QString> mergeQStringVectors( std::vector<QString> firstVector , std
 	newVector.resize(firstVector.size()+ secondVector.size());
 
 
-	for ( int i = 0; i < secondVector.size(); ++i ) 
+	for ( int i = 0; i < (int)secondVector.size(); ++i ) 
 	{
 		QString toFind = secondVector[i];
 		
-		for ( int ii = 0; ii < firstVector.size(); ++ii ) 
+		for ( int ii = 0; ii < (int)firstVector.size(); ++ii ) 
 		{
 			if( toFind == firstVector[ii])
 			{
@@ -506,7 +506,7 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 	drumkitInfo->setName( sDrumkitName );
 	drumkitInfo->setAuthor( author );
 	drumkitInfo->setInfo( info );
-	drumkitInfo->setLicense( info );
+	drumkitInfo->setLicense( license );
 
 	InstrumentList *instrumentList = new InstrumentList();
 
@@ -640,6 +640,7 @@ int LocalFileMng::saveDrumkit( Drumkit *info )
 	writeXmlString( &rootNode, "name", info->getName() );	// name
 	writeXmlString( &rootNode, "author", info->getAuthor() );	// author
 	writeXmlString( &rootNode, "info", info->getInfo() );	// info
+	writeXmlString( &rootNode, "license", info->getLicense() );	// license
 
 	TiXmlElement instrumentListNode( "instrumentList" );		// instrument list
 	unsigned nInstrument = info->getInstrumentList()->get_size();

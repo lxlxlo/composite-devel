@@ -696,7 +696,7 @@ void SongEditorPatternList::mousePressEvent( QMouseEvent *ev )
 		return;
 	}
 
-	if ( ev->button() == Qt::MidButton || ev->modifiers() == Qt::ControlModifier && ev->button() == Qt::RightButton || ev->modifiers() == Qt::ControlModifier && ev->button() == Qt::LeftButton ){
+	if ( (ev->button() == Qt::MidButton) || (ev->modifiers() == Qt::ControlModifier && ev->button() == Qt::RightButton) || (ev->modifiers() == Qt::ControlModifier && ev->button() == Qt::LeftButton) ){
 		togglePattern( row );
 	} else {
 		engine->setSelectedPatternNumber( row );
@@ -1375,24 +1375,21 @@ void SongEditorPositionRuler::paintEvent( QPaintEvent *ev )
 	if (!isVisible()) {
 		return;
 	}
+	
+	Hydrogen *H = Hydrogen::get_instance();
 
-	static float fOldPosition = -1000;
-	float fPos = Hydrogen::get_instance()->getPatternPos();
+	float fPos = H->getPatternPos();
 
-	if ( Hydrogen::get_instance()->getCurrentPatternList()->get_size() != 0 ) {
-		H2Core::Pattern *pPattern = Hydrogen::get_instance()->getCurrentPatternList()->get( 0 );
-		fPos += (float)Hydrogen::get_instance()->getTickPosition() / (float)pPattern->get_lenght();
+	if ( H->getCurrentPatternList()->get_size() != 0 ) {
+		H2Core::Pattern *pPattern = H->getCurrentPatternList()->get( 0 );
+		fPos += (float)H->getTickPosition() / (float)pPattern->get_lenght();
 	}
 	else {
 		// nessun pattern, uso la grandezza di default
-		fPos += (float)Hydrogen::get_instance()->getTickPosition() / (float)MAX_NOTES;
+		fPos += (float)H->getTickPosition() / (float)MAX_NOTES;
 	}
 
-	if ( fOldPosition != fPos ) {
-		fOldPosition = fPos;
-	}
-
-	if ( Hydrogen::get_instance()->getSong()->get_mode() == Song::PATTERN_MODE ) {
+	if ( H->getSong()->get_mode() == Song::PATTERN_MODE ) {
 		fPos = -1;
 	}
 

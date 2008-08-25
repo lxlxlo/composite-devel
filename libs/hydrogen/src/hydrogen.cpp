@@ -728,6 +728,14 @@ int audioEngine_process( uint32_t nframes, void *arg )
 			_INFOLOG( "End of song." );
 			return 1;	// kill the audio AudioDriver thread
 		}
+#ifdef JACK_SUPPORT
+		else if ( m_pAudioDriver->get_class_name() == "JackOutput" ) {
+			// Do something clever :-s ... Jakob Lund
+			// Mainly to keep sync with Ardour.
+			static_cast<JackOutput*>(m_pAudioDriver)->locateInNCycles( 0 );
+		}
+#endif
+
 
 		return 0;
 	} else if ( res2 == 2 ) {	// send pattern change
@@ -1025,8 +1033,8 @@ inline int audioEngine_updateNoteQueue( unsigned nFrames )
 	// When starting from the beginning, we prime the note queue with notes between 0 and nFrames
 	// plus lookahead. lookahead should be equal or greater than the nLeadLagFactor + nMaxTimeHumanize.
 	int lookahead = nLeadLagFactor + nMaxTimeHumanize + 1;
-	if ( framepos == 0 ) {
-		tickNumber_start = 0; // a.k.a.: (int)( framepos / m_pAudioDriver->m_transport.m_nTickSize );
+	if ( framepos == 0 || ( m_audioEngineState == STATE_PLAYING && m_pSong->get_mode() == Song::SONG_MODE && m_nSongPos == -1 ) ) {
+		tickNumber_start = (int)( framepos / m_pAudioDriver->m_transport.m_nTickSize );
 	}
 	else {
 		tickNumber_start = (int)( (framepos + lookahead) / m_pAudioDriver->m_transport.m_nTickSize );
@@ -1172,20 +1180,11 @@ inline int audioEngine_updateNoteQueue( unsigned nFrames )
 					m_nPatternStartTick = tick;
 				}
 			}
-// 			m_nPatternTickPosition = tick % nPatternSize;
 			m_nPatternTickPosition = tick - m_nPatternStartTick;
-			assert( m_nPatternTickPosition < nPatternSize );
+			if ( m_nPatternTickPosition > nPatternSize ) {
+				m_nPatternTickPosition = tick % nPatternSize;
+			}
 		}
-		/*
-					else {
-						_ERRORLOG( "Pattern mode. m_pPlayingPatterns->getSize() = 0" );
-						_ERRORLOG( "Panic! Stopping audio engine");
-						// PANIC!
-						m_pAudioDriver->stop();
-					}
-				}
-		*/
-
 
 		// metronome
 // 		if (  ( m_nPatternStartTick == tick ) || ( ( tick - m_nPatternStartTick ) % 48 == 0 ) ) {
@@ -1240,9 +1239,9 @@ inline int audioEngine_updateNoteQueue( unsigned nFrames )
 						//~
 
 						// cannot play note before 0 frame
-						if (tick + nOffset / m_pAudioDriver->m_transport.m_nTickSize < 0) {
+						if (tick + nOffset / m_pAudioDriver->m_transport.m_nTickSize < tickNumber_start ) {
 							_INFOLOG(" offset before 0 frame ");
-							nOffset = 0 - (int) (tick * m_pAudioDriver->m_transport.m_nTickSize);
+							nOffset = tickNumber_start - (int) (tick * m_pAudioDriver->m_transport.m_nTickSize);
 						}
 						Note *pCopiedNote = new Note( pNote );
 						pCopiedNote->set_position( tick );
@@ -2108,6 +2107,7 @@ float Hydrogen::getMaxProcessTime()
 int Hydrogen::loadDrumkit( Drumkit *drumkitInfo )
 {
 	_INFOLOG( drumkitInfo->getName() );
+	m_currentDrumkit = drumkitInfo->getName();
 	LocalFileMng fileMng;
 	QString sDrumkitPath = fileMng.getDrumkitDirectory( drumkitInfo->getName() );
 
@@ -2288,8 +2288,10 @@ void Hydrogen::setPatternPos( int pos )
 
 	if ( getState() != STATE_PLAYING ) {
 		// find pattern immediately when not playing
-		int dummy;
-		m_nSongPos = findPatternInTick( totalTick, m_pSong->is_loop_enabled(), &dummy );
+//		int dummy;
+// 		m_nSongPos = findPatternInTick( totalTick, m_pSong->is_loop_enabled(), &dummy );
+		m_nSongPos = pos;
+		m_nPatternTickPosition = 0;
 	}
 	m_pAudioDriver->locate( ( int ) ( totalTick * m_pAudioDriver->m_transport.m_nTickSize ) );
 
@@ -2544,7 +2546,7 @@ void Hydrogen::handleBeatCounter()
 				beatDiffs[beatCount - 2] = beatDiff ;
 		// Compute and reset:
 			if (beatCount == m_nbeatsToCount){
-				unsigned long currentframe = getRealtimeFrames();
+//				unsigned long currentframe = getRealtimeFrames();
 				double beatTotalDiffs = 0;
 				for(int i = 0; i < (m_nbeatsToCount - 1); i++) 
 					beatTotalDiffs += beatDiffs[i];
@@ -2620,7 +2622,6 @@ unsigned long Hydrogen::getTimeMasterFrames()
 {
 	float allframes = 0 ;
 
-
 	if ( m_pAudioDriver->m_transport.m_status == TransportInfo::STOPPED ){
 
 		int oldtick = getTickPosition();
@@ -2629,8 +2630,8 @@ unsigned long Hydrogen::getTimeMasterFrames()
 			allframes = framesforposition + allframes;
 		}
 		unsigned long framesfortimemaster = (unsigned int)(allframes + oldtick * (float)m_pAudioDriver->m_transport.m_nTickSize);
-		return framesfortimemaster;
 		m_nHumantimeFrames = framesfortimemaster;
+		return framesfortimemaster;
 	}else
 	{
 	return m_nHumantimeFrames;
@@ -2687,6 +2688,11 @@ float Hydrogen::getNewBpmJTM()
 	return m_nNewBpmJTM;
 }
 
+void Hydrogen::setNewBpmJTM( float bpmJTM )
+{
+	m_nNewBpmJTM = bpmJTM;
+}
+
 
 void Hydrogen::ComputeHumantimeFrames(uint32_t nFrames)
 {
@@ -2695,7 +2701,8 @@ void Hydrogen::ComputeHumantimeFrames(uint32_t nFrames)
 }
 //~ jack transport master
 void Hydrogen::triggerRelocateDuringPlay() {
-	m_nPatternStartTick = -1; // This forces the barline position to be recalculated in Pattern Mode.
+	if ( m_pSong->get_mode() == Song::PATTERN_MODE )
+		m_nPatternStartTick = -1; // This forces the barline position 
 }
 
 void Hydrogen::togglePlaysSelected() {

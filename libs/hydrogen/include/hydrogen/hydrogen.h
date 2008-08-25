@@ -121,6 +121,17 @@ public:
 
 	int loadDrumkit( Drumkit *drumkitInfo );
 
+	//return the name of the current drumkit
+	QString m_currentDrumkit;
+
+	const QString& getCurrentDrumkitname() {
+		return m_currentDrumkit;
+	}
+
+	void setCurrentDrumkitname( const QString& currentdrumkitname ) {
+		this->m_currentDrumkit = currentdrumkitname;
+	}
+
 	void raiseError( unsigned nErrorCode );
 
 
@@ -175,6 +186,7 @@ public:
 	unsigned long getTimeMasterFrames();
 	long getTickForHumanPosition( int humanpos );
 	float getNewBpmJTM();
+	void setNewBpmJTM( float bpmJTM);
 	void ComputeHumantimeFrames(uint32_t nFrames);
 
 private:
