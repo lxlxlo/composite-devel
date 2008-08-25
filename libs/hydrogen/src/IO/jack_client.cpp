@@ -290,9 +290,10 @@ std::vector<QString> JackClient::getMidiOutputPortList(void)
 				    JACK_DEFAULT_MIDI_TYPE,
 				    JackPortIsOutput);
 	if (!port_names) return ports;
-	while (*port_names) {
-		ports.push_back(QString(*port_names));
-		++port_names;
+	int k = 0;
+	while (port_names[k]) {
+		ports.push_back(QString(port_names[k]));
+		++k;
 	}
 	free((void*)port_names);
 	return ports;
