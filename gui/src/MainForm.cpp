@@ -703,13 +703,10 @@ void MainForm::action_file_openPattern()
 	Instrument *instr = song->get_instrument_list()->get ( 0 );
 	assert ( instr );
 
-	QString sDataDir = Preferences::getInstance()->getDataDirectory();
-
-	QDir dirPattern ( sDataDir + "patterns" );
-	ERRORLOG( sDataDir );
+	QDir dirPattern( Preferences::getInstance()->getDataDirectory() + "/patterns" );
 	QFileDialog *fd = new QFileDialog ( this );
 	fd->setFileMode ( QFileDialog::ExistingFile );
-	fd->setFilter ( trUtf8 ( "Hydrogen Song (*.h2pattern)" ) );
+	fd->setFilter ( trUtf8 ( "Hydrogen Pattern (*.h2pattern)" ) );
 	fd->setDirectory ( dirPattern );
 
 	fd->setWindowTitle ( trUtf8 ( "Open Pattern" ) );
@@ -1663,6 +1660,7 @@ QString MainForm::getAutoSaveFilename()
 void MainForm::onAutoSaveTimer()
 {
 	//INFOLOG( "[onAutoSaveTimer]" );
+	Hydrogen::get_instance()->kill_instruments();
 	Song *pSong = Hydrogen::get_instance()->getSong();
 	assert( pSong );
 	QString sOldFilename = pSong->get_filename();
