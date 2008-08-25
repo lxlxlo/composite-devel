@@ -24,15 +24,8 @@
 #define SONG_EDITOR_H
 
 #include <vector>
-using std::vector;
 
-#include <QMenu>
-
-#include <QMouseEvent>
-#include <QKeyEvent>
-#include <QPaintEvent>
-#include <QWidget>
-#include <QPixmap>
+#include <QtGui>
 
 #include <hydrogen/Object.h>
 #include "../EventListener.h"
@@ -77,8 +70,8 @@ class SongEditor : public QWidget, public Object
 		QPixmap *m_pBackgroundPixmap;
 		QPixmap *m_pSequencePixmap;
 
-		vector<QPoint> m_selectedCells;
-		vector<QPoint> m_movingCells;
+		std::vector<QPoint> m_selectedCells;
+		std::vector<QPoint> m_movingCells;
 		QPoint m_clickPoint;	// Usato come riferimento per le operazioni di spostamento
 		bool m_bShowLasso;
 		QRect m_lasso;
@@ -120,6 +113,8 @@ class SongEditorPatternList : public QWidget, public Object, public EventListene
 		void patternPopup_fill();
 		void inlineEditingFinished();
 		void inlineEditingEntered();
+		virtual void dragEnterEvent(QDragEnterEvent *event);
+		virtual void dropEvent(QDropEvent *event);
 
 
 	private:
@@ -148,6 +143,9 @@ class SongEditorPatternList : public QWidget, public Object, public EventListene
 		void togglePattern( int );
 
 		virtual void patternChangedEvent();
+		void mouseMoveEvent(QMouseEvent *event);
+		void movePatternLine(int,int);
+		QPoint __drag_start_position;
 
 };
 

@@ -39,9 +39,11 @@
 #include <QFileDialog>
 #include <vector>
 #include <cstdlib>
+#include <iostream>
+#include <fstream>
 
 using namespace H2Core;
-
+using namespace std;
 
 PlaylistDialog::PlaylistDialog ( QWidget* pParent )
 		: QDialog ( pParent )
@@ -768,14 +770,14 @@ bool PlaylistDialog::eventFilter ( QObject *o, QEvent *e )
 
 		switch ( k->key() )
 		{
-			case  Qt::Key_PageUp :
+			case  Qt::Key_F5 :
 				if( Hydrogen::get_instance()->m_PlayList.size() == 0)
 					break;
 				Playlist::get_instance()->setPrevSongPlaylist();
 				return TRUE;
 				break;
 
-			case  Qt::Key_PageDown :
+			case  Qt::Key_F6 :
 				if( Hydrogen::get_instance()->m_PlayList.size() == 0)
 					break;
 				Playlist::get_instance()->setNextSongPlaylist();

@@ -22,19 +22,21 @@
 
 #include "PatternEditorInstrumentList.h"
 
-#include <hydrogen/Preferences.h>
-#include <hydrogen/Song.h>
-#include <hydrogen/hydrogen.h>
+#include <hydrogen/audio_engine.h>
 #include <hydrogen/event_queue.h>
+#include <hydrogen/hydrogen.h>
 #include <hydrogen/instrument.h>
 #include <hydrogen/note.h>
-#include <hydrogen/audio_engine.h>
 #include <hydrogen/Pattern.h>
+#include <hydrogen/Preferences.h>
+#include <hydrogen/Song.h>
 using namespace H2Core;
 
 #include "PatternEditorPanel.h"
+#include "DrumPatternEditor.h"
 #include "../HydrogenApp.h"
 #include "../Mixer/Mixer.h"
+#include "../widgets/Button.h"
 
 #include <QtGui>
 #include <cassert>
@@ -363,7 +365,9 @@ void InstrumentLine::functionDeleteInstrument()
 	pEngine->removeInstrument( m_nInstrumentNumber, false );
 	
 	AudioEngine::get_instance()->lock("InstrumentLine::functionDeleteInstrument");
+#ifdef JACK_SUPPORT
 	pEngine->renameJackPorts();
+#endif
 	AudioEngine::get_instance()->unlock();
 }
 
@@ -544,7 +548,7 @@ void PatternEditorInstrumentList::dropEvent(QDropEvent *event)
 	ERRORLOG(sText);
 	
 
-	if(sText.startsWith("Songs:") or sText.startsWith("Patterns:")) return;
+	if(sText.startsWith("Songs:") or sText.startsWith("Patterns:") or sText.startsWith("move pattern:")or sText.startsWith("drag pattern:")) return;
 
 	if (sText.startsWith("move instrument:")) {
 
@@ -568,7 +572,7 @@ void PatternEditorInstrumentList::dropEvent(QDropEvent *event)
 		QStringList tokens = sText.split( "::" );
 		QString sDrumkitName = tokens.at( 0 );
 		QString sInstrumentName = tokens.at( 1 );
-
+		
 		Instrument *pNewInstrument = Instrument::load_instrument( sDrumkitName, sInstrumentName );
 		Hydrogen *pEngine = Hydrogen::get_instance();
 
