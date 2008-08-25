@@ -114,6 +114,7 @@ JackMidiDriver::JackMidiDriver()
 	: MidiInput( "JackMidiDriver" ),
 	  m_port(0)
 {
+	INFOLOG( "CREATE" );
 }
 
 JackMidiDriver::~JackMidiDriver()
