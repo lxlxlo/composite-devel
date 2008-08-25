@@ -30,6 +30,7 @@
 #ifdef JACK_SUPPORT
 
 #ifdef LASH_SUPPORT
+#include <hydrogen/Preferences.h>
 #include <hydrogen/LashClient.h>
 #endif
 
@@ -148,10 +149,13 @@ void JackClient::open(void)
 	// Here, m_client should either be valid, or NULL.	
 
 #ifdef LASH_SUPPORT
-	LashClient* lashClient = LashClient::getInstance();
-	if (lashClient && lashClient->isConnected())
-	{
-		lashClient->sendJackClientName();
+	if ( Preferences::getInstance()->useLash() ) {
+		LashClient* lashClient = LashClient::getInstance();
+		if (lashClient && lashClient->isConnected())
+		{
+			lashClient->setJackClientName(sClientName.toStdString());
+			lashClient->sendJackClientName();
+		}
 	}
 #endif
 }

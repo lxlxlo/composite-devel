@@ -39,6 +39,7 @@
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/IO/MidiInput.h>
+#include <hydrogen/LashClient.h>
 
 using namespace H2Core;
 
@@ -230,7 +231,16 @@ PreferencesDialog::PreferencesDialog(QWidget* parent)
 	// General tab
 	restoreLastUsedSongCheckbox->setChecked( pPref->isRestoreLastSongEnabled() );
 	patternModeFollowsSelection->setChecked( pPref->patternModePlaysSelected() );
-	useLashCheckbox->setChecked(pPref->useLash());
+
+	//restore the right m_bsetlash value 
+	if ( pPref->m_brestartLash == true ){ 
+		if (pPref->m_bsetLash == false ){ 
+		 	pPref->m_bsetLash = true ;
+			pPref->m_brestartLash = false;
+		}
+
+	}
+	useLashCheckbox->setChecked( pPref->m_bsetLash );	
 
 	m_bNeedDriverRestart = false;
 }
@@ -249,6 +259,16 @@ void PreferencesDialog::on_cancelBtn_clicked()
 {
 	Preferences *preferencesMng = Preferences::getInstance();
 	preferencesMng->loadPreferences( false );	// reload old user's preferences
+
+	//restore the right m_bsetlash value
+	if ( preferencesMng->m_brestartLash == true ){ 
+		if (preferencesMng->m_bsetLash == false ){
+		 	preferencesMng->m_bsetLash = true ;
+			preferencesMng->m_brestartLash = false;
+		}
+
+	}
+
 	reject();
 }
 
@@ -368,9 +388,15 @@ void PreferencesDialog::on_okBtn_clicked()
 	// General tab
 	pPref->setRestoreLastSongEnabled( restoreLastUsedSongCheckbox->isChecked() );
 	pPref->setPatternModePlaysSelected( patternModeFollowsSelection->isChecked() );
-	pPref->setUseLash( useLashCheckbox->isChecked() );
+
+	//check preferences 
+	if ( pPref->m_brestartLash == true ){ 
+		pPref->m_bsetLash = false ; //if m_bsetlash = true, when the pref. Dialog closed lash would be activatet this case we dont want 
+	}
 
 	pPref->savePreferences();
+
+	pPref->m_bsetLash = useLashCheckbox->isChecked(); //restore m_bsetLash after saving pref. 
 
 	if (m_bNeedDriverRestart) {
 		(Hydrogen::get_instance())->restartDrivers();
@@ -654,3 +680,15 @@ void PreferencesDialog::on_styleComboBox_activated( int index )
 }
 
 
+
+void PreferencesDialog::on_useLashCheckbox_clicked()
+{
+	if ( useLashCheckbox->isChecked() ){
+		Preferences::getInstance()->m_brestartLash = true;
+	}
+	else
+	{
+		 Preferences::getInstance()->m_bsetLash = false ;
+	}
+	QMessageBox::information ( this, "Hydrogen", trUtf8 ( "Please restart hydrogen to enable/disable LASH support" ) );
+}

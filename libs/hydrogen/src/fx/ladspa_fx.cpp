@@ -27,6 +27,7 @@
 
 #include <QDir>
 
+#include <algorithm>
 #include <cstdio>
 #include <vector>
 using namespace std;
@@ -70,6 +71,17 @@ void LadspaFXGroup::addChild( LadspaFXGroup *pChild )
 	m_childGroups.push_back( pChild );
 }
 
+bool LadspaFXGroup::alphabeticOrder( LadspaFXGroup* a, LadspaFXGroup* b )
+{
+	return ( a->getName() < b->getName() );
+}
+
+void LadspaFXGroup::sort()
+{
+	std::sort( m_ladspaList.begin(), m_ladspaList.end(), LadspaFXInfo::alphabeticOrder );
+	std::sort( m_childGroups.begin(), m_childGroups.end(), LadspaFXGroup::alphabeticOrder );
+}
+
 
 
 ////////////////
@@ -92,6 +104,11 @@ LadspaFXInfo::LadspaFXInfo( const QString& sName )
 LadspaFXInfo::~LadspaFXInfo()
 {
 //	infoLog( "DESTROY " + m_sName );
+}
+
+bool LadspaFXInfo::alphabeticOrder( LadspaFXInfo* a, LadspaFXInfo* b )
+{
+	return ( a->m_sName < b->m_sName );
 }
 
 
@@ -399,6 +416,7 @@ void LadspaFX::connectAudioPorts( float* pIn_L, float* pIn_R, float* pOut_L, flo
 void LadspaFX::processFX( unsigned nFrames )
 {
 //	infoLog( "[LadspaFX::applyFX()]" );
+	if( m_bActivated )
 	m_d->run( m_handle, nFrames );
 }
 
