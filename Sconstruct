@@ -42,39 +42,39 @@ def subdirsContaining( root, patterns ):
 
 def get_platform_flags():
 	includes = []
-	cppflags = ""
-	ldflags = ""
+	cppflags = []
+	ldflags = []
 
 	if sys.platform == "linux2" or sys.platform == "darwin":
 		if debug:
-			cppflags += " -Wall -g2 -ggdb -O0"
+			cppflags += ['-Wall',  '-g2', '-ggdb', '-O0']
 		else:
-			cppflags += " -O3 -fomit-frame-pointer -funroll-loops"
+			cppflags += ['-O3', '-fomit-frame-pointer', '-funroll-loops']
 			#cppflags += " %s" % get_optimized_flags( target_cpu )
 
-		if alsa: cppflags += " -DALSA_SUPPORT"
-		if jack: cppflags += " -DJACK_SUPPORT"
-		if lash: cppflags += " -DLASH_SUPPORT"
-		if portaudio: cppflags += " -DPORTAUDIO_SUPPORT"
-		if portmidi: cppflags += " -DPORTMIDI_SUPPORT"	
+		if alsa: cppflags.append('-DALSA_SUPPORT')
+		if jack: cppflags.append('-DJACK_SUPPORT')
+		if lash: cppflags.append('-DLASH_SUPPORT')
+                if lrdf: cppflags.append('-DLRDF_SUPPORT')
+		if portaudio: cppflags.append('-DPORTAUDIO_SUPPORT')
+		if portmidi: cppflags.append('-DPORTMIDI_SUPPORT')
 
 
-		cppflags += " -DFLAC_SUPPORT"
-		cppflags += " -DLADSPA_SUPPORT"
-		cppflags += " -DLRDF_SUPPORT"
-		cppflags += " -DOSS_SUPPORT"
+		cppflags.append('-DFLAC_SUPPORT')
+		cppflags.append('-DLADSPA_SUPPORT')
+		cppflags.append('-DOSS_SUPPORT')
 
 
 		includes.append( '/usr/lib/lash-1.0' )
 
-	if libarchive: cppflags += " -DLIBARCHIVE_SUPPORT"
+	if libarchive: cppflags.append('-DLIBARCHIVE_SUPPORT')
 
 	includes.append( './' )
 	includes.append( 'gui/src/' )
 	includes.append( '3rdparty/install/include' )
 
 	if sys.platform == 'linux2':
-		ldflags += " -lasound"
+		ldflags.append('-lasound')
 
 	elif sys.platform == 'darwin':
 		pass
@@ -202,7 +202,9 @@ def get_hydrogen_gui( lib_hydrogen ):
 	if lrdf: env.Append( LIBS = ["lrdf"] )
 	if flac: env.Append( LIBS = ["FLAC","FLAC++"] )
 	if lash: env.Append( LIBS = ["lash"])
-	if jack: env.Append( LIBS = ["jack"])
+	if jack:
+            env.Append( LIBS = ["jack"])
+            env.ParseConfig('pkg-config --modversion jack', get_jack_midi_api_version)    
 	if alsa: env.Append( LIBS = ["asound"])
 	if libarchive: env.Append( LIBS = ["archive"])
 	else: env.Append( LIBS = ["tar"])
@@ -214,9 +216,7 @@ def get_hydrogen_gui( lib_hydrogen ):
 	env.Append( LIBPATH = '3rdparty\libsndfile-1_0_17' )
 	env.Append( LIBPATH = 'build\pthreads\lib' )
 
-	#app = env.Program(target = 'hydrogengui', source = src, LIBS = libs )
-	app = env.Program(target = 'hydrogengui', source = src )
-
+	app = env.Program(target = 'hydrogen', source = src )
 
 	env.Alias('programs', app)
 	env.Default('programs')
@@ -295,7 +295,29 @@ else:
 	opts.Add('flac', 'Set to 1 to enable flac',0)
 	flac = int(ARGUMENTS.get('flac',0))
 
-
+# JACK MIDI version detection.
+def get_jack_midi_api_version(xenv, pkg_ver):
+    global jack_midi
+    rv = ""
+    (major, minor, patch) = pkg_ver.rstrip().split('.')
+    major = int(major)
+    minor = int(minor)
+    patch = int(patch)
+    if major != 0:
+        return rv
+    if minor < 102:
+        return rv
+    rv = "-DJACK_MIDI_SUPPORT"
+    jack_midi = 1
+    if (minor == 102) and (patch <= 26):
+        rv += " -DJACK_MIDI_0_102_0"
+    elif (minor < 104):
+        rv += " -DJACK_MIDI_0_102_27"
+    elif (minor == 104) and (patch == 0):
+        rv += " -DJACK_MIDI_0_102_27"
+    elif (minor >= 105):
+        rv += " -DJACK_MIDI_0_105_0"
+    xenv.MergeFlags(rv)
 
 debug =int(ARGUMENTS.get('debug', 0))
 libarchive = int(ARGUMENTS.get('libarchive', 0))
@@ -346,6 +368,10 @@ if jack and not conf.CheckCHeader('jack/jack.h'):
     print 'jack must be installed!'
     Exit(1)
 
+#jack_midi: (default: enabled if jack is)
+if jack and conf.CheckCHeader('jack/midiport.h'):
+    jack_midi = 1
+
 #lash: (default: disabled)
 if lash and not os.path.isdir("/usr/include/lash-1.0"):
     print 'liblash must be installed!'
@@ -395,6 +421,7 @@ print "Feature Overview:\n"
 print "      lash: " + printStatus( lash )
 print "      alsa: " + printStatus( alsa )
 print "      jack: " + printStatus( jack )
+print " jack_midi: " + printStatus( jack_midi )
 print "libarchive: " + printStatus( libarchive ) + (' (using libtar instead)', '')[libarchive]
 print " portaudio: " + printStatus( portaudio )
 print "  portmidi: " + printStatus( portmidi ) 
@@ -436,7 +463,5 @@ version.write( "static const std::string VERSION = \"0.9.4-svn\" + REVISION;\n" 
 version.write( "#endif\n" )
 version.close()
 
-
 libhyd = get_hydrogen_lib()
 app = get_hydrogen_gui( libhyd )
-
