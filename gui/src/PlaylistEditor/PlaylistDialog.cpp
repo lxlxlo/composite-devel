@@ -117,7 +117,7 @@ PlaylistDialog::PlaylistDialog ( QWidget* pParent )
 
 	up_btn->setFontSize(7);
 	up_btn->setToolTip( trUtf8( "sort" ) );
-	connect(up_btn, SIGNAL(clicked(Button*)), this, SLOT(on_upBTN_clicked()) );
+	connect(up_btn, SIGNAL(clicked(Button*)), this, SLOT(o_upBClicked()) );
 	sideBarLayout->addWidget(up_btn);
 
 	// zoom-in btn
@@ -131,7 +131,7 @@ PlaylistDialog::PlaylistDialog ( QWidget* pParent )
 
 	down_btn->setFontSize(7);
 	down_btn->setToolTip( trUtf8( "sort" ) );
-	connect(down_btn, SIGNAL(clicked(Button*)), this, SLOT(on_downBTN_clicked()));
+	connect(down_btn, SIGNAL(clicked(Button*)), this, SLOT(o_downBClicked()));
 	sideBarLayout->addWidget(down_btn);
 	
 
@@ -554,8 +554,10 @@ void PlaylistDialog::on_editScriptBTN_clicked()
 }
 
 
-void PlaylistDialog::on_upBTN_clicked()
+void PlaylistDialog::o_upBClicked()
 {	
+
+	Playlist* pList = Playlist::get_instance();
 
 	QTreeWidget* m_pPlaylist = m_pPlaylistTree;
 	QTreeWidgetItem* m_pPlaylistItem = m_pPlaylistTree->currentItem();
@@ -567,13 +569,21 @@ void PlaylistDialog::on_upBTN_clicked()
 
 	m_pPlaylist->insertTopLevelItem ( index -1, tmpPlaylistItem );
 	m_pPlaylist->setCurrentItem ( tmpPlaylistItem ); 
+
+	if ( pList->getSelectedSongNr() > 0 )
+		pList->setSelectedSongNr( pList->getSelectedSongNr() -1 );
+	if ( pList->getActiveSongNumber() > 0 )
+		pList->setActiveSongNumber( pList->getActiveSongNumber() -1 );
+
 	updatePlayListVector();
 
 }
 
 
-void PlaylistDialog::on_downBTN_clicked()
+void PlaylistDialog::o_downBClicked()
 {
+
+	Playlist* pList = Playlist::get_instance();
 
 	QTreeWidget* m_pPlaylist = m_pPlaylistTree;
 	int length = m_pPlaylist->topLevelItemCount();
@@ -588,6 +598,12 @@ void PlaylistDialog::on_downBTN_clicked()
 
 	m_pPlaylist->insertTopLevelItem ( index +1, tmpPlaylistItem );
 	m_pPlaylist->setCurrentItem ( tmpPlaylistItem ); 
+
+	if ( pList->getSelectedSongNr() > 0 )
+		pList->setSelectedSongNr( pList->getSelectedSongNr() +1 );
+	if (pList ->getActiveSongNumber() > 0 )
+		pList->setActiveSongNumber( pList->getActiveSongNumber() +1 );
+
 	updatePlayListVector();
 
 }

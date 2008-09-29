@@ -1285,13 +1285,8 @@ inline int audioEngine_updateNoteQueue( unsigned nFrames )
 								   * nLeadLagFactor);
 						//~
 
-						// cannot play note before 0 frame
-						if (tick
-						    + nOffset / m_pAudioDriver->m_transport.m_nTickSize
-						    < tickNumber_start ) {
-							_INFOLOG(" offset before 0 frame ");
-							nOffset = tickNumber_start
-								- (int) (tick * m_pAudioDriver->m_transport.m_nTickSize);
+						if((tick == 0) && (nOffset < 0)) {
+							nOffset = 0;
 						}
 						Note *pCopiedNote = new Note( pNote );
 						pCopiedNote->set_position( tick );
@@ -2941,6 +2936,15 @@ void Hydrogen::__kill_instruments()
 			. arg( pInstr->is_queued() ) );
 	}
 }
+
+
+
+void Hydrogen::__panic()
+{
+	sequencer_stop();	
+	AudioEngine::get_instance()->get_sampler()->stop_playing_notes();
+}
+
 
 };
 
