@@ -50,6 +50,17 @@ using namespace H2Core;
 
 #include <QtGui>
 
+
+void PatternEditorPanel::updateSLnameLabel( )
+{
+	QFont font;
+	font.setBold( true );
+	pSLlabel->setFont( font );
+	pSLlabel->setText( Hydrogen::get_instance()->m_currentDrumkit  );
+} 
+
+
+
 PatternEditorPanel::PatternEditorPanel( QWidget *pParent )
  : QWidget( pParent )
  , Object( "PatternEditorPanel" )
@@ -59,7 +70,7 @@ PatternEditorPanel::PatternEditorPanel( QWidget *pParent )
 	setAcceptDrops(true);
 
 	Preferences *pPref = Preferences::getInstance();
-
+	
 
 // Editor TOP
 	PixmapWidget *editor_top = new PixmapWidget(0);
@@ -80,6 +91,14 @@ PatternEditorPanel::PatternEditorPanel( QWidget *pParent )
 	editor_top_hbox_2->setMargin(0);
 	editor_top_hbox_2->setAlignment(Qt::AlignLeft);
 
+
+	//soundlibrary name
+	pSLlabel = new QLabel( NULL );
+	pSLlabel->setText( Hydrogen::get_instance()->m_currentDrumkit );
+	pSLlabel->setFixedSize( 170, 20 );
+	pSLlabel->move( 10, 3 );
+	pSLlabel->setToolTip( trUtf8("Loaded Soundlibrary") );
+	editor_top_hbox->addWidget( pSLlabel ); 
 
 //wolke some background images back_size_res
 	PixmapWidget *pSizeResol = new PixmapWidget( NULL );
@@ -212,38 +231,6 @@ PatternEditorPanel::PatternEditorPanel( QWidget *pParent )
 	//editor_top_hbox_2->addWidget(zoom_out_btn);
 
 
-	// show drum editor btn
-	__show_drum_btn = new ToggleButton(
-			NULL,
-			"/skin_btn_on.png",
-			"/skin_btn_off.png",
-			"/skin_btn_over.png",
-			QSize(40, 17),
-			true
-	);
-	__show_drum_btn->setText( trUtf8("Drum") );
-	__show_drum_btn->setPressed( true );
-	__show_drum_btn->setToolTip( trUtf8( "Show drum editor" ) );
-	connect(__show_drum_btn, SIGNAL(clicked(Button*)), this, SLOT( showDrumEditorBtnClick(Button*)));
-	editor_top_hbox->addWidget(__show_drum_btn);
-	__show_drum_btn->hide();
-
-
-	// show piano roll btn
-	__show_piano_btn = new ToggleButton(
-			NULL,
-			"/skin_btn_on.png",
-			"/skin_btn_off.png",
-			"/skin_btn_over.png",
-			QSize(40, 17),
-			true
-	);
-	__show_piano_btn->setText( trUtf8("Piano") );
-	__show_piano_btn->setPressed( false );
-	__show_piano_btn->setToolTip( trUtf8( "Show piano roll editor" ) );
-	connect(__show_piano_btn, SIGNAL(clicked(Button*)), this, SLOT( showPianoEditorBtnClick(Button*)));
-	editor_top_hbox->addWidget(__show_piano_btn);
-	__show_piano_btn->hide();
 // End Editor TOP
 
 

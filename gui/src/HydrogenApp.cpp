@@ -115,8 +115,10 @@ HydrogenApp::~HydrogenApp()
 
 	Hydrogen *engine = Hydrogen::get_instance();
 	if (engine) {
-		delete engine->getSong();
+		H2Core::Song * song = engine->getSong();
+		// Hydrogen calls removeSong on from its destructor, so here we just delete the objects:
 		delete engine;
+		delete song;
 	}
 
 	#ifdef LADSPA_SUPPORT
@@ -256,6 +258,7 @@ void HydrogenApp::setSong(Song* song)
 	Preferences::getInstance()->setLastSongFilename( song->get_filename() );
 
 	m_pSongEditorPanel->updateAll();
+	m_pPatternEditorPanel->updateSLnameLabel();
 
 	QString songName( song->__name );
 	m_pMainForm->setWindowTitle( ( "Hydrogen " + QString(get_version().c_str()) + QString( " - " ) + songName ) );
@@ -349,7 +352,10 @@ void HydrogenApp::showInfoSplash()
 	}
 }
 
-
+void HydrogenApp::onDrumkitLoad( QString name ){
+	setStatusBarMessage( trUtf8( "Drumkit loaded: [%1]" ).arg( name ), 2000 );
+	m_pPatternEditorPanel->updateSLnameLabel( );
+}
 
 void HydrogenApp::onEventQueueTimer()
 {
