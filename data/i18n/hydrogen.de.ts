@@ -1,4 +1,5 @@
-<!DOCTYPE TS><TS>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS><TS version="1.1" language="de_DE">
 <defaultcodec></defaultcodec>
 <context>
     <name>AboutDialog</name>
@@ -43,7 +44,7 @@
     </message>
     <message>
         <source>&amp;Authors</source>
-        <translation>&amp;Authoren</translation>
+        <translation>&amp;Autoren</translation>
     </message>
     <message>
         <source>&amp;License</source>
@@ -507,8 +508,8 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>DownloadWidget</name>
     <message>
-        <source>(%1K/%2K) - ETA %3</source>
-        <translation>(%1K/%2K) - ETA %3</translation>
+        <source>(%1/%2 KiB) - ETA %3</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -535,7 +536,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Author</source>
-        <translation>Author</translation>
+        <translation>Autor</translation>
     </message>
     <message>
         <source>Info</source>
@@ -651,29 +652,6 @@ http://www.hydrogen-music.org
     <message>
         <source>%1&lt;br&gt;%2 KHz&lt;br&gt;%3 %4</source>
         <translation>%1&lt;br&gt;%2 KHz&lt;br&gt;%3 %4</translation>
-    </message>
-</context>
-<context>
-    <name>FilePreview</name>
-    <message>
-        <source>&amp;Play sample</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Size: %1 bytes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Samplerate: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Preview not available</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>-</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2149,13 +2127,11 @@ The path to the script and the scriptname must without whitespaces.</source>
     </message>
     <message>
         <source>Post-Fader</source>
-        <translation>Post-Fader
-</translation>
+        <translation>Post-Fader</translation>
     </message>
     <message>
         <source>Pre-Fader</source>
-        <translation>Pre-Fader
-</translation>
+        <translation>Pre-Fader</translation>
     </message>
     <message>
         <source>Track output</source>
@@ -2168,6 +2144,26 @@ The path to the script and the scriptname must without whitespaces.</source>
     <message>
         <source>Use lash</source>
         <translation>Lash benutzen</translation>
+    </message>
+    <message>
+        <source>first step, adjust timing mismatch between controller/keyboard trigger latency and computed bpm</source>
+        <translation type="unfinished">Zuerst, justiere die Zeitdifferenz zwischen Tastatur-/Controller-Anschlägen und den von Hydrogen errechneten BPM-Werten</translation>
+    </message>
+    <message>
+        <source>Beat counter drift compensation in 1/10 ms   </source>
+        <translation type="unfinished">Takt-Zähler-Kompensation in 1/10 ms      </translation>
+    </message>
+    <message>
+        <source>second step, adjust offset between last controller/keybord trigger and the deferred sequencer startup </source>
+        <translation type="unfinished">Zweitens, justiere die Zeitdifferenz zwischen letzten Tastatur/Controller Anschlag und dem zeitverzögerten Sequenzer Start. </translation>
+    </message>
+    <message>
+        <source>Beat counter start offset in ms    </source>
+        <translation type="unfinished">Takt-Zähler-Startverzögerung in ms           </translation>
+    </message>
+    <message>
+        <source>Enable timing offset (workaround for Ardour bug)</source>
+        <translation type="unfinished">Aktiviere Zeitverzögerung (behebt den Jack-Transport-Bug von Ardour)</translation>
     </message>
 </context>
 <context>
@@ -2322,7 +2318,7 @@ The pattern-file exists.</source>
     </message>
     <message>
         <source>Author</source>
-        <translation>Author</translation>
+        <translation>Autor</translation>
     </message>
     <message>
         <source>Song name</source>
@@ -2492,6 +2488,10 @@ The pattern-file exists.</source>
         <source>Edit server list</source>
         <translation>Bearbeite Server-Liste</translation>
     </message>
+    <message>
+        <source>Close</source>
+        <translation>Schliessen</translation>
+    </message>
 </context>
 <context>
     <name>SoundLibraryPanel</name>
@@ -2551,7 +2551,7 @@ Are you sure?</source>
     <message>
         <source>Warning, the selected pattern will be deleted from disk.
 Are you sure?</source>
-        <translation type="unfinished"></translation>
+        <translation>Achtung! Das ausgewählte Pattern wird von der Festplatte gelöscht werden. Sind sie sicher? </translation>
     </message>
 </context>
 <context>
@@ -2586,7 +2586,7 @@ Are you sure?</source>
     </message>
     <message>
         <source>Save changes made to instruments into sound library</source>
-        <translation type="unfinished">Änderungen an den Instrumenten übernehmen</translation>
+        <translation>Änderungen an den Instrumenten übernehmen</translation>
     </message>
 </context>
 <context>
