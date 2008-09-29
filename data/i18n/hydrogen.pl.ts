@@ -651,29 +651,6 @@ http://www.hydrogen-music.org
     </message>
 </context>
 <context>
-    <name>FilePreview</name>
-    <message>
-        <source>Play sample</source>
-        <translation type="obsolete">Odtwarza próbkę</translation>
-    </message>
-    <message>
-        <source>Size: %1 bytes</source>
-        <translation type="obsolete">Rozmiar: %1B</translation>
-    </message>
-    <message>
-        <source>Samplerate: %1</source>
-        <translation type="obsolete">Częstotliwość próbkowania: %1</translation>
-    </message>
-    <message>
-        <source>Size: - </source>
-        <translation type="obsolete">Rozmiar: - </translation>
-    </message>
-    <message>
-        <source>Samplerate: - </source>
-        <translation type="obsolete">Częstotliwość próbkowania: - </translation>
-    </message>
-</context>
-<context>
     <name>FxMixerLine</name>
     <message>
         <source>FX on/off</source>
@@ -682,6 +659,30 @@ http://www.hydrogen-music.org
     <message>
         <source>Master output</source>
         <translation>Wyjście główne (master)</translation>
+    </message>
+</context>
+<context>
+    <name>H2Core::SoundLibraryPropertiesDialog</name>
+    <message>
+        <source>SoundLibrary Properties</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Ok</source>
+        <translation type="unfinished">&amp;Ok</translation>
+    </message>
+    <message>
+        <source>&amp;Cancel</source>
+        <translation type="unfinished">&amp;Anuluj</translation>
+    </message>
+    <message>
+        <source>This is not possible, you can only save changes inside instruments to the current loaded sound library</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Warning! Changing the drumkit name will result in creating a new drumkit with this name.
+Are you sure?</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -854,14 +855,6 @@ http://www.hydrogen-music.org
         <translation>Grupy</translation>
     </message>
     <message>
-        <source>Uncategorized</source>
-        <translation>Bez kategorii</translation>
-    </message>
-    <message>
-        <source>Categorized (LRDF)</source>
-        <translation>Skategoryzowane (LRDF)</translation>
-    </message>
-    <message>
         <source>Stereo</source>
         <translation>Stereo</translation>
     </message>
@@ -875,6 +868,14 @@ http://www.hydrogen-music.org
     </message>
     <message>
         <source>Recently Used</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Alphabetic List</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Categorized</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -901,28 +902,8 @@ http://www.hydrogen-music.org
         <translation>Alt+O</translation>
     </message>
     <message>
-        <source>Name:</source>
-        <translation type="obsolete">Nazwa:</translation>
-    </message>
-    <message>
-        <source>### fx name</source>
-        <translation type="obsolete">### nazwa efektu</translation>
-    </message>
-    <message>
-        <source>Label:</source>
-        <translation type="obsolete">Etykieta:</translation>
-    </message>
-    <message>
         <source>### fx label</source>
         <translation>### etykieta efektu</translation>
-    </message>
-    <message>
-        <source>Type:</source>
-        <translation type="obsolete">Typ:</translation>
-    </message>
-    <message>
-        <source>ID:</source>
-        <translation type="obsolete">ID:</translation>
     </message>
     <message>
         <source>### fx type</source>
@@ -931,30 +912,6 @@ http://www.hydrogen-music.org
     <message>
         <source>### fx ID</source>
         <translation>### ID efektu</translation>
-    </message>
-    <message>
-        <source>Maker:</source>
-        <translation type="obsolete">Twórca:</translation>
-    </message>
-    <message>
-        <source>### FX maker
-1
-2
-3
-4</source>
-        <translation type="obsolete">### twórca efektu1234</translation>
-    </message>
-    <message>
-        <source>Copyright:</source>
-        <translation type="obsolete">Copyright:</translation>
-    </message>
-    <message>
-        <source>### copyright
-1
-2
-3
-4</source>
-        <translation type="obsolete">### copyright1234</translation>
     </message>
     <message>
         <source>1</source>
@@ -1045,10 +1002,6 @@ p, li { white-space: pre-wrap; }
         <translation>&amp;Nowy</translation>
     </message>
     <message>
-        <source>Show info</source>
-        <translation type="obsolete">Pokaż info</translation>
-    </message>
-    <message>
         <source>&amp;Open</source>
         <translation>&amp;Otwórz</translation>
     </message>
@@ -1097,20 +1050,12 @@ p, li { white-space: pre-wrap; }
         <translation>&amp;Preferencje</translation>
     </message>
     <message>
-        <source>OLD &amp;drumkit manager (Obsolete)</source>
-        <translation type="obsolete">STARY menedżer &amp;zestawów perkusyjnych (nieaktualny)</translation>
-    </message>
-    <message>
         <source>De&amp;bug</source>
         <translation>&amp;Odpluskwianie</translation>
     </message>
     <message>
         <source>Show &amp;audio engine info</source>
         <translation>Pokaż informacje o silniku &amp;audio</translation>
-    </message>
-    <message>
-        <source>debug action</source>
-        <translation>akcja</translation>
     </message>
     <message>
         <source>Print Objects</source>
@@ -1210,30 +1155,6 @@ The song has unsaved changes
         <translation>Utwór zawiera niezachowane zmiany Czy chcesz zachować te zmiany przed wyjściem?</translation>
     </message>
     <message>
-        <source>Instruments</source>
-        <translation type="obsolete">Instrumenty</translation>
-    </message>
-    <message>
-        <source>Add instrument</source>
-        <translation type="obsolete">Dodaj instrument</translation>
-    </message>
-    <message>
-        <source>Clear all</source>
-        <translation type="obsolete">Wyczyść wszystko</translation>
-    </message>
-    <message>
-        <source>Save library</source>
-        <translation type="obsolete">Zachowaj bibliotekę</translation>
-    </message>
-    <message>
-        <source>Export library</source>
-        <translation type="obsolete">Eksportuj bibliotekę</translation>
-    </message>
-    <message>
-        <source>Import library</source>
-        <translation type="obsolete">Importuj bibliotekę</translation>
-    </message>
-    <message>
         <source>Clear all instruments?</source>
         <translation>Wyczyścić wszystkie instrumenty?</translation>
     </message>
@@ -1271,10 +1192,6 @@ The song has unsaved changes
     </message>
     <message>
         <source>Pattern saved.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hydrogen Song (*.h2pattern)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1367,6 +1284,21 @@ The song has unsaved changes
     </message>
 </context>
 <context>
+    <name>MidiTable</name>
+    <message>
+        <source>Event</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Param.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Action</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Mixer</name>
     <message>
         <source>Mixer</source>
@@ -1424,47 +1356,8 @@ The song has unsaved changes
         <translation>Ustawia głośność instrumentu [%1]</translation>
     </message>
     <message>
-        <source>Set instrument pan [%1]</source>
-        <translation type="obsolete">Ustawia  panoramę instrumentu [%1]</translation>
-    </message>
-    <message>
         <source>Set instr. pan [%1]</source>
         <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>OldDrumkitManager</name>
-    <message>
-        <source>Drumkit manager</source>
-        <translation type="obsolete">Menedżer zestawów</translation>
-    </message>
-    <message>
-        <source>Name: &lt;b&gt;%1&lt;/b&gt;</source>
-        <translation type="obsolete">Nazwa: &lt;b&gt;%1&lt;/b&gt;</translation>
-    </message>
-    <message>
-        <source>Author: %1</source>
-        <translation type="obsolete">Autor: %1</translation>
-    </message>
-    <message>
-        <source>Info: &lt;br&gt;%1</source>
-        <translation type="obsolete">Informacja:  &lt;br&gt;%1</translation>
-    </message>
-    <message>
-        <source>Drumkit loaded: [%1]</source>
-        <translation type="obsolete">Zestaw załadowany: [%1]</translation>
-    </message>
-    <message>
-        <source>Import drumkit</source>
-        <translation type="obsolete">Import zestawu perkusyjnego</translation>
-    </message>
-    <message>
-        <source>Export drumkit</source>
-        <translation type="obsolete">Eksport zestawu perkusyjnego</translation>
-    </message>
-    <message>
-        <source>The drumkit will be installed in %1</source>
-        <translation type="obsolete">Zestaw perkusyjny będzie zainstalowany w %1</translation>
     </message>
 </context>
 <context>
@@ -1761,18 +1654,6 @@ The song has unsaved changes
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Key coma handle beatcounter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Note length</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Strokes to count</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Set BPM / Set BPM and play</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1822,10 +1703,6 @@ The song has unsaved changes
     <message>
         <source>exec Script</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Zoom in</source>
-        <translation type="obsolete">Powiększenie</translation>
     </message>
     <message>
         <source>Add Song to PlayList</source>
@@ -2009,6 +1886,10 @@ The path to the script and the scriptname must without whitespaces.</source>
         <source>&lt;b&gt;CoreAudio Driver&lt;/b&gt;&lt;br&gt;</source>
         <translation>&lt;b&gt;Sterownik CoreAudio&lt;/b&gt;&lt;br&gt;</translation>
     </message>
+    <message>
+        <source>Please restart hydrogen to enable/disable LASH support</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PreferencesDialog_UI</name>
@@ -2049,10 +1930,6 @@ The path to the script and the scriptname must without whitespaces.</source>
         <translation>&amp;System Audio</translation>
     </message>
     <message>
-        <source>Restart driver</source>
-        <translation type="obsolete">Uruchom ponownie sterownik</translation>
-    </message>
-    <message>
         <source>###</source>
         <translation>###</translation>
     </message>
@@ -2091,14 +1968,6 @@ The path to the script and the scriptname must without whitespaces.</source>
     <message>
         <source>Alt+D</source>
         <translation>Alt+D</translation>
-    </message>
-    <message>
-        <source>&amp;Enable Track Outputs</source>
-        <translation type="obsolete">Włącz Wyjścia Ści&amp;eżek</translation>
-    </message>
-    <message>
-        <source>Alt+E</source>
-        <translation type="obsolete">Alt+E</translation>
     </message>
     <message>
         <source>Polyphony</source>
@@ -2261,10 +2130,6 @@ The path to the script and the scriptname must without whitespaces.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Always play selected pattern in Pattern Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Use lash</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2388,11 +2253,11 @@ Kontynuować?</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Hydrogen Song (*.h2pattern)</source>
+        <source>Open Pattern</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Open Pattern</source>
+        <source>Hydrogen Pattern (*.h2pattern)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2627,10 +2492,6 @@ Kontynuować?</translation>
         <translation>&amp;Anuluj</translation>
     </message>
     <message>
-        <source>Rename</source>
-        <translation>Zmień nazwę</translation>
-    </message>
-    <message>
         <source>Songs</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2641,6 +2502,45 @@ Kontynuować?</translation>
     <message>
         <source>Error loading song.</source>
         <translation type="unfinished">Błąd podczas ładowania utworu.</translation>
+    </message>
+    <message>
+        <source>Properties</source>
+        <translation type="unfinished">Właściwości</translation>
+    </message>
+</context>
+<context>
+    <name>SoundLibraryPropertiesDialog_UI</name>
+    <message>
+        <source>Dialog</source>
+        <translation type="unfinished">Dialog</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished">Nazwa</translation>
+    </message>
+    <message>
+        <source>Author</source>
+        <translation type="unfinished">Autor</translation>
+    </message>
+    <message>
+        <source>Information</source>
+        <translation type="unfinished">Informacja</translation>
+    </message>
+    <message>
+        <source>License</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished">Anuluj</translation>
+    </message>
+    <message>
+        <source>Save changes made to instruments into sound library</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2703,11 +2603,11 @@ Kontynuować?</translation>
         <translation>Anuluj</translation>
     </message>
     <message>
-        <source>Save soundlibrary</source>
-        <translation>Zachowaj Bibliotekę Dźwięków</translation>
+        <source>License</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>License</source>
+        <source>Save </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2716,21 +2616,6 @@ Kontynuować?</translation>
     <message>
         <source>Sound library</source>
         <translation>Biblioteka dźwięków</translation>
-    </message>
-</context>
-<context>
-    <name>midiTable</name>
-    <message>
-        <source>Event</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Param.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Action</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
