@@ -41,7 +41,7 @@ Sample::Sample( unsigned frames, const QString& filename, float* data_l, float* 
 		, __filename( filename )
 		, __n_frames( frames )
 {
-//	infoLog("INIT " + m_sFilename + ". nFrames: " + toString( nFrames ) );
+		//INFOLOG("INIT " + m_sFilename + ". nFrames: " + toString( nFrames ) );
 }
 
 
@@ -50,7 +50,7 @@ Sample::~Sample()
 {
 	delete[] __data_l;
 	delete[] __data_r;
-//	infoLog( "DESTROY " + m_sFilename);
+	//INFOLOG( "DESTROY " + m_sFilename);
 }
 
 
@@ -58,9 +58,8 @@ Sample::~Sample()
 
 Sample* Sample::load( const QString& filename )
 {
-	// is a flac file?
-	QString ext = filename.right( filename.length() - 4 );
-	if ( ( ext == "flac" ) || ( ext == "FLAC" ) ) {
+	// is it a flac file?
+	if ( ( filename.endsWith( "flac") ) || ( filename.endsWith( "FLAC" )) ) {
 		return load_flac( filename );
 	} else {
 		return load_wave( filename );
@@ -76,7 +75,7 @@ Sample* Sample::load_flac( const QString& filename )
 	FLACFile file;
 	return file.load( filename );
 #else
-	std::cerr << "[loadFLAC] FLAC support was disabled during compilation" << std::endl;
+	_ERRORLOG("[loadFLAC] FLAC support was disabled during compilation");
 	return NULL;
 #endif
 }
@@ -86,7 +85,7 @@ Sample* Sample::load_flac( const QString& filename )
 Sample* Sample::load_wave( const QString& filename )
 {
 	// file exists?
-	if ( QFile( filename).exists() == false ) {
+	if ( QFile( filename ).exists() == false ) {
 		_ERRORLOG( QString( "[Sample::load] Load sample: File %1 not found" ).arg( filename ) );
 		return NULL;
 	}
@@ -98,9 +97,6 @@ Sample* Sample::load_wave( const QString& filename )
 		_ERRORLOG( QString( "[Sample::load] Error loading file %1" ).arg( filename ) );
 	}
 
-//	cout << "frames = " << soundInfo.frames << endl;
-//	cout << "samplerate = " << soundInfo.samplerate << endl;
-//	cout << "channels = " << soundInfo.channels << endl;
 
 	float *pTmpBuffer = new float[ soundInfo.frames * soundInfo.channels ];
 

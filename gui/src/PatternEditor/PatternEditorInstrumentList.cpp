@@ -138,6 +138,12 @@ void InstrumentLine::setMuted(bool isMuted)
 }
 
 
+void InstrumentLine::setSoloed( bool soloed )
+{
+	m_pSoloBtn->setPressed( soloed );
+}
+
+
 
 void InstrumentLine::muteClicked()
 {
@@ -212,18 +218,19 @@ void InstrumentLine::functionClearNotes()
 	int nSelectedInstrument = m_nInstrumentNumber;
 	Instrument *pSelectedInstrument = H->getSong()->get_instrument_list()->get( nSelectedInstrument );
 	
- 	std::multimap <int, Note*>::iterator pos;
- 	for ( pos = pCurrentPattern->note_map.begin(); pos != pCurrentPattern->note_map.end(); ++pos ) {
- 		Note *pNote = pos->second;
- 		assert( pNote );
- 		if ( pNote->get_instrument() != pSelectedInstrument ) {
- 			continue;
- 		}
- 
- 		delete pNote;
- 		pCurrentPattern->note_map.erase( pos );
- 	}
- 	AudioEngine::get_instance()->unlock();	// unlock the audio engine
+	pCurrentPattern->purge_instrument( pSelectedInstrument );
+// 	std::multimap <int, Note*>::iterator pos;
+// 	for ( pos = pCurrentPattern->note_map.begin(); pos != pCurrentPattern->note_map.end(); ++pos ) {
+// 		Note *pNote = pos->second;
+// 		assert( pNote );
+// 		if ( pNote->get_instrument() != pSelectedInstrument ) {
+// 			continue;
+// 		}
+// 
+// 		delete pNote;
+// 		pCurrentPattern->note_map.erase( pos );
+// 	}
+// 	AudioEngine::get_instance()->unlock();	// unlock the audio engine
 
 	// this will force an update...
 	EventQueue::get_instance()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
@@ -360,48 +367,13 @@ void InstrumentLine::functionRandomizeVelocity()
 void InstrumentLine::functionDeleteInstrument()
 {
 	Hydrogen *pEngine = Hydrogen::get_instance();
+	pEngine->removeInstrument( m_nInstrumentNumber, false );
 	
 	AudioEngine::get_instance()->lock("InstrumentLine::functionDeleteInstrument");
-        Instrument *pInstr = pEngine->getSong()->get_instrument_list()->get( m_nInstrumentNumber ); 
-
-	// if the instrument was the last on the instruments list, select the next-last 
-	if ( m_nInstrumentNumber >= (int)pEngine->getSong()->get_instrument_list()->get_size() -1 ) { 
-		Hydrogen::get_instance()->setSelectedInstrumentNumber(std::max(0, m_nInstrumentNumber - 1) ); 
-	} 
-
-	// delete the instrument from the instruments list 
-	pEngine->getSong()->get_instrument_list()->del( m_nInstrumentNumber ); 
-	pEngine->getSong()->__is_modified = true; 
-
-
-	// delete all the notes using this instrument 
-	PatternList* pPatternList = pEngine->getSong()->get_pattern_list(); 
-	for ( int nPattern = 0; nPattern < (int)pPatternList->get_size(); ++nPattern ) { 
-		H2Core::Pattern *pPattern = pPatternList->get( nPattern ); 
-
-		std::multimap <int, Note*>::iterator pos; 
-		for ( pos = pPattern->note_map.begin(); pos != pPattern->note_map.end(); ++pos ) { 
-		Note *pNote = pos->second; 
-			assert( pNote ); 
-			if ( pNote->get_instrument() == pInstr ) { 
-				delete pNote; 
-				pPattern->note_map.erase( pos ); 
-			} 
-		} 
-	} 
-
-	// stop all notes playing 
-	AudioEngine::get_instance()->get_sampler()->stop_playing_notes(); 
-
-	delete pInstr; 
-
 #ifdef JACK_SUPPORT
 	pEngine->renameJackPorts();
 #endif
 	AudioEngine::get_instance()->unlock();
-
-	// this will force an update... 
-        EventQueue::get_instance()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 ); 
 }
 
 
@@ -516,6 +488,7 @@ void PatternEditorInstrumentList::updateInstrumentLines()
 	Hydrogen *pEngine = Hydrogen::get_instance();
 	Song *pSong = pEngine->getSong();
 	InstrumentList *pInstrList = pSong->get_instrument_list();
+	Mixer * mixer = HydrogenApp::getInstance()->getMixer();
 
 	unsigned nSelectedInstr = pEngine->getSelectedInstrumentNumber();
 
@@ -550,6 +523,9 @@ void PatternEditorInstrumentList::updateInstrumentLines()
 			pLine->setName( pInstr->get_name() );
 			pLine->setSelected( nInstr == nSelectedInstr );
 			pLine->setMuted( pInstr->is_muted() );
+			if ( mixer ) {
+				pLine->setSoloed( mixer->isSoloClicked( nInstr ) );
+			}
 
 		}
 	}
