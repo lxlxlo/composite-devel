@@ -339,6 +339,7 @@ void Preferences::loadPreferences( bool bGlobal )
 					m_bJackConnectDefaults = LocalFileMng::readXmlBool( jackDriverNode, "jack_connect_defaults", m_bJackConnectDefaults );
 
 					m_nJackTrackOutputMode = LocalFileMng::readXmlInt( jackDriverNode, "jack_track_output_mode", m_nJackTrackOutputMode );
+					m_nJackManualTransportOffset = LocalFileMng::readXmlInt( jackDriverNode, "jack_manual_transport_offset", m_nJackManualTransportOffset );
 				}
 
 
@@ -431,6 +432,10 @@ void Preferences::loadPreferences( bool bGlobal )
 					} else if ( setPlay == "SET_PLAY_ON" ) {
 						m_mmcsetplay = SET_PLAY_ON;
 					}
+				
+				m_countOffset = LocalFileMng::readXmlInt( guiNode, "countoffset", 0 );
+				m_startOffset = LocalFileMng::readXmlInt( guiNode, "playoffset", 0 );
+				
 				//~ beatcounter
 
 				for ( unsigned nFX = 0; nFX < MAX_FX; nFX++ ) {
@@ -672,7 +677,8 @@ void Preferences::savePreferences()
 				jackTrackOutsString = "true";
 			}
 			LocalFileMng::writeXmlString( &jackDriverNode, "jack_track_outs", jackTrackOutsString );
-
+			QString jackManualTransportOffsetString = QString("%1").arg(m_nJackManualTransportOffset);
+			LocalFileMng::writeXmlString( &jackDriverNode, "jack_manual_transport_offset", jackManualTransportOffsetString );
 		}
 		audioEngineNode.InsertEndChild( jackDriverNode );
 
@@ -753,6 +759,9 @@ void Preferences::savePreferences()
 				setPlay = "SET_PLAY_ON";
 			}
 			LocalFileMng::writeXmlString( &guiNode, "setplay", setPlay );
+
+		LocalFileMng::writeXmlString( &guiNode, "countoffset", to_string(m_countOffset) );
+		LocalFileMng::writeXmlString( &guiNode, "playoffset", to_string(m_startOffset) );
 		//~ beatcounter
 
 		// User interface style

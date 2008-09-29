@@ -184,15 +184,17 @@ void JackOutput::deactivate()
 	JackClient::get_instance(false)->clearAudioProcessCallback();
 }
 
-
-
-
 unsigned JackOutput::getBufferSize()
 {
 	return jack_server_bufferSize;
 }
 
-
+int JackOutput::getManualTransportAdjustment()
+{
+	int rv = getBufferSize()
+		* Preferences::getInstance()->m_nJackManualTransportOffset;
+	return rv;
+}
 
 unsigned JackOutput::getSampleRate()
 {
@@ -218,7 +220,7 @@ void JackOutput::relocateBBT()
 {
 	//wolke if hydrogen is jack time master this is not relevant
 	if( Preferences::getInstance()->m_bJackMasterMode == Preferences::USE_JACK_TIME_MASTER &&  m_transport.m_status != TransportInfo::ROLLING) {
-		m_transport.m_nFrames = Hydrogen::get_instance()->getHumantimeFrames() - getBufferSize();
+		m_transport.m_nFrames = Hydrogen::get_instance()->getHumantimeFrames() - getManualTransportAdjustment();
 		WARNINGLOG( "Relocate: Call it off" );
 		calculateFrameOffset();
 	 	return;
@@ -346,7 +348,7 @@ void JackOutput::updateTransportInfo()
 
 					//this perform Jakobs mod in pattern mode, but both m_transport.m_nFrames works with the same result in pattern Mode
 					// in songmode the first case dont work. 
-					//so we can remove this "if query" and only use this old mod: m_transport.m_nFrames = H->getHumantimeFrames() - getBufferSize();
+					//so we can remove this "if query" and only use this old mod: m_transport.m_nFrames = H->getHumantimeFrames() - getManualTransportAdjustment();
 					//because to get the songmode we have to add this "H2Core::Hydrogen *m_pEngine" to the header file
 					//if we remove this we also can remove *m_pEngine from header
 					if ( m_pEngine->getSong()->get_mode() == Song::PATTERN_MODE  ){
@@ -354,7 +356,7 @@ void JackOutput::updateTransportInfo()
 					}
 					else
 					{
-						m_transport.m_nFrames = H->getHumantimeFrames() - getBufferSize();
+						m_transport.m_nFrames = H->getHumantimeFrames() - getManualTransportAdjustment();
 					}
 					// In jack 'slave' mode, if there's no master, the following line is needed to be able to relocate by clicking the song ruler (wierd corner case, but still...)
 					if ( m_transport.m_status == TransportInfo::ROLLING )
@@ -362,7 +364,7 @@ void JackOutput::updateTransportInfo()
 				} else {
 					///this is experimantal... but it works for the moment... fix me fix :-) wolke
 					// ... will this actually happen? keeping it for now ( jakob lund )
-					m_transport.m_nFrames = H->getHumantimeFrames() - getBufferSize();
+					m_transport.m_nFrames = H->getHumantimeFrames() - getManualTransportAdjustment();
 				}
 			}
 		}

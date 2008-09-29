@@ -131,6 +131,7 @@ PreferencesDialog::PreferencesDialog(QWidget* parent)
 	trackOutsCheckBox->setChecked( pPref->m_bJackTrackOuts );
 	connectDefaultsCheckBox->setChecked( pPref->m_bJackConnectDefaults );
 	trackOutputComboBox->setCurrentIndex( pPref->m_nJackTrackOutputMode );
+	manualTransportOffsetSpinBox->setValue( pPref->m_nJackManualTransportOffset );
 	//~ JACK
 
 
@@ -241,6 +242,9 @@ PreferencesDialog::PreferencesDialog(QWidget* parent)
 
 	}
 	useLashCheckbox->setChecked( pPref->m_bsetLash );	
+
+	sBcountOffset->setValue( pPref->m_countOffset );
+	sBstartOffset->setValue( pPref->m_startOffset );
 
 	m_bNeedDriverRestart = false;
 }
@@ -393,6 +397,10 @@ void PreferencesDialog::on_okBtn_clicked()
 	if ( pPref->m_brestartLash == true ){ 
 		pPref->m_bsetLash = false ; //if m_bsetlash = true, when the pref. Dialog closed lash would be activatet this case we dont want 
 	}
+
+	pPref->m_countOffset = sBcountOffset->value();
+	pPref->m_startOffset = sBstartOffset->value();
+	Hydrogen::get_instance()->setBcOffsetAdjust();
 
 	pPref->savePreferences();
 
@@ -691,4 +699,9 @@ void PreferencesDialog::on_useLashCheckbox_clicked()
 		 Preferences::getInstance()->m_bsetLash = false ;
 	}
 	QMessageBox::information ( this, "Hydrogen", trUtf8 ( "Please restart hydrogen to enable/disable LASH support" ) );
+}
+
+void PreferencesDialog::on_manualTransportOffsetSpinBox_valueChanged( int value )
+{
+	Preferences::getInstance()->m_nJackManualTransportOffset = value;
 }

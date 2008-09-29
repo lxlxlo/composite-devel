@@ -52,6 +52,7 @@ class PreferencesDialog : public QDialog, private Ui_PreferencesDialog_UI, publi
 		void on_styleComboBox_activated( int index );
 		void on_useLashCheckbox_clicked();
 		void on_m_pMidiDriverComboBox_currentIndexChanged( const QString& text );
+		void on_manualTransportOffsetSpinBox_valueChanged( int i );
 
 	private:
 		bool m_bNeedDriverRestart;

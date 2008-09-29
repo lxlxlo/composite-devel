@@ -86,7 +86,7 @@ float m_fMaxProcessTime = 0.0f;		///< max ms usable in process with no xrun
 // beatcounter
 
 //100,000 ms in 1 second.
-#define MS_DIVIDER .000001
+#define US_DIVIDER .000001
 
 float m_ntaktoMeterCompute = 1;	  	///< beatcounter note lenght
 int m_nbeatsToCount = 4;		///< beatcounter beats to count
@@ -97,6 +97,8 @@ double beatDiffs[16];			///< beat diff
 timeval currentTime, lastTime;		///< timeval
 double lastBeatTime, currentBeatTime, beatDiff;		///< timediff
 float beatCountBpm;			///< bpm
+int m_nCoutOffset = 0;			///ms default 0
+int m_nStartOffset = 0;			///ms default 0
 //~ beatcounter
 
 //jack time master
@@ -1678,10 +1680,6 @@ Hydrogen* Hydrogen::get_instance()
 /// Start the internal sequencer
 void Hydrogen::sequencer_play()
 {
-	// play from start if pattern mode is enabled
-	if ( m_pSong->get_mode() == Song::PATTERN_MODE ) {
-		setPatternPos( 0 );
-	}
 	m_pAudioDriver->play();
 }
 
@@ -2497,9 +2495,20 @@ int Hydrogen::getBcStatus()
 }
 
 
+void Hydrogen::setBcOffsetAdjust()
+{
+	//individual fine tuning for the beatcounter
+	//to adjust  ms_offset from different people and controller
+	Preferences *pref = Preferences::getInstance();
+
+	m_nCoutOffset = pref->m_countOffset;
+	m_nStartOffset = pref->m_startOffset;
+}
+
 
 void Hydrogen::handleBeatCounter()
-{ 
+{
+	 
 	// Get first time value:
 	if (beatCount == 1)
 		gettimeofday(&currentTime,NULL);
@@ -2514,8 +2523,8 @@ void Hydrogen::handleBeatCounter()
 	
 
 	// Build doubled time difference:
-		lastBeatTime = (double)(lastTime.tv_sec + (double)(lastTime.tv_usec * MS_DIVIDER));
-		currentBeatTime = (double)(currentTime.tv_sec + (double)(currentTime.tv_usec * MS_DIVIDER));
+		lastBeatTime = (double)(lastTime.tv_sec + (double)(lastTime.tv_usec * US_DIVIDER)  + (int)m_nCoutOffset * .0001 );
+		currentBeatTime = (double)(currentTime.tv_sec + (double)(currentTime.tv_usec * US_DIVIDER) );
 		beatDiff = beatCount == 1 ? 0 : currentBeatTime - lastBeatTime;
 		
 	//if differences are to big reset the beatconter
@@ -2555,7 +2564,7 @@ void Hydrogen::handleBeatCounter()
 							rtstartframe = bcsamplerate * beatDiffAverage / m_ntaktoMeterCompute ;
 						}
 
-						int sleeptime =  (float) rtstartframe / (float) bcsamplerate * ( int ) 1000 ;
+						int sleeptime =  (float) rtstartframe / (float) bcsamplerate * (int) 1000 + (int)m_nCoutOffset + (int) m_nStartOffset;
 						#ifdef WIN32
 						Sleep( sleeptime );
 						#else
