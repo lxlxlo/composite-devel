@@ -376,39 +376,9 @@ if ( Preferences::getInstance()->useLash() ){
 /// return true if the app needs to be closed.
 bool MainForm::action_file_exit()
 {
-	if ( Hydrogen::get_instance()->getSong()->__is_modified ) {
-		int res = QMessageBox::information(
-				this,
-				"Hydrogen",
-				trUtf8("\nThe song has unsaved changes\n Do you want to save the changes before exiting?\n"),
-				trUtf8("&Save"),
-				trUtf8("&Discard"),
-				trUtf8("&Cancel"),
-				0,	// Enter == button 0
-				2 	// Escape == button 2
-		);
-		switch( res ) {
-			case 0:
-				// Save clicked or Alt+S pressed or Enter pressed.
-				if ( Hydrogen::get_instance()->getSong()->get_filename() != "") {
-					action_file_save();
-				} else {
-					action_file_save_as();
-				}
-				// save
-				break;
-			case 1:
-				// Discard clicked or Alt+D pressed
-				// don't save but exit
-				break;
-			case 2:
-				// Cancel clicked or Alt+C pressed or Escape pressed
-				// don't exit
-				return false;
-				break;
-			default:
-				ERRORLOG( "Unknown return code: " + to_string( res ) );
-		}
+	bool proceed = handleUnsavedChanges();
+	if(!proceed) {
+		return false;
 	}
 	closeAll();
 	return true;
@@ -422,31 +392,9 @@ void MainForm::action_file_new()
 		Hydrogen::get_instance()->sequencer_stop();
 	}
 
-	if ( Hydrogen::get_instance()->getSong()->__is_modified ) {
-		switch(
-				QMessageBox::information( this, "Hydrogen",
-						trUtf8("\nThe document contains unsaved changes\n"
-						"Do you want to save the changes before exiting?\n"),
-						trUtf8("&Save"), trUtf8("&Discard"), trUtf8("&Cancel"),
-						0,      // Enter == button 0
-						2 ) ) { // Escape == button 2
-			case 0: // Save clicked or Alt+S pressed or Enter pressed.
-				if ( Hydrogen::get_instance()->getSong()->get_filename() != "") {
-					action_file_save();
-				} else {
-					// never been saved
-					action_file_save_as();
-				}
-				// save
-				break;
-			case 1: // Discard clicked or Alt+D pressed
-				// don't save but exit
-				break;
-			case 2: // Cancel clicked or Alt+C pressed or Escape pressed
-				// don't exit
-				return;
-				break;
-		}
+	bool proceed = handleUnsavedChanges();
+	if(!proceed) {
+		return;
 	}
 
 	Song * song = Song::get_empty_song();
@@ -622,6 +570,7 @@ void MainForm::action_file_export_pattern_as()
 		int err = fileMng.savePattern ( song , selectedpattern, patternname, realname, 2 );
 		if ( err != 0 )
 		{
+			QMessageBox::warning( this, "Hydrogen", trUtf8("Could not export pattern.") );
 			_ERRORLOG ( "Error saving the pattern" );
 		}
 	}
@@ -639,37 +588,10 @@ void MainForm::action_file_open() {
 		Hydrogen::get_instance()->sequencer_stop();
 	}
 
-	if ( Hydrogen::get_instance()->getSong()->__is_modified ) {
-		switch(
-			QMessageBox::information( this, "Hydrogen",
-					trUtf8("\nThe document contains unsaved changes\n"
-					"Do you want to save the changes before exiting?\n"),
-					trUtf8("&Save"), trUtf8("&Discard"), trUtf8("&Cancel"),
-					0,      // Enter == button 0
-					2 ) ) { // Escape == button 2
-			case 0: // Save clicked or Alt+S pressed or Enter pressed.
-				if ( Hydrogen::get_instance()->getSong()->get_filename() != "") {
-					action_file_save();
-				}
-				else {
-					action_file_save_as();
-				}
-				// save
-				break;
-			case 1: // Discard clicked or Alt+D pressed
-				// don't save but exit
-				break;
-			case 2: // Cancel clicked or Alt+C pressed or Escape pressed
-				// don't exit
-				return;
-				break;
-		}
+	bool proceed = handleUnsavedChanges();
+	if(!proceed) {
+		return;
 	}
-
-	
-	 
-
-	
 
 	static QString lastUsedDir = Preferences::getInstance()->getDataDirectory() + "/songs";
 	
@@ -754,33 +676,10 @@ void MainForm::action_file_openDemo()
 		Hydrogen::get_instance()->sequencer_stop();
 	}
 
-	if ( ( Hydrogen::get_instance()->getSong())->__is_modified ) {
-		switch(
-			QMessageBox::information( this, "Hydrogen",
-					trUtf8("\nThe document contains unsaved changes\n"
-					"Do you want to save the changes before exiting?\n"),
-					trUtf8("&Save"), trUtf8("&Discard"), trUtf8("&Cancel"),
-					0,      // Enter == button 0
-					2 ) ) { // Escape == button 2
-			case 0: // Save clicked or Alt+S pressed or Enter pressed.
-				if ( Hydrogen::get_instance()->getSong()->get_filename() != "") {
-					action_file_save_as();
-				}
-				else {
-					action_file_save_as();
-				}
-				// save
-				break;
-			case 1: // Discard clicked or Alt+D pressed
-				// don't save but exit
-				break;
-			case 2: // Cancel clicked or Alt+C pressed or Escape pressed
-				// don't exit
-				return;
-				break;
-		}
+	bool proceed = handleUnsavedChanges();
+	if(!proceed) {
+		return;
 	}
-
 
 	QFileDialog *fd = new QFileDialog(this);
 	fd->setFileMode(QFileDialog::ExistingFile);
@@ -1195,33 +1094,101 @@ void MainForm::openSongFile( const QString& sFilename )
 
 void MainForm::initKeyInstMap()
 {
+
+	QString loc = QLocale::system().name();
 	int instr = 0;
-	keycodeInstrumentMap[Qt::Key_Z] = instr++;
-	keycodeInstrumentMap[Qt::Key_S] = instr++;
-	keycodeInstrumentMap[Qt::Key_X] = instr++;
-	keycodeInstrumentMap[Qt::Key_D] = instr++;
-	keycodeInstrumentMap[Qt::Key_C] = instr++;
-	keycodeInstrumentMap[Qt::Key_V] = instr++;
-	keycodeInstrumentMap[Qt::Key_G] = instr++;
-	keycodeInstrumentMap[Qt::Key_B] = instr++;
-	keycodeInstrumentMap[Qt::Key_H] = instr++;
-	keycodeInstrumentMap[Qt::Key_N] = instr++;
-	keycodeInstrumentMap[Qt::Key_J] = instr++;
-	keycodeInstrumentMap[Qt::Key_M] = instr++;
 
-	keycodeInstrumentMap[Qt::Key_Q] = instr++;
-	keycodeInstrumentMap[Qt::Key_2] = instr++;
-	keycodeInstrumentMap[Qt::Key_W] = instr++;
-	keycodeInstrumentMap[Qt::Key_3] = instr++;
-	keycodeInstrumentMap[Qt::Key_E] = instr++;
-	keycodeInstrumentMap[Qt::Key_R] = instr++;
-	keycodeInstrumentMap[Qt::Key_5] = instr++;
-	keycodeInstrumentMap[Qt::Key_T] = instr++;
-	keycodeInstrumentMap[Qt::Key_6] = instr++;
-	keycodeInstrumentMap[Qt::Key_Y] = instr++;
-	keycodeInstrumentMap[Qt::Key_7] = instr++;
-	keycodeInstrumentMap[Qt::Key_U] = instr++;
+///POSIX Locale
+//locale for keyboardlayout QWERTZ
+// de_DE, de_AT, de_LU, de_CH, de
 
+//locale for keyboardlayout AZERTY
+// fr_BE, fr_CA, fr_FR, fr_LU, fr_CH
+
+//locale for keyboardlayout QWERTY
+// en_GB, en_US, en_ZA, usw.
+
+	if ( loc.contains( "de" ) || loc.contains( "DE" )){ ///QWERTZ
+		keycodeInstrumentMap[Qt::Key_Y] = instr++;
+		keycodeInstrumentMap[Qt::Key_S] = instr++;
+		keycodeInstrumentMap[Qt::Key_X] = instr++;
+		keycodeInstrumentMap[Qt::Key_D] = instr++;
+		keycodeInstrumentMap[Qt::Key_C] = instr++;
+		keycodeInstrumentMap[Qt::Key_V] = instr++;
+		keycodeInstrumentMap[Qt::Key_G] = instr++;
+		keycodeInstrumentMap[Qt::Key_B] = instr++;
+		keycodeInstrumentMap[Qt::Key_H] = instr++;
+		keycodeInstrumentMap[Qt::Key_N] = instr++;
+		keycodeInstrumentMap[Qt::Key_J] = instr++;
+		keycodeInstrumentMap[Qt::Key_M] = instr++;
+	
+		keycodeInstrumentMap[Qt::Key_Q] = instr++;
+		keycodeInstrumentMap[Qt::Key_2] = instr++;
+		keycodeInstrumentMap[Qt::Key_W] = instr++;
+		keycodeInstrumentMap[Qt::Key_3] = instr++;
+		keycodeInstrumentMap[Qt::Key_E] = instr++;
+		keycodeInstrumentMap[Qt::Key_R] = instr++;
+		keycodeInstrumentMap[Qt::Key_5] = instr++;
+		keycodeInstrumentMap[Qt::Key_T] = instr++;
+		keycodeInstrumentMap[Qt::Key_6] = instr++;
+		keycodeInstrumentMap[Qt::Key_Z] = instr++;
+		keycodeInstrumentMap[Qt::Key_7] = instr++;
+		keycodeInstrumentMap[Qt::Key_U] = instr++;
+	}
+	else if ( loc.contains( "fr" ) || loc.contains( "FR" )){ ///AZERTY
+		keycodeInstrumentMap[Qt::Key_W] = instr++;
+		keycodeInstrumentMap[Qt::Key_S] = instr++;
+		keycodeInstrumentMap[Qt::Key_X] = instr++;
+		keycodeInstrumentMap[Qt::Key_D] = instr++;
+		keycodeInstrumentMap[Qt::Key_C] = instr++;
+		keycodeInstrumentMap[Qt::Key_V] = instr++;
+		keycodeInstrumentMap[Qt::Key_G] = instr++;
+		keycodeInstrumentMap[Qt::Key_B] = instr++;
+		keycodeInstrumentMap[Qt::Key_H] = instr++;
+		keycodeInstrumentMap[Qt::Key_N] = instr++;
+		keycodeInstrumentMap[Qt::Key_J] = instr++;
+		keycodeInstrumentMap[Qt::Key_Question] = instr++;
+	
+		keycodeInstrumentMap[Qt::Key_A] = instr++;
+		keycodeInstrumentMap[Qt::Key_2] = instr++;
+		keycodeInstrumentMap[Qt::Key_Z] = instr++;
+		keycodeInstrumentMap[Qt::Key_3] = instr++;
+		keycodeInstrumentMap[Qt::Key_E] = instr++;
+		keycodeInstrumentMap[Qt::Key_R] = instr++;
+		keycodeInstrumentMap[Qt::Key_5] = instr++;
+		keycodeInstrumentMap[Qt::Key_T] = instr++;
+		keycodeInstrumentMap[Qt::Key_6] = instr++;
+		keycodeInstrumentMap[Qt::Key_Y] = instr++;
+		keycodeInstrumentMap[Qt::Key_7] = instr++;
+		keycodeInstrumentMap[Qt::Key_U] = instr++;
+	}else
+	{ /// default QWERTY
+		keycodeInstrumentMap[Qt::Key_Z] = instr++;
+		keycodeInstrumentMap[Qt::Key_S] = instr++;
+		keycodeInstrumentMap[Qt::Key_X] = instr++;
+		keycodeInstrumentMap[Qt::Key_D] = instr++;
+		keycodeInstrumentMap[Qt::Key_C] = instr++;
+		keycodeInstrumentMap[Qt::Key_V] = instr++;
+		keycodeInstrumentMap[Qt::Key_G] = instr++;
+		keycodeInstrumentMap[Qt::Key_B] = instr++;
+		keycodeInstrumentMap[Qt::Key_H] = instr++;
+		keycodeInstrumentMap[Qt::Key_N] = instr++;
+		keycodeInstrumentMap[Qt::Key_J] = instr++;
+		keycodeInstrumentMap[Qt::Key_M] = instr++;
+	
+		keycodeInstrumentMap[Qt::Key_Q] = instr++;
+		keycodeInstrumentMap[Qt::Key_2] = instr++;
+		keycodeInstrumentMap[Qt::Key_W] = instr++;
+		keycodeInstrumentMap[Qt::Key_3] = instr++;
+		keycodeInstrumentMap[Qt::Key_E] = instr++;
+		keycodeInstrumentMap[Qt::Key_R] = instr++;
+		keycodeInstrumentMap[Qt::Key_5] = instr++;
+		keycodeInstrumentMap[Qt::Key_T] = instr++;
+		keycodeInstrumentMap[Qt::Key_6] = instr++;
+		keycodeInstrumentMap[Qt::Key_Y] = instr++;
+		keycodeInstrumentMap[Qt::Key_7] = instr++;
+		keycodeInstrumentMap[Qt::Key_U] = instr++;
+	}
 
 	/*
 	// QWERTY etc.... rows of the keyboard
@@ -1660,4 +1627,42 @@ void MainForm::onPlaylistDisplayTimer()
 	}
 	QString message = (trUtf8("Playlist: Song No. %1").arg( songnumber + 1)) + QString("  ---  Songname: ") + songname + QString("  ---  Author: ") + Hydrogen::get_instance()->getSong()->__author;
 	HydrogenApp::getInstance()->setScrollStatusBarMessage( message, 2000 );
+}
+
+// Returns true if unsaved changes are successfully handled (saved, discarded, etc.)
+// Returns false if not (i.e. Cancel)
+bool MainForm::handleUnsavedChanges()
+{
+	bool done = false;
+	bool rv = true;
+	while ( !done && Hydrogen::get_instance()->getSong()->__is_modified ) {
+		switch(
+				QMessageBox::information( this, "Hydrogen",
+						trUtf8("\nThe document contains unsaved changes.\n"
+						"Do you want to save the changes?\n"),
+						trUtf8("&Save"), trUtf8("&Discard"), trUtf8("&Cancel"),
+						0,      // Enter == button 0
+						2 ) ) { // Escape == button 2
+			case 0: // Save clicked or Alt+S pressed or Enter pressed.
+				// If the save fails, the __is_modified flag will still be true
+				if ( Hydrogen::get_instance()->getSong()->get_filename() != "") {
+					action_file_save();
+				} else {
+					// never been saved
+					action_file_save_as();
+				}
+				// save
+				break;
+			case 1: // Discard clicked or Alt+D pressed
+				// don't save but exit
+				done = true;
+				break;
+			case 2: // Cancel clicked or Alt+C pressed or Escape pressed
+				// don't exit
+				done = true;
+				rv = false;
+				break;
+		}
+	}
+	return rv;
 }
