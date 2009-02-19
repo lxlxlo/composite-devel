@@ -97,6 +97,7 @@ public:
 	}
 	void handleMidiMessage( const MidiMessage& msg );
 	void handleSysexMessage( const MidiMessage& msg );
+	void handleControlChangeMessage( const MidiMessage& msg );
 
 	// Process callback hooks.  Specifically added for JACK MIDI,
 	// but could be used by others.  The default implementation
