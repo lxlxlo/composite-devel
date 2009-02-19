@@ -169,8 +169,11 @@ void Sampler::note_on( Note *note )
 
 void Sampler::note_off( Note* note )
 {
-	UNUSED( note );
-	ERRORLOG( "not implemented yet" );
+//this is in work. i planing a sustain-curve that users can edit
+//in moment only stop_playing_notes delete the current playing note.
+	stop_playing_notes( note->get_instrument() );
+//also the note_off msg from midi keyboard should be recorded into drum pattern note_map.
+//all this will develop into branch: new_fx_rack_and_sample_fun
 }
 
 
@@ -691,7 +694,7 @@ void Sampler::stop_playing_notes( Instrument* instrument )
 
 
 /// Preview, uses only the first layer
-void Sampler::preview_sample( Sample* sample )
+void Sampler::preview_sample( Sample* sample, int length )
 {
 	AudioEngine::get_instance()->lock( "Sampler::previewSample" );
 
@@ -699,12 +702,12 @@ void Sampler::preview_sample( Sample* sample )
 
 	Sample *pOldSample = pLayer->get_sample();
 	pLayer->set_sample( sample );
-	delete pOldSample;
 
-	Note *previewNote = new Note( __preview_instrument, 0, 1.0, 0.5, 0.5, MAX_NOTES, 0 );
+	Note *previewNote = new Note( __preview_instrument, 0, 1.0, 0.5, 0.5, length, 0 );
 
 	stop_playing_notes( __preview_instrument );
 	note_on( previewNote );
+	delete pOldSample;
 
 	AudioEngine::get_instance()->unlock();
 }
