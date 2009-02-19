@@ -27,6 +27,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <cstdlib>
+#include <cassert>
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/instrument.h>
 #include <hydrogen/Song.h>
@@ -439,15 +440,14 @@ float* JackOutput::getTrackOut_R( unsigned nTrack )
 }
 
 
-int JackOutput::init( unsigned nBufferSize )
+int JackOutput::init( unsigned /*nBufferSize*/ )
 {
-	UNUSED( nBufferSize );
-
 	output_port_name_1 = Preferences::getInstance()->m_sJackPortName1;
 	output_port_name_2 = Preferences::getInstance()->m_sJackPortName2;
 
 	jack_client_t* client = JackClient::get_instance()->ref();
 
+	// Here, client should either be valid, or NULL.	
 	jack_server_sampleRate = jack_get_sample_rate ( client );
 	jack_server_bufferSize = jack_get_buffer_size ( client );
 
