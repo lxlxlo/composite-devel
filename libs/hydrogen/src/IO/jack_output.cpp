@@ -117,7 +117,13 @@ int JackOutput::connect()
 		LashClient* lashClient = LashClient::getInstance();
 		if (lashClient && !lashClient->isNewProject())
 		{
-			connect_output_ports = false;
+	//		infoLog("[LASH] Sending Jack client name to LASH server");
+			lashClient->sendJackClientName();
+			
+			if (!lashClient->isNewProject())
+			{
+				connect_output_ports = false;
+			}
 		}
 	}
 #endif

@@ -408,8 +408,17 @@ void SoundLibraryPanel::on_DrumkitList_mouseMove( QMouseEvent *event)
 			return;
 		}
 
+		if ( __sound_library_tree->currentItem()->parent() == __song_item )
+		{
+			return;
+		}
+
 		if ( __sound_library_tree->currentItem()->parent()->text(0) == NULL )
 		{
+			return;
+		}
+
+		if ( __sound_library_tree->currentItem()->parent() == __pattern_item ) {
 			return;
 		}
 
@@ -515,7 +524,6 @@ void SoundLibraryPanel::on_drumkitLoadAction()
 
 	//HydrogenApp::getInstance()->getPatternEditorPanel()->getDrumPatternEditor()->updateEditor();
 }
-
 
 
 void SoundLibraryPanel::update_background_color()
