@@ -161,6 +161,7 @@ float m_fFXPeak_R[MAX_FX];
 
 int m_nPatternStartTick = -1;
 int m_nPatternTickPosition = 0;
+int m_nLookaheadFrames = 0;
 
 // used in findPatternInTick
 int m_nSongSizeInTicks = 0;
@@ -1054,6 +1055,7 @@ inline int audioEngine_updateNoteQueue( unsigned nFrames )
 	// lookahead. lookahead should be equal or greater than the
 	// nLeadLagFactor + nMaxTimeHumanize.
 	int lookahead = nLeadLagFactor + nMaxTimeHumanize + 1;
+	m_nLookaheadFrames = lookahead;
 	if ( framepos == 0
 	     || ( m_audioEngineState == STATE_PLAYING
 		  && m_pSong->get_mode() == Song::SONG_MODE
@@ -1836,8 +1838,26 @@ void Hydrogen::addRealtimeNote( int instrument,
 		return;
 	}
 
-	realcolumn = (use_frame) ? getRealtimeTickPosition(frame) : getRealtimeTickPosition();
+	Pattern* currentPattern = NULL;
+	PatternList *pPatternList = m_pSong->get_pattern_list();
+	if ( ( m_nSelectedPatternNumber != -1 )
+	     && ( m_nSelectedPatternNumber < ( int )pPatternList->get_size() ) ) {
+		currentPattern = pPatternList->get( m_nSelectedPatternNumber );
+	}
+
+	// Get current column and compensate for "lookahead"
 	unsigned int column = (use_frame) ? realcolumn : getTickPosition();
+	unsigned int lookaheadTicks = m_nLookaheadFrames
+		/ m_pAudioDriver->m_transport.m_nTickSize;
+	if ( column >= lookaheadTicks ) {
+		column -= lookaheadTicks;
+	} else {
+		lookaheadTicks %= currentPattern->get_lenght();
+		column = (column + currentPattern->get_lenght() - lookaheadTicks)
+			% currentPattern->get_lenght();
+	}
+
+	realcolumn = (use_frame) ? getRealtimeTickPosition(frame) : getRealtimeTickPosition();
 
 	// quantize it to scale
 	int qcolumn = ( int )::round( column / ( double )scalar ) * scalar;
@@ -1849,13 +1869,6 @@ void Hydrogen::addRealtimeNote( int instrument,
 
 
 	unsigned position = column;
-
-	Pattern* currentPattern = NULL;
-	PatternList *pPatternList = m_pSong->get_pattern_list();
-	if ( ( m_nSelectedPatternNumber != -1 )
-	     && ( m_nSelectedPatternNumber < ( int )pPatternList->get_size() ) ) {
-		currentPattern = pPatternList->get( m_nSelectedPatternNumber );
-	}
 
 	Instrument *instrRef = 0;
 	if ( song ) {
