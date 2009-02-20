@@ -371,7 +371,6 @@ if ( msg.m_sysexData.size() == 6 ) {
 	}
 }
 
-<<<<<<< HEAD:libs/hydrogen/src/IO/midi_input.cpp
 int MidiInput::processAudio(uint32_t /*nframes*/)
 {
     return 0;
@@ -383,10 +382,5 @@ int MidiInput::processNonAudio(uint32_t /*nframes*/)
 }
 
 
-=======
->>>>>>> r818:libs/hydrogen/src/IO/midi_input.cpp
 };
-<<<<<<< HEAD:libs/hydrogen/src/IO/midi_input.cpp
 
-=======
->>>>>>> r818:libs/hydrogen/src/IO/midi_input.cpp
