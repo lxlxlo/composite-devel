@@ -239,12 +239,12 @@ void MidiInput::handleNoteOffMessage( const MidiMessage& msg )
 	const float fVelocity = 0.0f;
 	const float fPan_L = 0.5f;
 	const float fPan_R = 0.5f;
-	const int nLenght = -1;
+	const int nLength = -1;
 	const float fPitch = 0.0f;
 	if (msg.m_use_frame) {
 	    nPosition = pEngine->getRealtimeTickPosition(msg.m_frame);
 	}
-	Note *pNewNote = new Note( pInstr, nPosition, fVelocity, fPan_L, fPan_R, nLenght, fPitch );
+	Note *pNewNote = new Note( pInstr, nPosition, fVelocity, fPan_L, fPan_R, nLength, fPitch );
 
 	pEngine->midi_noteOff( pNewNote );
 }
@@ -371,6 +371,7 @@ if ( msg.m_sysexData.size() == 6 ) {
 	}
 }
 
+<<<<<<< HEAD:libs/hydrogen/src/IO/midi_input.cpp
 int MidiInput::processAudio(uint32_t /*nframes*/)
 {
     return 0;
@@ -382,5 +383,10 @@ int MidiInput::processNonAudio(uint32_t /*nframes*/)
 }
 
 
+=======
+>>>>>>> r818:libs/hydrogen/src/IO/midi_input.cpp
 };
+<<<<<<< HEAD:libs/hydrogen/src/IO/midi_input.cpp
 
+=======
+>>>>>>> r818:libs/hydrogen/src/IO/midi_input.cpp
