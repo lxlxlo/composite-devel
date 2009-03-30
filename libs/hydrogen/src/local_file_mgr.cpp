@@ -69,6 +69,7 @@ LocalFileMng::~LocalFileMng()
 //	infoLog("DESTROY");
 }
 
+#warning "TODO: Handle and/or declare the XML encoding for XML file content (<?xml encoding="foo"?>)"
 
 QString LocalFileMng::getDrumkitNameForPattern( const QString& patternDir )
 {
@@ -228,7 +229,7 @@ int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString&
 		dir.mkdir( sPatternDir );// create the drumkit directory
 	}
 
-	QString sPatternXmlFilename = "";
+	QString sPatternXmlFilename;
 	// create the drumkit.xml file
 	switch ( mode ){
 		case 1: //save
@@ -438,7 +439,7 @@ std::vector<QString> LocalFileMng::getAllCategoriesFromPattern()
 			QString sCategoryName( LocalFileMng::readXmlString( patternNode,"category", "" ) );
 
 
-			if ( sCategoryName != "" ){
+			if ( !sCategoryName.isEmpty() ){
 				bool test = true;
 				for (uint i = 0; i < categorylist.size(); ++i){
 					if ( sCategoryName == categorylist[i] ){
@@ -648,7 +649,7 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 
 	// Name
 	QString sDrumkitName = readXmlString( drumkitNode, "name", "" );
-	if ( sDrumkitName == "" ) {
+	if ( sDrumkitName.isEmpty() ) {
 		ERRORLOG( "Error reading drumkit: name node not found" );
 		return NULL;
 	}
@@ -696,7 +697,7 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 			int nMuteGroup = sMuteGroup.toInt();
 
 			// some sanity checks
-			if ( id == "" ) {
+			if ( id.isEmpty() ) {
 				ERRORLOG( "Empty ID for instrument. The drumkit '" + sDrumkitName + "' is corrupted. Skipping instrument '" + name + "'" );
 				continue;
 			}
@@ -1184,7 +1185,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 
 			QString sFilename = pSample->get_filename();
 
-			if ( instr->get_drumkit_name() != "" ) {
+			if ( !instr->get_drumkit_name().isEmpty() ) {
 				// se e' specificato un drumkit, considero solo il nome del file senza il path
 				int nPos = sFilename.lastIndexOf( "/" );
 				sFilename = sFilename.mid( nPos + 1, sFilename.length() );

@@ -88,7 +88,7 @@ void Playlist::setNextSongByNumber(int SongNumber)
 	setSelectedSongNr(  realNumber );
 	setActiveSongNumber( realNumber );
 
-	QString selected = "";
+	QString selected;
 	selected = Hydrogen::get_instance()->m_PlayList[ realNumber ].m_hFile;
 
 	loadSong( selected );
@@ -103,7 +103,7 @@ void Playlist::setNextSongPlaylist()
 {
 	
 	int index = getSelectedSongNr();
-_INFOLOG( "index" + to_string( index ) );
+	_INFOLOG( "index" + to_string( index ) );
 	if (index == -1 ){
 		if ( getActiveSongNumber() != -1){
 			index = getActiveSongNumber();
@@ -119,7 +119,7 @@ _INFOLOG( "index" + to_string( index ) );
 	setSelectedSongNr( index );
 	setActiveSongNumber( index );
 
-	QString selected = "";
+	QString selected;
 	selected = Hydrogen::get_instance()->m_PlayList[ index ].m_hFile;
 
 	loadSong( selected );
@@ -151,7 +151,7 @@ void Playlist::setPrevSongPlaylist()
 	setSelectedSongNr( index );
 	setActiveSongNumber( index );
 
-	QString selected = "";
+	QString selected;
 	selected = Hydrogen::get_instance()->m_PlayList[ index ].m_hFile;
 
 	loadSong( selected );
@@ -215,8 +215,8 @@ void Playlist::loadSong( QString songName )
 
 void Playlist::execScript( int index)
 {
-	QString file = "";
-	QString script = "";
+	QString file;
+	QString script;
 
 	file = Hydrogen::get_instance()->m_PlayList[ index ].m_hScript;
 	script = Hydrogen::get_instance()->m_PlayList[ index ].m_hScriptEnabled;

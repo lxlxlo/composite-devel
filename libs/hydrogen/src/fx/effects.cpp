@@ -201,7 +201,7 @@ std::vector<LadspaFXInfo*> Effects::getPluginList()
 							pFX->m_nOAPorts++;
 						} else {
 //							string sPortName = d->PortNames[ j ];
-							QString sPortName = "";
+							QString sPortName;
 							ERRORLOG( QString( "%1::%2 unknown port type" ).arg( pFX->m_sLabel ).arg( sPortName ) );
 						}
 					}

@@ -223,7 +223,7 @@ void Preferences::loadPreferences( bool bGlobal )
 
 			// version
 			QString version = LocalFileMng::readXmlString( rootNode, "version", "" );
-			if ( version == "" ) {
+			if ( version.isEmpty() ) {
 				recreate = true;
 			}
 

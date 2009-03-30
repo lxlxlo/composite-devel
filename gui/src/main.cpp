@@ -127,9 +127,9 @@ int main(int argc, char *argv[])
 {
 	try {
 
-		QString songFilename = "";
+		QString songFilename;
 		bool bNoSplash = false;
-		QString sSelectedDriver = "";
+		QString sSelectedDriver;
 
 #ifdef CONFIG_DEBUG
 		Object::use_verbose_log( true );
@@ -255,7 +255,7 @@ int main(int argc, char *argv[])
 		pQApp->installTranslator( &tor );
 
 		QString sStyle = pPref->getQTStyle();
-		if (sStyle != "" ) {
+		if ( !sStyle.isEmpty() ) {
 			pQApp->setStyle( sStyle );
 		}
 
