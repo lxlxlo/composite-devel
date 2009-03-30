@@ -180,12 +180,12 @@ std::vector<LadspaFXInfo*> Effects::getPluginList()
 			const LADSPA_Descriptor * d;
 			if ( desc_func ) {
 				for ( unsigned i = 0; ( d = desc_func ( i ) ) != NULL; i++ ) {
-					LadspaFXInfo* pFX = new LadspaFXInfo( d->Name );
+					LadspaFXInfo* pFX = new LadspaFXInfo( QString::fromLocal8Bit(d->Name) );
 					pFX->m_sFilename = sAbsPath;
-					pFX->m_sLabel = d->Label;
+					pFX->m_sLabel = QString::fromLocal8Bit(d->Label);
 					pFX->m_sID = QString::number(d->UniqueID);
-					pFX->m_sMaker = d->Maker;
-					pFX->m_sCopyright = d->Copyright;
+					pFX->m_sMaker = QString::fromLocal8Bit(d->Maker);
+					pFX->m_sCopyright = QString::fromLocal8Bit(d->Copyright);
 
 					//INFOLOG( "Loading: " + pFX->m_sLabel );
 
@@ -328,12 +328,12 @@ void Effects::getRDF( LadspaFXGroup *pGroup, vector<LadspaFXInfo*> pluginList )
 // funzione ricorsiva
 void Effects::RDFDescend( const QString& sBase, LadspaFXGroup *pGroup, vector<LadspaFXInfo*> pluginList )
 {
-	//cout << "LadspaFX::RDFDescend " << sBase.toStdString() << endl;
+	//cout << "LadspaFX::RDFDescend " << sBase.toLocal8Bit().constData() << endl;
 
 	lrdf_uris* uris = lrdf_get_subclasses( sBase.toLocal8Bit() );
 	if ( uris ) {
 		for ( int i = 0; i < ( int )uris->count; i++ ) {
-			QString sGroup = lrdf_get_label( uris->items[ i ] );
+			QString sGroup = QString::fromLocal8Bit(lrdf_get_label( uris->items[ i ] ));
 
 			LadspaFXGroup *pNewGroup = NULL;
 			// verifico se esiste gia una categoria con lo stesso nome
@@ -349,7 +349,7 @@ void Effects::RDFDescend( const QString& sBase, LadspaFXGroup *pGroup, vector<La
 				pNewGroup = new LadspaFXGroup( sGroup );
 				pGroup->addChild( pNewGroup );
 			}
-			RDFDescend( uris->items[i], pNewGroup, pluginList );
+			RDFDescend( QString::fromLocal8Bit(uris->items[i]), pNewGroup, pluginList );
 		}
 		lrdf_free_uris ( uris );
 	}

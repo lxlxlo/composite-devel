@@ -215,18 +215,18 @@ void Drumkit::install( const QString& filename )
         strcpy( tarfilename, gunzippedName.toLocal8Bit() );
 
         if ( tar_open( &tarFile, tarfilename, NULL, O_RDONLY, 0, TAR_VERBOSE | TAR_GNU ) == -1 ) { 
-                _ERRORLOG( QString( "[Drumkit::install] tar_open(): %1" ).arg( strerror( errno ) ) );
+		_ERRORLOG( QString( "[Drumkit::install] tar_open(): %1" ).arg( QString::fromLocal8Bit(strerror(errno)) ) );
 		return;
         }
 
         char destDir[1024];
         strcpy( destDir, dataDir.toLocal8Bit() );
         if ( tar_extract_all( tarFile, destDir ) != 0 ) {
-                _ERRORLOG( QString( "[Drumkit::install] tar_extract_all(): %1" ).arg( strerror( errno ) ) );
+                _ERRORLOG( QString( "[Drumkit::install] tar_extract_all(): %1" ).arg( QString::fromLocal8Bit(strerror(errno)) ) );
         }
 
         if ( tar_close( tarFile ) != 0 ) {
-                _ERRORLOG( QString( "[Drumkit::install] tar_close(): %1" ).arg( strerror( errno ) ) );
+                _ERRORLOG( QString( "[Drumkit::install] tar_close(): %1" ).arg( QString::fromLocal8Bit(strerror(errno)) ) );
         }
 }
 #endif

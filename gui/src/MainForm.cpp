@@ -325,7 +325,7 @@ if ( Preferences::getInstance()->useLash() ){
 				songFilename.append(lash_event_get_string(event));
 				songFilename.append("/hydrogen.h2song"); 
 				
-				filenameSong = songFilename.c_str();
+				filenameSong = QString::fromLocal8Bit( songFilename.c_str() );
 				song->set_filename( filenameSong );
 				action_file_save();
 			  
@@ -340,7 +340,7 @@ if ( Preferences::getInstance()->useLash() ){
 				
 				INFOLOG("[LASH] Restore file: " + to_string( songFilename ));
 
-				filenameSong = songFilename.c_str();
+				filenameSong = QString::fromLocal8Bit( songFilename.c_str() );
 							 
 				openSongFile( filenameSong );
 			 

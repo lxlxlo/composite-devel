@@ -940,14 +940,15 @@ int LocalFileMng::loadPlayList( const std::string& patternname)
 		// new code :)
 		Hydrogen::get_instance()->m_PlayList.clear();
 		for ( TiXmlNode* nextNode = playlistNode->FirstChild( "next" ); nextNode; nextNode = nextNode->NextSibling( "next" ) ) {
-			std::string song =  LocalFileMng::readXmlString( nextNode, "song", "" ).toStdString();
-			std::string script = LocalFileMng::readXmlString( nextNode, "script", "" ).toStdString();
-			std::string ScriptEnabled = LocalFileMng::readXmlString( nextNode, "enabled", "" ).toStdString();
+			#warning "TODO: Why do we convert QString => std::string => QString here?"
+			std::string song =  LocalFileMng::readXmlString( nextNode, "song", "" ).toLocal8Bit().constData();
+			std::string script = LocalFileMng::readXmlString( nextNode, "script", "" ).toLocal8Bit().constData();
+			std::string ScriptEnabled = LocalFileMng::readXmlString( nextNode, "enabled", "" ).toLocal8Bit().constData();
 
 			Hydrogen::HPlayListNode playListItem;
-			playListItem.m_hFile = song.c_str();
-			playListItem.m_hScript = script.c_str();
-			playListItem.m_hScriptEnabled = ScriptEnabled.c_str();
+			playListItem.m_hFile = QString::fromLocal8Bit(song.c_str());
+			playListItem.m_hScript = QString::fromLocal8Bit(script.c_str());
+			playListItem.m_hScriptEnabled = QString::fromLocal8Bit(ScriptEnabled.c_str());
 			Hydrogen::get_instance()->m_PlayList.push_back( playListItem );	
 		}
 	}

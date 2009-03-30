@@ -143,7 +143,7 @@ void Object::print_object_map()
 		int nInstances = ( *iter ).second;
 		QString sObject = ( *iter ).first;
 		if ( nInstances != 0 ) {
-			std::cout << nInstances << "\t" << sObject.toStdString() << std::endl;
+			std::cout << nInstances << "\t" << sObject.toLocal8Bit().constData() << std::endl;
 		}
 		nTotal += nInstances;
 		iter++;

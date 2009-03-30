@@ -119,22 +119,16 @@ inline QString to_string( const T& t )
 	std::ostringstream osstream;
 	osstream << t;
 
-	return QString( osstream.str().c_str() );
+	return QString::fromLocal8Bit( osstream.str().c_str() );
 }
 
 inline int string_to_int( const QString& str )
 {
-	std::istringstream isstream( str.toStdString() );
-	int t;
-	isstream >> t;
-	return t;
+	return str.toInt();
 }
 inline float string_to_float( const QString& str )
 {
-	std::istringstream isstream( str.toStdString() );
-	float t;
-	isstream >> t;
-	return t;
+	return str.toFloat();
 }
 
 #endif

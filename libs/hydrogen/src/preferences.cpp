@@ -86,7 +86,7 @@ Preferences::Preferences()
 	char * ladpath = getenv( "LADSPA_PATH" );	// read the Environment variable LADSPA_PATH
 	if ( ladpath ) {
 		INFOLOG( "Found LADSPA_PATH enviroment variable" );
-		QString sLadspaPath = ladpath;
+		QString sLadspaPath = QString::fromLocal8Bit(ladpath);
 		int pos;
 		while ( ( pos = sLadspaPath.indexOf( ":" ) ) != -1 ) {
 			QString sPath = sLadspaPath.left( pos );
@@ -548,7 +548,7 @@ void Preferences::loadPreferences( bool bGlobal )
 ///
 void Preferences::savePreferences()
 {
-	//string prefDir = QDir::homePath().append("/.hydrogen").toStdString();
+	//string prefDir = QDir::homePath().append("/.hydrogen").toLocal8Bit().constData();
 	QString filename = m_sPreferencesFilename;
 
 	INFOLOG( "Saving preferences file: " + filename );

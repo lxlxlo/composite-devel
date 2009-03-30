@@ -569,7 +569,7 @@ int JackOutput::init( unsigned /*nBufferSize*/ )
 		LashClient* lashClient = LashClient::getInstance();
 		if (lashClient->isConnected())
 		{
-			lashClient->setJackClientName(sClientName.toStdString());
+		    lashClient->setJackClientName(sClientName.toLocal8Bit().constData());
 		}
 	}
 #endif

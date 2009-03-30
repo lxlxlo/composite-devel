@@ -87,7 +87,7 @@ bool Button::loadImage( const QString& sFilename, QPixmap& pixmap )
 		}
 		QSvgRenderer doc( sFilename );
 		if ( doc.isValid() == false ) {
-			ERRORLOG( "error loading SVG image: '" + sFilename.toStdString() + "'" );
+			ERRORLOG( "error loading SVG image: '" + sFilename.toLocal8Bit().constData() + "'" );
 			return false;
 		}
 
