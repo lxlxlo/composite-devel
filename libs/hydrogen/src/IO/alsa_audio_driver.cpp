@@ -147,12 +147,12 @@ int AlsaAudioDriver::connect()
 	int err;
 
 	// provo ad aprire il device per verificare se e' libero ( non bloccante )
-	if ( ( err = snd_pcm_open( &m_pPlayback_handle, m_sAlsaAudioDevice.toAscii(), SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK ) ) < 0 ) {
+	if ( ( err = snd_pcm_open( &m_pPlayback_handle, m_sAlsaAudioDevice.toLocal8Bit(), SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK ) ) < 0 ) {
 		ERRORLOG( QString( "ALSA: cannot open audio device %1:%2" ).arg( m_sAlsaAudioDevice ).arg( snd_strerror( err ) ) );
 
 		// il dispositivo e' occupato..provo con "default"
 		m_sAlsaAudioDevice = "default";
-		if ( ( err = snd_pcm_open( &m_pPlayback_handle, m_sAlsaAudioDevice.toAscii(), SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK ) ) < 0 ) {
+		if ( ( err = snd_pcm_open( &m_pPlayback_handle, m_sAlsaAudioDevice.toLocal8Bit(), SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK ) ) < 0 ) {
 			ERRORLOG( QString( "ALSA: cannot open audio device %1:%2" ).arg( m_sAlsaAudioDevice ) .arg( snd_strerror( err ) ) );
 			return 1;
 		}
@@ -161,7 +161,7 @@ int AlsaAudioDriver::connect()
 	snd_pcm_close( m_pPlayback_handle );
 
 	// Apro il device ( bloccante )
-	if ( ( err = snd_pcm_open( &m_pPlayback_handle, m_sAlsaAudioDevice.toAscii(), SND_PCM_STREAM_PLAYBACK, 0 ) ) < 0 ) {
+	if ( ( err = snd_pcm_open( &m_pPlayback_handle, m_sAlsaAudioDevice.toLocal8Bit(), SND_PCM_STREAM_PLAYBACK, 0 ) ) < 0 ) {
 		ERRORLOG( QString( "ALSA: cannot open audio device %1:%2" ).arg( m_sAlsaAudioDevice ).arg( snd_strerror( err ) ) );
 		return 1;
 	}

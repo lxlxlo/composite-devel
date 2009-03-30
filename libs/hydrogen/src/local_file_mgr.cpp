@@ -74,7 +74,7 @@ QString LocalFileMng::getDrumkitNameForPattern( const QString& patternDir )
 {
 	QString patternInfoFile = patternDir;
 
-	TiXmlDocument doc( patternInfoFile.toAscii() );
+	TiXmlDocument doc( patternInfoFile.toLocal8Bit() );
 	doc.LoadFile();
 
 	TiXmlNode* rootNode;	// root element
@@ -92,7 +92,7 @@ QString LocalFileMng::getDrumkitNameForPattern( const QString& patternDir )
 QString LocalFileMng::getCategoryFromPatternName( const QString& patternPathName )
 {
 	QString sCatrgory = patternPathName;
-	TiXmlDocument doc( sCatrgory.toAscii() );
+	TiXmlDocument doc( sCatrgory.toLocal8Bit() );
 	doc.LoadFile();
 
 
@@ -112,7 +112,7 @@ QString LocalFileMng::getCategoryFromPatternName( const QString& patternPathName
 QString LocalFileMng::getPatternNameFromPatternDir( const QString& patternDirName)
 {
 	QString sDir = patternDirName;
-	TiXmlDocument doc( sDir.toAscii() );
+	TiXmlDocument doc( sDir.toLocal8Bit() );
 	doc.LoadFile();
 
 
@@ -144,7 +144,7 @@ Pattern* LocalFileMng::loadPattern( const QString& directory )
 	}
 
 
-	TiXmlDocument doc( patternInfoFile.toAscii() );
+	TiXmlDocument doc( patternInfoFile.toLocal8Bit() );
 	doc.LoadFile();
 
 	// root element
@@ -248,7 +248,7 @@ int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString&
 	if ( testfile.exists() && mode == 1)
 		return 1;
 
-	TiXmlDocument doc( sPatternXmlFilename.toAscii() );
+	TiXmlDocument doc( sPatternXmlFilename.toLocal8Bit() );
 
 	TiXmlElement rootNode( "drumkit_pattern" );
 	//LIB_ID just in work to get better usability
@@ -309,13 +309,13 @@ void LocalFileMng::fileCopy( const QString& sOrigFilename, const QString& sDestF
 		return;
 	}
 
-	FILE *inputFile = fopen( sOrigFilename.toAscii(), "rb" );
+	FILE *inputFile = fopen( sOrigFilename.toLocal8Bit(), "rb" );
 	if ( inputFile == NULL ) {
 		ERRORLOG( "Error opening " + sOrigFilename );
 		return;
 	}
 
-	FILE *outputFile = fopen( sDestFilename.toAscii(), "wb" );
+	FILE *outputFile = fopen( sDestFilename.toLocal8Bit(), "wb" );
 	if ( outputFile == NULL ) {
 		ERRORLOG( "Error opening " + sDestFilename );
 		return;
@@ -399,7 +399,7 @@ std::vector<QString> LocalFileMng::getAllPatternName()
 		QString patternInfoFile =  m_allPatternList[i];
 
 
-		TiXmlDocument doc( patternInfoFile.toAscii() );
+		TiXmlDocument doc( patternInfoFile.toLocal8Bit() );
 		doc.LoadFile();
 
 		TiXmlNode* rootNode;	// root element
@@ -427,7 +427,7 @@ std::vector<QString> LocalFileMng::getAllCategoriesFromPattern()
 	for (uint i = 0; i < m_allPatternList.size(); ++i) {
 		QString patternInfoFile =  m_allPatternList[i];
 		
-		TiXmlDocument doc( patternInfoFile.toAscii() );
+		TiXmlDocument doc( patternInfoFile.toLocal8Bit() );
 		doc.LoadFile();
 
 		TiXmlNode* rootNode;	// root element
@@ -636,7 +636,7 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 		return NULL;
 	}
 
-	TiXmlDocument doc( drumkitInfoFile.toAscii() );
+	TiXmlDocument doc( drumkitInfoFile.toLocal8Bit() );
 	doc.LoadFile();
 
 	// root element
@@ -790,7 +790,7 @@ int LocalFileMng::saveDrumkit( Drumkit *info )
 	// create the drumkit.xml file
 	QString sDrumkitXmlFilename = sDrumkitDir + QString( "/drumkit.xml" );
 
-	TiXmlDocument doc( sDrumkitXmlFilename.toAscii() );
+	TiXmlDocument doc( sDrumkitXmlFilename.toLocal8Bit() );
 
 	TiXmlElement rootNode( "drumkit_info" );
 
@@ -959,7 +959,7 @@ int LocalFileMng::loadPlayList( const std::string& patternname)
 QString LocalFileMng::readXmlString( TiXmlNode* parent, const QString& nodeName, const QString& defaultValue, bool bCanBeEmpty, bool bShouldExists )
 {
 	TiXmlNode* node;
-	if ( parent && ( node = parent->FirstChild( nodeName.toAscii() ) ) ) {
+	if ( parent && ( node = parent->FirstChild( nodeName.toLocal8Bit() ) ) ) {
 		if ( node->FirstChild() ) {
 			return node->FirstChild()->Value();
 		} else {
@@ -981,7 +981,7 @@ QString LocalFileMng::readXmlString( TiXmlNode* parent, const QString& nodeName,
 float LocalFileMng::readXmlFloat( TiXmlNode* parent, const QString& nodeName, float defaultValue, bool bCanBeEmpty, bool bShouldExists )
 {
 	TiXmlNode* node;
-	if ( parent && ( node = parent->FirstChild( nodeName.toAscii() ) ) ) {
+	if ( parent && ( node = parent->FirstChild( nodeName.toLocal8Bit() ) ) ) {
 		if ( node->FirstChild() ) {
 			float res = string_to_float( node->FirstChild()->Value() );
 			return res;
@@ -1004,7 +1004,7 @@ float LocalFileMng::readXmlFloat( TiXmlNode* parent, const QString& nodeName, fl
 int LocalFileMng::readXmlInt( TiXmlNode* parent, const QString& nodeName, int defaultValue, bool bCanBeEmpty, bool bShouldExists )
 {
 	TiXmlNode* node;
-	if ( parent && ( node = parent->FirstChild( nodeName.toAscii() ) ) ) {
+	if ( parent && ( node = parent->FirstChild( nodeName.toLocal8Bit() ) ) ) {
 		if ( node->FirstChild() ) {
 			return atoi( node->FirstChild()->Value() );
 		} else {
@@ -1026,7 +1026,7 @@ int LocalFileMng::readXmlInt( TiXmlNode* parent, const QString& nodeName, int de
 bool LocalFileMng::readXmlBool( TiXmlNode* parent, const QString& nodeName, bool defaultValue, bool bShouldExists )
 {
 	TiXmlNode* node;
-	if ( parent && ( node = parent->FirstChild( nodeName.toAscii() ) ) ) {
+	if ( parent && ( node = parent->FirstChild( nodeName.toLocal8Bit() ) ) ) {
 		if ( node->FirstChild() ) {
 			if ( QString( node->FirstChild()->Value() ) == "true" ) {
 				return true;
@@ -1049,8 +1049,8 @@ bool LocalFileMng::readXmlBool( TiXmlNode* parent, const QString& nodeName, bool
 
 void LocalFileMng::writeXmlString( TiXmlNode *parent, const QString& name, const QString& text )
 {
-	TiXmlElement versionNode( name.toAscii() );
-	TiXmlText versionText( text.toAscii() );
+	TiXmlElement versionNode( name.toLocal8Bit() );
+	TiXmlText versionText( text.toLocal8Bit() );
 	versionNode.InsertEndChild( versionText );
 	parent->InsertEndChild( versionNode );
 }
@@ -1107,12 +1107,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 	// FIXME: effettuare copia di backup per il file gia' esistente
 
 
-	#ifdef WIN32
-  		TiXmlDocument doc( filename.toAscii().constData() );
-	#else
-   		TiXmlDocument doc( filename.toUtf8().constData() );
-	#endif
-
+        TiXmlDocument doc( filename.toLocal8Bit().constData() );
 	TiXmlElement songNode( "song" );
 
 	LocalFileMng::writeXmlString( &songNode, "version", QString( get_version().c_str() ) );

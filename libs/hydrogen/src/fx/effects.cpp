@@ -250,7 +250,7 @@ LadspaFXGroup* Effects::getLadspaFXGroup()
 	char C = 0;
 	LadspaFXGroup* pGroup;
 	for ( std::vector<LadspaFXInfo*>::iterator i = m_pluginList.begin(); i < m_pluginList.end(); i++ ) {
-		char ch = (*i)->m_sName[0].toAscii();
+                char ch = (*i)->m_sName.toLocal8Bit().at(0);
 		if ( ch != C ) {
 			C = ch;
 			pGroup = new LadspaFXGroup( QString( C ) );
@@ -313,7 +313,7 @@ void Effects::getRDF( LadspaFXGroup *pGroup, vector<LadspaFXInfo*> pluginList )
 
 		QString sRDFFile = QString( "file://%1/%2" ).arg( sDir ).arg( sFilename );
 
-		int err = lrdf_read_file( sRDFFile.toAscii() );
+		int err = lrdf_read_file( sRDFFile.toLocal8Bit() );
 		if ( err ) {
 			ERRORLOG( "Error parsing rdf file " + sFilename );
 		}
@@ -330,7 +330,7 @@ void Effects::RDFDescend( const QString& sBase, LadspaFXGroup *pGroup, vector<La
 {
 	//cout << "LadspaFX::RDFDescend " << sBase.toStdString() << endl;
 
-	lrdf_uris* uris = lrdf_get_subclasses( sBase.toAscii() );
+	lrdf_uris* uris = lrdf_get_subclasses( sBase.toLocal8Bit() );
 	if ( uris ) {
 		for ( int i = 0; i < ( int )uris->count; i++ ) {
 			QString sGroup = lrdf_get_label( uris->items[ i ] );
@@ -354,7 +354,7 @@ void Effects::RDFDescend( const QString& sBase, LadspaFXGroup *pGroup, vector<La
 		lrdf_free_uris ( uris );
 	}
 
-	uris = lrdf_get_instances( sBase.toAscii() );
+	uris = lrdf_get_instances( sBase.toLocal8Bit() );
 	if ( uris ) {
 		for ( int i = 0; i < ( int )uris->count; i++ ) {
 			int uid = lrdf_get_uid ( uris->items[i] );

@@ -224,7 +224,7 @@ void Playlist::execScript( int index)
 	if( file == "no Script" || script == "Script not used")
 		return;
 
-	std::system( file.toAscii() );
+	std::system( file.toLocal8Bit() );
 
 	return;
 }

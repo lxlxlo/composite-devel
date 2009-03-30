@@ -247,12 +247,7 @@ Song* SongReader::readSong( const QString& filename )
 	}
 
 
-	#ifdef WIN32
-  		TiXmlDocument doc( filename.toAscii().constData() );
-	#else
-   		TiXmlDocument doc( filename.toUtf8().constData() );
-	#endif
-
+        TiXmlDocument doc( filename.toLocal8Bit() );
 
 	doc.LoadFile();
 

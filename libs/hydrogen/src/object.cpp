@@ -184,7 +184,7 @@ void* loggerThread_func( void* param )
 		QString sLogFilename = QDir::homePath().append( "/.hydrogen/hydrogen.log" );
 #endif
 
-		pLogFile = fopen( sLogFilename.toAscii(), "w" );
+		pLogFile = fopen( sLogFilename.toLocal8Bit(), "w" );
 		if ( pLogFile == NULL ) {
 			std::cerr << "Error: can't open log file for writing..." << std::endl;
 		} else {
@@ -206,10 +206,10 @@ void* loggerThread_func( void* param )
 		while ( ( it  = pLogger->__msg_queue.begin() ) != pLogger->__msg_queue.end() ) {
 			tmpString = *it;
 			pLogger->__msg_queue.erase( it );
-			printf( tmpString.toAscii() );
+			printf( tmpString.toLocal8Bit() );
 
 			if ( pLogFile ) {
-				fprintf( pLogFile, tmpString.toAscii() );
+				fprintf( pLogFile, tmpString.toLocal8Bit() );
 				fflush( pLogFile );
 			}
 		}

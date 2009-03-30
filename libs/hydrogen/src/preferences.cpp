@@ -212,10 +212,10 @@ void Preferences::loadPreferences( bool bGlobal )
 	}
 	
 	// pref file exists?
-	std::ifstream input( sPreferencesFilename.toAscii() , std::ios::in | std::ios::binary );
+	std::ifstream input( sPreferencesFilename.toLocal8Bit() , std::ios::in | std::ios::binary );
 	if ( input ) {
 		// read preferences file
-		TiXmlDocument doc( sPreferencesFilename.toAscii() );
+		TiXmlDocument doc( sPreferencesFilename.toLocal8Bit() );
 		doc.LoadFile();
 
 		TiXmlNode* rootNode;
@@ -553,7 +553,7 @@ void Preferences::savePreferences()
 
 	INFOLOG( "Saving preferences file: " + filename );
 
-	TiXmlDocument doc( filename.toAscii() );
+	TiXmlDocument doc( filename.toLocal8Bit() );
 
 	TiXmlElement rootNode( "hydrogen_preferences" );
 
@@ -953,7 +953,7 @@ WindowProperties Preferences::readWindowProperties( TiXmlNode *parent, const QSt
 	WindowProperties prop = defaultProp;
 
 	TiXmlNode* windowPropNode;
-	if ( !( windowPropNode = parent->FirstChild( windowName.toAscii() ) ) ) {
+	if ( !( windowPropNode = parent->FirstChild( windowName.toLocal8Bit() ) ) ) {
 		WARNINGLOG( "Error reading configuration file: " + windowName + " node not found" );
 	} else {
 		prop.visible = LocalFileMng::readXmlBool( windowPropNode, "visible", true );
@@ -971,7 +971,7 @@ WindowProperties Preferences::readWindowProperties( TiXmlNode *parent, const QSt
 /// Write the xml nodes related to window properties
 void Preferences::writeWindowProperties( TiXmlNode& parent, const QString& windowName, const WindowProperties& prop )
 {
-	TiXmlElement windowPropNode( windowName.toAscii() );
+	TiXmlElement windowPropNode( windowName.toLocal8Bit() );
 	if ( prop.visible ) {
 		LocalFileMng::writeXmlString( &windowPropNode, "visible", "true" );
 	} else {
