@@ -110,6 +110,10 @@ public:
 	int writeSong( Song *song, const QString& filename );
 };
 
+/// Utility for getting encodings.
+/// *Will* return a valid pointer and never a NULL one.
+QTextCodec* getCodecForDoc(TiXmlNode* node);
+
 };
 
 

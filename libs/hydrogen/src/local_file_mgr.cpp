@@ -1338,6 +1338,20 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 	return rv;
 }
 
+QTextCodec* getCodecForDoc(TiXmlNode* node)
+{
+	QTextCodec* enc = 0;
+	if( node && node->GetDocument() ) {
+		enc = QTextCodec::codecForName( node->GetDocument()->GetEncoding().c_str() );
+	}
+	if( !enc ) {
+		// Assume local 8-bit encoding
+		enc = QTextCodec::codecForLocale();
+	}
+	assert(enc);
+	return enc;
+}
+
 
 };
 

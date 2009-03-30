@@ -51,7 +51,6 @@ namespace H2Core
 
 Preferences* Preferences::instance = NULL;
 
-
 /// Return an instance of Preferences
 Preferences* Preferences::getInstance()
 {
@@ -244,8 +243,9 @@ void Preferences::loadPreferences( bool bGlobal )
 			TiXmlNode* pRecentUsedSongsNode = rootNode->FirstChild( "recentUsedSongs" );
 			if ( pRecentUsedSongsNode ) {
 				TiXmlNode* pSongNode = 0;
+				QTextCodec* enc = getCodecForDoc(rootNode);
 				for ( pSongNode = pRecentUsedSongsNode->FirstChild( "song" ); pSongNode; pSongNode = pSongNode->NextSibling( "song" ) ) {
-					QString sFilename = pSongNode->FirstChild()->Value();
+					QString sFilename = enc->toUnicode( pSongNode->FirstChild()->Value() );
 					m_recentFiles.push_back( sFilename );
 				}
 			} else {
@@ -255,8 +255,9 @@ void Preferences::loadPreferences( bool bGlobal )
 			TiXmlNode* pRecentFXNode = rootNode->FirstChild( "recentlyUsedEffects" );
 			if ( pRecentFXNode ) {
 				TiXmlNode* pFXNode = 0;
+				QTextCodec* enc = getCodecForDoc(rootNode);
 				for ( pFXNode = pRecentFXNode->FirstChild( "FX" ); pFXNode; pFXNode = pFXNode->NextSibling( "FX" ) ) {
-					QString sFXName = pFXNode->FirstChild()->Value();
+					QString sFXName = enc->toUnicode(pFXNode->FirstChild()->Value());
 					m_recentFX.push_back( sFXName );
 				}
 			} else {
@@ -267,8 +268,9 @@ void Preferences::loadPreferences( bool bGlobal )
 			TiXmlNode* pServerListNode = rootNode->FirstChild( "serverList" );
 			if ( pServerListNode ) {
 				TiXmlNode* pServerNode = 0;
+				QTextCodec* enc = getCodecForDoc(rootNode);
 				for ( pServerNode = pServerListNode->FirstChild( "server" ); pServerNode; pServerNode = pServerNode->NextSibling( "server" ) ) {
-					QString sFilename = pServerNode->FirstChild()->Value();
+					QString sFilename = enc->toUnicode(pServerNode->FirstChild()->Value());
 					sServerList.push_back( sFilename );
 				}
 			} else {
@@ -279,8 +281,9 @@ void Preferences::loadPreferences( bool bGlobal )
 			TiXmlNode* pPatternCategoriesNode = rootNode->FirstChild( "patternCategories" );
 			if ( pPatternCategoriesNode ) {
 				TiXmlNode* pCategoriesNode = 0;
+				QTextCodec* enc = getCodecForDoc(rootNode);
 				for ( pCategoriesNode = pPatternCategoriesNode->FirstChild( "categories" ); pCategoriesNode; pCategoriesNode = pCategoriesNode->NextSibling( "categories" ) ) {
-					QString sFilename = pCategoriesNode->FirstChild()->Value();
+					QString sFilename = enc->toUnicode(pCategoriesNode->FirstChild()->Value());
 					m_patternCategories.push_back( sFilename );
 				}
 			} else {
@@ -479,33 +482,33 @@ void Preferences::loadPreferences( bool bGlobal )
 			TiXmlNode* pMidiEventMapNode = rootNode->FirstChild( "midiEventMap" );
 			if ( pMidiEventMapNode ) {
 				TiXmlNode* pMidiEventNode = 0;
-				
+				QTextCodec* enc = getCodecForDoc(rootNode);
 				for ( pMidiEventNode = pMidiEventMapNode->FirstChild( "midiEvent" ); pMidiEventNode; pMidiEventNode = pMidiEventNode->NextSibling( "midiEvent" ) ) {
 					
 					if( pMidiEventNode->FirstChild()->Value() == QString("mmcEvent")){
-						QString event = pMidiEventNode->FirstChild("mmcEvent")->FirstChild()->Value();
-						QString s_action = pMidiEventNode->FirstChild("action")->FirstChild()->Value();
-						QString s_param = pMidiEventNode->FirstChild("parameter")->FirstChild()->Value();
+						QString event = enc->toUnicode( pMidiEventNode->FirstChild("mmcEvent")->FirstChild()->Value() );
+						QString s_action = enc->toUnicode( pMidiEventNode->FirstChild("action")->FirstChild()->Value() );
+						QString s_param = enc->toUnicode( pMidiEventNode->FirstChild("parameter")->FirstChild()->Value() );
 						Action* pAction = new Action( s_action );
 						pAction->setParameter1( s_param );
 						mM->registerMMCEvent(event, pAction);
 					}
 
 					if( pMidiEventNode->FirstChild()->Value() == QString("noteEvent")){
-						QString event = pMidiEventNode->FirstChild("noteEvent")->FirstChild()->Value();
-						QString s_action = pMidiEventNode->FirstChild("action")->FirstChild()->Value();
-						QString s_param = pMidiEventNode->FirstChild("parameter")->FirstChild()->Value();
-						QString s_eventParameter = pMidiEventNode->FirstChild("eventParameter")->FirstChild()->Value();
+						QString event = enc->toUnicode( pMidiEventNode->FirstChild("noteEvent")->FirstChild()->Value() );
+						QString s_action = enc->toUnicode( pMidiEventNode->FirstChild("action")->FirstChild()->Value() );
+						QString s_param = enc->toUnicode( pMidiEventNode->FirstChild("parameter")->FirstChild()->Value() );
+						QString s_eventParameter = enc->toUnicode( pMidiEventNode->FirstChild("eventParameter")->FirstChild()->Value() );
 						Action* pAction = new Action( s_action );
 						pAction->setParameter1( s_param );
 						mM->registerNoteEvent(s_eventParameter.toInt(), pAction);
 					}
 
 					if( pMidiEventNode->FirstChild()->Value() == QString("ccEvent") ){
-						QString event = pMidiEventNode->FirstChild("ccEvent")->FirstChild()->Value();
-						QString s_action = pMidiEventNode->FirstChild("action")->FirstChild()->Value();
-						QString s_param = pMidiEventNode->FirstChild("parameter")->FirstChild()->Value();
-						QString s_eventParameter = pMidiEventNode->FirstChild("eventParameter")->FirstChild()->Value();
+						QString event = enc->toUnicode( pMidiEventNode->FirstChild("ccEvent")->FirstChild()->Value() );
+						QString s_action = enc->toUnicode( pMidiEventNode->FirstChild("action")->FirstChild()->Value() );
+						QString s_param = enc->toUnicode( pMidiEventNode->FirstChild("parameter")->FirstChild()->Value() );
+						QString s_eventParameter = enc->toUnicode( pMidiEventNode->FirstChild("eventParameter")->FirstChild()->Value() );
 						Action * pAction = new Action( s_action );
 						pAction->setParameter1( s_param );
 						mM->registerCCEvent( s_eventParameter.toInt(), pAction );

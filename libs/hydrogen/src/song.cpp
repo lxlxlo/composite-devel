@@ -476,10 +476,11 @@ Song* SongReader::readSong( const QString& filename )
 	std::vector<PatternList*>* pPatternGroupVector = new std::vector<PatternList*>;
 
 	// back-compatibility code..
+	QTextCodec* enc = getCodecForDoc(songNode);
 	for ( TiXmlNode* pPatternIDNode = patternSequenceNode->FirstChild( "patternID" ); pPatternIDNode; pPatternIDNode = pPatternIDNode->NextSibling( "patternID" ) ) {
 		WARNINGLOG( "Using old patternSequence code for back compatibility" );
 		PatternList *patternSequence = new PatternList();
-		QString patId = pPatternIDNode->FirstChild()->Value();
+		QString patId = enc->toUnicode( pPatternIDNode->FirstChild()->Value() );
 
 		Pattern *pat = NULL;
 		for ( unsigned i = 0; i < patternList->get_size(); i++ ) {
@@ -503,7 +504,7 @@ Song* SongReader::readSong( const QString& filename )
 	for ( TiXmlNode* groupNode = patternSequenceNode->FirstChild( "group" ); groupNode; groupNode = groupNode->NextSibling( "group" ) ) {
 		PatternList *patternSequence = new PatternList();
 		for ( TiXmlNode* patternId = groupNode->FirstChild( "patternID" ); patternId; patternId = patternId->NextSibling( "patternID" ) ) {
-			QString patId = patternId->FirstChild()->Value();
+			QString patId = enc->toUnicode( patternId->FirstChild()->Value() );
 
 			Pattern *pat = NULL;
 			for ( unsigned i = 0; i < patternList->get_size(); i++ ) {
