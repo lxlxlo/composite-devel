@@ -70,8 +70,6 @@ LocalFileMng::~LocalFileMng()
 //	infoLog("DESTROY");
 }
 
-#warning "TODO: Handle and/or declare the XML encoding for XML file content (<?xml encoding="foo"?>)"
-
 QString LocalFileMng::getDrumkitNameForPattern( const QString& patternDir )
 {
 	QString patternInfoFile = patternDir;
@@ -794,6 +792,9 @@ int LocalFileMng::saveDrumkit( Drumkit *info )
 
 	TiXmlDocument doc( sDrumkitXmlFilename.toLocal8Bit() );
 
+	TiXmlDeclaration decl( "1.0", "UTF-8", "yes" );
+	doc.InsertEndChild(decl);
+
 	TiXmlElement rootNode( "drumkit_info" );
 
 	writeXmlString( &rootNode, "name", info->getName() );	// name
@@ -892,7 +893,9 @@ int LocalFileMng::savePlayList( const std::string& patternname)
 
 	std::string realname = name.substr(name.rfind("/")+1);
 
-	
+	TiXmlDeclaration decl( "1.0", "UTF-8", "yes" );
+	doc.InsertEndChild(decl);
+
 	TiXmlElement rootNode( "playlist" );
 	//LIB_ID just in work to get better usability
 	writeXmlString( &rootNode, "Name", QString (realname.c_str()) );
@@ -1052,10 +1055,15 @@ bool LocalFileMng::readXmlBool( TiXmlNode* parent, const QString& nodeName, bool
 
 
 
-void LocalFileMng::writeXmlString( TiXmlNode *parent, const QString& name, const QString& text )
+void LocalFileMng::writeXmlString( TiXmlNode *parent, const QString& name, const QString& text, const QString encoding)
 {
-	TiXmlElement versionNode( name.toLocal8Bit() );
-	TiXmlText versionText( text.toLocal8Bit() );
+	#warning "We need to cascade the encoding somehow... in case we move beyond UTF-8.  ...maybe"
+	QTextCodec* enc = QTextCodec::codecForName(encoding.toLocal8Bit());
+	if( !enc ) {
+		enc = QTextCodec::codecForLocale();
+	}
+	TiXmlElement versionNode( enc->fromUnicode(name).constData() );
+	TiXmlText versionText( enc->fromUnicode(text).constData() );
 	versionNode.InsertEndChild( versionText );
 	parent->InsertEndChild( versionNode );
 }
@@ -1113,6 +1121,10 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 
 
         TiXmlDocument doc( filename.toLocal8Bit().constData() );
+
+	TiXmlDeclaration decl( "1.0", "UTF-8", "yes" );
+	doc.InsertEndChild(decl);
+
 	TiXmlElement songNode( "song" );
 
 	LocalFileMng::writeXmlString( &songNode, "version", QString( get_version().c_str() ) );

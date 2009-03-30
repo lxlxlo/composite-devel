@@ -75,7 +75,7 @@ public:
 	Drumkit* loadDrumkit( const QString& directory );
 	int saveDrumkit( Drumkit *pDrumkit );
 
-	static void writeXmlString( ::TiXmlNode *parent, const QString& name, const QString& text );
+	static void writeXmlString( ::TiXmlNode *parent, const QString& name, const QString& text, const QString encoding = "UTF-8" );
 	static void writeXmlBool( ::TiXmlNode *parent, const QString& name, bool value );
 
 	Pattern* loadPattern( const QString& directory );

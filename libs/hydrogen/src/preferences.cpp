@@ -558,6 +558,9 @@ void Preferences::savePreferences()
 
 	TiXmlDocument doc( filename.toLocal8Bit() );
 
+	TiXmlDeclaration decl( "1.0", "UTF-8", "yes" );
+	doc.InsertEndChild(decl);
+
 	TiXmlElement rootNode( "hydrogen_preferences" );
 
 	// hydrogen version

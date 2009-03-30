@@ -170,6 +170,14 @@ TiXmlNode* TiXmlNode::LinkEndChild( TiXmlNode* node )
 	node->prev = lastChild;
 	node->next = 0;
 
+	if( node->type == DECLARATION ) {
+		TiXmlDeclaration* decl = dynamic_cast<TiXmlDeclaration*>(node);
+		TiXmlDocument* doc = GetDocument();
+		if( doc && decl ) {
+			doc->SetEncoding( decl->Encoding() );
+		}
+	}
+
 	if ( lastChild )
 		lastChild->next = node;
 	else
