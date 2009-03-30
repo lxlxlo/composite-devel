@@ -962,19 +962,8 @@ int LocalFileMng::loadPlayList( const std::string& patternname)
 QString LocalFileMng::readXmlString( TiXmlNode* parent, const QString& nodeName, const QString& defaultValue, bool bCanBeEmpty, bool bShouldExists )
 {
 	TiXmlNode* node;
-	QTextCodec *enc = 0;  // Construction and deletion is handled by Qt, not us.
+	QTextCodec *enc = getCodecForDoc(parent);
 
-        // Determine encoding for strings.
-        if( parent && parent->GetDocument() ) {
-		if( ! parent->GetDocument()->GetEncoding().empty() ) {
-			enc = QTextCodec::codecForName( parent->GetDocument()->GetEncoding().c_str() );
-		}
-		if( enc ) cout << QString(enc->name()).toStdString() << endl;
-        }
-        if( !enc ) {
-		// Assume local 8-bit encoding.
-		enc = QTextCodec::codecForLocale();
-        }
 	if ( parent && ( node = parent->FirstChild( nodeName.toLocal8Bit() ) ) ) {
 		if ( node->FirstChild() ) {
 			return enc->toUnicode(node->FirstChild()->Value());
