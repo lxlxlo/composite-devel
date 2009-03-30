@@ -972,6 +972,11 @@ public:
 		errorId = err;
 	errorDesc = errorString[ errorId ]; }
 
+	// Access to encoding declaration for document.  TiXml does *NOT* transcode anything.
+	// This is a Hydrogen extention to TiXml.
+	const std::string& GetEncoding() { return encoding; }
+	void SetEncoding( const std::string& _encoding ) { encoding = _encoding; }
+
 protected :
 	virtual void StreamOut ( TIXML_OSTREAM * out) const;
 	// [internal use]
@@ -984,6 +989,7 @@ private:
 	bool error;
 	int  errorId;
 	TIXML_STRING errorDesc;
+	std::string encoding;
 };
 
 #endif

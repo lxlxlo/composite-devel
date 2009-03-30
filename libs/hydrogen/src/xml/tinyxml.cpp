@@ -627,6 +627,7 @@ TiXmlDocument::TiXmlDocument() : TiXmlNode( TiXmlNode::DOCUMENT )
 {
 	error = false;
 	//	ignoreWhiteSpace = true;
+	encoding = "";
 }
 
 TiXmlDocument::TiXmlDocument( const char * documentName ) : TiXmlNode( TiXmlNode::DOCUMENT )
@@ -634,6 +635,7 @@ TiXmlDocument::TiXmlDocument( const char * documentName ) : TiXmlNode( TiXmlNode
 	//	ignoreWhiteSpace = true;
 	value = documentName;
 	error = false;
+        encoding = "";
 }
 
 bool TiXmlDocument::LoadFile()
@@ -912,6 +914,9 @@ TiXmlDeclaration::TiXmlDeclaration( const char * _version,
 	version = _version;
 	encoding = _encoding;
 	standalone = _standalone;
+	if( this->GetDocument() ) {
+		this->GetDocument()->SetEncoding( encoding );
+	}
 }
 
 
