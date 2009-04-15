@@ -525,6 +525,7 @@ Song* SongReader::readSong( const QString& filename )
 		}
 		if ( pat == NULL ) {
 			WARNINGLOG( "patternid not found in patternSequence" );
+			pPatternIDNode = ( QDomNode ) pPatternIDNode.nextSiblingElement( "patternID" );
 			continue;
 		}
 		patternSequence->add( pat );
@@ -540,6 +541,7 @@ Song* SongReader::readSong( const QString& filename )
 		QDomNode patternId = groupNode.firstChildElement( "patternID" );
 		while (  !patternId.isNull()  ) {
 			QString patId = patternId.firstChildElement().text();
+			WARNINGLOG( patternId.firstChildElement().tagName() );
 
 			Pattern *pat = NULL;
 			for ( unsigned i = 0; i < patternList->get_size(); i++ ) {
@@ -553,6 +555,7 @@ Song* SongReader::readSong( const QString& filename )
 			}
 			if ( pat == NULL ) {
 				WARNINGLOG( "patternid not found in patternSequence" );
+				patternId = ( QDomNode ) patternId.nextSiblingElement( "patternID" );
 				continue;
 			}
 			patternSequence->add( pat );
