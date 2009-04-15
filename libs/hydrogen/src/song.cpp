@@ -479,6 +479,7 @@ Song* SongReader::readSong( const QString& filename )
 
 	PatternList *patternList = new PatternList();
 	int pattern_count = 0;
+
 	QDomNode patternNode =  patterns.firstChildElement( "pattern" );
 	while (  !patternNode.isNull()  ) {
 		pattern_count++;
@@ -540,8 +541,7 @@ Song* SongReader::readSong( const QString& filename )
 		PatternList *patternSequence = new PatternList();
 		QDomNode patternId = groupNode.firstChildElement( "patternID" );
 		while (  !patternId.isNull()  ) {
-			QString patId = patternId.firstChildElement().text();
-			WARNINGLOG( patternId.firstChildElement().tagName() );
+			QString patId = patternId.firstChild().nodeValue();
 
 			Pattern *pat = NULL;
 			for ( unsigned i = 0; i < patternList->get_size(); i++ ) {
