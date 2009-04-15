@@ -25,8 +25,6 @@
 
 #include <cassert>
 
-#include "xml/tinyxml.h"
-
 #include <hydrogen/adsr.h>
 #include <hydrogen/data_path.h>
 #include <hydrogen/LocalFileMng.h>
