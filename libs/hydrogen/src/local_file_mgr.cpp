@@ -46,8 +46,11 @@
 #include <QDir>
 #include <QApplication>
 #include <QVector>
+#include <QDomDocument>
+
 
 #include "xml/tinyxml.h"
+
 
 #include <algorithm>
 //#include <cstdio>
@@ -956,6 +959,104 @@ int LocalFileMng::loadPlayList( const std::string& patternname)
 
 
 
+/* New QtXml based methods */
+
+QString LocalFileMng::readQtXmlString( QDomNode node , const QString& nodeName, const QString& defaultValue, bool bCanBeEmpty, bool bShouldExists)
+{
+ 	QDomElement element = node.firstChildElement( nodeName );
+	
+	
+	if( element.isNull()  && bShouldExists ){
+		_WARNINGLOG( "'" + nodeName + "' node not found" );
+		return defaultValue;
+	}
+
+
+
+	if( element.text().isEmpty() ){
+		if ( !bCanBeEmpty ) {
+			_WARNINGLOG( "Using default value in " + nodeName );
+		}
+		return defaultValue;
+	}
+
+	return element.text();
+}
+
+float LocalFileMng::readQtXmlFloat( QDomNode node , const QString& nodeName, float defaultValue, bool bCanBeEmpty, bool bShouldExists)
+{
+ 	QDomElement element = node.firstChildElement( nodeName );
+	
+	
+	if( element.isNull()  && bShouldExists ){
+		_WARNINGLOG( "'" + nodeName + "' node not found" );
+		return defaultValue;
+	}
+
+
+
+	if( element.text().isEmpty() ){
+		if ( !bCanBeEmpty ) {
+			_WARNINGLOG( "Using default value in " + nodeName );
+		}
+		return defaultValue;
+	}
+
+	return element.text().toFloat();
+}
+
+int LocalFileMng::readQtXmlInt( QDomNode node , const QString& nodeName, int defaultValue, bool bCanBeEmpty, bool bShouldExists)
+{
+ 	QDomElement element = node.firstChildElement( nodeName );
+	
+	
+	if( element.isNull()  && bShouldExists ){
+		_WARNINGLOG( "'" + nodeName + "' node not found" );
+		return defaultValue;
+	}
+
+
+
+	if( element.text().isEmpty() ){
+		if ( !bCanBeEmpty ) {
+			_WARNINGLOG( "Using default value in " + nodeName );
+		}
+		return defaultValue;
+	}
+
+	return element.text().toInt();
+}
+
+bool LocalFileMng::readQtXmlBool( QDomNode node , const QString& nodeName, bool defaultValue, bool bCanBeEmpty, bool bShouldExists)
+{
+ 	QDomElement element = node.firstChildElement( nodeName );
+	
+	
+	if( element.isNull()  && bShouldExists ){
+		_WARNINGLOG( "'" + nodeName + "' node not found" );
+		return defaultValue;
+	}
+
+
+
+	if( element.text().isEmpty() ){
+		if ( !bCanBeEmpty ) {
+			_WARNINGLOG( "Using default value in " + nodeName );
+		}
+		return defaultValue;
+	}
+
+	if( element.text().toLower() == "true" ) return true;
+	return false; 
+}
+
+
+
+
+
+/* Old tinyXml based methods */
+
+
 QString LocalFileMng::readXmlString( TiXmlNode* parent, const QString& nodeName, const QString& defaultValue, bool bCanBeEmpty, bool bShouldExists )
 {
 	TiXmlNode* node;
@@ -975,7 +1076,6 @@ QString LocalFileMng::readXmlString( TiXmlNode* parent, const QString& nodeName,
 		return defaultValue;
 	}
 }
-
 
 
 float LocalFileMng::readXmlFloat( TiXmlNode* parent, const QString& nodeName, float defaultValue, bool bCanBeEmpty, bool bShouldExists )
@@ -998,6 +1098,9 @@ float LocalFileMng::readXmlFloat( TiXmlNode* parent, const QString& nodeName, fl
 		return defaultValue;
 	}
 }
+
+
+
 
 
 
@@ -1044,6 +1147,12 @@ bool LocalFileMng::readXmlBool( TiXmlNode* parent, const QString& nodeName, bool
 		return defaultValue;
 	}
 }
+
+
+
+
+
+
 
 
 

@@ -30,6 +30,8 @@
 
 #include <hydrogen/Object.h>
 
+#include <QDomDocument>
+
 class TiXmlNode;
 
 namespace H2Core
@@ -89,6 +91,11 @@ public:
 	static float readXmlFloat( ::TiXmlNode* parent, const QString& nodeName, float defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true );
 	static bool readXmlBool(  ::TiXmlNode* parent, const QString& nodeName, bool defaultValue, bool bShouldExists = true );
 
+
+	static QString readQtXmlString( QDomNode , const QString& nodeName, const QString& defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true );
+	static float readQtXmlFloat( QDomNode , const QString& nodeName, float defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true );
+	static int readQtXmlInt( QDomNode , const QString& nodeName, int defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true );
+	static bool readQtXmlBool( QDomNode , const QString& nodeName, bool defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true );
 
 private:
 	void fileCopy( const QString& sOrigFilename, const QString& sDestFilename );
