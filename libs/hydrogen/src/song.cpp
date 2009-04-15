@@ -474,8 +474,6 @@ Song* SongReader::readSong( const QString& filename )
 
 
 	
-
-
 	// Pattern list
 	QDomNode patterns = songNode.firstChildElement( "patternList" );
 
@@ -501,17 +499,19 @@ Song* SongReader::readSong( const QString& filename )
 	song->set_pattern_list( patternList );
 	
 	
-	/*
+	
 	// Pattern sequence
-	QDomNode patternSequenceNode = songNode->FirstChild( "patternSequence" );
+	QDomNode patternSequenceNode = songNode.firstChildElement( "patternSequence" );
 
 	std::vector<PatternList*>* pPatternGroupVector = new std::vector<PatternList*>;
 	
 	// back-compatibility code..
-	for ( TiXmlNode* pPatternIDNode = patternSequenceNode->FirstChild( "patternID" ); pPatternIDNode; pPatternIDNode = pPatternIDNode->NextSibling( "patternID" ) ) {
+	QDomNode pPatternIDNode = patternSequenceNode.firstChildElement( "patternID" );
+	while ( ! pPatternIDNode.isNull()  ) {
 		WARNINGLOG( "Using old patternSequence code for back compatibility" );
 		PatternList *patternSequence = new PatternList();
-		QString patId = pPatternIDNode->FirstChild()->Value();
+		QString patId = pPatternIDNode.firstChildElement().text();
+		ERRORLOG(patId);
 
 		Pattern *pat = NULL;
 		for ( unsigned i = 0; i < patternList->get_size(); i++ ) {
@@ -530,12 +530,16 @@ Song* SongReader::readSong( const QString& filename )
 		patternSequence->add( pat );
 
 		pPatternGroupVector->push_back( patternSequence );
+
+		pPatternIDNode = ( QDomNode ) pPatternIDNode.nextSiblingElement( "patternID" );
 	}
 
-	for ( TiXmlNode* groupNode = patternSequenceNode->FirstChild( "group" ); groupNode; groupNode = groupNode->NextSibling( "group" ) ) {
+	QDomNode groupNode = patternSequenceNode.firstChildElement( "group" );
+	while (  !groupNode.isNull()  ) {
 		PatternList *patternSequence = new PatternList();
-		for ( TiXmlNode* patternId = groupNode->FirstChild( "patternID" ); patternId; patternId = patternId->NextSibling( "patternID" ) ) {
-			QString patId = patternId->FirstChild()->Value();
+		QDomNode patternId = groupNode.firstChildElement( "patternID" );
+		while (  !patternId.isNull()  ) {
+			QString patId = patternId.firstChildElement().text();
 
 			Pattern *pat = NULL;
 			for ( unsigned i = 0; i < patternList->get_size(); i++ ) {
@@ -552,12 +556,15 @@ Song* SongReader::readSong( const QString& filename )
 				continue;
 			}
 			patternSequence->add( pat );
+			patternId = ( QDomNode ) patternId.nextSiblingElement( "patternID" );
 		}
 		pPatternGroupVector->push_back( patternSequence );
+
+		groupNode = groupNode.nextSiblingElement( "group" );
 	}
 
 	song->set_pattern_group_vector( pPatternGroupVector );
-
+	
 #ifdef LADSPA_SUPPORT
 	// reset FX
 	for ( int fx = 0; fx < MAX_FX; ++fx ) {
@@ -566,17 +573,17 @@ Song* SongReader::readSong( const QString& filename )
 		Effects::getInstance()->setLadspaFX( NULL, fx );
 	}
 #endif
-
+	
 	// LADSPA FX
-	TiXmlNode* ladspaNode = songNode->FirstChild( "ladspa" );
-	if ( ladspaNode ) {
+	QDomNode ladspaNode = songNode.firstChildElement( "ladspa" );
+	if ( !ladspaNode.isNull() ) {
 		int nFX = 0;
-		TiXmlNode* fxNode;
-		for ( fxNode = ladspaNode->FirstChild( "fx" ); fxNode; fxNode = fxNode->NextSibling( "fx" ) ) {
-			QString sName = LocalFileMng::readXmlString( fxNode, "name", "" );
-			QString sFilename = LocalFileMng::readXmlString( fxNode, "filename", "" );
-			bool bEnabled = LocalFileMng::readXmlBool( fxNode, "enabled", false );
-			float fVolume = LocalFileMng::readXmlFloat( fxNode, "volume", 1.0 );
+		QDomNode fxNode = ladspaNode.firstChildElement( "fx" );
+		while (  !fxNode.isNull()  ) {
+			QString sName = LocalFileMng::readQtXmlString( fxNode, "name", "" );
+			QString sFilename = LocalFileMng::readQtXmlString( fxNode, "filename", "" );
+			bool bEnabled = LocalFileMng::readQtXmlBool( fxNode, "enabled", false );
+			float fVolume = LocalFileMng::readQtXmlFloat( fxNode, "volume", 1.0 );
 
 			if ( sName != "no plugin" ) {
 				// FIXME: il caricamento va fatto fare all'engine, solo lui sa il samplerate esatto
@@ -586,10 +593,10 @@ Song* SongReader::readSong( const QString& filename )
 				if ( pFX ) {
 					pFX->setEnabled( bEnabled );
 					pFX->setVolume( fVolume );
-					TiXmlNode* inputControlNode;
-					for ( inputControlNode = fxNode->FirstChild( "inputControlPort" ); inputControlNode; inputControlNode = inputControlNode->NextSibling( "inputControlPort" ) ) {
-						QString sName = LocalFileMng::readXmlString( inputControlNode, "name", "" );
-						float fValue = LocalFileMng::readXmlFloat( inputControlNode, "value", 0.0 );
+					QDomNode inputControlNode = fxNode.firstChildElement( "inputControlPort" );
+					while ( !inputControlNode.isNull() ) {
+						QString sName = LocalFileMng::readQtXmlString( inputControlNode, "name", "" );
+						float fValue = LocalFileMng::readQtXmlFloat( inputControlNode, "value", 0.0 );
 
 						for ( unsigned nPort = 0; nPort < pFX->inputControlPorts.size(); nPort++ ) {
 							LadspaControlPort *port = pFX->inputControlPorts[ nPort ];
@@ -597,15 +604,18 @@ Song* SongReader::readSong( const QString& filename )
 								port->fControlValue = fValue;
 							}
 						}
+						 inputControlNode = ( QDomNode ) inputControlNode.nextSiblingElement( "inputControlPort" );
 					}
 
+					/*
 					TiXmlNode* outputControlNode;
 					for ( outputControlNode = fxNode->FirstChild( "outputControlPort" ); outputControlNode; outputControlNode = outputControlNode->NextSibling( "outputControlPort" ) ) {
-					}
+					}*/
 				}
 #endif
 			}
 			nFX++;
+			fxNode = ( QDomNode ) fxNode.nextSiblingElement( "fx" );
 		}
 	} else {
 		WARNINGLOG( "ladspa node not found" );
@@ -614,7 +624,7 @@ Song* SongReader::readSong( const QString& filename )
 	
 	song->__is_modified = false;
 	song->set_filename( filename );
-	*/
+	
 
 	return song;
 	
