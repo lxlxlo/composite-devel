@@ -75,40 +75,52 @@ LocalFileMng::~LocalFileMng()
 
 QString LocalFileMng::getDrumkitNameForPattern( const QString& patternDir )
 {
-	QString patternInfoFile = patternDir;
+	QDomDocument doc;
+	QFile file( patternDir );
 
-	TiXmlDocument doc( patternInfoFile.toAscii() );
-	doc.LoadFile();
+	if ( !file.open(QIODevice::ReadOnly) )
+		return NULL;
 
-	TiXmlNode* rootNode;	// root element
-	if ( !( rootNode = doc.FirstChild( "drumkit_pattern" ) ) ) {
-		ERRORLOG( "Error reading Pattern: Pattern_drumkit_infonode not found " + patternDir); return NULL;
+	if ( !doc.setContent( &file ) ) {
+		file.close();
+		return NULL;
+	}
+	file.close();
+
+	QDomNode rootNode = doc.firstChildElement( "drumkit_pattern" );	// root element
+	if (  rootNode.isNull() ) {
+		ERRORLOG( "Error reading Pattern: Pattern_drumkit_infonode not found " + patternDir); 
+		return NULL;
 	}
 
-
-	QString sDrumkitName( LocalFileMng::readXmlString( rootNode,"pattern_for_drumkit", "" ) );
-	return sDrumkitName;
-	
+	return LocalFileMng::readQtXmlString( rootNode,"pattern_for_drumkit", "" );	
 }
 
 
 QString LocalFileMng::getCategoryFromPatternName( const QString& patternPathName )
 {
-	QString sCatrgory = patternPathName;
-	TiXmlDocument doc( sCatrgory.toAscii() );
-	doc.LoadFile();
+	QDomDocument doc;
+	QFile file( patternPathName );
+
+	if ( !file.open(QIODevice::ReadOnly) )
+		return NULL;
+
+	if ( !doc.setContent( &file ) ) {
+		file.close();
+		return NULL;
+	}
+	file.close();
 
 
-	TiXmlNode* rootNode;	// root element
-	if ( !( rootNode = doc.FirstChild( "drumkit_pattern" ) ) ) {
+	QDomNode rootNode = doc.firstChildElement( "drumkit_pattern" );	// root element
+	if ( rootNode.isNull() ) {
 		ERRORLOG( "Error reading Pattern: Pattern_drumkit_info node not found "); 
-		 return NULL;
+		return NULL;
 	}
 
-	TiXmlNode* patternNode = rootNode->FirstChild( "pattern" );
-	QString sCategoryName( LocalFileMng::readXmlString( patternNode,"category", "" ) );
+	QDomNode patternNode = rootNode.firstChildElement( "pattern" );
 
-	return sCategoryName;
+	return LocalFileMng::readQtXmlString( patternNode,"category", "" );
 	
 }
 
