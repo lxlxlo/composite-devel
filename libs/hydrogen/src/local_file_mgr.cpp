@@ -126,21 +126,27 @@ QString LocalFileMng::getCategoryFromPatternName( const QString& patternPathName
 
 QString LocalFileMng::getPatternNameFromPatternDir( const QString& patternDirName)
 {
-	QString sDir = patternDirName;
-	TiXmlDocument doc( sDir.toAscii() );
-	doc.LoadFile();
+	QDomDocument doc;
+	QFile file( patternDirName );
 
+	if ( !file.open(QIODevice::ReadOnly) )
+		return NULL;
 
-	TiXmlNode* rootNode;	// root element
-	if ( !( rootNode = doc.FirstChild( "drumkit_pattern" ) ) ) {
+	if ( !doc.setContent( &file ) ) {
+		file.close();
+		return NULL;
+	}
+	file.close();
+
+	QDomNode rootNode =doc.firstChildElement( "drumkit_pattern" );	// root element
+	if ( rootNode.isNull() ) {
 		ERRORLOG( "Error reading Pattern: Pattern_drumkit_info node not found "); 
 		 return NULL;
 	}
 
-	TiXmlNode* patternNode = rootNode->FirstChild( "pattern" );
-	QString sPatternName( LocalFileMng::readXmlString( patternNode,"pattern_name", "" ) );
+	QDomNode patternNode = rootNode.firstChildElement( "pattern" );
 
-	return sPatternName;
+	return LocalFileMng::readQtXmlString( patternNode,"pattern_name", "" );
 	
 }
 
@@ -159,43 +165,53 @@ Pattern* LocalFileMng::loadPattern( const QString& directory )
 	}
 
 
-	TiXmlDocument doc( patternInfoFile.toAscii() );
-	doc.LoadFile();
+	QDomDocument doc;
+	QFile file( patternInfoFile );
+
+	if ( !file.open(QIODevice::ReadOnly) )
+		return NULL;
+
+	if ( !doc.setContent( &file ) ) {
+		file.close();
+		return NULL;
+	}
+	file.close();
 
 	// root element
-	TiXmlNode* rootNode;	// root element
-	if ( !( rootNode = doc.FirstChild( "drumkit_pattern" ) ) ) {
+	QDomNode rootNode = doc.firstChildElement( "drumkit_pattern" );	// root element
+	if (  rootNode.isNull() ) {
 		ERRORLOG( "Error reading Pattern: Pattern_drumkit_infonode not found" ); return NULL;
 	}
 
-	TiXmlNode* patternNode = rootNode->FirstChild( "pattern" );
+	QDomNode patternNode = rootNode.firstChildElement( "pattern" );
 
-	QString sName( LocalFileMng::readXmlString( patternNode,"pattern_name", "" ) );
-	QString sCategory( LocalFileMng::readXmlString( patternNode,"category", "" ) );
+	QString sName( LocalFileMng::readQtXmlString( patternNode,"pattern_name", "" ) );
+	QString sCategory( LocalFileMng::readQtXmlString( patternNode,"category", "" ) );
 
 	int nSize = -1;
-	nSize = LocalFileMng::readXmlInt( patternNode, "size",nSize ,false,false );
+	nSize = LocalFileMng::readQtXmlInt( patternNode, "size",nSize ,false,false );
 	pPattern = new Pattern( sName, sCategory, nSize );
 
 
 
-	TiXmlNode* pNoteListNode = patternNode->FirstChild( "noteList" );
-	if ( pNoteListNode )
+	QDomNode pNoteListNode = patternNode.firstChildElement( "noteList" );
+	if ( ! pNoteListNode.isNull() )
 	{
 		// new code  :)
-		for ( TiXmlNode* noteNode = pNoteListNode->FirstChild( "note" ); noteNode; noteNode = noteNode->NextSibling( "note" ) )
+		QDomNode noteNode = pNoteListNode.firstChildElement( "note" );
+		while (  ! noteNode.isNull()  )
 		{
 			Note* pNote = NULL;
-			unsigned nPosition = LocalFileMng::readXmlInt( noteNode, "position", 0 );
-			float fLeadLag = LocalFileMng::readXmlFloat( noteNode, "leadlag", 0.0 );
-			float fVelocity = LocalFileMng::readXmlFloat( noteNode, "velocity", 0.8f );
-			float fPan_L = LocalFileMng::readXmlFloat( noteNode, "pan_L", 0.5 );
-			float fPan_R = LocalFileMng::readXmlFloat( noteNode, "pan_R", 0.5 );
-			int nLength = LocalFileMng::readXmlInt( noteNode, "length", -1, true );
-			float nPitch = LocalFileMng::readXmlFloat( noteNode, "pitch", 0.0, false, false );
-			QString sKey = LocalFileMng::readXmlString( noteNode, "key", "C0", false, false );
+			unsigned nPosition = LocalFileMng::readQtXmlInt( noteNode, "position", 0 );
+			float fLeadLag = LocalFileMng::readQtXmlFloat( noteNode, "leadlag", 0.0 );
+			float fVelocity = LocalFileMng::readQtXmlFloat( noteNode, "velocity", 0.8f );
+			float fPan_L = LocalFileMng::readQtXmlFloat( noteNode, "pan_L", 0.5 );
+			float fPan_R = LocalFileMng::readQtXmlFloat( noteNode, "pan_R", 0.5 );
+			int nLength = LocalFileMng::readQtXmlInt( noteNode, "length", -1, true );
+			float nPitch = LocalFileMng::readQtXmlFloat( noteNode, "pitch", 0.0, false, false );
+			QString sKey = LocalFileMng::readQtXmlString( noteNode, "key", "C0", false, false );
 
-			QString instrId = LocalFileMng::readXmlString( noteNode, "instrument", "" );
+			QString instrId = LocalFileMng::readQtXmlString( noteNode, "instrument", "" );
 
 			Instrument *instrRef = NULL;
 			// search instrument by ref
@@ -207,6 +223,7 @@ Pattern* LocalFileMng::loadPattern( const QString& directory )
 			}
 			if ( !instrRef ) {
 				ERRORLOG( QString( "Instrument with ID: '%1' not found. Note skipped." ).arg( instrId ) );
+				noteNode = noteNode.nextSiblingElement( "note" );
 				continue;
 			}
 			//assert( instrRef );
@@ -214,6 +231,7 @@ Pattern* LocalFileMng::loadPattern( const QString& directory )
 			pNote = new Note( instrRef, nPosition, fVelocity, fPan_L, fPan_R, nLength, nPitch, Note::stringToKey( sKey ) );
 			pNote->set_leadlag(fLeadLag);
 			pPattern->note_map.insert( std::make_pair( pNote->get_position(),pNote ) );
+			noteNode = noteNode.nextSiblingElement( "note" );
 		}
 	}
 
