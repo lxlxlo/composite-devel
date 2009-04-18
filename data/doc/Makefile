@@ -24,6 +24,10 @@ ALL_TUTORIALS = tutorial_en.html \
 
 ALL_POT_FILES = manual_en.pot tutorial_en.pot
 
+XMLTO_OPTS = --stringparam section.autolabel=1 \
+	--stringparam toc.max.depth=2 \
+	--stringparam xref.with.number.and.title=0
+
 all: all_manuals all_tutorials all_pot_files
 
 all_manuals: $(ALL_MANUALS)
@@ -39,7 +43,7 @@ clean:
 	-rm -f $(ALL_MANUALS) $(ALL_TUTORIALS) *_{en,es,it,fr,nl}.docbook *.docbook_validated
 
 %.html: %.docbook %.docbook_validated
-	xmlto html-nochunks $<
+	xmlto html-nochunks $(XMLTO_OPTS) $<
 
 %.docbook_validated: %.docbook
 	xmllint --noout --valid $^
