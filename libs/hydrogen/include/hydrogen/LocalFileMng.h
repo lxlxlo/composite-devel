@@ -80,6 +80,9 @@ public:
 	static void writeXmlString( ::TiXmlNode *parent, const QString& name, const QString& text );
 	static void writeXmlBool( ::TiXmlNode *parent, const QString& name, bool value );
 
+	static void writeXmlString( QDomNode parent, const QString& name, const QString& text );
+	static void writeXmlBool( QDomNode parent, const QString& name, bool value );
+
 	Pattern* loadPattern( const QString& directory );
 	int savePattern( Song *song , int selectedpattern , const QString& patternname, const QString& realpatternname, int mode);
 
