@@ -928,29 +928,44 @@ int LocalFileMng::saveDrumkit( Drumkit *info )
 
 int LocalFileMng::savePlayList( const std::string& patternname)
 {
-	TiXmlDocument doc = patternname.c_str();
+
 	std::string name = patternname.c_str();
 
 	std::string realname = name.substr(name.rfind("/")+1);
 
-	
-	TiXmlElement rootNode( "playlist" );
+	QDomDocument doc;
+	QDomNode rootNode = doc.createElement( "playlist" ); 
+
 	//LIB_ID just in work to get better usability
-	writeXmlString( &rootNode, "Name", QString (realname.c_str()) );
-	writeXmlString( &rootNode, "LIB_ID", "in_work" );
+	writeXmlString( rootNode, "Name", QString (realname.c_str()) );
+	writeXmlString( rootNode, "LIB_ID", "in_work" );
 		
-	TiXmlElement playlistNode( "Songs" );
-			for ( uint i = 0; i < Hydrogen::get_instance()->m_PlayList.size(); ++i ){
-			TiXmlElement nextNode( "next" );
-			LocalFileMng::writeXmlString ( &nextNode, "song", Hydrogen::get_instance()->m_PlayList[i].m_hFile );
-			LocalFileMng::writeXmlString ( &nextNode, "script", Hydrogen::get_instance()->m_PlayList[i].m_hScript );
-			LocalFileMng::writeXmlString ( &nextNode, "enabled", Hydrogen::get_instance()->m_PlayList[i].m_hScriptEnabled );
-			playlistNode.InsertEndChild( nextNode );
+	QDomNode playlistNode = doc.createElement( "Songs" );
+	for ( uint i = 0; i < Hydrogen::get_instance()->m_PlayList.size(); ++i ){
+		QDomNode nextNode = doc.createElement( "next" );
+		
+		LocalFileMng::writeXmlString ( nextNode, "song", Hydrogen::get_instance()->m_PlayList[i].m_hFile );
+		
+		LocalFileMng::writeXmlString ( nextNode, "script", Hydrogen::get_instance()->m_PlayList[i].m_hScript );
+		
+		LocalFileMng::writeXmlString ( nextNode, "enabled", Hydrogen::get_instance()->m_PlayList[i].m_hScriptEnabled );
+		
+		playlistNode.appendChild( nextNode );
 	}
 
-	rootNode.InsertEndChild( playlistNode );
-	doc.InsertEndChild( rootNode );
-	doc.SaveFile();
+	rootNode.appendChild( playlistNode );
+	doc.appendChild( rootNode );
+
+	QString filename = QString( patternname.c_str() );
+	QFile file(filename);
+	if ( !file.open(QIODevice::WriteOnly) )
+		return NULL;
+
+	QTextStream TextStream( &file );
+	doc.save( TextStream, 0 );
+
+	file.close();
+
 	return 0; // ok
 
 }
