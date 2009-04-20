@@ -443,17 +443,25 @@ std::vector<QString> LocalFileMng::getAllPatternName()
 	for (uint i = 0; i < m_allPatternList.size(); ++i) {
 		QString patternInfoFile =  m_allPatternList[i];
 
+		QDomDocument doc;
+		QFile file( patternInfoFile );
 
-		TiXmlDocument doc( patternInfoFile.toAscii() );
-		doc.LoadFile();
+		if ( !file.open(QIODevice::ReadOnly) )
+			return alllist;
 
-		TiXmlNode* rootNode;	// root element
-		if ( !( rootNode = doc.FirstChild( "drumkit_pattern" ) ) ) {
+		if ( !doc.setContent( &file ) ) {
+			file.close();
+			return alllist;
+		}
+		file.close();
+
+		QDomNode rootNode =  doc.firstChildElement( "drumkit_pattern" );	// root element
+		if ( rootNode.isNull() ) {
 			ERRORLOG( "Error reading Pattern: Pattern_drumkit_info node not found "); 
 		}else{
-			TiXmlNode* patternNode = rootNode->FirstChild( "pattern" );
+			QDomNode patternNode = rootNode.firstChildElement( "pattern" );
 
-			QString sPatternName( LocalFileMng::readXmlString( patternNode,"pattern_name", "" ) );
+			QString sPatternName( LocalFileMng::readQtXmlString( patternNode,"pattern_name", "" ) );
 			alllist.push_back(sPatternName);
 		}
 
@@ -472,15 +480,25 @@ std::vector<QString> LocalFileMng::getAllCategoriesFromPattern()
 	for (uint i = 0; i < m_allPatternList.size(); ++i) {
 		QString patternInfoFile =  m_allPatternList[i];
 		
-		TiXmlDocument doc( patternInfoFile.toAscii() );
-		doc.LoadFile();
+		QDomDocument doc;
+		QFile file( patternInfoFile );
 
-		TiXmlNode* rootNode;	// root element
-		if ( !( rootNode = doc.FirstChild( "drumkit_pattern" ) ) ) {
+		if ( !file.open(QIODevice::ReadOnly) )
+			return categorylist;
+
+		if ( !doc.setContent( &file ) ) {
+			file.close();
+			return categorylist;
+		}
+		file.close();
+
+
+		QDomNode rootNode = doc.firstChildElement( "drumkit_pattern" );	// root element
+		if ( rootNode.isNull() ) {
 			ERRORLOG( "Error reading Pattern: Pattern_drumkit_info node not found "); 
 		}else{
-			TiXmlNode* patternNode = rootNode->FirstChild( "pattern" );
-			QString sCategoryName( LocalFileMng::readXmlString( patternNode,"category", "" ) );
+			QDomNode patternNode = rootNode.firstChildElement( "pattern" );
+			QString sCategoryName( LocalFileMng::readQtXmlString( patternNode,"category", "" ) );
 
 
 			if ( sCategoryName != "" ){
@@ -681,26 +699,37 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 		return NULL;
 	}
 
-	TiXmlDocument doc( drumkitInfoFile.toAscii() );
-	doc.LoadFile();
+	
+	QDomDocument doc;
+	QFile file( drumkitInfoFile  );
+
+	if ( !file.open(QIODevice::ReadOnly) )
+		return NULL;
+
+	if ( !doc.setContent( &file ) ) {
+		file.close();
+		return NULL;
+	}
+	file.close();
+
 
 	// root element
-	TiXmlNode* drumkitNode;	// root element
-	if ( !( drumkitNode = doc.FirstChild( "drumkit_info" ) ) ) {
+	QDomNode drumkitNode = doc.firstChildElement( "drumkit_info" );	// root element
+	if ( drumkitNode.isNull() ) {
 		ERRORLOG( "Error reading drumkit: drumkit_info node not found" );
 		return NULL;
 	}
 
 	// Name
-	QString sDrumkitName = readXmlString( drumkitNode, "name", "" );
+	QString sDrumkitName = readQtXmlString( drumkitNode, "name", "" );
 	if ( sDrumkitName == "" ) {
 		ERRORLOG( "Error reading drumkit: name node not found" );
 		return NULL;
 	}
 
-	QString author = readXmlString( drumkitNode, "author", "undefined author", true );
-	QString info = readXmlString( drumkitNode, "info", "defaultInfo", true );
-	QString license = readXmlString( drumkitNode, "license", "undefined license", true );
+	QString author = readQtXmlString( drumkitNode, "author", "undefined author", true );
+	QString info = readQtXmlString( drumkitNode, "info", "defaultInfo", true );
+	QString license = readQtXmlString( drumkitNode, "license", "undefined license", true );
 
 	Drumkit *drumkitInfo = new Drumkit();
 	drumkitInfo->setName( sDrumkitName );
@@ -710,39 +739,40 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 
 	InstrumentList *instrumentList = new InstrumentList();
 
-	TiXmlNode* instrumentListNode;
-	if ( ( instrumentListNode = drumkitNode->FirstChild( "instrumentList" ) ) ) {
+	QDomNode instrumentListNode = doc.firstChildElement( "drumkit_info" );
+	if ( ! instrumentListNode.isNull() ) {
 		// INSTRUMENT NODE
 		int instrumentList_count = 0;
-		TiXmlNode* instrumentNode = 0;
-		for ( instrumentNode = instrumentListNode->FirstChild( "instrument" ); instrumentNode; instrumentNode = instrumentNode->NextSibling( "instrument" ) ) {
+		QDomNode instrumentNode = instrumentListNode.firstChildElement( "instrument" );
+		while (! instrumentNode.isNull()  ) {
 			instrumentList_count++;
 			if ( instrumentList_count > MAX_INSTRUMENTS ) {
 				ERRORLOG( "Instrument count >= MAX_INSTRUMENTS. Drumkit: " + drumkitInfo->getName() );
 				break;
 			}
 
-			QString id = readXmlString( instrumentNode, "id", "" );
-			QString name = readXmlString( instrumentNode, "name", "" );
-			float volume = readXmlFloat( instrumentNode, "volume", 1.0f );
-			bool isMuted = readXmlBool( instrumentNode, "isMuted", false );
-			float pan_L = readXmlFloat( instrumentNode, "pan_L", 1.0f );
-			float pan_R = readXmlFloat( instrumentNode, "pan_R", 1.0f );
-			bool bFilterActive = readXmlBool( instrumentNode, "filterActive", false, false );
-			float fFilterCutoff = readXmlFloat( instrumentNode, "filterCutoff", 1.0f, false, false );
-			float fFilterResonance = readXmlFloat( instrumentNode, "filterResonance", 0.0f, false, false );
-			float fRandomPitchFactor = readXmlFloat( instrumentNode, "randomPitchFactor", 0.0f, false, false );
-			float fAttack = LocalFileMng::readXmlFloat( instrumentNode, "Attack", 0, false, false );		// Attack
-			float fDecay = LocalFileMng::readXmlFloat( instrumentNode, "Decay", 0, false, false  );		// Decay
-			float fSustain = LocalFileMng::readXmlFloat( instrumentNode, "Sustain", 1.0, false, false );	// Sustain
-			float fRelease = LocalFileMng::readXmlFloat( instrumentNode, "Release", 1000, false, false );	// Release
-			float fGain = readXmlFloat( instrumentNode, "gain", 1.0f, false, false );
-			QString sMuteGroup = readXmlString( instrumentNode, "muteGroup", "-1", false, false );
+			QString id = readQtXmlString( instrumentNode, "id", "" );
+			QString name = readQtXmlString( instrumentNode, "name", "" );
+			float volume = readQtXmlFloat( instrumentNode, "volume", 1.0f );
+			bool isMuted = readQtXmlBool( instrumentNode, "isMuted", false );
+			float pan_L = readQtXmlFloat( instrumentNode, "pan_L", 1.0f );
+			float pan_R = readQtXmlFloat( instrumentNode, "pan_R", 1.0f );
+			bool bFilterActive = readQtXmlBool( instrumentNode, "filterActive", false, false );
+			float fFilterCutoff = readQtXmlFloat( instrumentNode, "filterCutoff", 1.0f, false, false );
+			float fFilterResonance = readQtXmlFloat( instrumentNode, "filterResonance", 0.0f, false, false );
+			float fRandomPitchFactor = readQtXmlFloat( instrumentNode, "randomPitchFactor", 0.0f, false, false );
+			float fAttack = LocalFileMng::readQtXmlFloat( instrumentNode, "Attack", 0, false, false );		// Attack
+			float fDecay = LocalFileMng::readQtXmlFloat( instrumentNode, "Decay", 0, false, false  );		// Decay
+			float fSustain = LocalFileMng::readQtXmlFloat( instrumentNode, "Sustain", 1.0, false, false );	// Sustain
+			float fRelease = LocalFileMng::readQtXmlFloat( instrumentNode, "Release", 1000, false, false );	// Release
+			float fGain = readQtXmlFloat( instrumentNode, "gain", 1.0f, false, false );
+			QString sMuteGroup = readQtXmlString( instrumentNode, "muteGroup", "-1", false, false );
 			int nMuteGroup = sMuteGroup.toInt();
 
 			// some sanity checks
 			if ( id == "" ) {
 				ERRORLOG( "Empty ID for instrument. The drumkit '" + sDrumkitName + "' is corrupted. Skipping instrument '" + name + "'" );
+				instrumentNode = instrumentNode.nextSiblingElement( "instrument" );
 				continue;
 			}
 
@@ -751,10 +781,10 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 
 
 			// back compatibility code
-			TiXmlNode* filenameNode = instrumentNode->FirstChild( "filename" );
-			if ( filenameNode ) {
+			QDomNode filenameNode = instrumentNode.firstChildElement( "filename" );
+			if ( ! filenameNode.isNull() ) {
 				//warningLog( "Using back compatibility code. filename node found" );
-				QString sFilename = LocalFileMng::readXmlString( instrumentNode, "filename", "" );
+				QString sFilename = LocalFileMng::readQtXmlString( instrumentNode, "filename", "" );
 				Sample *pSample = new Sample( 0, sFilename );
 				InstrumentLayer *pLayer = new InstrumentLayer( pSample );
 				pInstrument->set_layer( pLayer, 0 );
@@ -762,16 +792,18 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 			//~ back compatibility code
 			else {
 				unsigned nLayer = 0;
-				for ( TiXmlNode* layerNode = instrumentNode->FirstChild( "layer" ); layerNode; layerNode = layerNode->NextSibling( "layer" ) ) {
+				QDomNode layerNode = instrumentNode.firstChildElement( "layer" );
+				while ( !layerNode.isNull() ) {
 					if ( nLayer >= MAX_LAYERS ) {
 						ERRORLOG( "nLayer > MAX_LAYERS" );
+						layerNode = layerNode.nextSiblingElement( "layer" );
 						continue;
 					}
-					QString sFilename = LocalFileMng::readXmlString( layerNode, "filename", "" );
-					float fMin = LocalFileMng::readXmlFloat( layerNode, "min", 0.0 );
-					float fMax = LocalFileMng::readXmlFloat( layerNode, "max", 1.0 );
-					float fGain = LocalFileMng::readXmlFloat( layerNode, "gain", 1.0, false, false );
-					float fPitch = LocalFileMng::readXmlFloat( layerNode, "pitch", 0.0, false, false );
+					QString sFilename = LocalFileMng::readQtXmlString( layerNode, "filename", "" );
+					float fMin = LocalFileMng::readQtXmlFloat( layerNode, "min", 0.0 );
+					float fMax = LocalFileMng::readQtXmlFloat( layerNode, "max", 1.0 );
+					float fGain = LocalFileMng::readQtXmlFloat( layerNode, "gain", 1.0, false, false );
+					float fPitch = LocalFileMng::readQtXmlFloat( layerNode, "pitch", 0.0, false, false );
 
 					Sample *pSample = new Sample( 0, sFilename );
 					InstrumentLayer *pLayer = new InstrumentLayer( pSample );
@@ -780,7 +812,9 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 					pLayer->set_gain( fGain );
 					pLayer->set_pitch( fPitch );
 					pInstrument->set_layer( pLayer, nLayer );
-
+					
+					layerNode = layerNode.nextSiblingElement( "layer" );
+		
 					nLayer++;
 				}
 			}
@@ -798,6 +832,7 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 
 			pInstrument->set_adsr( new ADSR( fAttack, fDecay, fSustain, fRelease ) );
 			instrumentList->add( pInstrument );
+			instrumentNode = instrumentNode.nextSiblingElement( "instrument" );
 		}
 	} else {
 		WARNINGLOG( "Error reading drumkit: instrumentList node not found" );
@@ -836,7 +871,6 @@ int LocalFileMng::saveDrumkit( Drumkit *info )
 	QString sDrumkitXmlFilename = sDrumkitDir + QString( "/drumkit.xml" );
 
 	QDomDocument doc;
-
 
 	QDomElement rootNode = doc.createElement( "drumkit_info" );
 
@@ -995,6 +1029,15 @@ int LocalFileMng::loadPlayList( const std::string& patternname)
 
 	QDomDocument doc;
 	QFile file( QString( patternname.c_str() ) );
+
+	if ( !file.open(QIODevice::ReadOnly) )
+		return NULL;
+
+	if ( !doc.setContent( &file ) ) {
+		file.close();
+		return NULL;
+	}
+	file.close();
 
 	Hydrogen::get_instance()->m_PlayList.clear();
 
