@@ -881,7 +881,7 @@ void Preferences::savePreferences()
 		return;
 
 	QTextStream TextStream( &file );
-	doc.save( TextStream, 0 );
+	doc.save( TextStream, 1 );
 
 	file.close();
 }

@@ -327,7 +327,7 @@ int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString&
 		return NULL;
 
 	QTextStream TextStream( &file );
-	doc.save( TextStream, 0 );
+	doc.save( TextStream, 1 );
 
 	file.close();
 
@@ -963,7 +963,7 @@ int LocalFileMng::saveDrumkit( Drumkit *info )
 		return NULL;
 
 	QTextStream TextStream( &file );
-	doc.save( TextStream, 0 );
+	doc.save( TextStream, 1 );
 
 	file.close();
 
@@ -1006,7 +1006,7 @@ int LocalFileMng::savePlayList( const std::string& patternname)
 		return NULL;
 
 	QTextStream TextStream( &file );
-	doc.save( TextStream, 0 );
+	doc.save( TextStream, 1 );
 
 	file.close();
 
@@ -1429,7 +1429,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 		rv = 1;
 
 	QTextStream TextStream( &file );
-	doc.save( TextStream, 0 );
+	doc.save( TextStream, 1 );
 
 	file.close();
 
