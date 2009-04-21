@@ -1152,7 +1152,7 @@ bool LocalFileMng::readXmlBool( QDomNode node , const QString& nodeName, bool de
 
 
 	if( element.text().isEmpty() ){
-		if ( !bCanBeEmpty ) {
+		if ( bCanBeEmpty ) {
 			_WARNINGLOG( "Using default value in " + nodeName );
 		}
 		return defaultValue;
