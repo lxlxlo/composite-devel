@@ -700,6 +700,8 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 	
 	QDomDocument doc;
 	QFile file( drumkitInfoFile  );
+	
+	ERRORLOG( drumkitInfoFile  );
 
 	if ( !file.open(QIODevice::ReadOnly) )
 		return NULL;
@@ -737,7 +739,7 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 
 	InstrumentList *instrumentList = new InstrumentList();
 
-	QDomNode instrumentListNode = doc.firstChildElement( "drumkit_info" );
+	QDomNode instrumentListNode = drumkitNode.firstChildElement( "instrumentList" );
 	if ( ! instrumentListNode.isNull() ) {
 		// INSTRUMENT NODE
 		int instrumentList_count = 0;
