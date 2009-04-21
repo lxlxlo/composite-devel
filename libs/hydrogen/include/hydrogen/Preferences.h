@@ -508,9 +508,9 @@ private:
 	void createSoundLibraryDirectories();
 
 	WindowProperties readWindowProperties( QDomNode parent, const QString& windowName, WindowProperties defaultProp );
-	void writeWindowProperties( TiXmlNode& parent, const QString& windowName, const WindowProperties& prop );
+	void writeWindowProperties( QDomNode parent, const QString& windowName, const WindowProperties& prop );
 
-	void writeUIStyle( TiXmlNode& parent );
+	void writeUIStyle( QDomNode parent );
 	void readUIStyle( QDomNode parent );
 };
 

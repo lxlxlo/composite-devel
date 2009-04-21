@@ -571,103 +571,103 @@ void Preferences::savePreferences()
 
 	INFOLOG( "Saving preferences file: " + filename );
 
-	TiXmlDocument doc( filename.toAscii() );
+	QDomDocument doc;
 
-	TiXmlElement rootNode( "hydrogen_preferences" );
+	QDomNode rootNode = doc.createElement( "hydrogen_preferences" );
 
 	// hydrogen version
-	LocalFileMng::writeXmlString( &rootNode, "version", QString( get_version().c_str() ) );
+	LocalFileMng::writeXmlString( rootNode, "version", QString( get_version().c_str() ) );
 
 	////// GENERAL ///////
-	LocalFileMng::writeXmlString( &rootNode, "restoreLastSong", restoreLastSong ? "true": "false" );
+	LocalFileMng::writeXmlString( rootNode, "restoreLastSong", restoreLastSong ? "true": "false" );
 	
-	LocalFileMng::writeXmlString( &rootNode, "patternModePlaysSelected", m_bPatternModePlaysSelected ? "true": "false" );
+	LocalFileMng::writeXmlString( rootNode, "patternModePlaysSelected", m_bPatternModePlaysSelected ? "true": "false" );
 
-	LocalFileMng::writeXmlString( &rootNode, "useLash", m_bsetLash ? "true": "false" );
+	LocalFileMng::writeXmlString( rootNode, "useLash", m_bsetLash ? "true": "false" );
 
 	//show development version warning
-	LocalFileMng::writeXmlString( &rootNode, "showDevelWarning", m_bShowDevelWarning ? "true": "false" );
+	LocalFileMng::writeXmlString( rootNode, "showDevelWarning", m_bShowDevelWarning ? "true": "false" );
 
 	// hear new notes in the pattern editor
-	LocalFileMng::writeXmlString( &rootNode, "hearNewNotes", hearNewNotes ? "true": "false" );
+	LocalFileMng::writeXmlString( rootNode, "hearNewNotes", hearNewNotes ? "true": "false" );
 
 	// key/midi event prefs
-	LocalFileMng::writeXmlString( &rootNode, "recordEvents", recordEvents ? "true": "false" );
-	LocalFileMng::writeXmlString( &rootNode, "quantizeEvents", quantizeEvents ? "true": "false" );
+	LocalFileMng::writeXmlString( rootNode, "recordEvents", recordEvents ? "true": "false" );
+	LocalFileMng::writeXmlString( rootNode, "quantizeEvents", quantizeEvents ? "true": "false" );
 
 	// Recent used songs
-	TiXmlElement recentUsedSongsNode( "recentUsedSongs" );
+	QDomNode recentUsedSongsNode = doc.createElement( "recentUsedSongs" );
 	{
 		unsigned nSongs = 5;
 		if ( m_recentFiles.size() < 5 ) {
 			nSongs = m_recentFiles.size();
 		}
 		for ( unsigned i = 0; i < nSongs; i++ ) {
-			LocalFileMng::writeXmlString( &recentUsedSongsNode, "song", m_recentFiles[ i ] );
+			LocalFileMng::writeXmlString( recentUsedSongsNode, "song", m_recentFiles[ i ] );
 		}
 	}
-	rootNode.InsertEndChild( recentUsedSongsNode );
+	rootNode.appendChild( recentUsedSongsNode );
 	
-	TiXmlElement recentFXNode( "recentlyUsedEffects" );
+	QDomNode recentFXNode = doc.createElement( "recentlyUsedEffects" );
 	{
 		int nFX = 0;
 		QString FXname;
 		foreach( FXname, m_recentFX ) {
-			LocalFileMng::writeXmlString( &recentFXNode, "FX", FXname );
+			LocalFileMng::writeXmlString( recentFXNode, "FX", FXname );
 			if ( ++nFX > 10 ) break;
 		}
 	}
-	rootNode.InsertEndChild( recentFXNode );
+	rootNode.appendChild( recentFXNode );
 
 
 	std::list<QString>::const_iterator cur_Server;
 
-	TiXmlElement serverListNode( "serverList" );
+	QDomNode serverListNode = doc.createElement( "serverList" );
 	for( cur_Server = sServerList.begin(); cur_Server != sServerList.end(); ++cur_Server ){
-		LocalFileMng::writeXmlString( &serverListNode , QString("server") , QString( *cur_Server ) );
+		LocalFileMng::writeXmlString( serverListNode , QString("server") , QString( *cur_Server ) );
 	}
-	rootNode.InsertEndChild( serverListNode );
+	rootNode.appendChild( serverListNode );
 
 
 	std::list<QString>::const_iterator cur_patternCategories;
 
-	TiXmlElement patternCategoriesNode( "patternCategories" );
+	QDomNode patternCategoriesNode = doc.createElement( "patternCategories" );
 	for( cur_patternCategories = m_patternCategories.begin(); cur_patternCategories != m_patternCategories.end(); ++cur_patternCategories ){
-		LocalFileMng::writeXmlString( &patternCategoriesNode , QString("categories") , QString( *cur_patternCategories ) );
+		LocalFileMng::writeXmlString( patternCategoriesNode , QString("categories") , QString( *cur_patternCategories ) );
 	}
-	rootNode.InsertEndChild( patternCategoriesNode );
+	rootNode.appendChild( patternCategoriesNode );
 
 
 
 
-	LocalFileMng::writeXmlString( &rootNode, "lastNews", m_sLastNews );
+	LocalFileMng::writeXmlString( rootNode, "lastNews", m_sLastNews );
 
 
 	//---- AUDIO ENGINE ----
-	TiXmlElement audioEngineNode( "audio_engine" );
+	QDomNode audioEngineNode = doc.createElement( "audio_engine" );
 	{
 		// audio driver
-		LocalFileMng::writeXmlString( &audioEngineNode, "audio_driver", m_sAudioDriver );
+		LocalFileMng::writeXmlString( audioEngineNode, "audio_driver", m_sAudioDriver );
 
 		// use metronome
-		LocalFileMng::writeXmlString( &audioEngineNode, "use_metronome", m_bUseMetronome ? "true": "false" );
-		LocalFileMng::writeXmlString( &audioEngineNode, "metronome_volume", to_string( m_fMetronomeVolume ) );
-		LocalFileMng::writeXmlString( &audioEngineNode, "maxNotes", to_string( m_nMaxNotes ) );
-		LocalFileMng::writeXmlString( &audioEngineNode, "buffer_size", to_string( m_nBufferSize ) );
-		LocalFileMng::writeXmlString( &audioEngineNode, "samplerate", to_string( m_nSampleRate ) );
+		LocalFileMng::writeXmlString( audioEngineNode, "use_metronome", m_bUseMetronome ? "true": "false" );
+		LocalFileMng::writeXmlString( audioEngineNode, "metronome_volume", to_string( m_fMetronomeVolume ) );
+		LocalFileMng::writeXmlString( audioEngineNode, "maxNotes", to_string( m_nMaxNotes ) );
+		LocalFileMng::writeXmlString( audioEngineNode, "buffer_size", to_string( m_nBufferSize ) );
+		LocalFileMng::writeXmlString( audioEngineNode, "samplerate", to_string( m_nSampleRate ) );
 
 		//// OSS DRIVER ////
-		TiXmlElement ossDriverNode( "oss_driver" );
+		QDomNode ossDriverNode = doc.createElement( "oss_driver" );
 		{
-			LocalFileMng::writeXmlString( &ossDriverNode, "ossDevice", m_sOSSDevice );
+			LocalFileMng::writeXmlString( ossDriverNode, "ossDevice", m_sOSSDevice );
 		}
-		audioEngineNode.InsertEndChild( ossDriverNode );
+		audioEngineNode.appendChild( ossDriverNode );
 
 		//// JACK DRIVER ////
-		TiXmlElement jackDriverNode( "jack_driver" );
+		QDomNode jackDriverNode = doc.createElement( "jack_driver" );
 		{
-			LocalFileMng::writeXmlString( &jackDriverNode, "jack_port_name_1", m_sJackPortName1 );	// jack port name 1
-			LocalFileMng::writeXmlString( &jackDriverNode, "jack_port_name_2", m_sJackPortName2 );	// jack port name 2
+			LocalFileMng::writeXmlString( jackDriverNode, "jack_port_name_1", m_sJackPortName1 );	// jack port name 1
+			LocalFileMng::writeXmlString( jackDriverNode, "jack_port_name_2", m_sJackPortName2 );	// jack port name 2
 
 			// jack transport slave
 			QString sMode;
@@ -676,7 +676,7 @@ void Preferences::savePreferences()
 			} else if ( m_bJackTransportMode == USE_JACK_TRANSPORT ) {
 				sMode = "USE_JACK_TRANSPORT";
 			}
-			LocalFileMng::writeXmlString( &jackDriverNode, "jack_transport_mode", sMode );
+			LocalFileMng::writeXmlString( jackDriverNode, "jack_transport_mode", sMode );
 
 			//jack time master
 			QString tmMode;
@@ -685,7 +685,7 @@ void Preferences::savePreferences()
 			} else if (  m_bJackMasterMode == USE_JACK_TIME_MASTER ) {
 				tmMode = "NO_JACK_TIME_MASTER";
 			}
-			LocalFileMng::writeXmlString( &jackDriverNode, "jack_transport_mode_master", tmMode );
+			LocalFileMng::writeXmlString( jackDriverNode, "jack_transport_mode_master", tmMode );
 			//~ jack time master
 
 			// jack default connection
@@ -693,71 +693,71 @@ void Preferences::savePreferences()
 			if ( m_bJackConnectDefaults ) {
 				jackConnectDefaultsString = "true";
 			}
-			LocalFileMng::writeXmlString( &jackDriverNode, "jack_connect_defaults", jackConnectDefaultsString );
+			LocalFileMng::writeXmlString( jackDriverNode, "jack_connect_defaults", jackConnectDefaultsString );
 
 			//pre-fader or post-fader track outputs ?
-			LocalFileMng::writeXmlString( &jackDriverNode, "jack_track_output_mode", to_string ( m_nJackTrackOutputMode ));
+			LocalFileMng::writeXmlString( jackDriverNode, "jack_track_output_mode", to_string ( m_nJackTrackOutputMode ));
 
 			// jack track outs
 			QString jackTrackOutsString = "false";
 			if ( m_bJackTrackOuts ) {
 				jackTrackOutsString = "true";
 			}
-			LocalFileMng::writeXmlString( &jackDriverNode, "jack_track_outs", jackTrackOutsString );
+			LocalFileMng::writeXmlString( jackDriverNode, "jack_track_outs", jackTrackOutsString );
 			QString jackArdourTransportWorkaroundString = 
 			    (m_nJackArdourTransportWorkaround) ? "true" : "false";
-			LocalFileMng::writeXmlString( &jackDriverNode, "jack_ardour_transport_workaround", jackArdourTransportWorkaroundString );
+			LocalFileMng::writeXmlString( jackDriverNode, "jack_ardour_transport_workaround", jackArdourTransportWorkaroundString );
 		}
-		audioEngineNode.InsertEndChild( jackDriverNode );
+		audioEngineNode.appendChild( jackDriverNode );
 
 		//// ALSA AUDIO DRIVER ////
-		TiXmlElement alsaAudioDriverNode( "alsa_audio_driver" );
+		QDomNode alsaAudioDriverNode = doc.createElement( "alsa_audio_driver" );
 		{
-			LocalFileMng::writeXmlString( &alsaAudioDriverNode, "alsa_audio_device", m_sAlsaAudioDevice );
+			LocalFileMng::writeXmlString( alsaAudioDriverNode, "alsa_audio_device", m_sAlsaAudioDevice );
 		}
-		audioEngineNode.InsertEndChild( alsaAudioDriverNode );
+		audioEngineNode.appendChild( alsaAudioDriverNode );
 
 		/// MIDI DRIVER ///
-		TiXmlElement midiDriverNode( "midi_driver" );
+		QDomNode midiDriverNode = doc.createElement( "midi_driver" );
 		{
-			LocalFileMng::writeXmlString( &midiDriverNode, "driverName", m_sMidiDriver );
-			LocalFileMng::writeXmlString( &midiDriverNode, "port_name", m_sMidiPortName );
-			LocalFileMng::writeXmlString( &midiDriverNode, "channel_filter", to_string( m_nMidiChannelFilter ) );
+			LocalFileMng::writeXmlString( midiDriverNode, "driverName", m_sMidiDriver );
+			LocalFileMng::writeXmlString( midiDriverNode, "port_name", m_sMidiPortName );
+			LocalFileMng::writeXmlString( midiDriverNode, "channel_filter", to_string( m_nMidiChannelFilter ) );
 
 			if ( m_bMidiNoteOffIgnore ) {
-				LocalFileMng::writeXmlString( &midiDriverNode, "ignore_note_off", "true" );
+				LocalFileMng::writeXmlString( midiDriverNode, "ignore_note_off", "true" );
 			} else {
-				LocalFileMng::writeXmlString( &midiDriverNode, "ignore_note_off", "false" );
+				LocalFileMng::writeXmlString( midiDriverNode, "ignore_note_off", "false" );
 			}
 
 			if ( m_bMidiDiscardNoteAfterAction ) {
-				LocalFileMng::writeXmlString( &midiDriverNode, "discard_note_after_action", "true" );
+				LocalFileMng::writeXmlString( midiDriverNode, "discard_note_after_action", "true" );
 			} else {
-				LocalFileMng::writeXmlString( &midiDriverNode, "discard_note_after_action", "false" );
+				LocalFileMng::writeXmlString( midiDriverNode, "discard_note_after_action", "false" );
 			}
 		}
-		audioEngineNode.InsertEndChild( midiDriverNode );
+		audioEngineNode.appendChild( midiDriverNode );
 
 
 
 	}
-	rootNode.InsertEndChild( audioEngineNode );
+	rootNode.appendChild( audioEngineNode );
 
 	//---- GUI ----
-	TiXmlElement guiNode( "gui" );
+	QDomNode guiNode = doc.createElement( "gui" );
 	{
-		LocalFileMng::writeXmlString( &guiNode, "QTStyle", m_sQTStyle );
-		LocalFileMng::writeXmlString( &guiNode, "application_font_family", applicationFontFamily );
-		LocalFileMng::writeXmlString( &guiNode, "application_font_pointsize", to_string( applicationFontPointSize ) );
-		LocalFileMng::writeXmlString( &guiNode, "mixer_font_family", mixerFontFamily );
-		LocalFileMng::writeXmlString( &guiNode, "mixer_font_pointsize", to_string( mixerFontPointSize ) );
-		LocalFileMng::writeXmlString( &guiNode, "mixer_falloff_speed", to_string( mixerFalloffSpeed ) );
-		LocalFileMng::writeXmlString( &guiNode, "patternEditorGridResolution", to_string( m_nPatternEditorGridResolution ) );
-		LocalFileMng::writeXmlString( &guiNode, "patternEditorGridHeight", to_string( m_nPatternEditorGridHeight ) );
-		LocalFileMng::writeXmlString( &guiNode, "patternEditorGridWidth", to_string( m_nPatternEditorGridWidth ) );
-		LocalFileMng::writeXmlBool( &guiNode, "patternEditorUsingTriplets", m_bPatternEditorUsingTriplets );
-		LocalFileMng::writeXmlBool( &guiNode, "showInstrumentPeaks", m_bShowInstrumentPeaks );
-		LocalFileMng::writeXmlBool( &guiNode, "isFXTabVisible", m_bIsFXTabVisible );
+		LocalFileMng::writeXmlString( guiNode, "QTStyle", m_sQTStyle );
+		LocalFileMng::writeXmlString( guiNode, "application_font_family", applicationFontFamily );
+		LocalFileMng::writeXmlString( guiNode, "application_font_pointsize", to_string( applicationFontPointSize ) );
+		LocalFileMng::writeXmlString( guiNode, "mixer_font_family", mixerFontFamily );
+		LocalFileMng::writeXmlString( guiNode, "mixer_font_pointsize", to_string( mixerFontPointSize ) );
+		LocalFileMng::writeXmlString( guiNode, "mixer_falloff_speed", to_string( mixerFalloffSpeed ) );
+		LocalFileMng::writeXmlString( guiNode, "patternEditorGridResolution", to_string( m_nPatternEditorGridResolution ) );
+		LocalFileMng::writeXmlString( guiNode, "patternEditorGridHeight", to_string( m_nPatternEditorGridHeight ) );
+		LocalFileMng::writeXmlString( guiNode, "patternEditorGridWidth", to_string( m_nPatternEditorGridWidth ) );
+		LocalFileMng::writeXmlBool( guiNode, "patternEditorUsingTriplets", m_bPatternEditorUsingTriplets );
+		LocalFileMng::writeXmlBool( guiNode, "showInstrumentPeaks", m_bShowInstrumentPeaks );
+		LocalFileMng::writeXmlBool( guiNode, "isFXTabVisible", m_bIsFXTabVisible );
 
 
 		// MainForm window properties
@@ -772,7 +772,7 @@ void Preferences::savePreferences()
 			writeWindowProperties( guiNode, sNode, m_ladspaProperties[nFX] );
 		}
 
-		LocalFileMng::writeXmlBool( &guiNode, "followPlayhead", m_bFollowPlayhead );
+		LocalFileMng::writeXmlBool( guiNode, "followPlayhead", m_bFollowPlayhead );
 
 
 		//beatcounter
@@ -782,7 +782,7 @@ void Preferences::savePreferences()
 			} else if ( m_bbc  == BC_ON ) {
 				bcMode = "BC_ON";
 			}
-			LocalFileMng::writeXmlString( &guiNode, "bc", bcMode );
+			LocalFileMng::writeXmlString( guiNode, "bc", bcMode );
 
 
 		
@@ -792,35 +792,35 @@ void Preferences::savePreferences()
 			} else if ( m_mmcsetplay == SET_PLAY_ON ) {
 				setPlay = "SET_PLAY_ON";
 			}
-			LocalFileMng::writeXmlString( &guiNode, "setplay", setPlay );
+			LocalFileMng::writeXmlString( guiNode, "setplay", setPlay );
 
-		LocalFileMng::writeXmlString( &guiNode, "countoffset", to_string(m_countOffset) );
-		LocalFileMng::writeXmlString( &guiNode, "playoffset", to_string(m_startOffset) );
+		LocalFileMng::writeXmlString( guiNode, "countoffset", to_string(m_countOffset) );
+		LocalFileMng::writeXmlString( guiNode, "playoffset", to_string(m_startOffset) );
 		//~ beatcounter
 
 		//SoundLibraryPanel expand items
-		LocalFileMng::writeXmlString( &guiNode, "expandSongItem", __expandSongItem ? "true": "false" );
-		LocalFileMng::writeXmlString( &guiNode, "expandPatternItem", __expandPatternItem ? "true": "false" );
+		LocalFileMng::writeXmlString( guiNode, "expandSongItem", __expandSongItem ? "true": "false" );
+		LocalFileMng::writeXmlString( guiNode, "expandPatternItem", __expandPatternItem ? "true": "false" );
 
 		// User interface style
 		writeUIStyle( guiNode );
 	}
-	rootNode.InsertEndChild( guiNode );
+	rootNode.appendChild( guiNode );
 
 	//---- FILES ----
-	TiXmlElement filesNode( "files" );
+	QDomNode filesNode = doc.createElement( "files" );
 	{
 		// last used song
-		LocalFileMng::writeXmlString( &filesNode, "lastSongFilename", lastSongFilename );
-		LocalFileMng::writeXmlString( &filesNode, "defaulteditor", m_sDefaultEditor );
+		LocalFileMng::writeXmlString( filesNode, "lastSongFilename", lastSongFilename );
+		LocalFileMng::writeXmlString( filesNode, "defaulteditor", m_sDefaultEditor );
 	}
-	rootNode.InsertEndChild( filesNode );
+	rootNode.appendChild( filesNode );
 
 	MidiMap * mM = MidiMap::getInstance();
 	std::map< QString, Action* > mmcMap = mM->getMMCMap();
 
 	//---- MidiMap ----
-	TiXmlElement midiEventMapNode( "midiEventMap" );
+	QDomNode midiEventMapNode = doc.createElement( "midiEventMap" );
 	{
 		std::map< QString, Action* >::iterator dIter( mmcMap.begin() );
 		for( dIter = mmcMap.begin(); dIter != mmcMap.end(); dIter++ ){
@@ -829,28 +829,28 @@ void Preferences::savePreferences()
 			Action * pAction = dIter->second;
 
 			if ( pAction->getType() != "NOTHING" ){
-				TiXmlElement midiEventNode( "midiEvent" );
+				QDomNode midiEventNode = doc.createElement( "midiEvent" );
 
-				LocalFileMng::writeXmlString( &midiEventNode, "mmcEvent" , event );
-				LocalFileMng::writeXmlString( &midiEventNode, "action" , pAction->getType());
-				LocalFileMng::writeXmlString( &midiEventNode, "parameter" , pAction->getParameter1() );
+				LocalFileMng::writeXmlString( midiEventNode, "mmcEvent" , event );
+				LocalFileMng::writeXmlString( midiEventNode, "action" , pAction->getType());
+				LocalFileMng::writeXmlString( midiEventNode, "parameter" , pAction->getParameter1() );
 
-				midiEventMapNode.InsertEndChild(midiEventNode);
+				midiEventMapNode.appendChild( midiEventNode );
 			}
 		}
 		
 		for( int note=0; note < 128; note++ ){
 			Action * pAction = mM->getNoteAction( note );
 			if( pAction != NULL && pAction->getType() != "NOTHING") {
-				TiXmlElement midiEventNode( "midiEvent" );
+				QDomNode midiEventNode = doc.createElement( "midiEvent" );
 				
-				LocalFileMng::writeXmlString( &midiEventNode, "noteEvent" , QString("NOTE") );
-				LocalFileMng::writeXmlString( &midiEventNode, "eventParameter" , QString::number( note ) );
-				LocalFileMng::writeXmlString( &midiEventNode, "action" , pAction->getType() );
-				LocalFileMng::writeXmlString( &midiEventNode, "parameter" , pAction->getParameter1() );
+				LocalFileMng::writeXmlString( midiEventNode, "noteEvent" , QString("NOTE") );
+				LocalFileMng::writeXmlString( midiEventNode, "eventParameter" , QString::number( note ) );
+				LocalFileMng::writeXmlString( midiEventNode, "action" , pAction->getType() );
+				LocalFileMng::writeXmlString( midiEventNode, "parameter" , pAction->getParameter1() );
 	
 
-				midiEventMapNode.InsertEndChild(midiEventNode);
+				midiEventMapNode.appendChild(midiEventNode);
 			}
 		}
 
@@ -858,25 +858,33 @@ void Preferences::savePreferences()
 			Action * pAction = mM->getCCAction( parameter );
 			if( pAction != NULL && pAction->getType() != "NOTHING")
 			{
-				TiXmlElement midiEventNode( "midiEvent" );
+				QDomNode midiEventNode = doc.createElement( "midiEvent" );
 				
-				LocalFileMng::writeXmlString( &midiEventNode, "ccEvent" , QString("CC") );
-				LocalFileMng::writeXmlString( &midiEventNode, "eventParameter" , QString::number( parameter ) );
+				LocalFileMng::writeXmlString( midiEventNode, "ccEvent" , QString("CC") );
+				LocalFileMng::writeXmlString( midiEventNode, "eventParameter" , QString::number( parameter ) );
 				
 
-				LocalFileMng::writeXmlString( &midiEventNode, "action" , pAction->getType() );
+				LocalFileMng::writeXmlString( midiEventNode, "action" , pAction->getType() );
 
-				LocalFileMng::writeXmlString( &midiEventNode, "parameter" , pAction->getParameter1() );
+				LocalFileMng::writeXmlString( midiEventNode, "parameter" , pAction->getParameter1() );
 
-				midiEventMapNode.InsertEndChild(midiEventNode);
+				midiEventMapNode.appendChild( midiEventNode );
 			}
 		}
 	}
 	
-	rootNode.InsertEndChild( midiEventMapNode );
+	rootNode.appendChild( midiEventMapNode );
 
-	doc.InsertEndChild( rootNode );
-	doc.SaveFile();
+	doc.appendChild( rootNode );
+	
+	QFile file( filename );
+	if ( !file.open(QIODevice::WriteOnly) )
+		return;
+
+	QTextStream TextStream( &file );
+	doc.save( TextStream, 0 );
+
+	file.close();
 }
 
 
@@ -987,54 +995,56 @@ WindowProperties Preferences::readWindowProperties( QDomNode parent, const QStri
 
 
 /// Write the xml nodes related to window properties
-void Preferences::writeWindowProperties( TiXmlNode& parent, const QString& windowName, const WindowProperties& prop )
+void Preferences::writeWindowProperties( QDomNode parent, const QString& windowName, const WindowProperties& prop )
 {
-	TiXmlElement windowPropNode( windowName.toAscii() );
+	QDomDocument doc;
+	QDomNode windowPropNode = doc.createElement( windowName.toAscii() );
 	if ( prop.visible ) {
-		LocalFileMng::writeXmlString( &windowPropNode, "visible", "true" );
+		LocalFileMng::writeXmlString( windowPropNode, "visible", "true" );
 	} else {
-		LocalFileMng::writeXmlString( &windowPropNode, "visible", "false" );
+		LocalFileMng::writeXmlString( windowPropNode, "visible", "false" );
 	}
 
-	LocalFileMng::writeXmlString( &windowPropNode, "x", to_string( prop.x ) );
-	LocalFileMng::writeXmlString( &windowPropNode, "y", to_string( prop.y ) );
-	LocalFileMng::writeXmlString( &windowPropNode, "width", to_string( prop.width ) );
-	LocalFileMng::writeXmlString( &windowPropNode, "height", to_string( prop.height ) );
-	parent.InsertEndChild( windowPropNode );
+	LocalFileMng::writeXmlString( windowPropNode, "x", to_string( prop.x ) );
+	LocalFileMng::writeXmlString( windowPropNode, "y", to_string( prop.y ) );
+	LocalFileMng::writeXmlString( windowPropNode, "width", to_string( prop.width ) );
+	LocalFileMng::writeXmlString( windowPropNode, "height", to_string( prop.height ) );
+	parent.appendChild( windowPropNode );
 }
 
 
 
-void Preferences::writeUIStyle( TiXmlNode& parent )
+void Preferences::writeUIStyle( QDomNode parent )
 {
-	TiXmlElement node( "UI_Style" );
+	QDomDocument doc;
+	QDomNode node = doc.createElement( "UI_Style" );
 
 	// SONG EDITOR
-	TiXmlElement songEditorNode( "songEditor" );
-	LocalFileMng::writeXmlString( &songEditorNode, "backgroundColor", m_pDefaultUIStyle->m_songEditor_backgroundColor.toStringFmt() );
-	LocalFileMng::writeXmlString( &songEditorNode, "alternateRowColor", m_pDefaultUIStyle->m_songEditor_alternateRowColor.toStringFmt() );
-	LocalFileMng::writeXmlString( &songEditorNode, "selectedRowColor", m_pDefaultUIStyle->m_songEditor_selectedRowColor.toStringFmt() );
-	LocalFileMng::writeXmlString( &songEditorNode, "lineColor", m_pDefaultUIStyle->m_songEditor_lineColor.toStringFmt() );
-	LocalFileMng::writeXmlString( &songEditorNode, "textColor", m_pDefaultUIStyle->m_songEditor_textColor.toStringFmt() );
-	LocalFileMng::writeXmlString( &songEditorNode, "pattern1Color", m_pDefaultUIStyle->m_songEditor_pattern1Color.toStringFmt() );
-	node.InsertEndChild( songEditorNode );
+	QDomNode songEditorNode = doc.createElement( "songEditor" );
+	LocalFileMng::writeXmlString( songEditorNode, "backgroundColor", m_pDefaultUIStyle->m_songEditor_backgroundColor.toStringFmt() );
+	LocalFileMng::writeXmlString( songEditorNode, "alternateRowColor", m_pDefaultUIStyle->m_songEditor_alternateRowColor.toStringFmt() );
+	LocalFileMng::writeXmlString( songEditorNode, "selectedRowColor", m_pDefaultUIStyle->m_songEditor_selectedRowColor.toStringFmt() );
+	LocalFileMng::writeXmlString( songEditorNode, "lineColor", m_pDefaultUIStyle->m_songEditor_lineColor.toStringFmt() );
+	LocalFileMng::writeXmlString( songEditorNode, "textColor", m_pDefaultUIStyle->m_songEditor_textColor.toStringFmt() );
+	LocalFileMng::writeXmlString( songEditorNode, "pattern1Color", m_pDefaultUIStyle->m_songEditor_pattern1Color.toStringFmt() );
+	node.appendChild( songEditorNode );
 
 	// PATTERN EDITOR
-	TiXmlElement patternEditorNode( "patternEditor" );
-	LocalFileMng::writeXmlString( &patternEditorNode, "backgroundColor", m_pDefaultUIStyle->m_patternEditor_backgroundColor.toStringFmt() );
-	LocalFileMng::writeXmlString( &patternEditorNode, "alternateRowColor", m_pDefaultUIStyle->m_patternEditor_alternateRowColor.toStringFmt() );
-	LocalFileMng::writeXmlString( &patternEditorNode, "selectedRowColor", m_pDefaultUIStyle->m_patternEditor_selectedRowColor.toStringFmt() );
-	LocalFileMng::writeXmlString( &patternEditorNode, "textColor", m_pDefaultUIStyle->m_patternEditor_textColor.toStringFmt() );
-	LocalFileMng::writeXmlString( &patternEditorNode, "noteColor", m_pDefaultUIStyle->m_patternEditor_noteColor.toStringFmt() );
-	LocalFileMng::writeXmlString( &patternEditorNode, "lineColor", m_pDefaultUIStyle->m_patternEditor_lineColor.toStringFmt() );
-	LocalFileMng::writeXmlString( &patternEditorNode, "line1Color", m_pDefaultUIStyle->m_patternEditor_line1Color.toStringFmt() );
-	LocalFileMng::writeXmlString( &patternEditorNode, "line2Color", m_pDefaultUIStyle->m_patternEditor_line2Color.toStringFmt() );
-	LocalFileMng::writeXmlString( &patternEditorNode, "line3Color", m_pDefaultUIStyle->m_patternEditor_line3Color.toStringFmt() );
-	LocalFileMng::writeXmlString( &patternEditorNode, "line4Color", m_pDefaultUIStyle->m_patternEditor_line4Color.toStringFmt() );
-	LocalFileMng::writeXmlString( &patternEditorNode, "line5Color", m_pDefaultUIStyle->m_patternEditor_line5Color.toStringFmt() );
-	node.InsertEndChild( patternEditorNode );
+	QDomNode patternEditorNode = doc.createElement( "patternEditor" );
+	LocalFileMng::writeXmlString( patternEditorNode, "backgroundColor", m_pDefaultUIStyle->m_patternEditor_backgroundColor.toStringFmt() );
+	LocalFileMng::writeXmlString( patternEditorNode, "alternateRowColor", m_pDefaultUIStyle->m_patternEditor_alternateRowColor.toStringFmt() );
+	LocalFileMng::writeXmlString( patternEditorNode, "selectedRowColor", m_pDefaultUIStyle->m_patternEditor_selectedRowColor.toStringFmt() );
+	LocalFileMng::writeXmlString( patternEditorNode, "textColor", m_pDefaultUIStyle->m_patternEditor_textColor.toStringFmt() );
+	LocalFileMng::writeXmlString( patternEditorNode, "noteColor", m_pDefaultUIStyle->m_patternEditor_noteColor.toStringFmt() );
+	LocalFileMng::writeXmlString( patternEditorNode, "lineColor", m_pDefaultUIStyle->m_patternEditor_lineColor.toStringFmt() );
+	LocalFileMng::writeXmlString( patternEditorNode, "line1Color", m_pDefaultUIStyle->m_patternEditor_line1Color.toStringFmt() );
+	LocalFileMng::writeXmlString( patternEditorNode, "line2Color", m_pDefaultUIStyle->m_patternEditor_line2Color.toStringFmt() );
+	LocalFileMng::writeXmlString( patternEditorNode, "line3Color", m_pDefaultUIStyle->m_patternEditor_line3Color.toStringFmt() );
+	LocalFileMng::writeXmlString( patternEditorNode, "line4Color", m_pDefaultUIStyle->m_patternEditor_line4Color.toStringFmt() );
+	LocalFileMng::writeXmlString( patternEditorNode, "line5Color", m_pDefaultUIStyle->m_patternEditor_line5Color.toStringFmt() );
+	node.appendChild( patternEditorNode );
 
-	parent.InsertEndChild( node );
+	parent.appendChild( node );
 }
 
 
