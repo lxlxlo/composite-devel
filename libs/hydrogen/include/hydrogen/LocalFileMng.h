@@ -89,7 +89,7 @@ public:
 	static QString readXmlString( QDomNode , const QString& nodeName, const QString& defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true );
 	static float readXmlFloat( QDomNode , const QString& nodeName, float defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true );
 	static int readXmlInt( QDomNode , const QString& nodeName, int defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true );
-	static bool readXmlBool( QDomNode , const QString& nodeName, bool defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true );
+	static bool readXmlBool( QDomNode , const QString& nodeName, bool defaultValue, bool bShouldExists = true );
 
 private:
 	void fileCopy( const QString& sOrigFilename, const QString& sDestFilename );

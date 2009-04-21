@@ -700,8 +700,6 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 	
 	QDomDocument doc;
 	QFile file( drumkitInfoFile  );
-	
-	ERRORLOG( drumkitInfoFile  );
 
 	if ( !file.open(QIODevice::ReadOnly) )
 		return NULL;
@@ -1077,89 +1075,87 @@ QString LocalFileMng::readXmlString( QDomNode node , const QString& nodeName, co
 {
  	QDomElement element = node.firstChildElement( nodeName );
 	
-	
-	if( element.isNull()  && bShouldExists ){
-		_WARNINGLOG( "'" + nodeName + "' node not found" );
-		return defaultValue;
-	}
-
-
-
-	if( element.text().isEmpty() ){
-		if ( !bCanBeEmpty ) {
-			_WARNINGLOG( "Using default value in " + nodeName );
+	if( !node.isNull() && !element.isNull() ){
+		if(  !element.text().isEmpty() ){
+			return element.text();
+		} else {
+			if ( !bCanBeEmpty ) {
+				_WARNINGLOG( "Using default value in " + nodeName );
+			}
+			return defaultValue;
+		}
+	} else {	
+		if(  bShouldExists ){
+			_WARNINGLOG( "'" + nodeName + "' node not found" );
+			
 		}
 		return defaultValue;
 	}
-
-	return element.text();
 }
 
 float LocalFileMng::readXmlFloat( QDomNode node , const QString& nodeName, float defaultValue, bool bCanBeEmpty, bool bShouldExists)
 {
  	QDomElement element = node.firstChildElement( nodeName );
 	
-	
-	if( element.isNull()  && bShouldExists ){
-		_WARNINGLOG( "'" + nodeName + "' node not found" );
-		return defaultValue;
-	}
-
-
-
-	if( element.text().isEmpty() ){
-		if ( !bCanBeEmpty ) {
-			_WARNINGLOG( "Using default value in " + nodeName );
+	if( !node.isNull() && !element.isNull() ){
+		if(  !element.text().isEmpty() ){
+			return element.text().toFloat();
+		} else {
+			if ( !bCanBeEmpty ) {
+				_WARNINGLOG( "Using default value in " + nodeName );
+			}
+			return defaultValue;
+		}
+	} else {	
+		if(  bShouldExists ){
+			_WARNINGLOG( "'" + nodeName + "' node not found" );
 		}
 		return defaultValue;
 	}
-
-	return element.text().toFloat();
 }
 
 int LocalFileMng::readXmlInt( QDomNode node , const QString& nodeName, int defaultValue, bool bCanBeEmpty, bool bShouldExists)
 {
  	QDomElement element = node.firstChildElement( nodeName );
 	
-	
-	if( element.isNull()  && bShouldExists ){
-		_WARNINGLOG( "'" + nodeName + "' node not found" );
-		return defaultValue;
-	}
-
-
-
-	if( element.text().isEmpty() ){
-		if ( !bCanBeEmpty ) {
-			_WARNINGLOG( "Using default value in " + nodeName );
+	if( !node.isNull() && !element.isNull() ){
+		if(  !element.text().isEmpty() ){
+			return element.text().toInt();
+		} else {
+			if ( !bCanBeEmpty ) {
+				_WARNINGLOG( "Using default value in " + nodeName );
+			}
+			return defaultValue;
+		}
+	} else {	
+		if(  bShouldExists ){
+			_WARNINGLOG( "'" + nodeName + "' node not found" );
 		}
 		return defaultValue;
 	}
-
-	return element.text().toInt();
 }
 
-bool LocalFileMng::readXmlBool( QDomNode node , const QString& nodeName, bool defaultValue, bool bCanBeEmpty, bool bShouldExists)
+bool LocalFileMng::readXmlBool( QDomNode node , const QString& nodeName, bool defaultValue, bool bShouldExists)
 {
  	QDomElement element = node.firstChildElement( nodeName );
 	
-	
-	if( element.isNull()  && bShouldExists ){
-		_WARNINGLOG( "'" + nodeName + "' node not found" );
-		return defaultValue;
-	}
-
-
-
-	if( element.text().isEmpty() ){
-		if ( bCanBeEmpty ) {
+	if( !node.isNull() && !element.isNull() ){
+		if(  !element.text().isEmpty() ){
+			if( element.text() == "true"){
+				return true;
+			} else {
+				return false;
+			}
+		} else {
 			_WARNINGLOG( "Using default value in " + nodeName );
+			return defaultValue;
+		}
+	} else {	
+		if(  bShouldExists ){
+			_WARNINGLOG( "'" + nodeName + "' node not found" );
 		}
 		return defaultValue;
 	}
-
-	if( element.text().toLower() == "true" ) return true;
-	return false; 
 }
 
 
