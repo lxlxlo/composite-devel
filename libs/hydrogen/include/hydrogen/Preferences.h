@@ -31,6 +31,8 @@
 #include <hydrogen/globals.h>
 #include <hydrogen/Object.h>
 
+#include <QDomDocument>
+
 // forward declaration
 class TiXmlNode;
 
@@ -505,11 +507,11 @@ private:
 	/// Create soundLibrary directory
 	void createSoundLibraryDirectories();
 
-	WindowProperties readWindowProperties( TiXmlNode *parent, const QString& windowName, WindowProperties defaultProp );
+	WindowProperties readWindowProperties( QDomNode parent, const QString& windowName, WindowProperties defaultProp );
 	void writeWindowProperties( TiXmlNode& parent, const QString& windowName, const WindowProperties& prop );
 
 	void writeUIStyle( TiXmlNode& parent );
-	void readUIStyle( TiXmlNode& parent );
+	void readUIStyle( QDomNode parent );
 };
 
 };
