@@ -475,7 +475,7 @@ void Preferences::loadPreferences( bool bGlobal )
 
 			/////////////// FILES //////////////
 			QDomNode filesNode = rootNode.firstChildElement( "files" );
-			if ( !filesNode.isNull() ) {
+			if ( filesNode.isNull() ) {
 				WARNINGLOG( "files node not found" );
 				recreate = true;
 			} else {
