@@ -1298,7 +1298,7 @@ void LocalFileMng::writeXmlString( QDomNode parent, const QString& name, const Q
 	*/
 	QDomDocument doc;
 	QDomElement elem = doc.createElement( name );
-	QDomText t = doc.createTextNode( "Hello World" );
+	QDomText t = doc.createTextNode( text );
 	elem.appendChild( t );
 	parent.appendChild( elem );
 }
