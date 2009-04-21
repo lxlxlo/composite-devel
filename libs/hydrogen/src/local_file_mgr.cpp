@@ -49,8 +49,6 @@
 #include <QDomDocument>
 
 
-#include "xml/tinyxml.h"
-
 
 #include <algorithm>
 //#include <cstdio>
