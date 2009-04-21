@@ -337,7 +337,6 @@ Song* SongReader::readSong( const QString& filename )
 
 			QString sId = LocalFileMng::readQtXmlString( instrumentNode, "id", "" );			// instrument id
 			QString sDrumkit = LocalFileMng::readQtXmlString( instrumentNode, "drumkit", "" );	// drumkit
-			ERRORLOG( sDrumkit );
 			Hydrogen::get_instance()->setCurrentDrumkitname( sDrumkit ); 
 			QString sName = LocalFileMng::readQtXmlString( instrumentNode, "name", "" );		// name
 			float fVolume = LocalFileMng::readQtXmlFloat( instrumentNode, "volume", 1.0 );	// volume
