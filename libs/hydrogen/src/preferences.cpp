@@ -42,7 +42,6 @@
 #include "config.h"
 #include "version.h"
 
-#include "xml/tinyxml.h"
 #include <QDir>
 #include <QApplication>
 
