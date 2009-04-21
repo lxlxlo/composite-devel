@@ -270,7 +270,7 @@ Song* SongReader::readSong( const QString& filename )
 
 	QDomNode songNode = nodeList.at(0);
 
-	m_sSongVersion = LocalFileMng::readQtXmlString( songNode , "version", "Unknown version" );
+	m_sSongVersion = LocalFileMng::readXmlString( songNode , "version", "Unknown version" );
 
 	
 	if ( m_sSongVersion != QString( get_version().c_str() ) ) {
@@ -281,25 +281,25 @@ Song* SongReader::readSong( const QString& filename )
 	
 	
 		
-	float fBpm = LocalFileMng::readQtXmlFloat( songNode, "bpm", 120 );
+	float fBpm = LocalFileMng::readXmlFloat( songNode, "bpm", 120 );
 	Hydrogen::get_instance()->setNewBpmJTM( fBpm ); 
-	float fVolume = LocalFileMng::readQtXmlFloat( songNode, "volume", 0.5 );
-	float fMetronomeVolume = LocalFileMng::readQtXmlFloat( songNode, "metronomeVolume", 0.5 );
-	QString sName( LocalFileMng::readQtXmlString( songNode, "name", "Untitled Song" ) );
-	QString sAuthor( LocalFileMng::readQtXmlString( songNode, "author", "Unknown Author" ) );
-	QString sNotes( LocalFileMng::readQtXmlString( songNode, "notes", "..." ) );
-	QString sLicense( LocalFileMng::readQtXmlString( songNode, "license", "Unknown license" ) );
-	bool bLoopEnabled = LocalFileMng::readQtXmlBool( songNode, "loopEnabled", false );
+	float fVolume = LocalFileMng::readXmlFloat( songNode, "volume", 0.5 );
+	float fMetronomeVolume = LocalFileMng::readXmlFloat( songNode, "metronomeVolume", 0.5 );
+	QString sName( LocalFileMng::readXmlString( songNode, "name", "Untitled Song" ) );
+	QString sAuthor( LocalFileMng::readXmlString( songNode, "author", "Unknown Author" ) );
+	QString sNotes( LocalFileMng::readXmlString( songNode, "notes", "..." ) );
+	QString sLicense( LocalFileMng::readXmlString( songNode, "license", "Unknown license" ) );
+	bool bLoopEnabled = LocalFileMng::readXmlBool( songNode, "loopEnabled", false );
 
 	Song::SongMode nMode = Song::PATTERN_MODE;	// Mode (song/pattern)
-	QString sMode = LocalFileMng::readQtXmlString( songNode, "mode", "pattern" );
+	QString sMode = LocalFileMng::readXmlString( songNode, "mode", "pattern" );
 	if ( sMode == "song" ) {
 		nMode = Song::SONG_MODE;
 	}
 
-	float fHumanizeTimeValue = LocalFileMng::readQtXmlFloat( songNode, "humanize_time", 0.0 );
-	float fHumanizeVelocityValue = LocalFileMng::readQtXmlFloat( songNode, "humanize_velocity", 0.0 );
-	float fSwingFactor = LocalFileMng::readQtXmlFloat( songNode, "swing_factor", 0.0 );
+	float fHumanizeTimeValue = LocalFileMng::readXmlFloat( songNode, "humanize_time", 0.0 );
+	float fHumanizeVelocityValue = LocalFileMng::readXmlFloat( songNode, "humanize_velocity", 0.0 );
+	float fSwingFactor = LocalFileMng::readXmlFloat( songNode, "swing_factor", 0.0 );
 
 	song = new Song( sName, sAuthor, fBpm, fVolume );
 	song->set_metronome_volume( fMetronomeVolume );
@@ -335,31 +335,31 @@ Song* SongReader::readSong( const QString& filename )
 		while ( ! instrumentNode.isNull()  ) {
 			instrumentList_count++;
 
-			QString sId = LocalFileMng::readQtXmlString( instrumentNode, "id", "" );			// instrument id
-			QString sDrumkit = LocalFileMng::readQtXmlString( instrumentNode, "drumkit", "" );	// drumkit
+			QString sId = LocalFileMng::readXmlString( instrumentNode, "id", "" );			// instrument id
+			QString sDrumkit = LocalFileMng::readXmlString( instrumentNode, "drumkit", "" );	// drumkit
 			Hydrogen::get_instance()->setCurrentDrumkitname( sDrumkit ); 
-			QString sName = LocalFileMng::readQtXmlString( instrumentNode, "name", "" );		// name
-			float fVolume = LocalFileMng::readQtXmlFloat( instrumentNode, "volume", 1.0 );	// volume
-			bool bIsMuted = LocalFileMng::readQtXmlBool( instrumentNode, "isMuted", false );	// is muted
-			float fPan_L = LocalFileMng::readQtXmlFloat( instrumentNode, "pan_L", 0.5 );	// pan L
-			float fPan_R = LocalFileMng::readQtXmlFloat( instrumentNode, "pan_R", 0.5 );	// pan R
-			float fFX1Level = LocalFileMng::readQtXmlFloat( instrumentNode, "FX1Level", 0.0 );	// FX level
-			float fFX2Level = LocalFileMng::readQtXmlFloat( instrumentNode, "FX2Level", 0.0 );	// FX level
-			float fFX3Level = LocalFileMng::readQtXmlFloat( instrumentNode, "FX3Level", 0.0 );	// FX level
-			float fFX4Level = LocalFileMng::readQtXmlFloat( instrumentNode, "FX4Level", 0.0 );	// FX level
-			float fGain = LocalFileMng::readQtXmlFloat( instrumentNode, "gain", 1.0, false, false );	// instrument gain
+			QString sName = LocalFileMng::readXmlString( instrumentNode, "name", "" );		// name
+			float fVolume = LocalFileMng::readXmlFloat( instrumentNode, "volume", 1.0 );	// volume
+			bool bIsMuted = LocalFileMng::readXmlBool( instrumentNode, "isMuted", false );	// is muted
+			float fPan_L = LocalFileMng::readXmlFloat( instrumentNode, "pan_L", 0.5 );	// pan L
+			float fPan_R = LocalFileMng::readXmlFloat( instrumentNode, "pan_R", 0.5 );	// pan R
+			float fFX1Level = LocalFileMng::readXmlFloat( instrumentNode, "FX1Level", 0.0 );	// FX level
+			float fFX2Level = LocalFileMng::readXmlFloat( instrumentNode, "FX2Level", 0.0 );	// FX level
+			float fFX3Level = LocalFileMng::readXmlFloat( instrumentNode, "FX3Level", 0.0 );	// FX level
+			float fFX4Level = LocalFileMng::readXmlFloat( instrumentNode, "FX4Level", 0.0 );	// FX level
+			float fGain = LocalFileMng::readXmlFloat( instrumentNode, "gain", 1.0, false, false );	// instrument gain
 
-			int fAttack = LocalFileMng::readQtXmlInt( instrumentNode, "Attack", 0, false, false );		// Attack
-			int fDecay = LocalFileMng::readQtXmlInt( instrumentNode, "Decay", 0, false, false );		// Decay
-			float fSustain = LocalFileMng::readQtXmlFloat( instrumentNode, "Sustain", 1.0, false, false );	// Sustain
-			int fRelease = LocalFileMng::readQtXmlInt( instrumentNode, "Release", 1000, false, false );	// Release
+			int fAttack = LocalFileMng::readXmlInt( instrumentNode, "Attack", 0, false, false );		// Attack
+			int fDecay = LocalFileMng::readXmlInt( instrumentNode, "Decay", 0, false, false );		// Decay
+			float fSustain = LocalFileMng::readXmlFloat( instrumentNode, "Sustain", 1.0, false, false );	// Sustain
+			int fRelease = LocalFileMng::readXmlInt( instrumentNode, "Release", 1000, false, false );	// Release
 
-			float fRandomPitchFactor = LocalFileMng::readQtXmlFloat( instrumentNode, "randomPitchFactor", 0.0f, false, false );
+			float fRandomPitchFactor = LocalFileMng::readXmlFloat( instrumentNode, "randomPitchFactor", 0.0f, false, false );
 
-			bool bFilterActive = LocalFileMng::readQtXmlBool( instrumentNode, "filterActive", false );
-			float fFilterCutoff = LocalFileMng::readQtXmlFloat( instrumentNode, "filterCutoff", 1.0f, false );
-			float fFilterResonance = LocalFileMng::readQtXmlFloat( instrumentNode, "filterResonance", 0.0f, false );
-			QString sMuteGroup = LocalFileMng::readQtXmlString( instrumentNode, "muteGroup", "-1", false );
+			bool bFilterActive = LocalFileMng::readXmlBool( instrumentNode, "filterActive", false );
+			float fFilterCutoff = LocalFileMng::readXmlFloat( instrumentNode, "filterCutoff", 1.0f, false );
+			float fFilterResonance = LocalFileMng::readXmlFloat( instrumentNode, "filterResonance", 0.0f, false );
+			QString sMuteGroup = LocalFileMng::readXmlString( instrumentNode, "muteGroup", "-1", false );
 			int nMuteGroup = sMuteGroup.toInt();
 
 
@@ -400,7 +400,7 @@ Song* SongReader::readSong( const QString& filename )
 			QDomNode filenameNode = instrumentNode.firstChildElement( "filename" );
 			if ( ! filenameNode.isNull() ) {
 				WARNINGLOG( "Using back compatibility code. filename node found" );
-				QString sFilename = LocalFileMng::readQtXmlString( instrumentNode, "filename", "" );
+				QString sFilename = LocalFileMng::readXmlString( instrumentNode, "filename", "" );
 
 				if ( drumkitPath != "" ) {
 					sFilename = drumkitPath + "/" + sFilename;
@@ -430,11 +430,11 @@ Song* SongReader::readSong( const QString& filename )
 						ERRORLOG( "nLayer > MAX_LAYERS" );
 						continue;
 					}
-					QString sFilename = LocalFileMng::readQtXmlString( layerNode, "filename", "" );
-					float fMin = LocalFileMng::readQtXmlFloat( layerNode, "min", 0.0 );
-					float fMax = LocalFileMng::readQtXmlFloat( layerNode, "max", 1.0 );
-					float fGain = LocalFileMng::readQtXmlFloat( layerNode, "gain", 1.0 );
-					float fPitch = LocalFileMng::readQtXmlFloat( layerNode, "pitch", 0.0, false, false );
+					QString sFilename = LocalFileMng::readXmlString( layerNode, "filename", "" );
+					float fMin = LocalFileMng::readXmlFloat( layerNode, "min", 0.0 );
+					float fMax = LocalFileMng::readXmlFloat( layerNode, "max", 1.0 );
+					float fGain = LocalFileMng::readXmlFloat( layerNode, "gain", 1.0 );
+					float fPitch = LocalFileMng::readXmlFloat( layerNode, "pitch", 0.0, false, false );
 
 					if ( drumkitPath != "" ) {
 						sFilename = drumkitPath + "/" + sFilename;
@@ -580,10 +580,10 @@ Song* SongReader::readSong( const QString& filename )
 		int nFX = 0;
 		QDomNode fxNode = ladspaNode.firstChildElement( "fx" );
 		while (  !fxNode.isNull()  ) {
-			QString sName = LocalFileMng::readQtXmlString( fxNode, "name", "" );
-			QString sFilename = LocalFileMng::readQtXmlString( fxNode, "filename", "" );
-			bool bEnabled = LocalFileMng::readQtXmlBool( fxNode, "enabled", false );
-			float fVolume = LocalFileMng::readQtXmlFloat( fxNode, "volume", 1.0 );
+			QString sName = LocalFileMng::readXmlString( fxNode, "name", "" );
+			QString sFilename = LocalFileMng::readXmlString( fxNode, "filename", "" );
+			bool bEnabled = LocalFileMng::readXmlBool( fxNode, "enabled", false );
+			float fVolume = LocalFileMng::readXmlFloat( fxNode, "volume", 1.0 );
 
 			if ( sName != "no plugin" ) {
 				// FIXME: il caricamento va fatto fare all'engine, solo lui sa il samplerate esatto
@@ -595,8 +595,8 @@ Song* SongReader::readSong( const QString& filename )
 					pFX->setVolume( fVolume );
 					QDomNode inputControlNode = fxNode.firstChildElement( "inputControlPort" );
 					while ( !inputControlNode.isNull() ) {
-						QString sName = LocalFileMng::readQtXmlString( inputControlNode, "name", "" );
-						float fValue = LocalFileMng::readQtXmlFloat( inputControlNode, "value", 0.0 );
+						QString sName = LocalFileMng::readXmlString( inputControlNode, "name", "" );
+						float fValue = LocalFileMng::readXmlFloat( inputControlNode, "value", 0.0 );
 
 						for ( unsigned nPort = 0; nPort < pFX->inputControlPorts.size(); nPort++ ) {
 							LadspaControlPort *port = pFX->inputControlPorts[ nPort ];
@@ -637,12 +637,12 @@ Pattern* SongReader::getPattern( QDomNode pattern, InstrumentList* instrList )
 	Pattern *pPattern = NULL;
 
 	QString sName = "";	// name
-	sName = LocalFileMng::readQtXmlString( pattern, "name", sName );
+	sName = LocalFileMng::readXmlString( pattern, "name", sName );
 
 	QString sCategory = ""; // category
-	sCategory = LocalFileMng::readQtXmlString( pattern, "category", sCategory );
+	sCategory = LocalFileMng::readXmlString( pattern, "category", sCategory );
 	int nSize = -1;
-	nSize = LocalFileMng::readQtXmlInt( pattern, "size", nSize, false, false );
+	nSize = LocalFileMng::readXmlInt( pattern, "size", nSize, false, false );
 
 	pPattern = new Pattern( sName, sCategory, nSize );
 
@@ -656,16 +656,16 @@ Pattern* SongReader::getPattern( QDomNode pattern, InstrumentList* instrList )
 
 			Note* pNote = NULL;
 
-			unsigned nPosition = LocalFileMng::readQtXmlInt( noteNode, "position", 0 );
-			float fLeadLag = LocalFileMng::readQtXmlFloat( noteNode, "leadlag", 0.0 );
-			float fVelocity = LocalFileMng::readQtXmlFloat( noteNode, "velocity", 0.8f );
-			float fPan_L = LocalFileMng::readQtXmlFloat( noteNode, "pan_L", 0.5 );
-			float fPan_R = LocalFileMng::readQtXmlFloat( noteNode, "pan_R", 0.5 );
-			int nLength = LocalFileMng::readQtXmlInt( noteNode, "length", -1, true );
-			float nPitch = LocalFileMng::readQtXmlFloat( noteNode, "pitch", 0.0, false, false );
-			QString sKey = LocalFileMng::readQtXmlString( noteNode, "key", "C0", false, false );
+			unsigned nPosition = LocalFileMng::readXmlInt( noteNode, "position", 0 );
+			float fLeadLag = LocalFileMng::readXmlFloat( noteNode, "leadlag", 0.0 );
+			float fVelocity = LocalFileMng::readXmlFloat( noteNode, "velocity", 0.8f );
+			float fPan_L = LocalFileMng::readXmlFloat( noteNode, "pan_L", 0.5 );
+			float fPan_R = LocalFileMng::readXmlFloat( noteNode, "pan_R", 0.5 );
+			int nLength = LocalFileMng::readXmlInt( noteNode, "length", -1, true );
+			float nPitch = LocalFileMng::readXmlFloat( noteNode, "pitch", 0.0, false, false );
+			QString sKey = LocalFileMng::readXmlString( noteNode, "key", "C0", false, false );
 
-			QString instrId = LocalFileMng::readQtXmlString( noteNode, "instrument", "" );
+			QString instrId = LocalFileMng::readXmlString( noteNode, "instrument", "" );
 
 			Instrument *instrRef = NULL;
 			// search instrument by ref
@@ -703,15 +703,15 @@ Pattern* SongReader::getPattern( QDomNode pattern, InstrumentList* instrList )
 
 				Note* pNote = NULL;
 
-				unsigned nPosition = LocalFileMng::readQtXmlInt( noteNode, "position", 0 );
-				float fLeadLag = LocalFileMng::readQtXmlFloat( noteNode, "leadlag", 0.0 );
-				float fVelocity = LocalFileMng::readQtXmlFloat( noteNode, "velocity", 0.8f );
-				float fPan_L = LocalFileMng::readQtXmlFloat( noteNode, "pan_L", 0.5 );
-				float fPan_R = LocalFileMng::readQtXmlFloat( noteNode, "pan_R", 0.5 );
-				int nLength = LocalFileMng::readQtXmlInt( noteNode, "length", -1, true );
-				float nPitch = LocalFileMng::readQtXmlFloat( noteNode, "pitch", 0.0, false, false );
+				unsigned nPosition = LocalFileMng::readXmlInt( noteNode, "position", 0 );
+				float fLeadLag = LocalFileMng::readXmlFloat( noteNode, "leadlag", 0.0 );
+				float fVelocity = LocalFileMng::readXmlFloat( noteNode, "velocity", 0.8f );
+				float fPan_L = LocalFileMng::readXmlFloat( noteNode, "pan_L", 0.5 );
+				float fPan_R = LocalFileMng::readXmlFloat( noteNode, "pan_R", 0.5 );
+				int nLength = LocalFileMng::readXmlInt( noteNode, "length", -1, true );
+				float nPitch = LocalFileMng::readXmlFloat( noteNode, "pitch", 0.0, false, false );
 
-				QString instrId = LocalFileMng::readQtXmlString( noteNode, "instrument", "" );
+				QString instrId = LocalFileMng::readXmlString( noteNode, "instrument", "" );
 
 				Instrument *instrRef = NULL;
 				// search instrument by ref

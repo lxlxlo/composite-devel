@@ -77,9 +77,6 @@ public:
 	Drumkit* loadDrumkit( const QString& directory );
 	int saveDrumkit( Drumkit *pDrumkit );
 
-	static void writeXmlString( ::TiXmlNode *parent, const QString& name, const QString& text );
-	static void writeXmlBool( ::TiXmlNode *parent, const QString& name, bool value );
-
 	static void writeXmlString( QDomNode parent, const QString& name, const QString& text );
 	static void writeXmlBool( QDomNode parent, const QString& name, bool value );
 
@@ -89,16 +86,10 @@ public:
 	int savePlayList( const std::string& patternname );
 	int loadPlayList( const std::string& patternname);
 
-	static QString readXmlString( ::TiXmlNode* parent, const QString& nodeName, const QString& defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true );
-	static int readXmlInt( ::TiXmlNode* parent, const QString& nodeName, int defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true );
-	static float readXmlFloat( ::TiXmlNode* parent, const QString& nodeName, float defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true );
-	static bool readXmlBool(  ::TiXmlNode* parent, const QString& nodeName, bool defaultValue, bool bShouldExists = true );
-
-
-	static QString readQtXmlString( QDomNode , const QString& nodeName, const QString& defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true );
-	static float readQtXmlFloat( QDomNode , const QString& nodeName, float defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true );
-	static int readQtXmlInt( QDomNode , const QString& nodeName, int defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true );
-	static bool readQtXmlBool( QDomNode , const QString& nodeName, bool defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true );
+	static QString readXmlString( QDomNode , const QString& nodeName, const QString& defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true );
+	static float readXmlFloat( QDomNode , const QString& nodeName, float defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true );
+	static int readXmlInt( QDomNode , const QString& nodeName, int defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true );
+	static bool readXmlBool( QDomNode , const QString& nodeName, bool defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true );
 
 private:
 	void fileCopy( const QString& sOrigFilename, const QString& sDestFilename );

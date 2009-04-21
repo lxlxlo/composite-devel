@@ -232,24 +232,24 @@ void Preferences::loadPreferences( bool bGlobal )
 		if ( !rootNode.isNull() ) {
 
 			// version
-			QString version = LocalFileMng::readQtXmlString( rootNode, "version", "" );
+			QString version = LocalFileMng::readXmlString( rootNode, "version", "" );
 			if ( version == "" ) {
 				recreate = true;
 			}
 
 			//////// GENERAL ///////////
 			//m_sLadspaPath = LocalFileMng::readXmlString( this, rootNode, "ladspaPath", m_sLadspaPath );
-			m_bShowDevelWarning = LocalFileMng::readQtXmlBool( rootNode, "showDevelWarning", m_bShowDevelWarning );
-			restoreLastSong = LocalFileMng::readQtXmlBool( rootNode, "restoreLastSong", restoreLastSong );
-			m_bPatternModePlaysSelected = LocalFileMng::readQtXmlBool( rootNode, "patternModePlaysSelected", TRUE );
-			m_bUseLash = LocalFileMng::readQtXmlBool( rootNode, "useLash", FALSE );
+			m_bShowDevelWarning = LocalFileMng::readXmlBool( rootNode, "showDevelWarning", m_bShowDevelWarning );
+			restoreLastSong = LocalFileMng::readXmlBool( rootNode, "restoreLastSong", restoreLastSong );
+			m_bPatternModePlaysSelected = LocalFileMng::readXmlBool( rootNode, "patternModePlaysSelected", TRUE );
+			m_bUseLash = LocalFileMng::readXmlBool( rootNode, "useLash", FALSE );
 			
 			//restore the right m_bsetlash value
 			m_bsetLash = m_bUseLash;
 
-			hearNewNotes = LocalFileMng::readQtXmlBool( rootNode, "hearNewNotes", hearNewNotes );
-			recordEvents = LocalFileMng::readQtXmlBool( rootNode, "recordEvents", recordEvents );
-			quantizeEvents = LocalFileMng::readQtXmlBool( rootNode, "quantizeEvents", quantizeEvents );
+			hearNewNotes = LocalFileMng::readXmlBool( rootNode, "hearNewNotes", hearNewNotes );
+			recordEvents = LocalFileMng::readXmlBool( rootNode, "recordEvents", recordEvents );
+			quantizeEvents = LocalFileMng::readXmlBool( rootNode, "quantizeEvents", quantizeEvents );
 
 			QDomNode pRecentUsedSongsNode = rootNode.firstChildElement( "recentUsedSongs" );
 			if ( !pRecentUsedSongsNode.isNull() ) {
@@ -303,7 +303,7 @@ void Preferences::loadPreferences( bool bGlobal )
 
 
 
-			m_sLastNews = LocalFileMng::readQtXmlString( rootNode, "lastNews", "-", true );
+			m_sLastNews = LocalFileMng::readXmlString( rootNode, "lastNews", "-", true );
 
 			/////////////// AUDIO ENGINE //////////////
 			QDomNode audioEngineNode = rootNode.firstChildElement( "audio_engine" );
@@ -311,12 +311,12 @@ void Preferences::loadPreferences( bool bGlobal )
 				WARNINGLOG( "audio_engine node not found" );
 				recreate = true;
 			} else {
-				m_sAudioDriver = LocalFileMng::readQtXmlString( audioEngineNode, "audio_driver", m_sAudioDriver );
-				m_bUseMetronome = LocalFileMng::readQtXmlBool( audioEngineNode, "use_metronome", m_bUseMetronome );
-				m_fMetronomeVolume = LocalFileMng::readQtXmlFloat( audioEngineNode, "metronome_volume", 0.5f );
-				m_nMaxNotes = LocalFileMng::readQtXmlInt( audioEngineNode, "maxNotes", m_nMaxNotes );
-				m_nBufferSize = LocalFileMng::readQtXmlInt( audioEngineNode, "buffer_size", m_nBufferSize );
-				m_nSampleRate = LocalFileMng::readQtXmlInt( audioEngineNode, "samplerate", m_nSampleRate );
+				m_sAudioDriver = LocalFileMng::readXmlString( audioEngineNode, "audio_driver", m_sAudioDriver );
+				m_bUseMetronome = LocalFileMng::readXmlBool( audioEngineNode, "use_metronome", m_bUseMetronome );
+				m_fMetronomeVolume = LocalFileMng::readXmlFloat( audioEngineNode, "metronome_volume", 0.5f );
+				m_nMaxNotes = LocalFileMng::readXmlInt( audioEngineNode, "maxNotes", m_nMaxNotes );
+				m_nBufferSize = LocalFileMng::readXmlInt( audioEngineNode, "buffer_size", m_nBufferSize );
+				m_nSampleRate = LocalFileMng::readXmlInt( audioEngineNode, "samplerate", m_nSampleRate );
 
 				//// OSS DRIVER ////
 				QDomNode ossDriverNode = audioEngineNode.firstChildElement( "oss_driver" );
@@ -324,7 +324,7 @@ void Preferences::loadPreferences( bool bGlobal )
 					WARNINGLOG( "oss_driver node not found" );
 					recreate = true;
 				} else {
-					m_sOSSDevice = LocalFileMng::readQtXmlString( ossDriverNode, "ossDevice", m_sOSSDevice );
+					m_sOSSDevice = LocalFileMng::readXmlString( ossDriverNode, "ossDevice", m_sOSSDevice );
 				}
 
 				//// JACK DRIVER ////
@@ -333,9 +333,9 @@ void Preferences::loadPreferences( bool bGlobal )
 					WARNINGLOG( "jack_driver node not found" );
 					recreate = true;
 				} else {
-					m_sJackPortName1 = LocalFileMng::readQtXmlString( jackDriverNode, "jack_port_name_1", m_sJackPortName1 );
-					m_sJackPortName2 = LocalFileMng::readQtXmlString( jackDriverNode, "jack_port_name_2", m_sJackPortName2 );
-					QString sMode = LocalFileMng::readQtXmlString( jackDriverNode, "jack_transport_mode", "NO_JACK_TRANSPORT" );
+					m_sJackPortName1 = LocalFileMng::readXmlString( jackDriverNode, "jack_port_name_1", m_sJackPortName1 );
+					m_sJackPortName2 = LocalFileMng::readXmlString( jackDriverNode, "jack_port_name_2", m_sJackPortName2 );
+					QString sMode = LocalFileMng::readXmlString( jackDriverNode, "jack_transport_mode", "NO_JACK_TRANSPORT" );
 					if ( sMode == "NO_JACK_TRANSPORT" ) {
 						m_bJackTransportMode = NO_JACK_TRANSPORT;
 					} else if ( sMode == "USE_JACK_TRANSPORT" ) {
@@ -343,7 +343,7 @@ void Preferences::loadPreferences( bool bGlobal )
 					}
 					
 					//jack time master
-					QString tmMode = LocalFileMng::readQtXmlString( jackDriverNode, "jack_transport_mode_master", "NO_JACK_TIME_MASTER" );
+					QString tmMode = LocalFileMng::readXmlString( jackDriverNode, "jack_transport_mode_master", "NO_JACK_TIME_MASTER" );
 					if ( tmMode == "NO_JACK_TIME_MASTER" ) {
 						m_bJackMasterMode = NO_JACK_TIME_MASTER;
 					} else if ( tmMode == "USE_JACK_TIME_MASTER" ) {
@@ -351,11 +351,11 @@ void Preferences::loadPreferences( bool bGlobal )
 					}
 					//~ jack time master
 
-					m_bJackTrackOuts = LocalFileMng::readQtXmlBool( jackDriverNode, "jack_track_outs", m_bJackTrackOuts );
-					m_bJackConnectDefaults = LocalFileMng::readQtXmlBool( jackDriverNode, "jack_connect_defaults", m_bJackConnectDefaults );
+					m_bJackTrackOuts = LocalFileMng::readXmlBool( jackDriverNode, "jack_track_outs", m_bJackTrackOuts );
+					m_bJackConnectDefaults = LocalFileMng::readXmlBool( jackDriverNode, "jack_connect_defaults", m_bJackConnectDefaults );
 
-					m_nJackTrackOutputMode = LocalFileMng::readQtXmlInt( jackDriverNode, "jack_track_output_mode", m_nJackTrackOutputMode );
-					m_nJackArdourTransportWorkaround = LocalFileMng::readQtXmlBool( jackDriverNode, "jack_ardour_transport_workaround", m_nJackArdourTransportWorkaround );
+					m_nJackTrackOutputMode = LocalFileMng::readXmlInt( jackDriverNode, "jack_track_output_mode", m_nJackTrackOutputMode );
+					m_nJackArdourTransportWorkaround = LocalFileMng::readXmlBool( jackDriverNode, "jack_ardour_transport_workaround", m_nJackArdourTransportWorkaround );
 				}
 
 
@@ -365,7 +365,7 @@ void Preferences::loadPreferences( bool bGlobal )
 					WARNINGLOG( "alsa_audio_driver node not found" );
 					recreate = true;
 				} else {
-					m_sAlsaAudioDevice = LocalFileMng::readQtXmlString( alsaAudioDriverNode, "alsa_audio_device", m_sAlsaAudioDevice );
+					m_sAlsaAudioDevice = LocalFileMng::readXmlString( alsaAudioDriverNode, "alsa_audio_device", m_sAlsaAudioDevice );
 				}
 
 				/// MIDI DRIVER ///
@@ -374,10 +374,10 @@ void Preferences::loadPreferences( bool bGlobal )
 					WARNINGLOG( "midi_driver node not found" );
 					recreate = true;
 				} else {
-					m_sMidiDriver = LocalFileMng::readQtXmlString( midiDriverNode, "driverName", "ALSA" );
-					m_sMidiPortName = LocalFileMng::readQtXmlString( midiDriverNode, "port_name", "None" );
-					m_nMidiChannelFilter = LocalFileMng::readQtXmlInt( midiDriverNode, "channel_filter", -1 );
-					m_bMidiNoteOffIgnore = LocalFileMng::readQtXmlBool( midiDriverNode, "ignore_note_off", true );
+					m_sMidiDriver = LocalFileMng::readXmlString( midiDriverNode, "driverName", "ALSA" );
+					m_sMidiPortName = LocalFileMng::readXmlString( midiDriverNode, "port_name", "None" );
+					m_nMidiChannelFilter = LocalFileMng::readXmlInt( midiDriverNode, "channel_filter", -1 );
+					m_bMidiNoteOffIgnore = LocalFileMng::readXmlBool( midiDriverNode, "ignore_note_off", true );
 				}
 
 
@@ -391,35 +391,35 @@ void Preferences::loadPreferences( bool bGlobal )
 				recreate = true;
 			} else {
 				// QT Style
-				m_sQTStyle = LocalFileMng::readQtXmlString( guiNode, "QTStyle", m_sQTStyle, true );
+				m_sQTStyle = LocalFileMng::readXmlString( guiNode, "QTStyle", m_sQTStyle, true );
 
 				// Application font family
-				applicationFontFamily = LocalFileMng::readQtXmlString( guiNode, "application_font_family", applicationFontFamily );
+				applicationFontFamily = LocalFileMng::readXmlString( guiNode, "application_font_family", applicationFontFamily );
 
 				// Application font pointSize
-				applicationFontPointSize = LocalFileMng::readQtXmlInt( guiNode, "application_font_pointsize", applicationFontPointSize );
+				applicationFontPointSize = LocalFileMng::readXmlInt( guiNode, "application_font_pointsize", applicationFontPointSize );
 
 				// mixer font family
-				mixerFontFamily = LocalFileMng::readQtXmlString( guiNode, "mixer_font_family", mixerFontFamily );
+				mixerFontFamily = LocalFileMng::readXmlString( guiNode, "mixer_font_family", mixerFontFamily );
 
 				// mixer font pointSize
-				mixerFontPointSize = LocalFileMng::readQtXmlInt( guiNode, "mixer_font_pointsize", mixerFontPointSize );
+				mixerFontPointSize = LocalFileMng::readXmlInt( guiNode, "mixer_font_pointsize", mixerFontPointSize );
 
 				// Mixer falloff speed
-				mixerFalloffSpeed = LocalFileMng::readQtXmlFloat( guiNode, "mixer_falloff_speed", 1.1f );
+				mixerFalloffSpeed = LocalFileMng::readXmlFloat( guiNode, "mixer_falloff_speed", 1.1f );
 
 				// pattern editor grid resolution
-				m_nPatternEditorGridResolution = LocalFileMng::readQtXmlInt( guiNode, "patternEditorGridResolution", m_nPatternEditorGridResolution );
-				m_bPatternEditorUsingTriplets = LocalFileMng::readQtXmlBool( guiNode, "patternEditorUsingTriplets", m_bPatternEditorUsingTriplets );
-				m_bShowInstrumentPeaks = LocalFileMng::readQtXmlBool( guiNode, "showInstrumentPeaks", m_bShowInstrumentPeaks );
-				m_bIsFXTabVisible = LocalFileMng::readQtXmlBool( guiNode, "isFXTabVisible", m_bIsFXTabVisible );
+				m_nPatternEditorGridResolution = LocalFileMng::readXmlInt( guiNode, "patternEditorGridResolution", m_nPatternEditorGridResolution );
+				m_bPatternEditorUsingTriplets = LocalFileMng::readXmlBool( guiNode, "patternEditorUsingTriplets", m_bPatternEditorUsingTriplets );
+				m_bShowInstrumentPeaks = LocalFileMng::readXmlBool( guiNode, "showInstrumentPeaks", m_bShowInstrumentPeaks );
+				m_bIsFXTabVisible = LocalFileMng::readXmlBool( guiNode, "isFXTabVisible", m_bIsFXTabVisible );
 
 
 				// pattern editor grid height
-				m_nPatternEditorGridHeight = LocalFileMng::readQtXmlInt( guiNode, "patternEditorGridHeight", m_nPatternEditorGridHeight );
+				m_nPatternEditorGridHeight = LocalFileMng::readXmlInt( guiNode, "patternEditorGridHeight", m_nPatternEditorGridHeight );
 
 				// pattern editor grid width
-				m_nPatternEditorGridWidth = LocalFileMng::readQtXmlInt( guiNode, "patternEditorGridWidth", m_nPatternEditorGridWidth );
+				m_nPatternEditorGridWidth = LocalFileMng::readXmlInt( guiNode, "patternEditorGridWidth", m_nPatternEditorGridWidth );
 
 				// mainForm window properties
 				setMainFormProperties( readWindowProperties( guiNode, "mainForm_properties", mainFormProperties ) );
@@ -430,11 +430,11 @@ void Preferences::loadPreferences( bool bGlobal )
 
 
 
-				m_bFollowPlayhead = LocalFileMng::readQtXmlBool( guiNode, "followPlayhead", true );
+				m_bFollowPlayhead = LocalFileMng::readXmlBool( guiNode, "followPlayhead", true );
 
 
 				//beatcounter
-				QString bcMode = LocalFileMng::readQtXmlString( guiNode, "bc", "BC_OFF" );
+				QString bcMode = LocalFileMng::readXmlString( guiNode, "bc", "BC_OFF" );
 					if ( bcMode == "BC_OFF" ) {
 						m_bbc = BC_OFF;
 					} else if ( bcMode == "BC_ON" ) {
@@ -442,21 +442,21 @@ void Preferences::loadPreferences( bool bGlobal )
 					}
 
 
-				QString setPlay = LocalFileMng::readQtXmlString( guiNode, "setplay", "SET_PLAY_OFF" );
+				QString setPlay = LocalFileMng::readXmlString( guiNode, "setplay", "SET_PLAY_OFF" );
 					if ( setPlay == "SET_PLAY_OFF" ) {
 						m_mmcsetplay = SET_PLAY_OFF;
 					} else if ( setPlay == "SET_PLAY_ON" ) {
 						m_mmcsetplay = SET_PLAY_ON;
 					}
 				
-				m_countOffset = LocalFileMng::readQtXmlInt( guiNode, "countoffset", 0 );
-				m_startOffset = LocalFileMng::readQtXmlInt( guiNode, "playoffset", 0 );
+				m_countOffset = LocalFileMng::readXmlInt( guiNode, "countoffset", 0 );
+				m_startOffset = LocalFileMng::readXmlInt( guiNode, "playoffset", 0 );
 				
 				//~ beatcounter
 				
 				//SoundLibraryPanel expand items
-				__expandSongItem = LocalFileMng::readQtXmlBool( guiNode, "expandSongItem", __expandSongItem );
-				__expandPatternItem = LocalFileMng::readQtXmlBool( guiNode, "expandPatternItem", __expandPatternItem ); 
+				__expandSongItem = LocalFileMng::readXmlBool( guiNode, "expandSongItem", __expandSongItem );
+				__expandPatternItem = LocalFileMng::readXmlBool( guiNode, "expandPatternItem", __expandPatternItem ); 
 
 				for ( unsigned nFX = 0; nFX < MAX_FX; nFX++ ) {
 					QString sNodeName = "ladspaFX_properties" + to_string( nFX );
@@ -479,8 +479,8 @@ void Preferences::loadPreferences( bool bGlobal )
 				recreate = true;
 			} else {
 				// last used song
-				lastSongFilename = LocalFileMng::readQtXmlString( filesNode, "lastSongFilename", lastSongFilename, true );
-				m_sDefaultEditor = LocalFileMng::readQtXmlString( filesNode, "defaulteditor", m_sDefaultEditor, true );
+				lastSongFilename = LocalFileMng::readXmlString( filesNode, "lastSongFilename", lastSongFilename, true );
+				m_sDefaultEditor = LocalFileMng::readXmlString( filesNode, "defaulteditor", m_sDefaultEditor, true );
 			}
 
 			// FIXME: hack hack hack! Isn't better to create a "release" method in MidiMap class instead of destroying a singleton?
@@ -981,11 +981,11 @@ WindowProperties Preferences::readWindowProperties( QDomNode parent, const QStri
 	if ( windowPropNode.isNull() ) {
 		WARNINGLOG( "Error reading configuration file: " + windowName + " node not found" );
 	} else {
-		prop.visible = LocalFileMng::readQtXmlBool( windowPropNode, "visible", true );
-		prop.x = LocalFileMng::readQtXmlInt( windowPropNode, "x", prop.x );
-		prop.y = LocalFileMng::readQtXmlInt( windowPropNode, "y", prop.y );
-		prop.width = LocalFileMng::readQtXmlInt( windowPropNode, "width", prop.width );
-		prop.height = LocalFileMng::readQtXmlInt( windowPropNode, "height", prop.height );
+		prop.visible = LocalFileMng::readXmlBool( windowPropNode, "visible", true );
+		prop.x = LocalFileMng::readXmlInt( windowPropNode, "x", prop.x );
+		prop.y = LocalFileMng::readXmlInt( windowPropNode, "y", prop.y );
+		prop.width = LocalFileMng::readXmlInt( windowPropNode, "width", prop.width );
+		prop.height = LocalFileMng::readXmlInt( windowPropNode, "height", prop.height );
 	}
 
 	return prop;
@@ -1053,12 +1053,12 @@ void Preferences::readUIStyle( QDomNode parent )
 	// SONG EDITOR
 	QDomNode pSongEditorNode = parent.firstChildElement( "songEditor" );
 	if ( !pSongEditorNode.isNull() ) {
-		m_pDefaultUIStyle->m_songEditor_backgroundColor = H2RGBColor( LocalFileMng::readQtXmlString( pSongEditorNode, "backgroundColor", m_pDefaultUIStyle->m_songEditor_backgroundColor.toStringFmt() ) );
-		m_pDefaultUIStyle->m_songEditor_alternateRowColor = H2RGBColor( LocalFileMng::readQtXmlString( pSongEditorNode, "alternateRowColor", m_pDefaultUIStyle->m_songEditor_alternateRowColor.toStringFmt() ) );
-		m_pDefaultUIStyle->m_songEditor_selectedRowColor = H2RGBColor( LocalFileMng::readQtXmlString( pSongEditorNode, "selectedRowColor", m_pDefaultUIStyle->m_songEditor_selectedRowColor.toStringFmt() ) );
-		m_pDefaultUIStyle->m_songEditor_lineColor = H2RGBColor( LocalFileMng::readQtXmlString( pSongEditorNode, "lineColor", m_pDefaultUIStyle->m_songEditor_lineColor.toStringFmt() ) );
-		m_pDefaultUIStyle->m_songEditor_textColor = H2RGBColor( LocalFileMng::readQtXmlString( pSongEditorNode, "textColor", m_pDefaultUIStyle->m_songEditor_textColor.toStringFmt() ) );
-		m_pDefaultUIStyle->m_songEditor_pattern1Color = H2RGBColor( LocalFileMng::readQtXmlString( pSongEditorNode, "pattern1Color", m_pDefaultUIStyle->m_songEditor_pattern1Color.toStringFmt() ) );
+		m_pDefaultUIStyle->m_songEditor_backgroundColor = H2RGBColor( LocalFileMng::readXmlString( pSongEditorNode, "backgroundColor", m_pDefaultUIStyle->m_songEditor_backgroundColor.toStringFmt() ) );
+		m_pDefaultUIStyle->m_songEditor_alternateRowColor = H2RGBColor( LocalFileMng::readXmlString( pSongEditorNode, "alternateRowColor", m_pDefaultUIStyle->m_songEditor_alternateRowColor.toStringFmt() ) );
+		m_pDefaultUIStyle->m_songEditor_selectedRowColor = H2RGBColor( LocalFileMng::readXmlString( pSongEditorNode, "selectedRowColor", m_pDefaultUIStyle->m_songEditor_selectedRowColor.toStringFmt() ) );
+		m_pDefaultUIStyle->m_songEditor_lineColor = H2RGBColor( LocalFileMng::readXmlString( pSongEditorNode, "lineColor", m_pDefaultUIStyle->m_songEditor_lineColor.toStringFmt() ) );
+		m_pDefaultUIStyle->m_songEditor_textColor = H2RGBColor( LocalFileMng::readXmlString( pSongEditorNode, "textColor", m_pDefaultUIStyle->m_songEditor_textColor.toStringFmt() ) );
+		m_pDefaultUIStyle->m_songEditor_pattern1Color = H2RGBColor( LocalFileMng::readXmlString( pSongEditorNode, "pattern1Color", m_pDefaultUIStyle->m_songEditor_pattern1Color.toStringFmt() ) );
 	} else {
 		WARNINGLOG( "songEditor node not found" );
 	}
@@ -1066,17 +1066,17 @@ void Preferences::readUIStyle( QDomNode parent )
 	// PATTERN EDITOR
 	QDomNode pPatternEditorNode = parent.firstChildElement( "patternEditor" );
 	if ( !pPatternEditorNode.isNull() ) {
-		m_pDefaultUIStyle->m_patternEditor_backgroundColor = H2RGBColor( LocalFileMng::readQtXmlString( pPatternEditorNode, "backgroundColor", m_pDefaultUIStyle->m_patternEditor_backgroundColor.toStringFmt() ) );
-		m_pDefaultUIStyle->m_patternEditor_alternateRowColor = H2RGBColor( LocalFileMng::readQtXmlString( pPatternEditorNode, "alternateRowColor", m_pDefaultUIStyle->m_patternEditor_alternateRowColor.toStringFmt() ) );
-		m_pDefaultUIStyle->m_patternEditor_selectedRowColor = H2RGBColor( LocalFileMng::readQtXmlString( pPatternEditorNode, "selectedRowColor", m_pDefaultUIStyle->m_patternEditor_selectedRowColor.toStringFmt() ) );
-		m_pDefaultUIStyle->m_patternEditor_textColor = H2RGBColor( LocalFileMng::readQtXmlString( pPatternEditorNode, "textColor", m_pDefaultUIStyle->m_patternEditor_textColor.toStringFmt() ) );
-		m_pDefaultUIStyle->m_patternEditor_noteColor = H2RGBColor( LocalFileMng::readQtXmlString( pPatternEditorNode, "noteColor", m_pDefaultUIStyle->m_patternEditor_noteColor.toStringFmt() ) );
-		m_pDefaultUIStyle->m_patternEditor_lineColor = H2RGBColor( LocalFileMng::readQtXmlString( pPatternEditorNode, "lineColor", m_pDefaultUIStyle->m_patternEditor_lineColor.toStringFmt() ) );
-		m_pDefaultUIStyle->m_patternEditor_line1Color = H2RGBColor( LocalFileMng::readQtXmlString( pPatternEditorNode, "line1Color", m_pDefaultUIStyle->m_patternEditor_line1Color.toStringFmt() ) );
-		m_pDefaultUIStyle->m_patternEditor_line2Color = H2RGBColor( LocalFileMng::readQtXmlString( pPatternEditorNode, "line2Color", m_pDefaultUIStyle->m_patternEditor_line2Color.toStringFmt() ) );
-		m_pDefaultUIStyle->m_patternEditor_line3Color = H2RGBColor( LocalFileMng::readQtXmlString( pPatternEditorNode, "line3Color", m_pDefaultUIStyle->m_patternEditor_line3Color.toStringFmt() ) );
-		m_pDefaultUIStyle->m_patternEditor_line4Color = H2RGBColor( LocalFileMng::readQtXmlString( pPatternEditorNode, "line4Color", m_pDefaultUIStyle->m_patternEditor_line4Color.toStringFmt() ) );
-		m_pDefaultUIStyle->m_patternEditor_line5Color = H2RGBColor( LocalFileMng::readQtXmlString( pPatternEditorNode, "line5Color", m_pDefaultUIStyle->m_patternEditor_line5Color.toStringFmt() ) );
+		m_pDefaultUIStyle->m_patternEditor_backgroundColor = H2RGBColor( LocalFileMng::readXmlString( pPatternEditorNode, "backgroundColor", m_pDefaultUIStyle->m_patternEditor_backgroundColor.toStringFmt() ) );
+		m_pDefaultUIStyle->m_patternEditor_alternateRowColor = H2RGBColor( LocalFileMng::readXmlString( pPatternEditorNode, "alternateRowColor", m_pDefaultUIStyle->m_patternEditor_alternateRowColor.toStringFmt() ) );
+		m_pDefaultUIStyle->m_patternEditor_selectedRowColor = H2RGBColor( LocalFileMng::readXmlString( pPatternEditorNode, "selectedRowColor", m_pDefaultUIStyle->m_patternEditor_selectedRowColor.toStringFmt() ) );
+		m_pDefaultUIStyle->m_patternEditor_textColor = H2RGBColor( LocalFileMng::readXmlString( pPatternEditorNode, "textColor", m_pDefaultUIStyle->m_patternEditor_textColor.toStringFmt() ) );
+		m_pDefaultUIStyle->m_patternEditor_noteColor = H2RGBColor( LocalFileMng::readXmlString( pPatternEditorNode, "noteColor", m_pDefaultUIStyle->m_patternEditor_noteColor.toStringFmt() ) );
+		m_pDefaultUIStyle->m_patternEditor_lineColor = H2RGBColor( LocalFileMng::readXmlString( pPatternEditorNode, "lineColor", m_pDefaultUIStyle->m_patternEditor_lineColor.toStringFmt() ) );
+		m_pDefaultUIStyle->m_patternEditor_line1Color = H2RGBColor( LocalFileMng::readXmlString( pPatternEditorNode, "line1Color", m_pDefaultUIStyle->m_patternEditor_line1Color.toStringFmt() ) );
+		m_pDefaultUIStyle->m_patternEditor_line2Color = H2RGBColor( LocalFileMng::readXmlString( pPatternEditorNode, "line2Color", m_pDefaultUIStyle->m_patternEditor_line2Color.toStringFmt() ) );
+		m_pDefaultUIStyle->m_patternEditor_line3Color = H2RGBColor( LocalFileMng::readXmlString( pPatternEditorNode, "line3Color", m_pDefaultUIStyle->m_patternEditor_line3Color.toStringFmt() ) );
+		m_pDefaultUIStyle->m_patternEditor_line4Color = H2RGBColor( LocalFileMng::readXmlString( pPatternEditorNode, "line4Color", m_pDefaultUIStyle->m_patternEditor_line4Color.toStringFmt() ) );
+		m_pDefaultUIStyle->m_patternEditor_line5Color = H2RGBColor( LocalFileMng::readXmlString( pPatternEditorNode, "line5Color", m_pDefaultUIStyle->m_patternEditor_line5Color.toStringFmt() ) );
 	} else {
 		WARNINGLOG( "patternEditor node not found" );
 	}
