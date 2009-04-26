@@ -23,11 +23,11 @@
 #define H2CORE_TRANSPORT_H
 
 #include <stdint.h>  // int32_t, uint32_t
+#include <hydrogen/TransportPosition.h>
 
 namespace H2Core
 {
     class Song;
-    class TransportPosition;
 
     /**
      * This is the base class for a transport master.  It will be used and
@@ -59,6 +59,7 @@ namespace H2Core
          * cycle or two is fine.
          */
         virtual uint32_t get_current_frame(void) = 0;
+	virtual TransportPosition::State get_state() = 0;
     };
 
 }

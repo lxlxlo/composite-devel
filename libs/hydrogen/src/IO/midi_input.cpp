@@ -24,6 +24,7 @@
 #include <hydrogen/event_queue.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/hydrogen.h>
+#include <hydrogen/Transport.h>
 #include <hydrogen/instrument.h>
 #include <hydrogen/note.h>
 #include <hydrogen/action.h>
@@ -96,9 +97,7 @@ void MidiInput::handleMidiMessage( const MidiMessage& msg )
 
 	case MidiMessage::START:
 		INFOLOG( "START event" );
-		if ( Hydrogen::get_instance()->getState() != STATE_PLAYING ) {
-			Hydrogen::get_instance()->sequencer_play();
-		}
+		Hydrogen::get_instance()->get_transport()->start();
 		break;
 
 	case MidiMessage::CONTINUE:
@@ -107,9 +106,7 @@ void MidiInput::handleMidiMessage( const MidiMessage& msg )
 
 	case MidiMessage::STOP:
 		INFOLOG( "STOP event" );
-		if ( Hydrogen::get_instance()->getState() == STATE_PLAYING ) {
-			Hydrogen::get_instance()->sequencer_stop();
-		}
+		Hydrogen::get_instance()->get_transport()->stop();
 		break;
 
 	case MidiMessage::SONG_POS:

@@ -460,8 +460,8 @@ void PlayerControl::updatePlayerControl()
 	m_pShowMixerBtn->setPressed( pH2App->getMixer()->isVisible() );
 	m_pShowInstrumentRackBtn->setPressed( pH2App->getInstrumentRack()->isVisible() );
 
-	int state = m_pEngine->getState();
-	if (state == STATE_PLAYING ) {
+	TransportPosition::State state = m_pEngine->get_transport()->get_state();
+	if (state == TransportPosition::ROLLING ) {
 		m_pPlayBtn->setPressed(true);
 	}
 	else {

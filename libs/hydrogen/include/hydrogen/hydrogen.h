@@ -36,7 +36,9 @@
 #define STATE_INITIALIZED	2
 #define STATE_PREPARED		3
 #define STATE_READY		4
+/*
 #define STATE_PLAYING		5
+*/
 
 inline int randomValue( int max );
 

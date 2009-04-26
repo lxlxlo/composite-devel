@@ -34,7 +34,7 @@ namespace H2Core
      */
     struct TransportPosition
     {
-        enum { STOPPED, ROLLING } state; /// The current transport state.
+        enum State { STOPPED, ROLLING } state; /// The current transport state.
         bool new_position;        /// True if this position is not a continuation
                                   /// of the last one (i.e. we've relocated)
         uint32_t frame;           /// The current frame of the transport.  When

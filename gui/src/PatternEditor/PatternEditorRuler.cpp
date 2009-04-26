@@ -25,6 +25,7 @@
 
 #include <hydrogen/Preferences.h>
 #include <hydrogen/hydrogen.h>
+#include <hydrogen/Transport.h>
 #include <hydrogen/Pattern.h>
 using namespace H2Core;
 
@@ -132,8 +133,8 @@ void PatternEditorRuler::updateEditor( bool bRedrawAll )
 		}
 	}
 
-	int state = pEngine->getState();
-	if ( ( state == STATE_PLAYING ) && (bActive) ) {
+	TransportPosition::State state = pEngine->get_transport()->get_state();
+	if ( ( state == TransportPosition::ROLLING ) && (bActive) ) {
 		m_nTicks = pEngine->getTickPosition();
 	}
 	else {

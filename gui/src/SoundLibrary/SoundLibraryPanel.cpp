@@ -43,6 +43,7 @@
 
 #include <hydrogen/adsr.h>
 #include <hydrogen/audio_engine.h>
+#include <hydrogen/Transport.h>
 #include <hydrogen/data_path.h>
 #include <hydrogen/h2_exception.h>
 #include <hydrogen/hydrogen.h>
@@ -705,9 +706,7 @@ void SoundLibraryPanel::on_songLoadAction()
 	
 
 	Hydrogen *engine = Hydrogen::get_instance();
-	if ( engine->getState() == STATE_PLAYING ) {
-                engine->sequencer_stop();
-	}
+	engine->get_transport()->stop();
 
 	H2Core::LocalFileMng mng;
 	Song *pSong = Song::load( sFilename );

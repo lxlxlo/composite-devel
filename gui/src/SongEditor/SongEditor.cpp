@@ -1051,7 +1051,7 @@ void SongEditorPatternList::patternPopup_delete()
 {
 	Hydrogen *pEngine = Hydrogen::get_instance();
 
-//	int state = engine->getState();
+//	int state = engine->get_transport()->get_state();
 // 	// per ora non lascio possibile la cancellazione del pattern durante l'esecuzione
 // 	// da togliere quando correggo il bug
 //         if (state == PLAYING) {

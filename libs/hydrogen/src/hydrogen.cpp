@@ -89,6 +89,12 @@
 #include <hydrogen/data_path.h>
 #include <hydrogen/sampler/Sampler.h>
 
+#include <hydrogen/Transport.h>
+#include "transport/H2Transport.h"
+#include <hydrogen/SeqEvent.h>
+#include <hydrogen/SeqScript.h>
+#include <hydrogen/SeqScriptIterator.h>
+
 #include "IO/OssDriver.h"
 #include "IO/FakeDriver.h"
 #include "IO/AlsaAudioDriver.h"
@@ -140,6 +146,7 @@ float m_fMaxProcessTime = 0.0f;		///< max ms usable in process with no xrun
 //100,000 ms in 1 second.
 #define US_DIVIDER .000001
 
+H2Transport* m_pTransport = 0;
 float m_ntaktoMeterCompute = 1;	  	///< beatcounter note length
 int m_nbeatsToCount = 4;		///< beatcounter beats to count
 int eventCount = 1;			///< beatcounter event
@@ -265,14 +272,14 @@ void audioEngine_raiseError( unsigned nErrorCode )
 }
 
 
-
+/*
 void updateTickSize()
 {
 	float sampleRate = ( float )m_pAudioDriver->getSampleRate();
 	m_pAudioDriver->m_transport.m_nTickSize =
 		( sampleRate * 60.0 /  m_pSong->__bpm / m_pSong->__resolution );
 }
-
+*/
 
 
 void audioEngine_init()
@@ -389,6 +396,7 @@ int audioEngine_start( bool bLockEngine, unsigned nTotalFrames )
 
 	m_fMasterPeak_L = 0.0f;
 	m_fMasterPeak_R = 0.0f;
+	/*
 	m_pAudioDriver->m_transport.m_nFrames = nTotalFrames;	// reset total frames
 	m_nSongPos = -1;
 	m_nPatternStartTick = -1;
@@ -399,6 +407,8 @@ int audioEngine_start( bool bLockEngine, unsigned nTotalFrames )
 
 	// change the current audio engine state
 	m_audioEngineState = STATE_PLAYING;
+	*/
+	m_pTransport->start();
 	EventQueue::get_instance()->push_event( EVENT_STATE, STATE_PLAYING );
 
 	if ( bLockEngine ) {
@@ -418,8 +428,8 @@ void audioEngine_stop( bool bLockEngine )
 	_INFOLOG( "[audioEngine_stop]" );
 
 	// check current state
-	if ( m_audioEngineState != STATE_PLAYING ) {
-		_ERRORLOG( "Error the audio engine is not in PLAYING state" );
+	if ( m_audioEngineState != STATE_READY ) {
+		_ERRORLOG( "Error the audio engine is not in READY state, can't stop." );
 		if ( bLockEngine ) {
 			AudioEngine::get_instance()->unlock();
 		}
@@ -427,13 +437,18 @@ void audioEngine_stop( bool bLockEngine )
 	}
 
 	// change the current audio engine state
+	/*
 	m_audioEngineState = STATE_READY;
+	*/
+	m_pTransport->stop();
 	EventQueue::get_instance()->push_event( EVENT_STATE, STATE_READY );
 
 	m_fMasterPeak_L = 0.0f;
 	m_fMasterPeak_R = 0.0f;
 //	m_nPatternTickPosition = 0;
+	/*
 	m_nPatternStartTick = -1;
+	*/
 
 	// delete all copied notes in the song notes queue
 	while(!m_songNoteQueue.empty()){
@@ -890,10 +905,8 @@ void audioEngine_setSong( Song *newSong )
 
 	AudioEngine::get_instance()->lock( "audioEngine_setSong" );
 
-	if ( m_audioEngineState == STATE_PLAYING ) {
-		m_pAudioDriver->stop();
-		audioEngine_stop( false );
-	}
+	m_pTransport->stop();
+	audioEngine_stop( false );
 
 	// check current state
 	if ( m_audioEngineState != STATE_PREPARED ) {
@@ -913,6 +926,7 @@ void audioEngine_setSong( Song *newSong )
 
 	assert( m_pSong == NULL );
 	m_pSong = newSong;
+	m_pTransport->set_current_song(newSong);
 
 	// setup LADSPA FX
 	audioEngine_setupLadspaFX( m_pAudioDriver->getBufferSize() );
@@ -928,12 +942,14 @@ void audioEngine_setSong( Song *newSong )
 
 	audioEngine_renameJackPorts();
 
+	/*
 	m_pAudioDriver->setBpm( m_pSong->__bpm );
+	*/
 
 	// change the current audio engine state
 	m_audioEngineState = STATE_READY;
 
-	m_pAudioDriver->locate( 0 );
+	m_pTransport->locate( 0 );
 
 	AudioEngine::get_instance()->unlock();
 
@@ -946,10 +962,8 @@ void audioEngine_removeSong()
 {
 	AudioEngine::get_instance()->lock( "audioEngine_removeSong" );
 
-	if ( m_audioEngineState == STATE_PLAYING ) {
-		m_pAudioDriver->stop();
-		audioEngine_stop( false );
-	}
+	m_pTransport->stop();
+	audioEngine_stop( false );
 
 	// check current state
 	if ( m_audioEngineState != STATE_READY ) {
@@ -959,6 +973,8 @@ void audioEngine_removeSong()
 	}
 
 	m_pSong = NULL;
+	m_pTransport->set_current_song(0);
+
 	m_pPlayingPatterns->clear();
 	m_pNextPatterns->clear();
 
@@ -1663,6 +1679,8 @@ Hydrogen::Hydrogen()
 	_INFOLOG( "[Hydrogen]" );
 
 	hydrogenInstance = this;
+	m_pTransport = new H2Transport;
+
 	audioEngine_init();
 	// Prevent double creation caused by calls from MIDI thread 
 	__instance = this;
@@ -1682,6 +1700,7 @@ Hydrogen::~Hydrogen()
 	audioEngine_stopAudioDrivers();
 	audioEngine_destroy();
 	__kill_instruments();
+	delete m_pTransport;
 	__instance = NULL;
 }
 
@@ -1696,20 +1715,21 @@ Hydrogen* Hydrogen::get_instance()
 	return __instance;
 }
 
-
+Transport* Hydrogen::get_transport()
+{
+	return static_cast<Transport*>(m_pTransport);
+}
 
 /// Start the internal sequencer
 void Hydrogen::sequencer_play()
 {
-	m_pAudioDriver->play();
+	m_pTransport->start();
 }
-
-
 
 /// Stop the internal sequencer
 void Hydrogen::sequencer_stop()
 {
-	m_pAudioDriver->stop();
+	m_pTransport->stop();
 }
 
 
@@ -1903,7 +1923,9 @@ float Hydrogen::getMasterPeak_R()
 
 unsigned long Hydrogen::getTickPosition()
 {
-	return m_nPatternTickPosition;
+	TransportPosition pos;
+	m_pTransport->get_position(&pos);
+	return pos.tick + pos.beat * pos.ticks_per_beat;
 }
 
 
@@ -1988,7 +2010,9 @@ void Hydrogen::sequencer_setNextPattern( int pos, bool appendPattern, bool delet
 
 int Hydrogen::getPatternPos()
 {
-	return m_nSongPos;
+	TransportPosition pos;
+	m_pTransport->get_position(&pos);
+	return pos.bar;
 }
 
 

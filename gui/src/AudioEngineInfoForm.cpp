@@ -223,6 +223,7 @@ void AudioEngineInfoForm::updateAudioEngineState() {
 	// Audio Engine state
 	QString stateTxt;
 	int state = Hydrogen::get_instance()->getState();
+	TransportPosition::State xstate = Hydrogen::get_instance()->get_transport()->get_state();
 	switch (state) {
 	case STATE_UNINITIALIZED:
 		stateTxt = "Uninitialized";
@@ -237,11 +238,11 @@ void AudioEngineInfoForm::updateAudioEngineState() {
 		break;
 
 	case STATE_READY:
-		stateTxt = "Ready";
-		break;
-
-	case STATE_PLAYING:
-		stateTxt = "Playing";
+		if( xstate == TransportPosition::ROLLING ) {
+			stateTxt = "Ready/Playing";
+		} else {
+			stateTxt = "Ready/Stopped";
+		}
 		break;
 
 	default:

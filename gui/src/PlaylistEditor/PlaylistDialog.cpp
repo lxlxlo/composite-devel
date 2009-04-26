@@ -30,6 +30,7 @@
 #include <hydrogen/h2_exception.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/hydrogen.h>
+#include <hydrogen/Transport.h>
 #include <hydrogen/playlist.h>
 
 #include "../widgets/Button.h"
@@ -665,9 +666,7 @@ void PlaylistDialog::on_nodePlayBTN_clicked()
 	Hydrogen *engine = Hydrogen::get_instance();
 	
 
-	if ( engine->getState() == STATE_PLAYING ){
-		engine->sequencer_stop();
-	}
+	engine->get_transport()->stop();
 
 	LocalFileMng mng;
 	Song *pSong = Song::load ( selected );
@@ -710,9 +709,7 @@ void PlaylistDialog::on_m_pPlaylistTree_itemDoubleClicked ()
 	Hydrogen *engine = Hydrogen::get_instance();
 	
 
-	if ( engine->getState() == STATE_PLAYING ){
-		engine->sequencer_stop();
-	}
+	engine->get_transport()->stop();
 
 	LocalFileMng mng;
 	Song *pSong = Song::load ( selected );

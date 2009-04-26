@@ -22,6 +22,7 @@
 #include "version.h"
 
 #include <hydrogen/hydrogen.h>
+#include <hydrogen/Transport.h>
 #include <hydrogen/playlist.h>
 #include <hydrogen/audio_engine.h>
 #include <hydrogen/adsr.h>
@@ -179,9 +180,7 @@ MainForm::~MainForm()
 	QFile file( getAutoSaveFilename() );
 	file.remove();
 
-	if ( (Hydrogen::get_instance()->getState() == STATE_PLAYING) ) {
-		Hydrogen::get_instance()->sequencer_stop();
-	}
+	Hydrogen::get_instance()->get_transport()->stop();
 
 	// remove the autosave file
 	m_autosaveTimer.stop();
@@ -391,9 +390,7 @@ bool MainForm::action_file_exit()
 
 void MainForm::action_file_new()
 {
-	if ( (Hydrogen::get_instance()->getState() == STATE_PLAYING) ) {
-		Hydrogen::get_instance()->sequencer_stop();
-	}
+	Hydrogen::get_instance()->get_transport()->stop();
 
 	bool proceed = handleUnsavedChanges();
 	if(!proceed) {
@@ -411,9 +408,7 @@ void MainForm::action_file_new()
 
 void MainForm::action_file_save_as()
 {
-	if ( (Hydrogen::get_instance()->getState() == STATE_PLAYING) ) {
-		Hydrogen::get_instance()->sequencer_stop();
-	}
+	Hydrogen::get_instance()->get_transport()->stop();
 
         std::auto_ptr<QFileDialog> fd( new QFileDialog );
 	fd->setFileMode( QFileDialog::AnyFile );
@@ -522,10 +517,7 @@ void MainForm::showUserManual()
 
 void MainForm::action_file_export_pattern_as()
 {
-	if ( ( Hydrogen::get_instance()->getState() == STATE_PLAYING ) )
-	{
-		Hydrogen::get_instance()->sequencer_stop();
-	}
+	Hydrogen::get_instance()->get_transport()->stop();
 
 	Hydrogen *engine = Hydrogen::get_instance();
 	int selectedpattern = engine->getSelectedPatternNumber();
@@ -586,10 +578,9 @@ void MainForm::action_file_export_pattern_as()
 
 
 
-void MainForm::action_file_open() {
-	if ( ((Hydrogen::get_instance())->getState() == STATE_PLAYING) ) {
-		Hydrogen::get_instance()->sequencer_stop();
-	}
+void MainForm::action_file_open()
+{
+	Hydrogen::get_instance()->get_transport()->stop();
 
 	bool proceed = handleUnsavedChanges();
 	if(!proceed) {
@@ -675,9 +666,7 @@ void MainForm::action_file_openPattern()
 /// \todo parametrizzare il metodo action_file_open ed eliminare il seguente...
 void MainForm::action_file_openDemo()
 {
-	if ( (Hydrogen::get_instance()->getState() == STATE_PLAYING) ) {
-		Hydrogen::get_instance()->sequencer_stop();
-	}
+	Hydrogen::get_instance()->get_transport()->stop();
 
 	bool proceed = handleUnsavedChanges();
 	if(!proceed) {
@@ -716,10 +705,7 @@ void MainForm::action_file_openDemo()
 
 void MainForm::showPreferencesDialog()
 {
-	if ( (Hydrogen::get_instance()->getState() == STATE_PLAYING) ) {
-		Hydrogen::get_instance()->sequencer_stop();
-	}
-
+	Hydrogen::get_instance()->get_transport()->stop();
 	h2app->showPreferencesDialog();
 }
 
@@ -875,10 +861,9 @@ void MainForm::closeEvent( QCloseEvent* ev )
 
 
 
-void MainForm::action_file_export() {
-	if ( (Hydrogen::get_instance()->getState() == STATE_PLAYING) ) {
-		Hydrogen::get_instance()->sequencer_stop();
-	}
+void MainForm::action_file_export()
+{
+	Hydrogen::get_instance()->get_transport()->stop();
 
 	ExportSongDialog *dialog = new ExportSongDialog(this);
 	dialog->exec();
@@ -966,18 +951,19 @@ void MainForm::closeAll() {
 
 void MainForm::onPlayStopAccelEvent()
 {
-	int nState = Hydrogen::get_instance()->getState();
-	switch (nState) {
-		case STATE_READY:
-			Hydrogen::get_instance()->sequencer_play();
-			break;
+	Transport* xport = Hydrogen::get_instance()->get_transport();
+	TransportPosition::State state = xport->get_state();
+	switch (state) {
+	case TransportPosition::STOPPED:
+		xport->start();
+		break;
 
-		case STATE_PLAYING:
-			Hydrogen::get_instance()->sequencer_stop();
-			break;
+	case TransportPosition::ROLLING:
+		xport->stop();
+		break;
 
-		default:
-			ERRORLOG( "[MainForm::onPlayStopAccelEvent()] Unhandled case." );
+	default:
+		ERRORLOG( "[MainForm::onPlayStopAccelEvent()] Unhandled case." );
 	}
 }
 
@@ -1073,9 +1059,7 @@ void MainForm::action_file_open_recent(QAction *pAction)
 void MainForm::openSongFile( const QString& sFilename )
 {
  	Hydrogen *engine = Hydrogen::get_instance();
-	if ( engine->getState() == STATE_PLAYING ) {
-                engine->sequencer_stop();
-	}
+	engine->get_transport()->stop();
 
 	h2app->closeFXProperties();
 	LocalFileMng mng;
@@ -1376,9 +1360,7 @@ void MainForm::action_debug_printObjects()
 
 void MainForm::action_file_export_midi()
 {
-	if ( ((Hydrogen::get_instance())->getState() == STATE_PLAYING) ) {
-		Hydrogen::get_instance()->sequencer_stop();
-	}
+	Hydrogen::get_instance()->get_transport()->stop();
 
 	std::auto_ptr<QFileDialog> fd( new QFileDialog );
 	fd->setFileMode(QFileDialog::AnyFile);

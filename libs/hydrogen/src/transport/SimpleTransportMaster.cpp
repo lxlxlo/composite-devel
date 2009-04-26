@@ -227,3 +227,8 @@ void SimpleTransportMasterPrivate::set_current_song(Song* s)
         pos.beats_per_minute = 120.0;
     }
 }
+
+TransportPosition::State SimpleTransportMaster::get_state()
+{
+    return d->pos.state;
+}

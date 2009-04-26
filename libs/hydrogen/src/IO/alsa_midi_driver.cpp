@@ -195,7 +195,7 @@ void AlsaMidiDriver::midi_action( snd_seq_t *seq_handle )
 {
 	Hydrogen *engine = Hydrogen::get_instance();
 	int nState = engine->getState();
-	if ( ( nState != STATE_READY ) && ( nState != STATE_PLAYING ) ) {
+	if ( nState != STATE_READY ) {
 // 		ERRORLOG( "Skipping midi event! Audio engine not ready." );
 		return;
 	}

@@ -24,6 +24,7 @@
 #include <hydrogen/audio_engine.h>
 #include <hydrogen/event_queue.h>
 #include <hydrogen/hydrogen.h>
+#include <hydrogen/Transport.h>
 #include <gui/src/HydrogenApp.h>
 
 #include <hydrogen/instrument.h>
@@ -153,26 +154,27 @@ bool ActionManager::handleAction( Action * pAction ){
 	{
 		int nState = pEngine->getState();
 		if ( nState == STATE_READY ){
-			pEngine->sequencer_play();
+			pEngine->get_transport()->start();
 		}
 		return true;
 	}
 
 	if( sActionString == "PLAY_TOGGLE" )
 	{
-		int nState = pEngine->getState();
-		switch ( nState ) 
+		Transport* xport = pEngine->get_transport();
+		TransportPosition::State state = xport->get_state();
+		switch ( state ) 
 		{
-			case STATE_READY:
-				pEngine->sequencer_play();
-				break;
+		case TransportPosition::STOPPED:
+			xport->start();
+			break;
 
-			case STATE_PLAYING:
-				pEngine->sequencer_stop();
-				break;
+		case TransportPosition::ROLLING:
+			xport->stop();
+			break;
 
-			default:
-				ERRORLOG( "[Hydrogen::ActionManager(PLAY): Unhandled case" );
+		default:
+			ERRORLOG( "[Hydrogen::ActionManager(PLAY): Unhandled case" );
 		}
 
 		return true;

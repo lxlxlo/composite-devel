@@ -28,6 +28,7 @@
 #include <hydrogen/h2_exception.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/hydrogen.h>
+#include <hydrogen/Transport.h>
 #include <hydrogen/playlist.h>
 
 #include <vector>
@@ -197,9 +198,7 @@ void Playlist::loadSong( QString songName )
 	Hydrogen *engine = Hydrogen::get_instance();
 	
 
-	if ( engine->getState() == STATE_PLAYING ){
-		engine->sequencer_stop();
-	}
+	engine->get_transport()->stop();
 
 	LocalFileMng mng;
 	Song *pSong = Song::load ( songName );

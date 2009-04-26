@@ -34,6 +34,8 @@
 #include <hydrogen/Preferences.h>
 #include <hydrogen/audio_engine.h>
 #include <hydrogen/Pattern.h>
+#include <hydrogen/Transport.h>
+
 using namespace H2Core;
 using namespace std;
 
@@ -259,7 +261,7 @@ void SongEditorPanel::updatePlayHeadPosition()
 	Song *pSong = Hydrogen::get_instance()->getSong();
 
 	if ( Preferences::getInstance()->m_bFollowPlayhead && pSong->get_mode() == Song::SONG_MODE) {
-		if ( Hydrogen::get_instance()->getState() != STATE_PLAYING ) {
+	    if ( Hydrogen::get_instance()->get_transport()->get_state() != TransportPosition::ROLLING ) {
 			return;
 		}
 

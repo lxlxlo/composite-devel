@@ -53,6 +53,7 @@ namespace H2Core
 
         // Convenience interface (mostly for GUI)
         virtual uint32_t get_current_frame(void);
+	virtual TransportPosition::State get_state();
 
     private:
         SimpleTransportMasterPrivate* d;
