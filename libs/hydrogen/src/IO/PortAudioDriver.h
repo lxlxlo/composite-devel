@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef PORT_AUDIO_DRIVER_H
-#define PORT_AUDIO_DRIVER_H
+#ifndef H2CORE_PORT_AUDIO_DRIVER_H
+#define H2CORE_PORT_AUDIO_DRIVER_H
 
 #include <hydrogen/IO/AudioOutput.h>
 #include <hydrogen/IO/NullDriver.h>
