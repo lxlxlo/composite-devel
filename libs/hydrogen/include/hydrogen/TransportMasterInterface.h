@@ -27,33 +27,7 @@
 namespace H2Core
 {
     class Song;
-
-    /**
-     * Communicates the current position of the transport for the current
-     * process() cycle.  All values refer to the first frame of the cycle.
-     *
-     * Unlike the JACK trnsport, all fields must be present and must be valid.
-     */
-    struct TransportPosition
-    {
-        enum { STOPPED, ROLLING } state; /// The current transport state.
-        uint32_t frame;           /// The current frame of the transport.  When
-                                  /// sequencing, this is just FYI.  All
-                                  /// sequencing shall be done based on the
-                                  /// other fields (esp. B:b:t).
-        uint32_t frame_rate;      /// The audio sample rate (frames per second)
-        int32_t bar;              /// The current measure (1, 2, 3...)
-        int32_t beat;             /// The current beat in measure (1, 2, 3...)
-        int32_t tick;             /// The current tick in beat (0, 1, 2...)
-        uint32_t bbt_offset;      /// bar, beat, and tick refer to bbt_offset
-                                  /// frames BEFORE the current process cycle.
-        uint32_t bar_start_tick;  /// Absolute number of ticks elapsed in song
-                                  /// at the start of this bar.
-        uint8_t beats_per_bar;    /// The top number in the time signature
-        uint8_t beat_type;        /// The bottom number in the time signature
-        uint32_t ticks_per_beat;  /// Number of ticks in a single beat
-        double beats_per_minute;  /// The song tempo (beats per minute)
-    };
+    class TransportPosition;
 
     /**
      * This is the base class for a transport master.  It will be used and
