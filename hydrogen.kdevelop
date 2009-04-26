@@ -50,8 +50,6 @@
       <path>extra</path>
       <path>extra/hydrogenPlayer</path>
       <path>extra/hydrogenPlayer/HydrogenPlayer.cpp</path>
-      <path>extra/hydrogenSynth</path>
-      <path>extra/hydrogenSynth/HydrogenSynth.cpp</path>
       <path>gui/objs</path>
       <path>gui/objs/moc_AboutDialog.cpp</path>
       <path>gui/objs/moc_AudioEngineInfoForm.cpp</path>

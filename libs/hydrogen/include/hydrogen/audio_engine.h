@@ -25,7 +25,6 @@
 
 #include <hydrogen/Object.h>
 #include <hydrogen/sampler/Sampler.h>
-#include <hydrogen/synth/Synth.h>
 
 #include <pthread.h>
 #include <string>
@@ -50,13 +49,11 @@ public:
 	void unlock();
 
 	Sampler* get_sampler();
-	Synth* get_synth();
 
 private:
 	static AudioEngine* __instance;
 
 	Sampler* __sampler;
-	Synth* __synth;
 
 	/// Mutex for syncronized access to the Song object and the AudioEngine.
 	pthread_mutex_t __engine_mutex;

@@ -15,7 +15,6 @@ reformat("libs/hydrogen/include/hydrogen/IO")
 reformat("libs/hydrogen/include/hydrogen/sampler")
 reformat("libs/hydrogen/include/hydrogen/sequencer")
 reformat("libs/hydrogen/include/hydrogen/smf")
-reformat("libs/hydrogen/include/hydrogen/synth")
 
 reformat("libs/hydrogen/src")
 reformat("libs/hydrogen/src/fx")
@@ -23,7 +22,6 @@ reformat("libs/hydrogen/src/IO")
 reformat("libs/hydrogen/src/sampler")
 reformat("libs/hydrogen/src/sequencer")
 reformat("libs/hydrogen/src/smf")
-reformat("libs/hydrogen/src/synth")
 reformat("libs/hydrogen/src/table")
 
 

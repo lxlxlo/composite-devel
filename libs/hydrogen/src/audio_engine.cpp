@@ -23,7 +23,6 @@
 #include <hydrogen/audio_engine.h>
 
 #include <hydrogen/fx/Effects.h>
-#include <hydrogen/sequencer/Sequencer.h>
 #include <hydrogen/sampler/Sampler.h>
 
 #include <hydrogen/hydrogen.h>	// TODO: remove this line as soon as possible
@@ -49,7 +48,6 @@ AudioEngine* AudioEngine::get_instance()
 AudioEngine::AudioEngine()
 		: Object( "AudioEngine" )
 		, __sampler( NULL )
-		, __synth( NULL )
 		, __locker( "" )
 {
 	INFOLOG( "INIT" );
@@ -60,7 +58,6 @@ AudioEngine::AudioEngine()
 	Effects::getInstance();
 #endif
 
-//	Sequencer::getInstance();
 }
 
 
@@ -72,9 +69,7 @@ AudioEngine::~AudioEngine()
 	delete Effects::getInstance();
 #endif
 
-//	delete Sequencer::getInstance();
 	delete __sampler;
-	delete __synth;
 }
 
 
@@ -87,20 +82,6 @@ Sampler* AudioEngine::get_sampler()
 
 	return __sampler;
 }
-
-
-
-
-Synth* AudioEngine::get_synth()
-{
-	if ( !__synth ) {
-		__synth = new Synth();
-	}
-
-	return __synth;
-}
-
-
 
 
 void AudioEngine::lock( const QString& locker )

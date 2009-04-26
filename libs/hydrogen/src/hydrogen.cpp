@@ -691,19 +691,7 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 		m_pMainBuffer_R[ i ] += out_R[ i ];
 	}
 
-	// SYNTH
-	AudioEngine::get_instance()->get_synth()->process( nframes );
-	out_L = AudioEngine::get_instance()->get_synth()->m_pOut_L;
-	out_R = AudioEngine::get_instance()->get_synth()->m_pOut_R;
-	for ( unsigned i = 0; i < nframes; ++i ) {
-		m_pMainBuffer_L[ i ] += out_L[ i ];
-		m_pMainBuffer_R[ i ] += out_R[ i ];
-	}
-
-
 	timeval renderTime_end = currentTime2();
-
-
 
 	timeval ladspaTime_start = renderTime_end;
 #ifdef LADSPA_SUPPORT
