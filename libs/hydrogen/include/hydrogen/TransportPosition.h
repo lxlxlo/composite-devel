@@ -53,6 +53,33 @@ namespace H2Core
         uint8_t beat_type;        /// The bottom number in the time signature
         uint32_t ticks_per_beat;  /// Number of ticks in a single beat
         double beats_per_minute;  /// The song tempo (beats per minute)
+
+        /**
+         * Round struct so that bbt_offset is 0 and frame refers to the exact
+         * B:b.t.  Can be rounded to nearest bar, beat, or tick.
+         */
+        typedef enum { BAR, BEAT, TICK } snap_type;
+        void round(snap_type s);
+        void floor(snap_type s);
+        void ceil(snap_type s);
+
+        /**
+         * Increment/decrement one tick.  Note that this does not adjust
+         * bbt_offset to zero.  Use round(), floor(), or ceil() for that.
+         */
+        TransportPosition& operator++();
+        TransportPosition& operator--();
+
+        /**
+         * Convenience calculations
+         */
+        inline double frames_per_tick() const {
+            return double(frame_rate) * 60.0 / beats_per_minute / double(ticks_per_beat);
+        }
+
+        inline uint32_t tick_in_bar() const {
+            return beat * ticks_per_beat + tick;
+        }
     };
 
 }
