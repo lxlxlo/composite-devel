@@ -46,7 +46,7 @@ Pattern::~Pattern()
 //	INFOLOG( "DESTROY: " + m_sName );
 
 	// delete all Notes
-	std::multimap <int, Note*>::iterator pos;
+	Pattern::note_map_t::iterator pos;
 	for ( pos = note_map.begin(); pos != note_map.end(); ++pos ) {
 		Note *pNote = pos->second;
 		delete pNote;
@@ -59,7 +59,7 @@ void Pattern::purge_instrument( Instrument * I )
 	bool locked = false;
 	std::list< Note* > slate;
 	
-	std::multimap <int, Note*>::iterator pos = note_map.begin();
+	Pattern::note_map_t::iterator pos = note_map.begin();
 	while ( pos != note_map.end() ) {
 		Note *pNote = pos->second;
 		assert( pNote );
@@ -89,7 +89,7 @@ void Pattern::purge_instrument( Instrument * I )
 
 bool Pattern::references_instrument( Instrument * I )
 {
-	std::multimap <int, Note*>::const_iterator pos;
+	Pattern::note_map_t::const_iterator pos;
 	for ( pos = note_map.begin(); pos != note_map.end(); ++pos ) {
 		Note *pNote = pos->second;
 		assert( pNote );
@@ -118,7 +118,7 @@ Pattern* Pattern::copy()
 	Pattern *newPat = new Pattern( __name, __category );
 	newPat->set_length( get_length() );
 
-	std::multimap <int, Note*>::iterator pos;
+	Pattern::note_map_t::iterator pos;
 	for ( pos = note_map.begin(); pos != note_map.end(); ++pos ) {
 		Note *pNote = new Note( pos->second );
 		newPat->note_map.insert( std::make_pair( pos->first, pNote ) );

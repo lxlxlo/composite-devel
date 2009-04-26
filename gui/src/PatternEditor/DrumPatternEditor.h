@@ -80,15 +80,17 @@ class DrumPatternEditor : public QWidget, public EventListener, public Object
 		//QPixmap *m_pTemp;
 
 		// usati per la lunghezza della nota
+		// "used for the length of the note"
 		bool m_bRightBtnPressed;
 		H2Core::Note *m_pDraggedNote;
+		int m_nDraggedNoteStartPosition;
 		//~
 
 		H2Core::Pattern *m_pPattern;
 
 		PatternEditorPanel *m_pPatternEditorPanel;
 
-		void __draw_note( H2Core::Note* note, QPainter& painter );
+		void __draw_note( uint position, H2Core::Note* note, QPainter& painter );
 		void __draw_pattern( QPainter& painter );
 		void __draw_grid( QPainter& painter );
 		void __create_background( QPainter& pointer );

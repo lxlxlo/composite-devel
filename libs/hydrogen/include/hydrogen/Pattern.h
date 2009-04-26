@@ -38,7 +38,8 @@ class Instrument;
 class Pattern : public Object
 {
 public:
-	std::multimap <int, Note*> note_map;
+	typedef std::multimap <int, Note*> note_map_t;
+	note_map_t note_map;
 
 	Pattern( const QString& name, const QString& category, unsigned length = MAX_NOTES );
 	~Pattern();

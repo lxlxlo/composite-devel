@@ -196,9 +196,9 @@ Pattern* LocalFileMng::loadPattern( const QString& directory )
 			}
 			//assert( instrRef );
 
-			pNote = new Note( instrRef, nPosition, fVelocity, fPan_L, fPan_R, nLength, nPitch, Note::stringToKey( sKey ) );
+			pNote = new Note( instrRef, fVelocity, fPan_L, fPan_R, nLength, nPitch, Note::stringToKey( sKey ) );
 			pNote->set_leadlag(fLeadLag);
-			pPattern->note_map.insert( std::make_pair( pNote->get_position(),pNote ) );
+			pPattern->note_map.insert( std::make_pair( nPosition, pNote ) );
 		}
 	}
 
@@ -263,13 +263,13 @@ int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString&
 	writeXmlString( &patternNode, "size", to_string( pat->get_length() ) );
 
 		TiXmlElement noteListNode( "noteList" );
-		std::multimap <int, Note*>::iterator pos;
+		Pattern::note_map_t::iterator pos;
 		for ( pos = pat->note_map.begin(); pos != pat->note_map.end(); ++pos ) {
 			Note *pNote = pos->second;
 			assert( pNote );
 
 			TiXmlElement noteNode( "note" );
-			writeXmlString( &noteNode, "position", to_string( pNote->get_position() ) );
+			writeXmlString( &noteNode, "position", to_string( pos->first ) );
 			writeXmlString( &noteNode, "leadlag", to_string( pNote->get_leadlag() ) );
 			writeXmlString( &noteNode, "velocity", to_string( pNote->get_velocity() ) );
 			writeXmlString( &noteNode, "pan_L", to_string( pNote->get_pan_l() ) );
@@ -1223,13 +1223,13 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 		LocalFileMng::writeXmlString( &patternNode, "size", to_string( pat->get_length() ) );
 
 		TiXmlElement noteListNode( "noteList" );
-		std::multimap <int, Note*>::iterator pos;
+		Pattern::note_map_t::iterator pos;
 		for ( pos = pat->note_map.begin(); pos != pat->note_map.end(); ++pos ) {
 			Note *pNote = pos->second;
 			assert( pNote );
 
 			TiXmlElement noteNode( "note" );
-			LocalFileMng::writeXmlString( &noteNode, "position", to_string( pNote->get_position() ) );
+			LocalFileMng::writeXmlString( &noteNode, "position", to_string( pos->first ) );
 			LocalFileMng::writeXmlString( &noteNode, "leadlag", to_string( pNote->get_leadlag() ) );
 			LocalFileMng::writeXmlString( &noteNode, "velocity", to_string( pNote->get_velocity() ) );
 			LocalFileMng::writeXmlString( &noteNode, "pan_L", to_string( pNote->get_pan_l() ) );

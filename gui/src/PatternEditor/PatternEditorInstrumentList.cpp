@@ -178,7 +178,7 @@ void InstrumentLine::mousePressEvent(QMouseEvent *ev)
 		
 		Instrument *pInstr = pSong->get_instrument_list()->get( m_nInstrumentNumber );
 		
-		Note *pNote = new Note( pInstr, 0, velocity, pan_L, pan_R, nLength, fPitch);
+		Note *pNote = new Note( pInstr, velocity, pan_L, pan_R, nLength, fPitch);
 		AudioEngine::get_instance()->get_sampler()->note_on(pNote);
 	}
 	else if (ev->button() == Qt::RightButton ) {
@@ -219,7 +219,7 @@ void InstrumentLine::functionClearNotes()
 	Instrument *pSelectedInstrument = H->getSong()->get_instrument_list()->get( nSelectedInstrument );
 	
 	pCurrentPattern->purge_instrument( pSelectedInstrument );
-// 	std::multimap <int, Note*>::iterator pos;
+// 	Pattern::note_map_t::iterator pos;
 // 	for ( pos = pCurrentPattern->note_map.begin(); pos != pCurrentPattern->note_map.end(); ++pos ) {
 // 		Note *pNote = pos->second;
 // 		assert( pNote );
@@ -277,7 +277,7 @@ void InstrumentLine::functionFillNotes()
 			for (int i = 0; i < nPatternSize; i += nResolution) {
 				bool noteAlreadyPresent = false;
 
-				std::multimap <int, Note*>::iterator pos;
+				Pattern::note_map_t::iterator pos;
 				for ( pos = pCurrentPattern->note_map.lower_bound( i ); pos != pCurrentPattern->note_map.upper_bound( i ); ++pos ) {
 					Note *pNote = pos->second;
 					if ( pNote->get_instrument() == instrRef ) {
@@ -289,7 +289,7 @@ void InstrumentLine::functionFillNotes()
 
 				if ( noteAlreadyPresent == false ) {
 					// create the new note
-					Note *pNote = new Note( instrRef, i, velocity, pan_L, pan_R, nLength, fPitch );
+					Note *pNote = new Note( instrRef, velocity, pan_L, pan_R, nLength, fPitch );
 					//pNote->setInstrument(instrRef);
 					pCurrentPattern->note_map.insert( std::make_pair( i, pNote ) );
 				}
@@ -335,7 +335,7 @@ void InstrumentLine::functionRandomizeVelocity()
 			Instrument *instrRef = (pSong->get_instrument_list())->get( nSelectedInstrument );
 
 			for (int i = 0; i < nPatternSize; i += nResolution) {
-				std::multimap <int, Note*>::iterator pos;
+				Pattern::note_map_t::iterator pos;
 				for ( pos = pCurrentPattern->note_map.lower_bound(i); pos != pCurrentPattern->note_map.upper_bound( i ); ++pos ) {
 					Note *pNote = pos->second;
 					if ( pNote->get_instrument() == instrRef ) {

@@ -254,7 +254,7 @@ void SMFWriter::save( const QString& sFilename, Song *pSong )
 			for ( unsigned nNote = 0 ;
 			      nNote < pPattern->get_length() ;
 			      nNote++ ) {
-				std::multimap <int, Note*>::iterator pos;
+				Pattern::note_map_t::iterator pos;
 				for ( pos = pPattern->note_map.lower_bound( nNote ) ;
 				      pos != pPattern->note_map.upper_bound( nNote );
 				      ++pos ) {

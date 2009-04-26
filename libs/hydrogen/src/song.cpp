@@ -642,9 +642,9 @@ Pattern* SongReader::getPattern( TiXmlNode* pattern, InstrumentList* instrList )
 			}
 			//assert( instrRef );
 
-			pNote = new Note( instrRef, nPosition, fVelocity, fPan_L, fPan_R, nLength, nPitch, Note::stringToKey( sKey ) );
+			pNote = new Note( instrRef, fVelocity, fPan_L, fPan_R, nLength, nPitch, Note::stringToKey( sKey ) );
 			pNote->set_leadlag(fLeadLag);
-			pPattern->note_map.insert( std::make_pair( pNote->get_position(), pNote ) );
+			pPattern->note_map.insert( std::make_pair( nPosition, pNote ) );
 		}
 	} else {
 		// Back compatibility code. Version < 0.9.4
@@ -681,11 +681,11 @@ Pattern* SongReader::getPattern( TiXmlNode* pattern, InstrumentList* instrList )
 				}
 				assert( instrRef );
 
-				pNote = new Note( instrRef, nPosition, fVelocity, fPan_L, fPan_R, nLength, nPitch );
+				pNote = new Note( instrRef, fVelocity, fPan_L, fPan_R, nLength, nPitch );
 				pNote->set_leadlag(fLeadLag);
 
 				//infoLog( "new note!! pos: " + toString( pNote->m_nPosition ) + "\t instr: " + instrId );
-				pPattern->note_map.insert( std::make_pair( pNote->get_position(), pNote ) );
+				pPattern->note_map.insert( std::make_pair( nPosition, pNote ) );
 			}
 		}
 	}

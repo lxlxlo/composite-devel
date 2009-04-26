@@ -1174,7 +1174,7 @@ inline void audioEngine_updateNoteQueue( unsigned nFrames, const TransportPositi
 				Pattern *pPattern = m_pPlayingPatterns->get( nPat );
 				assert( pPattern != NULL );
 
-				std::multimap <int, Note*>::iterator pos;
+				Pattern::note_map_t::iterator pos;
 				for ( pos = pPattern->note_map.lower_bound( m_nPatternTickPosition ) ;
 				      pos != pPattern->note_map.upper_bound( m_nPatternTickPosition ) ;
 				      ++pos ) {
@@ -1787,7 +1787,7 @@ void Hydrogen::addRealtimeNote( int instrument,
 		for ( unsigned nNote = 0 ;
 		      nNote < currentPattern->get_length() ;
 		      nNote++ ) {
-			std::multimap <int, Note*>::iterator pos;
+			Pattern::note_map_t::iterator pos;
 			for ( pos = currentPattern->note_map.lower_bound( nNote ) ;
 			      pos != currentPattern->note_map.upper_bound( nNote ) ;
 			      ++pos ) {

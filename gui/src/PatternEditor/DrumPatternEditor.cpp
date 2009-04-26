@@ -53,6 +53,7 @@ DrumPatternEditor::DrumPatternEditor(QWidget* parent, PatternEditorPanel *panel)
  , m_bUseTriplets( false )
  , m_bRightBtnPressed( false )
  , m_pDraggedNote( NULL )
+ , m_nDraggedNoteStartPosition( 0 )
  , m_pPattern( NULL )
  , m_pPatternEditorPanel( panel )
 {
@@ -163,7 +164,7 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 		AudioEngine::get_instance()->lock( "DrumPatternEditor::mousePressEvent" );	// lock the audio engine
 
 		bool bNoteAlreadyExist = false;
-		std::multimap <int, Note*>::iterator pos;
+		Pattern::note_map_t::iterator pos;
 		for ( pos = m_pPattern->note_map.lower_bound( nColumn ); pos != m_pPattern->note_map.upper_bound( nColumn ); ++pos ) {
 			Note *pNote = pos->second;
 			assert( pNote );
@@ -184,13 +185,13 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 			const float fPan_R = 0.5f;
 			const int nLength = -1;
 			const float fPitch = 0.0f;
-			Note *pNote = new Note( pSelectedInstrument, nPosition, fVelocity, fPan_L, fPan_R, nLength, fPitch);
+			Note *pNote = new Note( pSelectedInstrument, fVelocity, fPan_L, fPan_R, nLength, fPitch);
 			m_pPattern->note_map.insert( std::make_pair( nPosition, pNote ) );
 
 			// hear note
 			Preferences *pref = Preferences::getInstance();
 			if ( pref->getHearNewNotes() ) {
-				Note *pNote2 = new Note( pSelectedInstrument, 0, fVelocity, fPan_L, fPan_R, nLength, fPitch);
+				Note *pNote2 = new Note( pSelectedInstrument, fVelocity, fPan_L, fPan_R, nLength, fPitch);
 				AudioEngine::get_instance()->get_sampler()->note_on(pNote2);
 			}
 		}
@@ -200,6 +201,7 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 	else if (ev->button() == Qt::RightButton ) {
 		m_bRightBtnPressed = true;
 		m_pDraggedNote = NULL;
+		m_nDraggedNoteStartPosition = 0;
 
 		unsigned nRealColumn = 0;
 		if( ev->x() > 20 ) {
@@ -208,13 +210,14 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 
 		AudioEngine::get_instance()->lock( "DrumPatternEditor::mousePressEvent" );
 
-		std::multimap <int, Note*>::iterator pos;
+		Pattern::note_map_t::iterator pos;
 		for ( pos = m_pPattern->note_map.lower_bound( nColumn ); pos != m_pPattern->note_map.upper_bound( nColumn ); ++pos ) {
 			Note *pNote = pos->second;
 			assert( pNote );
 
 			if ( pNote->get_instrument() == pSelectedInstrument ) {
 				m_pDraggedNote = pNote;
+				m_nDraggedNoteStartPosition = pos->first;
 				break;
 			}
 		}
@@ -225,11 +228,13 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 
 				if ( pNote->get_instrument() == pSelectedInstrument ) {
 					m_pDraggedNote = pNote;
+					m_nDraggedNoteStartPosition = pos->first;
 					break;
 				}
 			}
 		}
 		// potrei essere sulla coda di una nota precedente..
+		// "I could be on the tail of the previous note..."
 		for ( int nCol = 0; unsigned(nCol) < nRealColumn; ++nCol ) {
 			if ( m_pDraggedNote ) break;
 			for ( pos = m_pPattern->note_map.lower_bound( nCol ); pos != m_pPattern->note_map.upper_bound( nCol ); ++pos ) {
@@ -237,9 +242,10 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 				assert( pNote );
 
 				if ( pNote->get_instrument() == pSelectedInstrument
-				    && ( (nRealColumn <= pNote->get_position() + pNote->get_length() )
-				    && nRealColumn >= pNote->get_position() ) ){
+				     && ( nRealColumn <= unsigned(pos->first + pNote->get_length())
+					  && nRealColumn >= unsigned(pos->first) ) ){
 					m_pDraggedNote = pNote;
+					m_nDraggedNoteStartPosition = pos->first;
 					break;
 				}
 			}
@@ -289,7 +295,7 @@ void DrumPatternEditor::mouseMoveEvent(QMouseEvent *ev)
 		int nTickColumn = getColumn( ev );
 
 		AudioEngine::get_instance()->lock("DrumPatternEditor::mouseMoveEvent");	// lock the audio engine
-		int nLen = nTickColumn - (int)m_pDraggedNote->get_position();
+		int nLen = nTickColumn - m_nDraggedNoteStartPosition;
 
 		if (nLen <= 0) {
 			nLen = -1;
@@ -379,11 +385,11 @@ void DrumPatternEditor::__draw_pattern(QPainter& painter)
 
 	if( m_pPattern->note_map.size() == 0) return;
 
-	std::multimap <int, Note*>::iterator pos;
+	Pattern::note_map_t::iterator pos;
 	for ( pos = m_pPattern->note_map.begin(); pos != m_pPattern->note_map.end(); pos++ ) {
 		Note *note = pos->second;
 		assert( note );
-		__draw_note( note, painter );
+		__draw_note( (unsigned)pos->first, note, painter );
 	}
 }
 
@@ -391,7 +397,7 @@ void DrumPatternEditor::__draw_pattern(QPainter& painter)
 ///
 /// Draws a note
 ///
-void DrumPatternEditor::__draw_note( Note *note, QPainter& p )
+void DrumPatternEditor::__draw_note( uint pos, Note *note, QPainter& p )
 {
 	static const UIStyle *pStyle = Preferences::getInstance()->getDefaultUIStyle();
 	static const QColor noteColor( pStyle->m_patternEditor_noteColor.getRed(), pStyle->m_patternEditor_noteColor.getGreen(), pStyle->m_patternEditor_noteColor.getBlue() );
@@ -411,8 +417,6 @@ void DrumPatternEditor::__draw_note( Note *note, QPainter& p )
 		ERRORLOG( "Instrument not found..skipping note" );
 		return;
 	}
-
-	uint pos = note->get_position();
 
 	p.setPen( noteColor );
 

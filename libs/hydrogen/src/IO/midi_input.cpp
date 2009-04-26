@@ -235,13 +235,12 @@ void MidiInput::handleNoteOffMessage( const MidiMessage& msg )
 		nInstrument = MAX_INSTRUMENTS - 1;
 	}
 	Instrument *pInstr = pSong->get_instrument_list()->get( nInstrument );
-	const unsigned nPosition = 0;
 	const float fVelocity = 0.0f;
 	const float fPan_L = 0.5f;
 	const float fPan_R = 0.5f;
 	const int nLength = -1;
 	const float fPitch = 0.0f;
-	Note *pNewNote = new Note( pInstr, nPosition, fVelocity, fPan_L, fPan_R, nLength, fPitch );
+	Note *pNewNote = new Note( pInstr, fVelocity, fPan_L, fPan_R, nLength, fPitch );
 
 	pEngine->midi_noteOff( pNewNote );
 }
