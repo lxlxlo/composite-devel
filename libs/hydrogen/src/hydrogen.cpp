@@ -95,6 +95,7 @@
 #include <hydrogen/SeqEvent.h>
 #include <hydrogen/SeqScript.h>
 #include <hydrogen/SeqScriptIterator.h>
+#include "BeatCounter.h"
 
 #include "IO/OssDriver.h"
 #include "IO/FakeDriver.h"
@@ -253,24 +254,7 @@ H2Transport* m_pTransport = 0;
 SeqScript m_queue;
 GuiInputQueue m_GuiInput;
 
-
-// beatcounter
-
-//100,000 ms in 1 second.
-#define US_DIVIDER .000001
-
-float m_ntaktoMeterCompute = 1;	  	///< beatcounter note length
-int m_nbeatsToCount = 4;		///< beatcounter beats to count
-int eventCount = 1;			///< beatcounter event
-int tempochangecounter = 0;		///< count tempochanges for timeArray
-int beatCount = 1;			///< beatcounter beat to count
-double beatDiffs[16];			///< beat diff
-timeval currentTime, lastTime;		///< timeval
-double lastBeatTime, currentBeatTime, beatDiff;		///< timediff
-float beatCountBpm;			///< bpm
-int m_nCoutOffset = 0;			///ms default 0
-int m_nStartOffset = 0;			///ms default 0
-//~ beatcounter
+BeatCounter m_BeatCounter;
 
 AudioOutput *m_pAudioDriver = NULL;	///< Audio output
 MidiInput *m_pMidiDriver = NULL;	///< MIDI input
@@ -938,9 +922,6 @@ void audioEngine_setSong( Song *newSong )
 	// setup LADSPA FX
 	audioEngine_setupLadspaFX( m_pAudioDriver->getBufferSize() );
 
-	// update ticksize
-	audioEngine_process_checkBPMChanged();
-
 	// find the first pattern and set as current
 	if ( m_pSong->get_pattern_list()->get_size() > 0 ) {
 		m_pPlayingPatterns->add( m_pSong->get_pattern_list()->get( 0 ) );
@@ -948,10 +929,6 @@ void audioEngine_setSong( Song *newSong )
 
 
 	audioEngine_renameJackPorts();
-
-	/*
-	m_pAudioDriver->setBpm( m_pSong->__bpm );
-	*/
 
 	// change the current audio engine state
 	m_audioEngineState = STATE_READY;
@@ -1536,10 +1513,6 @@ void audioEngine_startAudioDrivers()
 	}
 
 
-	if ( m_pSong ) {
-		m_pAudioDriver->setBpm( m_pSong->__bpm );
-	}
-
 	// update the audiodriver reference in the sampler
 	AudioEngine::get_instance()->get_sampler()->set_audio_output( m_pAudioDriver );
 
@@ -1921,8 +1894,7 @@ void Hydrogen::startExportSong( const QString& filename )
 	AudioEngine::get_instance()->get_sampler()->set_audio_output( m_pAudioDriver );
 
 	// reset
-	m_pAudioDriver->m_transport.m_nFrames = 0;	// reset total frames
-	m_pAudioDriver->setBpm( m_pSong->__bpm );
+	m_transport->locate( 0 );
 	m_nSongPos = 0;
 	m_nPatternTickPosition = 0;
 	m_audioEngineState = STATE_PLAYING;
@@ -1973,11 +1945,6 @@ void Hydrogen::stopExportSong()
 	m_nPatternTickPosition = 0;
 	audioEngine_startAudioDrivers();
 
-	if ( m_pAudioDriver ) {
-		m_pAudioDriver->setBpm( m_pSong->__bpm );
-	} else {
-		_ERRORLOG( "m_pAudioDriver = NULL" );
-	}
 }
 
 
@@ -2316,95 +2283,19 @@ void Hydrogen::setLadspaFXPeak( int nFX, float fL, float fR )
 
 void Hydrogen::onTapTempoAccelEvent()
 {
-#ifndef WIN32
-	INFOLOG( "tap tempo" );
-	static timeval oldTimeVal;
-
-	struct timeval now;
-	gettimeofday(&now, NULL);
-
-	float fInterval =
-		(now.tv_sec - oldTimeVal.tv_sec) * 1000.0
-		+ (now.tv_usec - oldTimeVal.tv_usec) / 1000.0;
-
-	oldTimeVal = now;
-
-	if ( fInterval < 1000.0 ) {
-		setTapTempo( fInterval );
-	}
-#endif
+	m_BeatCounter.onTapTempoAccelEvent();
 }
 
 void Hydrogen::setTapTempo( float fInterval )
 {
-
-//	infoLog( "set tap tempo" );
-	static float fOldBpm1 = -1;
-	static float fOldBpm2 = -1;
-	static float fOldBpm3 = -1;
-	static float fOldBpm4 = -1;
-	static float fOldBpm5 = -1;
-	static float fOldBpm6 = -1;
-	static float fOldBpm7 = -1;
-	static float fOldBpm8 = -1;
-
-	float fBPM = 60000.0 / fInterval;
-
-	if ( fabs( fOldBpm1 - fBPM ) > 20 ) {	// troppa differenza, niente media
-		fOldBpm1 = fBPM;
-		fOldBpm2 = fBPM;
-		fOldBpm3 = fBPM;
-		fOldBpm4 = fBPM;
-		fOldBpm5 = fBPM;
-		fOldBpm6 = fBPM;
-		fOldBpm7 = fBPM;
-		fOldBpm8 = fBPM;
-	}
-
-	if ( fOldBpm1 == -1 ) {
-		fOldBpm1 = fBPM;
-		fOldBpm2 = fBPM;
-		fOldBpm3 = fBPM;
-		fOldBpm4 = fBPM;
-		fOldBpm5 = fBPM;
-		fOldBpm6 = fBPM;
-		fOldBpm7 = fBPM;
-		fOldBpm8 = fBPM;
-	}
-
-	fBPM = ( fBPM + fOldBpm1 + fOldBpm2 + fOldBpm3 + fOldBpm4 + fOldBpm5
-		 + fOldBpm6 + fOldBpm7 + fOldBpm8 ) / 9.0;
-
-
-	_INFOLOG( QString( "avg BPM = %1" ).arg( fBPM ) );
-	fOldBpm8 = fOldBpm7;
-	fOldBpm7 = fOldBpm6;
-	fOldBpm6 = fOldBpm5;
-	fOldBpm5 = fOldBpm4;
-	fOldBpm4 = fOldBpm3;
-	fOldBpm3 = fOldBpm2;
-	fOldBpm2 = fOldBpm1;
-	fOldBpm1 = fBPM;
-
-	AudioEngine::get_instance()->lock( "Hydrogen::setTapTempo" );
-
-// 	m_pAudioDriver->setBpm( fBPM );
-// 	m_pSong->setBpm( fBPM );
-
-	setBPM( fBPM );
-
-	AudioEngine::get_instance()->unlock();
+	m_BeatCounter.setTapTempo(fInterval);
 }
 
 
-// Called with audioEngine in LOCKED state.
 void Hydrogen::setBPM( float fBPM )
 {
-	if ( m_pAudioDriver && m_pSong ) {
-		m_pAudioDriver->setBpm( fBPM );
+	if( (fBPM < 500.0) && (fBPM > 20.0) ) {
 		m_pSong->__bpm = fBPM;
-		m_nNewBpmJTM = fBPM;
-//		audioEngine_process_checkBPMChanged();
 	}
 }
 
@@ -2481,150 +2372,45 @@ void Hydrogen::renameJackPorts()
 
 void Hydrogen::setbeatsToCount( int beatstocount)
 {
-	m_nbeatsToCount = beatstocount;
+	m_BeatCounter.setBeatsToCount(beatstocount);
 }
 
 
 int Hydrogen::getbeatsToCount()
 {
-	return m_nbeatsToCount;
+	return m_BeatCounter.getBeatsToCount();
 }
 
 
 void Hydrogen::setNoteLength( float notelength)
 {
-	m_ntaktoMeterCompute = notelength;
+	m_BeatCounter.setNoteLength(notelength);
 }
 
 
 
 float Hydrogen::getNoteLength()
 {
-	return m_ntaktoMeterCompute;
+	return m_BeatCounter.getNoteLength();
 }
 
 
 
 int Hydrogen::getBcStatus()
 {
-	return eventCount;
+	return m_BeatCounter.status();
 }
 
 
 void Hydrogen::setBcOffsetAdjust()
 {
-	//individual fine tuning for the beatcounter
-	//to adjust  ms_offset from different people and controller
-	Preferences *pref = Preferences::getInstance();
-
-	m_nCoutOffset = pref->m_countOffset;
-	m_nStartOffset = pref->m_startOffset;
+	m_BeatCounter.setOffsetAdjust();
 }
 
 
 void Hydrogen::handleBeatCounter()
 {
-	// Get first time value:
-	if (beatCount == 1)
-		gettimeofday(&currentTime,NULL);
-
-	eventCount++;
-		
-	// Set wlastTime to wcurrentTime to remind the time:		
-	lastTime = currentTime;
-	
-	// Get new time:
-	gettimeofday(&currentTime,NULL);
-	
-
-	// Build doubled time difference:
-	lastBeatTime = (double)(
-		lastTime.tv_sec
-		+ (double)(lastTime.tv_usec * US_DIVIDER)
-		+ (int)m_nCoutOffset * .0001
-		);
-	currentBeatTime = (double)(
-		currentTime.tv_sec
-		+ (double)(currentTime.tv_usec * US_DIVIDER)
-		);
-	beatDiff = beatCount == 1 ? 0 : currentBeatTime - lastBeatTime;
-		
-	//if differences are to big reset the beatconter
-		if( beatDiff > 3.001 * 1/m_ntaktoMeterCompute ){
-			eventCount = 1;
-			beatCount = 1;
-			return;
-		} 
-	// Only accept differences big enough
-		if (beatCount == 1 || beatDiff > .001) {
-			if (beatCount > 1)
-				beatDiffs[beatCount - 2] = beatDiff ;
-		// Compute and reset:
-			if (beatCount == m_nbeatsToCount){
-//				unsigned long currentframe = getRealtimeFrames();
-				double beatTotalDiffs = 0;
-				for(int i = 0; i < (m_nbeatsToCount - 1); i++) 
-					beatTotalDiffs += beatDiffs[i];
-				double beatDiffAverage =
-					beatTotalDiffs
-					/ (beatCount - 1)
-					* m_ntaktoMeterCompute ;
-				beatCountBpm =
-					(float) ((int) (60 / beatDiffAverage * 100))
-					/ 100;
-				AudioEngine::get_instance()
-					->lock( "Hydrogen::handleBeatCounter");
-				if ( beatCountBpm > 500)
-						beatCountBpm = 500; 
-				setBPM( beatCountBpm );
-				AudioEngine::get_instance()->unlock();
-				if (Preferences::getInstance()->m_mmcsetplay
-				    == Preferences::SET_PLAY_OFF) {
-					beatCount = 1; 
-					eventCount = 1;
-				}else{
-					if ( m_audioEngineState != STATE_PLAYING ){
-						unsigned bcsamplerate =
-							m_pAudioDriver->getSampleRate();
-						unsigned long rtstartframe = 0;
-						if ( m_ntaktoMeterCompute <= 1){
-							rtstartframe =
-								bcsamplerate
-								* beatDiffAverage
-								* ( 1/ m_ntaktoMeterCompute );
-						}else
-						{
-							rtstartframe =
-								bcsamplerate
-								* beatDiffAverage
-								/ m_ntaktoMeterCompute ;
-						}
-
-						int sleeptime =
-							( (float) rtstartframe
-							  / (float) bcsamplerate
-							  * (int) 1000 )
-							+ (int)m_nCoutOffset
-							+ (int) m_nStartOffset;
-						#ifdef WIN32
-						Sleep( sleeptime );
-						#else
-						usleep( 1000 * sleeptime );
-						#endif
-
-						sequencer_play();
-					}
-					
-					beatCount = 1; 
-					eventCount = 1;
-					return;
-				}
-			}
-			else {
-				beatCount ++;
-			}				
-		}
-		return;
+	m_BeatCounter.trigger();
 }
 //~ beatcounter
 
