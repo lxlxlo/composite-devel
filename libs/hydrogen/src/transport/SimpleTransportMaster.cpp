@@ -21,6 +21,7 @@
  */
 
 #include <hydrogen/Transport.h>
+#include <hydrogen/TransportPosition.h>
 #include "SimpleTransportMaster.h"
 
 #include <hydrogen/Song.h>

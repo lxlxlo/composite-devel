@@ -25,6 +25,7 @@
 #include <hydrogen/event_queue.h>
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/Transport.h>
+#include <hydrogen/TransportPosition.h>
 
 #include <pthread.h>
 #include <cassert>

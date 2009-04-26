@@ -20,6 +20,7 @@
  *
  */
 
+#include <QMessageBox>
 #include "SoundLibrarySaveDialog.h"
 
 #include <hydrogen/SoundLibrary.h>
