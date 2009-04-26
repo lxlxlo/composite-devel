@@ -1,0 +1,840 @@
+NOTES ON REDESIGNING THE TRANSPORT IN HYDROGEN
+==============================================
+
+--------------------------------------------------------------------------------
+Date: Tue, 26 Aug 2008 12:42:47 -0500
+From: "Gabriel M. Beddingfield" <gabriel@teuton.org>
+To:  hydrogen-devel@lists.sourceforge.net
+Subject: Re: [Hydrogen-devel] The transport, BBT, and Jack
+
+Jakob Lund wrote:
+> The transport code we have now is really confusing and hard to understand - I
+> still think we have to reinvent it somewhat in order to get it working.
+
+Agreed.  However, we may want to try and put a half-way decent band-aid on it
+and release 0.9.4 before restructuring it.
+
+> In my opinion the transport code should be moved into the sequencer (the
+> Hydrogen instance), instead of being processed in the audio driver (this is
+
+Actually... that's where the code already is, isn't it?  And that's kind of the
+problem.  When H2 is the master, the JACK Transport is just copying that code
+(which seems to work OK).  When H2 is the slave, the JACK Transport code is
+trying to cleverly update that info.  It looks like the sequencer was designed
+as a standalone sequencer (master), and later it was retrofitted with a slave
+option.  So what we have is that even when Hydrogen is a transport slave, it
+*thinks* it's the master (in hydrogen.cpp).
+
+How about this: Create a transport interface that the H2Core::Hydrogen is
+*always* the slave to.  One that is focused on mapping ticks to samples in the
+current buffer.  Then, create different Transport implementations depending on
+the situations.
+
+SEQUENCER   ABSTRACT INTERFACE      IMPLEMENTATIONS       BACKEND INTERFACES
+=========   ==================      ===============      ====================
+
+ Hydrogen <--TransportInterface <--+-- MasterTransport --> JackTransportAdapter
+   |                               |                                  |
+   |                               +-- SlaveJackTransport <-- jackd <-+
+   V                               |
+AudioOutput                        +-- SlaveMTCTransport <-- MidiDriver
+                                   |
+                                   +-- SlaveOtherTransport
+                                   |
+                                   +-- MasterTrickedOutExperimentalTransport
+                                   |
+
+class TransportInterface
+{
+public:
+     virtual ~TransportInterface() {}
+
+     uint32_t getBufferOffsetFrameForTick(uint32_t tick) = 0;
+     // ... other methods ...
+};
+
+Then, H2Core::Hydrogen doesn't care about sample rates, frames-per-tick,
+samples-per-beat, tempo, or anything.  We just go through the Note queue and
+say, "What sample to I use for tick 575?"
+
+> perhaps cosmetic, but it would be nice to be able to act as MIDI time slave
+> and / or master at some point). Also, there are some state variables in
+
+See above.  Good suggestion.  I've been thinking about doing this with InConcert
+as well.
+
+> Tempo changes from Ardour (which is about the only app that I know is being a
+> `good master`, in your terms) are working OK in Song mode; as long as you make
+> sure that 1 bar == 1 pattern on the song timeline (especially important if the
+> meter changes as well -- i.e. in non - 4/4 time).
+
+Maybe I'm misunderstanding what you're saying... but isn't that sort of a given
+when using the transport?  ...that your time signatures need to line up?
+Gracefully handling a mismatch would be good -- but I think is sort of
+"undefined" by its very nature.
+
+> Pattern mode is a bit funny - it seems that tempo changes aren't handled as
+> well there. When you press 'play' the pattern starts from beat 1, but if you
+> press rewind and then play, it sounds like beat 1 is played twice !??!!
+
+I thought I heard that in Song mode, too, recently.  I was throwing a lot of
+wacked out tempo changes, though.
+
+Peace,
+Gabriel
+
+--------------------------------------------------------------------------------
+Date: Sun, 1 Mar 2009 03:55:59 +0100
+From: "m.wolkstein@gmx.de" <m.wolkstein@gmx.de>
+To: hydrogen-devel <hydrogen-devel@lists.sourceforge.net>
+Subject: Re: [Hydrogen-devel] Gabriel Beddingfield commited [851]: Fix
+ double-hit at start when JACK Transport Master.
+
+Am Sat, 28 Feb 2009 04:19:10 +0000
+schrieb hydrogen@alerts.assembla.com:
+
+> 
+> 
+> Fix double-hit at start when JACK Transport Master.
+> Commit from user: Gabriel Beddingfield
+> 
+> For more details, visit: http://trac.assembla.com/hydrogen/changeset/851
+> 
+> Space URL: http://www.assembla.com/spaces/hydrogen
+> 
+> -------
+> 
+
+hiho, the old game :-(.
+after commit 851 it's not possible to change tempo during play.
+if you use old tabtempo (altgr + back slash) or new beatcounter (coma)
+the transport position jumps around (during play).
+so no live tempochange as master will be possible. that's definitely
+not usable for this use. jack time master implementation based on this
+feature. so other applications can follow h2 also during tempo change.
+
+maybe we need a small unitest for some important features.
+
+here a small list over things (this is what i think) that transport
+have to do.
+
+-- as slave--
+* follow other master apps (e.g ardour) start, stop, pause, jump to
+  position
+* follow tempo changes from master ->( currently broken)
+* relocate correct loop position. e.g. use a 4 pattern long h2 song in
+  loop mode to record a 16 pattern long song in ardour
+
+--as master--
+* do the same as slave!! important 
+* slave apps have to follow h2 like h2 follow master apps. play, stop,
+  relocate new position, tempo....
+* tempo change during playback without wrong relocation. (ticksize
+  will change during tempo change) ->( currently broken)
+ 
+wolke
+
+--------------------------------------------------------------------------------
+Date: Sun, 01 Mar 2009 21:16:37 -0600
+From: "Gabriel M. Beddingfield" <gabriel@teuton.org>
+To: hydrogen-devel@lists.sourceforge.net
+Subject: Re: [Hydrogen-devel] Gabriel Beddingfield commited [851]: Fix double-hit
+ at start when JACK Transport Master.
+
+This is a multi-part message in MIME format.
+--------------000603030801070202020104
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
+
+m.wolkstein@gmx.de wrote:
+> h2 as slave
+> (song mode)
+> + no double hit at start. (start impulse from h2 or ardour)
+> + follow correct tempo changes from master (ardour) 
+
+Actually, I'm getting double-hits at start after a few +/- button tempo changes.
+
+> (song mode)
+> h2 as master
+> + no double hit at start. (start impulse from h2 or ardour)
+> + no jumping in timeline on tempochanging during playback.
+
+Yes, but...
+
+> 
+> so imoh,
+> we can remove the whole getArdourTransportAdjustment function. because ardour
+> 2.7.1 and 3 , qjackctl(transport buttons), and seq24 produce no double hit
+> anymore.
+
+If everyone else agrees that our users only plan to use the H2 transport with 
+Ardour 2.7.1 and 3.x... then yes, let's take out the transport adjustment.
+
+> only time master will need on two places - getBufferSize() what is the same
+> than getArdourTransportAdjustment.
+
+No.  This is wrong.
+
+There should be no buffersize correction.  Frame=0 should be 1:1:0... not 
+Frame=getBufferSize().  Any sort of buffersize correction like this is *not* 
+conforming to the transport and is working around some other bug.
+
+I did some transport auditing, and find that Hydrogen (as transport master)
+isn't working right at all -- independent of audio.  I wrote a JACK Client that
+just observes the jack_position_t that is being fed to all the JACK Clients (see
+attached).  Here's what we get with your patch:
+
+usecs=179033476580 fps=48000 frame=0 bpm=110.4 B:B:T=1:1:0 bbt_offset=0
+usecs=179033497885 fps=48000 frame=1024 bpm=110.4 B:B:T=1:1:0 bbt_offset=0
+usecs=179033519235 fps=48000 frame=2048 bpm=110.4 B:B:T=1:1:40 bbt_offset=0
+usecs=179033540554 fps=48000 frame=3072 bpm=110.4 B:B:T=1:1:48 bbt_offset=0
+usecs=179033561939 fps=48000 frame=4096 bpm=110.4 B:B:T=1:1:56 bbt_offset=0
+
+Notice that ticks 0 and 1024 are both 1:1:0, and that 2048 jumps to 1:1:40.  I 
+would expect the ticks to go 0, 8, 16, etc.
+
+Here's rev 858:
+
+usecs=179454108209 fps=48000 frame=0 bpm=120 B:B:T=1:1:0 bbt_offset=0
+usecs=179454129526 fps=48000 frame=1024 bpm=120 B:B:T=1:1:0 bbt_offset=0
+usecs=179454150858 fps=48000 frame=2048 bpm=120 B:B:T=1:1:52 bbt_offset=0
+usecs=179454172379 fps=48000 frame=3072 bpm=120 B:B:T=1:1:60 bbt_offset=0
+usecs=179454193586 fps=48000 frame=4096 bpm=120 B:B:T=1:1:68 bbt_offset=0
+
+...not much better.
+
+What's more... the tick count is usually 8 ticks per period.  But, with your 
+patch we sometimes get a period with only 4 ticks (1:2:76 -> 1:2:80):
+
+usecs=179034095196 fps=48000 frame=29696 bpm=110.4 B:B:T=1:2:52 bbt_offset=0
+usecs=179034118910 fps=48000 frame=30720 bpm=110.4 B:B:T=1:2:60 bbt_offset=0
+usecs=179034138749 fps=48000 frame=31744 bpm=110.4 B:B:T=1:2:68 bbt_offset=0
+usecs=179034160514 fps=48000 frame=32768 bpm=110.4 B:B:T=1:2:76 bbt_offset=0
+usecs=179034181174 fps=48000 frame=33792 bpm=110.4 B:B:T=1:2:80 bbt_offset=0
+usecs=179034201904 fps=48000 frame=34816 bpm=110.4 B:B:T=1:2:88 bbt_offset=0
+usecs=179034223196 fps=48000 frame=35840 bpm=110.4 B:B:T=1:2:96 bbt_offset=0
+
+This happens regularly.  Some other patches may do this, but I didn't see it 
+with rev 858.
+
+In contrast, I get this from InConcert:
+
+usecs=180994287332 fps=48000 frame=0 bpm=120 B:B:T=1:1:0 bbt_offset=0
+usecs=180994308692 fps=48000 frame=1024 bpm=120 B:B:T=1:1:15 bbt_offset=23
+usecs=180994330006 fps=48000 frame=2048 bpm=120 B:B:T=1:1:30 bbt_offset=47
+usecs=180994351333 fps=48000 frame=3072 bpm=120 B:B:T=1:1:46 bbt_offset=5
+usecs=180994372664 fps=48000 frame=4096 bpm=120 B:B:T=1:1:61 bbt_offset=29
+
+(...not that InConcert is a pillar of stability and reliability... but... you 
+get the point.)
+
+*sigh*  I'm not sure what to do.  :-/
+
+I'm backing out rev 851 to find a better solution.
+
+Peace,
+Gabriel
+
+
+
+
+
+--------------000603030801070202020104
+Content-Type: text/x-c++src;
+ name="t_log_xport.cpp"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="t_log_xport.cpp"
+
+/**********************************************-*- indent-tabs-mode:nil; -*-
+ *                                                                         *
+ *   Jack Transport Audit Utils                                            *
+ *                                                                         *
+ *   Copyright (C) 2008 by Gabriel M. Beddingfield                         *
+ *   gabriel@teuton.org                                                    *
+ *                                                                         *
+ *   "For of him [God], and through him, and unto him, are all things.     *
+ *   To him be the glory for ever. Amen." (Romans 11:36)                   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; version 2 of the License, or any later  *
+ *   version                                                               *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+
+/* t_log_xport.cpp
+ *
+ * JACK Transport client that logs the frame and BBT of the transport
+ * for every process cycle.  This is similar to the showtime.c
+ * example client in the jack sources... but this catches every
+ * frame.  It records up to 262144 process cycles, it only records
+ * while Rolling.
+ */
+
+#include <cstring>
+#include <unistd.h>
+#include <iostream>
+#include <iomanip>
+#include <jack/jack.h>
+#include <jack/transport.h>
+
+using namespace std;
+
+struct xpos_t {
+    jack_time_t usecs;
+    jack_nframes_t frame_rate;
+    jack_nframes_t frame;
+    int32_t bar, beat, tick;
+    jack_nframes_t bbt_offset;
+    double beats_per_minute;
+};
+
+jack_client_t *_client;
+const long int BUFSIZE = 262144;  // max recording space.
+xpos_t buf[BUFSIZE];
+unsigned long buf_pos = 0;
+bool done = false;
+
+int jack_callback (jack_nframes_t nframes, void* /*arg*/)
+{
+    jack_transport_state_t     state; 
+    jack_position_t            posit;
+
+    if( buf_pos >= (unsigned long)BUFSIZE ) {
+        done = true;
+    }
+
+    if(done) return 0;
+
+    state = jack_transport_query (_client, &posit);
+
+    if (state == JackTransportRolling)
+    {
+        buf[buf_pos].usecs = posit.usecs;
+        buf[buf_pos].frame_rate = posit.frame_rate;
+        buf[buf_pos].frame = posit.frame;
+        buf[buf_pos].bar = posit.bar;
+        buf[buf_pos].beat = posit.beat;
+        buf[buf_pos].tick = posit.tick;
+        buf[buf_pos].bbt_offset =
+            ((posit.valid & JackBBTFrameOffset) ? posit.bbt_offset : 0);
+        buf[buf_pos].beats_per_minute = posit.beats_per_minute;
+        ++buf_pos;
+    }
+
+    return 0;  
+}
+
+ostream& operator<<(ostream& os, xpos_t p)
+{
+    os << "usecs=" << p.usecs
+       << " fps=" << p.frame_rate
+       << " frame=" << p.frame
+       << " bpm=" << p.beats_per_minute
+       << " B:B:T=" << p.bar << ':' << p.beat << ':' << p.tick
+       << " bbt_offset=" << p.bbt_offset;
+    return os;
+}
+
+int main(void)
+{
+    jack_client_t *client;
+
+    memset (buf, 0, BUFSIZE * sizeof (float));
+
+    _client = jack_client_open(__FILE__,
+			      JackNullOption,
+			      0);
+    jack_set_process_callback(_client,
+			      jack_callback,
+			      0);
+				 
+    jack_activate(_client);
+
+    unsigned long k = 0, tmp;
+    while(!done) {
+	sleep(1);
+        if( (buf_pos - k) >= 30 ) {
+            tmp = buf_pos;
+            for( k ; k < tmp ; ++k ) {
+                cout << buf[k] << endl;
+            }
+        }
+    }
+
+    done = true;
+
+    jack_client_close(_client);
+
+    return 0;
+}
+
+--------------000603030801070202020104--
+
+--------------------------------------------------------------------------------
+Date: Mon, 02 Mar 2009 13:03:48 -0600
+From: "Gabriel M. Beddingfield" <gabriel@teuton.org>
+To: hydrogen-devel@lists.sourceforge.net
+Subject: Re: [Hydrogen-devel] Gabriel Beddingfield commited [851]: Fix double-hit
+ at start when JACK Transport Master.
+
+m.wolkstein@gmx.de wrote:
+
+>> If everyone else agrees that our users only plan to use the H2 transport with
+>> Ardour 2.7.1 and 3.x... then yes, let's take out the transport adjustment.
+
+> yes, imo people who build and use actually versions of h2 also do this also
+> with other software.
+> also, ardour 2.7.x is in this moment standard in most distribution's. so i
+> think it's ok when h2 0.9.4 maybe in 1 - 9 month work stable with this and
+> newer versions.
+
+Sorry, I wrote that in a somewhat intimidating manner, didn't I?  What I mean is
+this: if we all agree to *not* support Ardour's bug, then I'm OK with taking it
+out.
+
+However, I don't agree to doing any buffer offsets -- unless we can turn them off.
+
+> if you interpret the code you will see that bbt 110 will set on 0 -
+> buffersize. that produce a negative value.
+> 
+> hmm?. the function getArdourTransportAdjustment() returns getBufferSize().
+
+> so what is wrong if i say it's the same. i write "-" get buffersize and not =
+> get buffersize. i only relpace getArdourTransportAdjustment() with
+> getBufferSize(). because imo, this pref. option is deprecated and what do
+> exactly the same thing but without test the pref. settings!!  and i remove
+> this buffersize offset in slave function. so frame 0 = 0 and not 0 - buffer
+> offset. what works correct for the moment.
+
+The problem is that adding or subtracting any offset violates the principles of
+using the transport in the first place.  The only Right reason for doing it is
+for latency compensation.  There should be ZERO latency between H2 and Ardour.
+Transport frame 0 in H2 is transport frame 0 in Ardour.  If not -- somone is
+cheating.
+
+The buffer offset says that frame 1024 in Ardour is frame 0 in H2.  This is 
+wrong.  (That is, if you start jack with 1024 frames/period.)
+
+> sorry but what mean all the output? and when you get it? after tempochange? or
+> after start?
+
+It "records" the transport state whenever it is rolling.  It doesn't care about 
+tempo changes or anything.  When someone presses PLAY, it records.  When someone 
+pressed STOP, it waits.
+
+> also sound card samplerate is never exact. what means samplerate is a product
+> from any divider from sound card quartz oscillator (if they have already
+> one). so what can i do with usecs and fps which are not exact? and also
+> sampler.cpp compute all output stream in the buffer size time.  did your
+> simple client incorporate this? don't misunderstand me but i try to learn how
+> the timing function works.
+
+Samplerate has nothing to do with it.  You probably know that whenever JACK does
+the process() callback, all we care about is the next nFrames samples.  We don't
+care about the oscillators in the hardware, or what the time on the wall clock
+says... we just care about reading or writing the next nFrames samples.  The
+only reason why we care about the sample rate is so that we can resample our
+waveforms.
+
+Usecs is simply provided by the JACK server in the jack_position_t.usecs field. 
+  All my little test program does is record what that value was.  I included it 
+because there may be cases it helps to understand what's happening in the data 
+(but none of these cases really benefits from usecs).
+
+> in moment i think to get a sync start h2 and other clients or masters always
+> need (or have to use) this given buffersize to compute the output.  so if h2
+> plans to start the transport it must send a correct startframe. e.g to
+> ardour. and that ardour can begin transport exactly h2 have to wait one
+> buffersize. because ardour need and use this time to compute the right
+> output. so if h2 is master hydrogen have to correct the "internal" transport
+> to startframe - buffersize. if h2 is slave and you start also transport from
+> h2 all exact information will compute in master this includes also the
+> buffersize offset. so imo, this will work correct in all ardour >2.7.x. i
+> don't know the sample function in ardour. but i think this function s really
+> complex. to compute all the things you can do in ardour.
+
+No, this is handled by the transport controls.  Whoever calls 
+jack_transport_locate() decides what the start frame is.  Hydrogen and Ardour 
+are supposed to play whatever happens at frame # jack_position_t.frame.  (In 
+other words, H2 and Ardour should have perfectly synchronized frames:  0, 1024, 
+2048, etc...)
+
+> the other way to handle a exact sync is to send only a whatever control signal
+> to all clients and than after one period buffersize all clients and master
+> start or do whatever control signal will send. but this method will cost 2
+> periods of buffersize. one period for sending the signal from any client or
+> master to any clients or master. and a second period to sync the output of all
+> the client and master sample engine. so imo, this is not the way how jack
+> transport work. imo, in moment to sync all apps will only cost 1 periode
+> buffersize from the trigger moment. what implement to compute the offset in
+> one of the apps. mostly master app.
+> my patch use buffersize offset as master and "no offset" as salve
+
+Did you know:  There is *no* callback whenever the transport master CHANGES?  If 
+H2 is the transport master... but Ardour takes over -- there is *no* 
+notification of the change.  So, if Ardour takes over as master... but H2 still 
+*thinks* he's the master --- we're screwed.  Right?  We're making decisions 
+based on who's controlling the transport.  (I discovered this in the last few days.)
+
+We're not supposed to care who the transport master is.  We're not supposed to 
+make decisions based on who's controlling the transport.
+
+>> Here's rev 858:
+>>
+>> usecs=179454108209 fps=48000 frame=0 bpm=120 B:B:T=1:1:0 bbt_offset=0
+>> usecs=179454129526 fps=48000 frame=1024 bpm=120 B:B:T=1:1:0 bbt_offset=0
+>> usecs=179454150858 fps=48000 frame=2048 bpm=120 B:B:T=1:1:52 bbt_offset=0
+>> usecs=179454172379 fps=48000 frame=3072 bpm=120 B:B:T=1:1:60 bbt_offset=0
+>> usecs=179454193586 fps=48000 frame=4096 bpm=120 B:B:T=1:1:68 bbt_offset=0
+>>
+>> ...not much better.
+>>
+>> What's more... the tick count is usually 8 ticks per period.  But, with your 
+>> patch we sometimes get a period with only 4 ticks (1:2:76 -> 1:2:80):
+>  
+> do you read the jack transport bbt and jack transport frames. because h2 ticks
+> from jack time master are not the same than h2 internal transport ticks.
+
+Hydrogen was the transport master for this test.  The BBT given is whatever 
+Hydrogen wrote to the jack_position_t struct.  Hydrogen wrote bpm, bar, beat, 
+and tick.  (H2 doesn't supply bbt_offset, so it's assumed 0, per the Jack docs.)
+
+One would expect that BBT changes at an even pace if the tempo is not changing.
+  Hydrogen does not do this at startup.
+
+> i am wrong if your displayed frames are not the jack transport frames. also
+> all usec values differ around +/- 300 usec.
+
+usecs is supplied by the JACK server.
+
+>> Peace,
+>> Gabriel
+> 
+> also peace wolke :-)
+
+:-)
+
+-gabriel
+
+--------------------------------------------------------------------------------
+2009-03-03 TRANSPORT DESIGN CONCEPTS
+====================================
+
+     HydrogenGUI
+        A
+        |                                              Current Song
+        V                                                     |(**)
+TransportControlInterface                JackTimebaseCallback |
+        A (start, stop, locate, select              A         |
+        |  transport master backend)                |(**)     |
+        V                                   (++)    |         V
+  Transport <-- TransportMasterInterface <-+-InternalTransportMaster
+     | (private)                           |
+     |                                     +-JackTransportMaster (++)
+     V                                     |                     
+TransportPosition (Struct/class)           +-MiscTransportMaster
+            | (analog to jack_position_t)  |
+            |                              .
+            V                              .
+    Hydrogen (sequencer)                   .
+                        (**) Currently, the Current song is a module
+                             variable (private) for hydrogen.cpp.
+                             How do we expose this to the transport?
+                        (++) Someone, somewhere, has to compensate
+                             for these cases:
+                             * When jack_position_t does not have BBT.
+                             * When ticks don't match Hydrogen's ticks.
+
+When H2 uses the Jack Transport, it will *always* slave to the
+JackTransportMaster.  When H2 is the JACK transport master, then
+InternalTransportMaster will be used for the external transport's
+callback.  However, we'll still slave to JackTransportMaster (whether
+we think we're in control or not).
+
+The intention when slaving to the JACK transport is that we listen to
+the BBT coming from the transport (only) -- if it is provided.  If it
+is *not* provided, then we need some manner of fallback.
+
+InternalTransportMaster is just a concept for now.  The plan is to
+start off with a simple implementation (i.e. no tap-tempo).  Once
+working, we can provide some tap-tempo models.
+
+Also, by modularizing these, it's much easier to write unit tests to
+ensure that the transports will follow certain rules.
+
+The names "Master" are a little confusing when you think in terms of being the
+Jack Transport Master.
+
+--------------------------------------------------------------------------------
+2009-03-05 SEQUENCER AND SAMPLER
+================================
+
+ROLES.....
+
+The sequencer (H2Core::Hydrogen) looks at the timeline (Transport) and the song
+and schedules sounds to be made by the synthesizer (Sampler).  The sampler is
+responsible for organizing and maintaining the current drum kit.  When
+controlling the sampler, it should not need any information about bars, beats,
+ticks, or the song.  Instead, the sequencer schedules samples to be triggered at
+specific frame numbers.
+
+MUTING.....
+
+So then, who is responsible for *MUTING*?  It could go either way.  If an
+instrument is muted, the sampler could ignore any triggers for that instrument.
+On the other hand, if the instrument is muted then the sequencer could *not*
+schedule the trigger.
+
+If muting is handled by the sampler, it's possible that muted channels can still
+have their signals registered on the meters.  All the normal processing is done,
+but the final signal is not mixed.  Or, if no processing is to be done... that
+can still be done efficiently be the sampler.
+
+On the other hand, if muting is handled by the sequencer then scheduling notes
+for the sampler is nearly identical to scheduling notes for MIDI output.
+
+CURRENTLY, Hydrogen does not show meters on a muted channel.
+
+      THEREFORE:  Muting will be handled by the sequencer.
+
+AUDIO DRIVERS.......
+
+What, then, should be the relationship between the sampler and the audio
+driver(s).  Currently, the audio drivers are owned and operated by the sequencer
+(H2Core::Hydrogen)... or maybe that's what H2Core::AudioEngine is trying to do.
+So, the sampler is handled like this:
+
+    * Sequencer shares an output buffer with the audio output driver.
+
+    * Sampler has its own buffer.
+
+    * Sequencer sends a series of note_on() events to the sequencer.  The
+      sequencer queues these notes... but doesn't play them.  The queue is
+      scheduled by tick (I think).
+
+    * Sequencer calls Sampler::process() to render all of the notes.
+
+    * Sequencer copies the sampler's buffers to the sequencer's main buffers.
+
+    * Sequencer used to do the same thing with the subtractive synth.... adding
+      in the synth's buffers to the main buffers.  (I just deleted that.)
+
+    * Sequencer then processes the main outs through LADSPA effects... using a
+      similar pattern.
+
+I would be inclined to say that the Sequencer is having way too much to do with
+the audio... but someobody's got to be coordinating things.  However, it might
+make more sense (and reduce buffers) if the Sampler was handling things with the
+audio driver.  This would mean that the effects, too, would fall under the
+domain of the Sampler.
+
+It really comes down to what is more flexable... but keeps the parts separate.
+
+IMHO, the sampler is our synthesizer... and needs to have a close
+relationship with the audio driver.
+
+      THEREFORE:  FX and audio outs will be handled by the Sampler.
+
+NOTE OFF EVENTS..........
+
+There's been two other devs working on handling note off stuff (including
+Michael Wolkstein).  These should also be scheduled by the sequencer.  How they
+are handled by the sampler is instrument-dependent.
+
+Since there appears to be a long history of H2 songs setting the length to
+-1... we should also establish some manner of "default note length."  I don't
+recall what the MIDI standard says about repeat notes... is it OK to send
+multiple note-on's but only one note-off?  How do we suppress the first
+note-off?
+
+Answer: MIDI assumes that when a note is on, it's on... and off is
+off.  It doesn't consider having the same note on twice at the same
+time (unison).  Therefore, there's no requirements about NOTE ON's
+being preceeded by NOTE OFF's.  Likewise, a NOTE OFF can be sent at
+any time, and will have no effect if the note is already off.
+So... when the sequencer schedules a note to re-trigger... it needs to
+cancel any other NOTE OFF events that have been scheduled for that
+not.
+
+There shall be no "max" note length.
+
+      THEREFORE: Note off messages handled by sequencer.  Notes
+                 re-triggered before the NOTE OFF will have the prior
+                 NOTE OFF event cancelled.
+
+SAMPLER EVENT SEQUENCE......
+
+To communicate events to the sampler, the sequencer will create a script (event
+list) that is shared with the sampler.  This event list is essentially
+translating the song B:b.t into frame numbers.  The list will persist between
+process() cycles... and should probably be some manner of ring buffer.
+
+In this script, frame 0 will refer to the first frame of the current process()
+cycle.  When the sequencer is scheduling... if a song tick could overlap into
+the current process() cycle (through lead/lag/humanize)... then the sequencer
+may schedule that tick.  This means that THE SEQUENCER CAN SCHEDULE MORE THAN
+ONE PERIOD'S WORTH OF EVENTS.  How many periods it could need to schedule can be
+determined based on the max size of lead, lag, and humanize.
+
+Because frames will be scheduled relative to the current process() cycle, this
+means that frame numbers have to be re-normalized after every cycle.  Otherwise,
+some other scheme would need to be implemented.  (e.g. frames scheduled relative
+to some number that may or may not correspond to the real transport frame.)
+
+Since there may be many ways to optimize this scheme... I wonder if it would be
+worth giving it some manner of container sematics.  Then, we can change the
+implementation without having to mess with the sequencer or the sampler.  But,
+this may be over-thinking it.
+
+       THEREFORE: Sequencer will communicate events to the sampler
+                  through a sorted list of events that are indexed by
+                  the frame offset for the current process cycle.
+                  More than one cycle may be scheduled, and so the
+                  frame refs will have to be readjusted after every
+                  cycle.
+
+SORTING.........
+
+Seems that someone needs to sort the events in the event sequence.  Right now,
+it's delegated to a priority_queue... but I think that actually requires memory
+allocation in realtime sections.
+
+WITHOUT sorting, it will require several passes over the audio buffers in the
+sequencer... and maybe several passes over the event sequence.  This is
+essentially sorting.
+
+WITH sorting... it can be done in any of these places: the sequencer, the event
+list (e.g. a priority queue), or the sampler.
+
+I would prefer that the event list sort itself... or...
+
+Or perhaps have the sequencer just dump all the events and sort them at one time
+using some (efficient) manner of pointer redirections... or...
+
+       THEREFORE: A sampler event list object will be created.  It
+                  will be sorted and provide an STL-container-like
+                  interface.  The implementation will be hidden so
+                  that the underlying storage and implementations are
+                  hidden (and can be changed without breaking
+                  anything).
+
+TRANSPORT POSITION.....
+
+I've already written a bunch of code using ticks_per_beat and
+beats_per_bar as floating point types.  Need to decide now if these
+will become integers.
+
+Calculation efficiency is not much different between FDIV, DIV, and
+IDIV instructions on an x86 (DIV is a little faster).  So, it ends up
+being an issue of clarity and flexibility.  If we snap these to be
+integers... we'll need to negotiate with JACK about when they're *not*
+integers.  If we don't snap them to integers, we need to handle them
+*without* the assumption that they *do* snap to integers.
+
+Here's the current (as of this writing) TransportPosition struct:
+
+    struct TransportPosition
+    {
+        enum { STOPPED, ROLLING } state; /// The current transport state.
+        uint32_t frame;           /// The current frame of the transport.  When
+                                  /// sequencing, this is just FYI.  All
+                                  /// sequencing shall be done based on the
+                                  /// other fields (esp. B:b:t).
+        uint32_t frame_rate;      /// The audio sample rate (frames per second)
+        int32_t bar;              /// The current measure (1, 2, 3...)
+        int32_t beat;             /// The current beat in measure (1, 2, 3...)
+        int32_t tick;             /// The current tick in beat (0, 1, 2...)
+        uint32_t bbt_offset;      /// bar, beat, and tick refer to bbt_offset
+                                  /// frames BEFORE the current process cycle.
+
+        double bar_start_tick;    /// Absolute number of ticks elapsed in song
+                                  /// at the start of this bar.
+        float beats_per_bar;      /// The top number in the time signature
+        float beat_type;          /// The bottom number in the time signature
+        double ticks_per_beat;    /// Number of ticks in a single beat
+        double beats_per_minute;  /// The song tempo (beats per minute)
+    };
+
+These are close analog's to JACK's jack_position_t.  Paul Davis
+explained it like this:
+
+-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+Date: Wed, 4 Mar 2009 07:46:03 -0500
+From: Paul Davis <paul@linuxaudiosystems.com>
+To: "Gabriel M. Beddingfield" <gabriel@teuton.org>
+Cc: JACK <jack-devel@lists.jackaudio.org>
+Subject: Re: [Jack-Devel] jack_transport_reposition() and the JackPositionBBT 
+	fields
+
+On Wed, Mar 4, 2009 at 12:45 AM, Gabriel M. Beddingfield <gabriel@teuton.org
+> wrote:
+
+>
+> 3. In the jack_position_t BBT fields... why are bar_start_tick,
+> beats_per_bar, beat_type, and ticks_per_beat all floating point types?  I
+> would have expected unsigned integers for all of these.  Should I set up to
+> handle ticks_per_beat = 67.174?
+
+
+there are musical traditions around the world in which beats_per_bar and the
+subdivisions of a bar into beats cannot be properly represented with
+integers. indian and some south-east asian traditions (bali and thailand)
+contain music in which it makes sense to think of a meter as containing half
+beats, for example. it doesn't work to just double the tempo and thus move
+to a whole number of beats - this misses the subtlety of the shifting
+relationship between the rhythmic and other components of the music.
+
+ticks per beat is normally a mid-size integer value that represents "BBT
+resolution". it is typically a number with a large number of factors, which
+thus allows 1 beat to be divided in many different ways and still end up
+with an integral number of ticks. ardour, for example, uses 1960 ticks per
+beat, which has a very large set of numbers as factors. this means that you
+can divide a beat into, say, 8ths, 10th, 12ths and so on, and each division
+is an exact number of ticks. all MIDI sequencers do this, since its a way to
+avoid rounding errors.
+
+even though this number is always going to be an integer, to harmonize with
+the floating point values of beats per bar and beat type, it was defined as
+a floating point value.
+
+-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+
+Now, in Hydrogen... in the past... it's worked like this...
+
+    struct TransportPosition
+    {
+        // [SNIP]
+
+        float beats_per_bar;      /// Always ticks_per_beat / 48.0
+        unsigned beat_type;       /// Always 4
+        unsigned ticks_per_beat;  /// Always 48
+        double beats_per_minute;  /// The song tempo (beats per minute)
+    };
+
+I think beats_per_bar and beats_per_minute remain floating points.
+
+If we allow beat_type to be floating point, then (as Paul said),
+ticks_per_beat would need to be a floating point to match.  Suppose
+the time signature is something really random like 6.666/3.5, with
+1680.0 ticks per beat.  Every measure would have:
+
+    6.666 * 1680.0 = 11198.88 ticks/bar
+
+If we calculate bar start ticks by rounding to 11199
+ticks/bar... roundoff error will catch up to us.
+
+HOWEVER, Hydrogen is all about pattern based sequencing... so...
+
+    THEREFORE: beats_per_bar, beat_type, ticks_per_beat, and
+               bar_start_tick will all be unsigned integer types.
