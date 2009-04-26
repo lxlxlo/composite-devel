@@ -65,16 +65,17 @@ namespace H2Core
 
         // Convenience interface (mostly for GUI)
         virtual uint32_t get_current_frame(void);
+	virtual TransportPosition::State get_state(void);
 
         // Interface for application (i.e. GUI)
         // * get list of transport models
         // * set current transport model
         // * possibly set parameters on transport models.
 
-    private:
         H2Transport();
         virtual ~H2Transport();
 
+    private:
         H2TransportPrivate* d;
     };
 

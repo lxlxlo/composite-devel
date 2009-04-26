@@ -80,3 +80,19 @@ void H2Transport::set_current_song(Song* s)
 {
     if(d->xport) d->xport->set_current_song(s);
 }
+
+uint32_t H2Transport::get_current_frame()
+{
+    if(d->xport) {
+	return d->xport->get_current_frame();
+    }
+    return (uint32_t)-1;
+}
+
+TransportPosition::State H2Transport::get_state()
+{
+    if(d->xport) {
+	return d->xport->get_state();
+    }
+    return TransportPosition::STOPPED;
+}

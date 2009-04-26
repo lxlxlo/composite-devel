@@ -20,7 +20,6 @@
  *
  */
 
-#error "README:"
 /*
  In redesigning the Sampler, the following responsibilities were
  shifted over to the Sequencer (H2Core::Hydrogen):
@@ -63,6 +62,7 @@
 #include <cstdio>
 #include <deque>
 #include <queue>
+#include <list>
 #include <iostream>
 #include <ctime>
 #include <cmath>
@@ -104,6 +104,76 @@
 #include "IO/PortMidiDriver.h"
 #include "IO/CoreAudioDriver.h"
 
+namespace H2Core
+{
+
+/**
+ * This class provides a thread-safe queue that can be written from
+ * anywhere to allow note on/off events.  It's primarily intended for
+ * GUI input, and not something like a MIDI input.  (However, MIDI
+ * input will probably use it temporarily.
+ *
+ * It provides a process() method that allows the events to be given
+ * to the master sequencer queue.
+ */
+class GuiInputQueue
+{
+private:
+	typedef std::list<SeqEvent> EvList;
+	EvList __events;
+	QMutex __mutex;
+
+public:
+	int process( SeqScript& seq, const TransportPosition& pos, uint32_t nframes ) {
+		QMutexLocker mx(&__mutex);
+		EvList::const_iterator k;
+		for( k=__events.begin() ; k!=__events.end() ; ++k ) {
+			seq.insert(*k);
+		}
+		__events.clear();
+	}
+
+	void note_on( Note* pNote) {
+		SeqEvent ev;
+		QMutexLocker mx(&__mutex);
+		ev.frame = 0;
+		ev.type = SeqEvent::NOTE_ON;
+		ev.note = *pNote;
+		ev.instrument_index =
+			Hydrogen::get_instance()->getSong()
+			->get_instrument_list()->get_pos( pNote->get_instrument() );
+	}
+
+	void note_off( Note* pNote ) {
+		SeqEvent ev;
+		QMutexLocker mx(&__mutex);
+		ev.frame = 0;
+		ev.type = SeqEvent::NOTE_OFF;
+		ev.note = *pNote;
+		ev.instrument_index =
+			Hydrogen::get_instance()->getSong()
+			->get_instrument_list()->get_pos( pNote->get_instrument() );
+	}
+
+	void panic() {
+		SeqEvent ev;
+		QMutexLocker mx(&__mutex);
+		__events.clear();
+		ev.frame = 0;
+		ev.type = SeqEvent::ALL_OFF;
+		ev.instrument_index = 0;
+		__events.push_front(ev);
+	}
+
+	void clear() {
+		QMutexLocker mx(&__mutex);
+		__events.clear();
+	}
+
+};
+
+// GLOBALS
+
 /************************
  * DEAD VARIABLES 
  ************************
@@ -125,13 +195,22 @@ int m_nSongSizeInTicks = 0;
 struct timeval m_currentTickTime;
 
 unsigned long m_nRealtimeFrames = 0;
+unsigned m_nBufferSize = 0;
+
+std::priority_queue<Note*, std::deque<Note*>, std::greater<Note> > m_songNoteQueue;
+std::deque<Note*> m_midiNoteQueue;	///< Midi Note FIFO
+
+PatternList* m_pNextPatterns;		///< Next pattern (used only in Pattern mode)
+bool m_bAppendNextPattern;		///< Add the next pattern to the list instead
+					/// of replace.
+bool m_bDeleteNextPattern;		///< Delete the next pattern from the list.
+
+
+PatternList* m_pPlayingPatterns;
+int m_nSongPos;				///< Is the position inside the song
+
 #endif // 0
 /****** END OF DEAD VARIABLES ********/
-
-namespace H2Core
-{
-
-// GLOBALS
 
 // info
 float m_fMasterPeak_L = 0.0f;		///< Master peak (left channel)
@@ -140,13 +219,18 @@ float m_fProcessTime = 0.0f;		///< time used in process function
 float m_fMaxProcessTime = 0.0f;		///< max ms usable in process with no xrun
 //~ info
 
+H2Transport* m_pTransport = 0;
+// This is *the* priority queue for scheduling notes/events to be
+// sent to the Sampler.
+SeqScript m_queue;
+GuiInputQueue m_GuiInput;
+
 
 // beatcounter
 
 //100,000 ms in 1 second.
 #define US_DIVIDER .000001
 
-H2Transport* m_pTransport = 0;
 float m_ntaktoMeterCompute = 1;	  	///< beatcounter note length
 int m_nbeatsToCount = 4;		///< beatcounter beats to count
 int eventCount = 1;			///< beatcounter event
@@ -163,45 +247,20 @@ int m_nStartOffset = 0;			///ms default 0
 AudioOutput *m_pAudioDriver = NULL;	///< Audio output
 MidiInput *m_pMidiDriver = NULL;	///< MIDI input
 
-// overload the the > operator of Note objects for priority_queue
-bool operator> (const Note& pNote1, const Note &pNote2) {
-	return (pNote1.m_nHumanizeDelay
-		+ pNote1.get_position() * m_pAudioDriver->m_transport.m_nTickSize)
-		>
-		(pNote2.m_nHumanizeDelay
-		 + pNote2.get_position() * m_pAudioDriver->m_transport.m_nTickSize);
-}
-
-                                                               /// Song Note FIFO
-std::priority_queue<Note*, std::deque<Note*>, std::greater<Note> > m_songNoteQueue;
-std::deque<Note*> m_midiNoteQueue;	///< Midi Note FIFO
-
 Song *m_pSong;				///< Current song
-PatternList* m_pNextPatterns;		///< Next pattern (used only in Pattern mode)
-bool m_bAppendNextPattern;		///< Add the next pattern to the list instead
-					/// of replace.
-bool m_bDeleteNextPattern;		///< Delete the next pattern from the list.
-
-
-PatternList* m_pPlayingPatterns;
-int m_nSongPos;				///< Is the position inside the song
-
-int m_nSelectedPatternNumber;
-int m_nSelectedInstrumentNumber;
-
 Instrument *m_pMetronomeInstrument = NULL;	///< Metronome instrument
 
 
 // Buffers used in the process function
-unsigned m_nBufferSize = 0;
 float *m_pMainBuffer_L = NULL;
 float *m_pMainBuffer_R = NULL;
 
-
 Hydrogen* hydrogenInstance = NULL;   ///< Hydrogen class instance (used for log)
 
-
 int  m_audioEngineState = STATE_UNINITIALIZED;	///< Audio engine state
+
+int m_nSelectedPatternNumber;
+int m_nSelectedInstrumentNumber;
 
 #ifdef LADSPA_SUPPORT
 float m_fFXPeak_L[MAX_FX];
@@ -218,6 +277,7 @@ void	audioEngine_removeSong();
 static void	audioEngine_noteOn( Note *note );
 static void	audioEngine_noteOff( Note *note );
 int	audioEngine_process( uint32_t nframes, void *arg );
+int	audioEngine_song_sequence_process( SeqScript& seq, const TransportPosition& pos, uint32_t nframes );
 inline void audioEngine_clearNoteQueue();
 inline void audioEngine_process_playNotes( unsigned long nframes );
 inline void audioEngine_process_transport();
@@ -233,7 +293,6 @@ void audioEngine_seek( long long nFrames, bool bLoopMode = false );
 void audioEngine_restartAudioDrivers();
 void audioEngine_startAudioDrivers();
 void audioEngine_stopAudioDrivers();
-
 
 inline timeval currentTime2()
 {
@@ -294,12 +353,8 @@ void audioEngine_init()
 	}
 
 	m_pSong = NULL;
-	m_pPlayingPatterns = new PatternList();
-	m_pNextPatterns = new PatternList();
-	m_nSongPos = -1;
 	m_nSelectedPatternNumber = 0;
 	m_nSelectedInstrumentNumber = 0;
-	m_nPatternTickPosition = 0;
 	m_pMetronomeInstrument = NULL;
 	m_pAudioDriver = NULL;
 
@@ -333,35 +388,16 @@ void audioEngine_destroy()
 		_ERRORLOG( "Error the audio engine is not in INITIALIZED state" );
 		return;
 	}
-	AudioEngine::get_instance()->get_sampler()->stop_playing_notes();
+	AudioEngine::get_instance()->get_sampler()->panic();
 
 	AudioEngine::get_instance()->lock( "audioEngine_destroy" );
 	_INFOLOG( "*** Hydrogen audio engine shutdown ***" );
 
-	// delete all copied notes in the song notes queue
-	while ( !m_songNoteQueue.empty() ) {
-		m_songNoteQueue.top()->get_instrument()->dequeue();
-		delete m_songNoteQueue.top();
-		m_songNoteQueue.pop();
-	}
-	// delete all copied notes in the midi notes queue
-	for ( unsigned i = 0; i < m_midiNoteQueue.size(); ++i ) {
-		Note *note = m_midiNoteQueue[i];
-		delete note;
-		note = NULL;
-	}
-	m_midiNoteQueue.clear();
+	audioEngine_clearNoteQueue();
 
 	// change the current audio engine state
 	m_audioEngineState = STATE_UNINITIALIZED;
-
 	EventQueue::get_instance()->push_event( EVENT_STATE, STATE_UNINITIALIZED );
-
-	delete m_pPlayingPatterns;
-	m_pPlayingPatterns = NULL;
-
-	delete m_pNextPatterns;
-	m_pNextPatterns = NULL;
 
 	delete m_pMetronomeInstrument;
 	m_pMetronomeInstrument = NULL;
@@ -409,7 +445,10 @@ int audioEngine_start( bool bLockEngine, unsigned nTotalFrames )
 	m_audioEngineState = STATE_PLAYING;
 	*/
 	m_pTransport->start();
+	#warning "Need to announce that we're playing"
+	/*
 	EventQueue::get_instance()->push_event( EVENT_STATE, STATE_PLAYING );
+	*/
 
 	if ( bLockEngine ) {
 		AudioEngine::get_instance()->unlock();
@@ -445,31 +484,8 @@ void audioEngine_stop( bool bLockEngine )
 
 	m_fMasterPeak_L = 0.0f;
 	m_fMasterPeak_R = 0.0f;
-//	m_nPatternTickPosition = 0;
-	/*
-	m_nPatternStartTick = -1;
-	*/
 
-	// delete all copied notes in the song notes queue
-	while(!m_songNoteQueue.empty()){
-		m_songNoteQueue.top()->get_instrument()->dequeue();
-		delete m_songNoteQueue.top();
-		m_songNoteQueue.pop();
-	}
-	/*	// delete all copied notes in the playing notes queue
-		for (unsigned i = 0; i < m_playingNotesQueue.size(); ++i) {
-			Note *note = m_playingNotesQueue[i];
-			delete note;
-		}
-		m_playingNotesQueue.clear();
-	*/
-
-	// delete all copied notes in the midi notes queue
-	for ( unsigned i = 0; i < m_midiNoteQueue.size(); ++i ) {
-		Note *note = m_midiNoteQueue[i];
-		delete note;
-	}
-	m_midiNoteQueue.clear();
+	audioEngine_clearNoteQueue();
 
 	if ( bLockEngine ) {
 		AudioEngine::get_instance()->unlock();
@@ -654,26 +670,10 @@ inline void audioEngine_process_transport()
 
 void audioEngine_clearNoteQueue()
 {
-	//_INFOLOG( "clear notes...");
-
-	// delete all copied notes in the song notes queue
-	while (!m_songNoteQueue.empty()) {
-		m_songNoteQueue.top()->get_instrument()->dequeue();
-		delete m_songNoteQueue.top();
-		m_songNoteQueue.pop();
-	}
-
-	AudioEngine::get_instance()->get_sampler()->stop_playing_notes();
-
-	// delete all copied notes in the midi notes queue
-	for ( unsigned i = 0; i < m_midiNoteQueue.size(); ++i ) {
-		delete m_midiNoteQueue[i];
-	}
-	m_midiNoteQueue.clear();
-
+	m_queue.clear();
+	m_GuiInput.clear();
+	AudioEngine::get_instance()->get_sampler()->panic();
 }
-
-
 
 /// Clear all audio buffers
 inline void audioEngine_process_clearAudioBuffers( uint32_t nFrames )
@@ -710,24 +710,43 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 		return 0;
 	}
 
+	if( Hydrogen::get_instance()->getState() != STATE_READY ) {
+		return 0;
+	}
+
 	timeval startTimeval = currentTime2();
 
         Transport* xport = Hydrogen::get_instance()->get_transport();
         TransportPosition pos;
         xport->get_position(&pos);
 
+	// PROCESS ALL INPUT SOURCES
+	m_GuiInput->process(m_queue, pos, nframes);
+	#warning "TODO: get MidiDriver::process() in the mix."
+	// TODO: m_pMidiDriver->process(m_queue, pos, nframes);
+	audioEngine_song_sequence_process(m_queue, pos, nframes);
+
+	// PROCESS ALL OUTPUTS
+
 	audioEngine_process_clearAudioBuffers( nframes );
 
+	/*
 	// always update note queue.. could come from pattern or realtime input
 	// (midi, keyboard)
 	audioEngine_updateNoteQueue( nframes, pos );
 
 	audioEngine_process_playNotes( nframes );
+	*/
 
 	timeval renderTime_start = currentTime2();
 
 	// SAMPLER
-	AudioEngine::get_instance()->get_sampler()->process( nframes, m_pSong );
+	Sampler* pSampler = AudioEngine::get_instance()->get_sampler();
+	pSampler->process( m_queue.begin_const(),
+			   m_queue.end_const(nframes),
+			   pos,
+			   nframes
+	    );
 	float* out_L = AudioEngine::get_instance()->get_sampler()->__main_out_L;
 	float* out_R = AudioEngine::get_instance()->get_sampler()->__main_out_R;
 	for ( unsigned i = 0; i < nframes; ++i ) {
@@ -832,9 +851,71 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 	return 0;
 }
 
+// This loads up song events into the SeqScript 'seq'.
+#warning "audioEngine_song_sequence_process() does not have any lookahead implemented."
+int audioEngine_song_sequence_process(
+	SeqScript& seq,
+	const TransportPosition& pos,
+	uint32_t nframes
+	)
+{
+	Song* pSong = m_pSong;
+	TransportPosition cur;
+	uint32_t end_frame = pos.frame + nframes;  // 1 past end of this process() cycle
+	uint32_t this_tick;
+	Note* pNote;
+	SeqEvent ev;
+	uint32_t pat_grp;
+	PatternList* patterns;
+	Pattern::note_map_t::const_iterator n;
+	int k;
+	uint32_t default_note_length, length;
 
+	if( m_pSong == 0 ) {
+		return 0;
+	}
+	if( pos.state != TransportPosition::ROLLING) {
+		return 0;
+	}
 
+	cur = pos;
+	cur.ceil(TransportPosition::TICK);
+	// Default note length is -1, meaning "play till there's no more sample."
+	default_note_length = (uint32_t)-1;
 
+	while( cur.frame < end_frame ) {
+		this_tick = cur.tick_in_bar();
+		pat_grp = pattern_group_index_for_bar(pSong, pos.bar);
+		patterns = pSong->get_pattern_group_vector()->at(pat_grp);
+
+		for( k=0 ; unsigned(k) < patterns->get_size() ; ++k ) {
+			for( n = patterns->get(k)->note_map.begin() ;
+			     n != patterns->get(k)->note_map.end() ;
+			     ++n ) {
+				if( n->first != this_tick ) continue;
+				pNote = n->second;
+				ev.frame = cur.frame;
+				ev.type = SeqEvent::NOTE_ON;
+				ev.channel = 0;
+				#warning "get_pitch() returns a float.  Need to sort out the"
+				#warning "whole pitch/instrument thing."
+				ev.note = pNote->get_pitch();
+				ev.velocity = pNote->get_velocity();
+				ev.pan_l = pNote->get_pan_l();
+				ev.pan_r = pNote->get_pan_r();
+				if( pNote->get_length() < 0 ) {
+					length = default_note_length;
+				} else {
+					length = unsigned(pNote->get_length()) * cur.frames_per_tick();
+				}
+				seq.insert_note(ev, length);
+			}
+		}
+		++cur;
+	}
+
+	return 0;
+}
 
 void audioEngine_setupLadspaFX( unsigned nBufferSize )
 {
@@ -1347,41 +1428,17 @@ inline int findPatternInTick( int nTick, bool bLoopMode, int *pPatternStartTick 
 
 void audioEngine_noteOn( Note *note )
 {
-	// check current state
-	if ( ( m_audioEngineState != STATE_READY )
-	     && ( m_audioEngineState != STATE_PLAYING ) ) {
-		_ERRORLOG( "Error the audio engine is not in READY state" );
-		delete note;
-		return;
-	}
-
-	m_midiNoteQueue.push_back( note );
+	m_GuiInput.note_on(note);
+	delete note;  // Why are we deleting the note?
 }
 
 
 
 void audioEngine_noteOff( Note *note )
 {
-	if ( note == NULL )	{
-		_ERRORLOG( "Error, note == NULL" );
-	}
-
-	AudioEngine::get_instance()->lock( "audioEngine_noteOff" );
-
-	// check current state
-	if ( ( m_audioEngineState != STATE_READY )
-	     && ( m_audioEngineState != STATE_PLAYING ) ) {
-		_ERRORLOG( "Error the audio engine is not in READY state" );
-		delete note;
-		AudioEngine::get_instance()->unlock();
-		return;
-	}
-
-	AudioEngine::get_instance()->get_sampler()->note_off( note );
-
-	AudioEngine::get_instance()->unlock();
-
-	delete note;
+	if ( note == 0 ) return;
+	m_GuiInput.note_off(note);
+	delete note; // Why are we deleting the note?
 }
 
 
