@@ -1,0 +1,305 @@
+THE NEW TRANSPORT AND AUDIO ENGINE DESIGN
+=========================================
+
+ABSTRACT
+--------
+
+The purpose of this file is to clearly communicate the intent and new
+relationships of the Transport and Audio Engine redesign of 2009.  Whereas
+TRANSPORT_REDESIGN_NOTES.gmb represents the evolution of thoughts and ideas
+regarding the design... this reflects the *decisions*.  When decisions change,
+this file is updated to reflect the current decision.
+
+BACKGROUND
+----------
+
+See TRANSPORT_REDESIGN_NOTES.gmb.  :-)
+
+OVERVIEW
+--------
+
+     ...HydrogenApp......................................
+     .                                                  .
+     .  Let there be GUI                                .
+     ....................................................
+              ...H Y D R O G E N    A P I .....
+              . H2Core::Hydrogen              .
+              . {                             .
+              .    TransportMasterInterface   .
+              .    Mixer                      .
+              .    Sequencer                  .
+              .    Sampler                    .
+              .    AudioOutput                .
+              .    MidiInput                  .
+              .    Song                       .
+              .    Preferences                .
+              . };                            .
+              .................................
+     ...Hydrogen.........................................
+     .                                                  .
+     .             Song         Transport <-----+       .
+     .               |              A           |       .
+     .               |              |     Transport     .
+     .               V              |     Back-Ends     .
+     .     +----> Sequencer <-------+           |       .
+     .     |         |  |                       +--------> Poss. External
+     .     |         |  +-----> MIDI-Out ---------+     .  Transport Model
+     .     |         V                            |     .
+     .   MIDI      Sampler      ...............   |     .
+     .    IN         |          .             .   |     .
+     .     A         V          . Preferences .   |     .
+     .     |     Instruments    ...............   |     .
+     .     |         |                            |     .
+     .     |         V                            |     .
+     .     |       Mixer                          |     .
+     .     |         |                            |     .
+     .     |         V                            |     .
+     .     |      AudioOut                        |     .
+     ......|.........|............................|......
+           |         |                            |    
+           |         V                            V    
+     ....................................................
+     .                                                  .
+     .  O P E R A T I N G     S Y S T E M               .
+     ....................................................
+
+
+The Sequencer becomes the central information router.  What *was* the
+audioEngine_process() callback will effectively become Sequencer::process().
+The Sequencer::process() method will resemble the JACK call graph, like the
+following pseudo-code template.
+
+int Sequencer::process(uint32_t nframes)
+{
+    UPDATE TRANSPORT POSITION;
+
+    PROCESS INPUTS;
+    PROCESS OUTPUTS;
+    DO MIXER PROCESSING;
+
+    NOTIFY TRANSPORT NUMBER OF FRAMES PROCESSED;
+    return 0;
+}
+
+A Sequencer Input is a Song or a Midi Device.  An Output is an Audio Device or a
+Midi Device.  However, this scheme makes it easy to plug in new I/O, be it OSC,
+GUI input, a logger, audio IN-put, etc.
+
+The intention is that the Sequencer only thinks in terms of audio frames for the
+current and next few process() cycles.  The inputs may refer to the transport
+position to map their clocks and models to frames.  Then, it feeds events to the
+sequencer with timestamps that are offset from the first frame of the current
+process() cycle.
+
+The sampler routes the events from the Sequencer and triggers the instruments
+accordingly.  The instruments feed their data to the mixer, which mixes all th
+signals for the audio outputs.  (**)
+
+The so-called "Hydrogen API" is how the Hydrogen GUI interfaces with the audio
+engine.  The public interface of H2Core::Hydrogen becomes the basis of the
+public API.  Any classes that are part of this interface become part of the
+public API.
+
+While the GUI needs to manipulate every parameter, the intention is that the
+classes of the public API be *Interfaces*.  That is, pure virtual classes.  The
+implementations can be chosen and mixed by Hydrogen without disturbing the GUI
+code... even at run time.  In some cases it may make more sense to feed heavy
+objects to the API... but it's still the goal.  This may also make other
+front-ends (e.g. CLI and plug-ins) more feasible.
+
+(**) It's worth noting that from the Sequencer to the output of the mixers, the
+processing is highly parallel number crunching.  If this proves to be a
+bottle-neck, it's possible to implement parallel processing here for the
+instruments and the mixer.
+
+THE TRANSPORT
+-------------
+
+A conceptual model of the transport looks like this:
+
+     HydrogenApp
+        A
+        |                                              Current Song
+        V                                                     |(**)
+dynamic_cast<TransportMasterInterface>   JackTimebaseCallback |
+        A                                           A         |
+        |                                           |(**)     |
+        V                                   (++)    |         V
+  Transport <-- TransportMasterInterface <-+-InternalTransportMaster
+     | (private)                           |
+     |                                     +-JackTransportMaster (++)
+     V                                     |                     
+TransportPosition (Struct/class)           +-MiscTransportMaster
+            | (analog to jack_position_t)  |
+            |                              .
+            V                              .
+    Sequencer and friends                  .
+                        (**) Currently, the Current song is a module
+                             variable (private) for hydrogen.cpp.
+                             How do we expose this to the transport?
+                        (++) Someone, somewhere, has to compensate
+                             for these cases:
+                             * When jack_position_t does not have BBT.
+                             * When ticks don't match Hydrogen's ticks.
+
+Hydrogen will create and own the transport.  It allows the GUI to
+manipulate it through the TransportMasterInterface.  This tranposrt is
+not very smart at all, but serves as a front to several different
+Transport implementations.  One key thing to notice in this: The
+Sequencer is *always* a transport slave.  It is unable to change the
+position of the transport without going through the transport's public
+interface.  Furthermore, it has *no* idea who is controlling the
+transport (whether it's Hydrogen or JACK or something else).
+
+The transport implementations are required supply Bar:Beat.Tick (BBT)
+data that maps the first frame of the audio cycle to a BBT.
+Furthermore, the BBT has to match the current song or pattern that is
+being played (depending on the mode).  So, this means that when we
+reach the end of the song and start looping -- it starts feeding
+1:1.0000 at the loop point.  This also means that if some external
+transport gives some crazy BBT data (or *no* BBT data), that this has
+to somehow be mapped in to something that is sane for the current
+song.
+
+InternalTransportMaster is just a concept for now.  The plan is to
+start off with a simple implementation (i.e. no tap-tempo).  Once
+working, we can provide some tap-tempo models without having to modify
+the code, and we can even change/test the different implementations at
+run-time.
+
+Also, by modularizing these, it's much easier to write unit tests to
+ensure that the transports will follow certain rules.
+
+The names "Master" are a little confusing when you think in terms of
+being the Jack Transport Master.
+
+THE JACK TRANSPORT
+==================
+
+When Hydrogen wishes to be the JACK Transport master, it must be done in a
+special way.  The JACK API provides a funtion for (optionally) taking control of
+the JACK Transport.  However, it does *not* provide any means of notification
+that you are no longer the transport master.
+
+Therefore, we can *never* make any decision based on whether or not Hydrogen is
+the JACK transport master.  Furthermore, when Hydrogen wishes to be the
+transport master, it works like this:
+
+
+                                        .....................
+  Song ---> JackTransportCallback ----->.                   .
+                                        . jackd             .
+  Transport <-- JackTransportMaster <---.                   .
+                                        .....................
+
+In this way, our JackTransportMaster "driver" has no clue who is really
+controlling the JACK transport.  Meanwhile, the JackTransportCallback is mapping
+the current Song to the Jack timeline.
+
+THE SEQUENCER
+=============
+
+The Sequencer requires inputs to convert their data into an event that
+will be put in a queue (SeqScript).  The queue will be fed to
+Sequencer output, which is to respond to the events.  This is very
+much like MIDI.  The Sequencer::process() should look something like
+this:
+
+    sequencer_process(uint32_t nframes)
+    {
+        SeqScript seq;
+        TransportPosition pos;
+        SeqInputInterface* pSongSeq;  // i.e. Song -> SeqEvents
+        SeqInputInterface* pMidiInput;
+        SeqInputInterface* pGuiInput;
+        SeqOutputInterface* pSampler; // i.e. H2Core::Sampler
+        SeqOutputInterface* pMidiOut; // i.e. H2Core::MidiOutput
+
+        // Get events from input sources
+
+        pSongSeq->process(seq, pos, nframes);
+        pMidiInput->process(seq, pos, nframes);
+        pGuiInput->process(seq, pos, nframes);
+
+        // Send events to the ouput clients to be processed.
+
+        pSampler->process(seq.begin_const(),
+                          seq.end_const(nframes),
+                          pos,
+                          nframes);
+        pMidiOut->process(seq.begin_const(),
+                          seq.end_const(nframes),
+                          pos,
+                          nframes);
+
+        seq.consumed(nframes);
+    }
+
+    SeqOutputImplementation::process(SeqScriptConstIterator beg,
+                                     SeqScriptConstIterator end,
+                                     const TransportPosition& // pos //,
+                                     uint32_t nframes)
+    {
+        // Do not use pos if you can help it!!
+        SeqScriptConstIterator k;
+
+        for( k=beg ; k != end ; ++k ) {
+            // process events
+        }
+    }
+
+Nobody is able to alter the tranport position, and the outputs are
+unable to alter the input script.
+
+Inputs *are* allowed to schedule beyond the current process() cycle.
+This allows for things like lookahead (for humanization).
+
+SAMPLER, MIXER, AND AUDIO OUT
+=============================
+
+Sequencer
+ |    |
+ |    +----> (Other outputs)
+ |
+ | (Via SeqScript)
+ |
+ V
+Sampler
+ |   (routing)
+ +-+-+-+-+-+ ... +-+-+-+
+ | | | | | |     | | | |
+ (I n s t r u m e n t s)
+ | | | | | |     | | | |
+ V V V V V V     V V V V
+.........................
+.                       .<--> FX1 SEND/RETURN
+.                       .<--> FX2 SEND/RETURN
+.       Mixer           .<--> FX3 SEND/RETURN
+.                       .<--> FX4 SEND/RETURN
+.                       .
+.                       .<--> Anything else
+.........................
+ | |  | | | | | | |
+ L R  TRACKING-OUTS
+ | |  | | | | | | |
+ V V  V V V V V V V
+.....................
+.   Audio Driver    . 
+.....................
+
+This is quite a bit different from how Hydrogen currently does things.
+Currently, H2Core::Instrument mostly holds parameters and data that
+the Sampler accesses to render the notes.  In this design, most of the
+audio code is now *leaving* the sampler, and the sampler is like a
+drummer hitting a stick on different instruments.
+
+Likewise, the current H2Core::Mixer is a set of parameters that the
+Sampler refers to when scaling and summing notes.  In this case, the
+Mixer becomes the audio output device for each instrument.  The mixer
+combines and routes signals as needed.
+
+It's worth noting that once the sequencer is given the list of events
+to render... the processing lends itself to parallel processing.  None
+of the instruments really need to know anything about the other
+intruments during this phase.
+

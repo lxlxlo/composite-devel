@@ -1,6 +1,18 @@
 NOTES ON REDESIGNING THE TRANSPORT IN HYDROGEN
 ==============================================
 
+#####################################
+#####    W A R N I N G ! ! !    *****
+#####################################
+#                                   #
+# This file represents the          #
+# evolution of ideas.  If you wnat  #
+# to know "what is the new design?" #
+# then you should read the file:    #
+# NEW_DESIGN.txt                    #
+#                                   #
+#####################################
+
 --------------------------------------------------------------------------------
 Date: Tue, 26 Aug 2008 12:42:47 -0500
 From: "Gabriel M. Beddingfield" <gabriel@teuton.org>
@@ -838,3 +850,392 @@ HOWEVER, Hydrogen is all about pattern based sequencing... so...
 
     THEREFORE: beats_per_bar, beat_type, ticks_per_beat, and
                bar_start_tick will all be unsigned integer types.
+
+--------------------------------------------------------------------------------
+2009-03-16 SEQUENCER THRU AUDIO OUT
+===================================
+
+Sequencer
+ |    |
+ |    +----> (Other outputs)
+ |
+ | (Via SeqScript)
+ |
+ V
+Sampler
+ |   (routing)
+ +-+-+-+-+-+ ... +-+-+-+
+ | | | | | |     | | | |
+ (I n s t r u m e n t s)
+ | | | | | |     | | | |
+ V V V V V V     V V V V
+.........................
+.                       .<--> FX1 SEND/RETURN
+.                       .<--> FX2 SEND/RETURN
+.       Mixer           .<--> FX3 SEND/RETURN
+.                       .<--> FX4 SEND/RETURN
+.                       .
+.                       .<--> Anything else
+.........................
+ | |  | | | | | | |
+ L R  TRACKING-OUTS
+ | |  | | | | | | |
+ V V  V V V V V V V
+.....................
+.   Audio Driver    . 
+.....................
+
+This causes the mixer to have a ton of buffers.  But, with "tracking outs," I
+don't think there's much way to avoid it.
+
+One way to reduce the buffers is to provide an interface for the instruments to
+write directly to mixer buffers with desired gains.
+
+int Instrument::process(nframes)
+{
+    float atten = 1.0;
+    sample_type* out;
+    Mixer* M;
+    //...
+    out = M->get_buffer_for_input(this);
+    atten = M->get_fader_atten_for_input(this);
+    end = out + nframes;
+    while(out != end) {
+        (*out) += atten * this->sample; // Write directly to mixer's buffer.
+        ++out;
+    }
+
+    return 0;
+}
+
+But... things change for tracking outs.
+
+-- or do they?  We still ask the mixer for a pointer to the buffer where the
+data goes.  If the mixer wants direct outs, the atten will be something like
+1/32.  If the mixer handles tracking outs, it will be 1.0.
+
+But... this setup feels like we're wagging the dog.  The call stack is something
+like:
+
+jackd process()
+  Hydrogen::process()
+    Sequencer::process()
+      Sampler::process()
+        Instrument::process()
+          Mixer::get_buffer()
+
+Seems like the Mixer should be in control of the instruments, instead of the
+Instruments being in control.  But how do we do that w/o the mixer being part of
+the sampler (thus, not a generic mixer)?
+
+But -- it doesn't seem like it would be too difficult to optimize tracks like
+this -- with inst's that aren't playing assumed to be zero and skipped.
+
+Here's a target Mixer API:
+
+int Hydrogen::process(nframes)
+{
+    Sequencer* seq;
+    Mixer* mix;
+    Transport* xport;
+    TransportPosition xpos;
+
+    xport->get_position(xpos);
+    seq->process(xpos, nframes);
+    mix->process(nframes);        // Is 'nframes' necc.?
+
+    return 0;
+}
+
+int SomeSeqClient::process(beg, end, xpos, nframes)
+{
+    Mixer* mix;
+    sample_type* obuf;
+
+    mix = Hydrogen::get_instance()::get_mixer();  // How do we avoid invoking
+                                                  // the Singleton here?
+    obuf = mix->get_buf_for_input(this);
+
+    // write stuff to obuf
+
+    return 0;
+}
+
+class Mixer
+{
+    //...
+
+private:
+    some_sequence_type<SeqClient*> used;
+    some_map_type<SeqClient* sample_type*> bufs;
+
+    //...
+};
+
+sample_type* Mixer::get_buf_for_input(that)
+{
+    used.push_back(that);
+    return bufs[that];
+}
+
+int Mixer::process(nframes)
+{
+    sample_type* outL, outR, that;
+
+    //...
+
+    while( ! used.empty() ) {
+        that = bufs[used.front()];
+        used.pop();
+        for(uint32_t k=0; k<nframes; ++k) {
+            outL[k] += that[k];
+            outR[k] += that[k];
+        } // what about L/R pan?
+    }
+
+    return 0;
+}
+
+--------------------------------------------------------------------------------
+2009-03-22 REVISED ROLE OF H2Core::Hydrogen
+===========================================
+
+The Hydrogen class has become a combination of the sequencer, audio engine, and
+controller for the audio backend.  That seems to me like too much.  The new
+Hydrogen class will simply be a controller for the audio engine.
+
+Note that this here is more of a concept.  I'm not married to the details (such
+as using std::string as the generic driver identifier).  Also, I'd prefer to
+take "Input" and "Output" out of the audio and midi drivers.  We generally use
+the same driver for both the input and output side.
+
+class Hydrogen : public Object
+{
+public:
+	typedef std::string driver_id_t;
+	typedef std::deque<driver_id_t> driver_list_t;
+
+	/// Return the Hydrogen instance
+	static Hydrogen* get_instance();
+
+	~Hydrogen();
+
+        // Master process() callbacks
+        static int process_callback(frames_type nframes, void* arg);
+        int process(frames_type nframes);
+
+	/// Access to major objects.
+	TransportMasterInterface& get_transport();
+	Mixer& get_mixer();
+	Sequencer& get_sequencer();
+	Sampler& get_sampler();
+	AudioOutput& get_audiooutput();
+	MidiInput& get_midiinput();
+
+	/// Should LADSPA effects be handled by Hydrogen or the Mixer?
+
+	/// Song manipulation
+	/// Should Hydrogen or GUI be loading songs??
+	Song& get_song();
+	void set_song(Song* s);
+	void set_song(std::string path);
+	void remove_song();
+
+	/// Configuration options
+	const driver_list_t& get_transport_drivers();
+	int set_transport_driver(const driver_id_t& name);
+	const driver_list_t& get_audio_outputs();
+	int set_audio_output(const driver_id_t& name);
+	const driver_list_t& get_midi_drivers();
+	int set_midi_input(const driver_id_t& name);	
+
+	/// Future ideas for interfaces.  We could feed the
+	/// GUI a list of the configuration parameters by driver.
+	/// The GUI would create the config dialog based on this
+	/// list.  This way, new features can be handled automagically.
+	// typedef (unknown) config_list_t;
+	// const config_list_t& get_transport_configuration();
+	// int set_transport_configuration(...);
+	// const config_list_t& get_audio_configuration()
+	// ...etc.
+
+	/// Misc.
+	int get_state();  // For implementing a global "pause", maybe
+	/// playlist stuff?
+	void panic();     // Immediately cease all audio
+
+private:
+	static Hydrogen* __instance;
+
+	class HydrogenPrivate;
+	HydrogenPrivate* d;
+
+	Hydrogen();  // private because Hydrogen is a singleton.
+};
+
+--------------------------------------------------------------------------------
+2009-03-22 THE PROCESS() CALLBACK - PROPOSED
+============================================
+
+Currently, Hydrogen requires the AudioOutput driver to supply something that
+will call the process() callback.  When using JACK, CoreAudio, or PortAudio for
+Audio, those API's supply a thread that calls the process() callback.  When
+using OSS or ALSA, they are required to supply a thread that calls process()
+repeatedly.  When using MIDI, the MIDI happens _outside_ of the process()
+callback.  This makes it difficult to synchronize MIDI events with audio
+frames.  When I did the JACK MIDI driver, I had to add a hook into the audio
+process callback and kludge a lot of the "getCurrentFrame" logic.
+
+Here's a listing of the current/planned/potential Hydrogen driver API's:
+
+API       | Data  | API TYPE | Requires   | Syncs with
+==========+=======+==========+============+============
+JACK      | Audio | Callback | (none)     | JACK MIDI
+ALSA      | Audio | I/O      | (none)     |
+OSS       | Audio | I/O      | (none)     |
+CoreAudio | Audio | Callback | (none)     |
+PortAudio | Audio | Callback | (none)     |
+JACK *%   | MIDI  | Callback | JACK Audio | JACK Audio
+ALSA      | MIDI  | I/O      | (none)     |
+CoreMidi  | MIDI  | Callback | (none)     |
+PortMidi  | MIDI  | I/O      | (none)     |
+LADSPA *  | Audio | Callback | (none)     | (Host app)
+LV2 *     | (any) | Callback | (none)     | (Host app)
+DSSI *    | Au+Mi | Callback | (none)     | (Host app)
+OSC *     | (any) | Event    | (none)     | Wall clock
+
+* - an API that is not currently supported by Hydrogen.
+% - an API that is planned to be supported by Hydrogen.
+
+Note that a good resource on this topic is this article on writing ALSA
+applications, written by Paul Davis:
+http://www.equalarea.com/paul/alsa-audio.html
+
+So, the issue is: how do we handle and synchronize all of these?  And in a way
+that isn't confusing to users?  And what do we do when we have two Callback
+API's that aren't synchronized (like CoreAudio and CoreMidi)?
+
+First off, Davis's article shows how to turn an I/O API into a Callback API.  So
+then, it becomes a matter of who is controlling the clock.  It looks like we
+have the following 5 situations:
+
+               | Callback MIDI      | Callback MIDI  | I/O MIDI
+               | (Same as Aud.)     | (Ind. of Aud.) |
+===============+====================+================+====================
+Callback Audio | Use API's thread   | ???            | ???
+---------------+--------------------+----------------+--------------------
+I/O Audio      | ???                | N/A            | ???
+
+Here's how H2 currently does it:
+
+               | Callback MIDI      | Callback MIDI  | I/O MIDI
+               | (Same as Aud.)     | (Ind. of Aud.) |
+===============+====================+================+====================
+Callback Audio | Use API's thread   | N/A            | Audio uses API thd.
+               |                    |                | MIDI supplies thd.
+---------------+--------------------+----------------+--------------------
+I/O Audio      | N/A                | N/A            | Ea. supplies thread
+
+Here's how H2 might do it:
+
+               | Callback MIDI      | Callback MIDI  | I/O MIDI
+               | (Same as Aud.)     | (Ind. of Aud.) |
+===============+====================+================+====================
+Callback Audio | Use API's thread   | Use Audio API's| Use Audio API's
+               |                    | thread.        | thread.
+               |                    | (???)          | MIDI supplies own
+               |                    |                | thread only if necc
+---------------+--------------------+----------------+--------------------
+I/O Audio      | H2 Supplies thread | N/A            | H2 Supplies thread
+               | and timer          |                | and timer.
+
+Suggest:  Examine how ALSA was implemented in the JACK codebase.  At first
+glance, JACK supplies a thread to control timings for noncallback API's (called
+_nt_ drivers for non-thread).  Callback API's handle it themselves.  I'm still
+not clear on how they set timer interrupts -- whether it's done using audio
+hardware frame-based interrupts or by using an internal timer like HPET.
+
+Hmmm... would be much easier if it were JACK only.  I feel like this is
+rewriting JACK.  Maybe I'm barking up the wrong tree here.
+
+2009-04-17: OK, after thinking about it a while, I think that the table at the
+bottom is OK, and this is what we should do.  For API's that don't synchronize,
+synchronization can be approximated like this... for example the case of a
+MidiDriver which has a callback API not compatible with the AudioDriver's
+callback API...
+
+   circular_buffer<MidiDriver::ev_t> MidiDriver::m_buf;
+   some_timer_t MidiDriver::m_epoch;
+
+   MidiDriver::ThreadMain()
+   {
+      driver_data_t buf[];
+      MidiDriver::ev_t *ev;
+      size_t k;
+   
+      while( count = driver_read(buf) ) {
+         ev = m_buf.reserve(count);
+         for( k=0 ; k<count ; ++k ) {
+	    ev[k].timestamp = some_timer_calculation() - m_epoch;
+            ev[k].data = buf[k];
+         }
+         m_buf.push();
+      }
+   }
+
+   MidiDriver::HydrogenProcess()
+   {
+      size_t k;
+      MidiDriver::ev_t ev;
+
+      m_epoch = some_timer();
+      size_t data = m_buf.avail_for_read();
+
+      for( k = 0 ; k < data ; ++k ) {
+         ev = m_buf.pop();
+	 // Process ev
+      }
+   }
+
+Thus, timing is synchronized roughly by the distince between calls to
+HydrogenProcess().  This will require some manner of circular (ring) buffer.
+Note that the timer sync (m_epoch) could be incorperated into the
+circular_buffer's API.
+
+One issue: If our master callback is called much more frequently than
+this "rogue" callback... what do we do?  For example:
+
+     Wall Clock: 0 . . . . 1 . . . . 2 . . . . 3 . . . . 4 . . . . 5
+         Thread: X                                       X
+HydrogenProcess: X         X         X         X         X         X
+       m_epoch =  0         1         2         3         4         5
+
+Between 0 and 4, data may be received.  When normalized to the current
+buffer, all time will be from the span 0 to 4.  Measuring time from 3,
+our span is from -3 to 1.  This is a problem, because our processing
+is expecting all the events to be between 0 and 1.
+
+What do we do?  Here's two options:
+
+  * Add latency to the signal.  All data is scheduled, say, 4 periods
+    after how we would normally schedule it.
+
+  * Squash the data between 0 and 3 and schedule it as if they all
+    happened at 3.
+
+For now (since I'm writing more aobut it than coding :-)), either will
+do.  But the bottom line is that Hydrogen needs these (as utilities):
+
+1. A master thread sourced by Hydrogen for when the Audio API is not
+   interrupt-driven (callbacks).
+
+2. A lock-free circular (ring) buffer.
+
+3. A high precision timer that can roughly be mapped back to the frame
+   rate.
+
+In the Ardour source tree is a libs/pbd/pbd/ringbuffer.h, which is a
+C++ ring buffer class.  This was the basis of the JACK ringbuffer
+design (translating the code from C++ to C).  It is GPL v2+, so I'm
+grafting it in to our code.
+
