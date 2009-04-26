@@ -28,7 +28,7 @@
 #endif
 
 
-#include <QtGui>
+#include <QString>
 #include <map>
 #include <vector>
 #include <sstream>
