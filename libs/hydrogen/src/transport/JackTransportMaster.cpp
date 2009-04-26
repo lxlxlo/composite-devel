@@ -37,11 +37,14 @@ class H2Core::JackTransportMasterPrivate
 {
 public:
     jack_client_t* client;
+    uint32_t next_frame;
 };
 
 JackTransportMaster::JackTransportMaster(void) : d(0)
 {
     d = new JackTransportMasterPrivate;
+    d.client = 0;
+    d.next_frame = (uint32_t)-1;
 }
 
 int JackTransportMaster::locate(uint32_t frame)
@@ -84,6 +87,7 @@ void JackTransportMaster::get_position(TransportPosition* hpos)
     } else {
         hpos->state = TransportPosition::STOPPED;
     }
+    hpos->new_position = ( jpos.frame != d->next_frame )
     hpos->frame = jpos.frame;
     hpos->frame_rate = jpos.frame_rate;
     #warning "Did not check for a jpos.valid & JackPositionBBT"
@@ -98,9 +102,17 @@ void JackTransportMaster::get_position(TransportPosition* hpos)
     hpos->beats_per_minute = jpos.beats_per_minute;
 }
 
-void JackTransportMaster::processed_frames(uint32_t /*nFrames*/)
+void JackTransportMaster::processed_frames(uint32_t nFrames)
 {
-    // Handled by JACK server.
+    jack_transport_state_t state;
+    jack_position_t jpos;
+
+    state = jack_transport_query(d->client, &jpos);
+    if( state == TransportPosition::ROLLING ) {
+        d->next_frame = jpos.frame + nFrames;
+    } else {
+        d->next_frame = jpos.frame;
+    }
 }
 
 void JackTransportMaster::set_current_song(Song* s)

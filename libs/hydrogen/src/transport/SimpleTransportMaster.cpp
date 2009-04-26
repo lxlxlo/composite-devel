@@ -75,6 +75,7 @@ int SimpleTransportMaster::locate(uint32_t frame)
     d->pos.beat = 1 + (abs_tick - d->pos.bar_start_tick) / d->pos.ticks_per_beat;
     d->pos.tick = (abs_tick - d->pos.bar_start_tick) % d->pos.ticks_per_beat;
     d->pos.frame = frame;
+    d->pos.new_position = true;
     return 0;
 }
 
@@ -114,6 +115,7 @@ int SimpleTransportMaster::locate(uint32_t bar, uint32_t beat, uint32_t tick)
         / double(d->pos.ticks_per_beat)
         / d->pos.beats_per_minute;
 
+    d->pos.new_position = true;
 
     return 0;
 }
@@ -155,6 +157,7 @@ void SimpleTransportMaster::processed_frames(uint32_t nFrames)
         / d->pos.ticks_per_beat;
 
     d->pos.frame += nFrames;
+    d->pos.new_position = false;
 
     d->pos.bbt_offset += nFrames;
     if( double(d->pos.bbt_offset) < frames_per_tick ) return;
