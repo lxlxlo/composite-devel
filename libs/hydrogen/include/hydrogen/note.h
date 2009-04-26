@@ -103,7 +103,7 @@ public:
 	    float fVelocity = 1.0,
 	    float fPan_L = 0.5,
 	    float fPan_R = 0.5,
-	    int nLength = 0,                 // Length is in *ticks*
+	    int nLength = -1,                 // Length is in *ticks*
 	    float fPitch = 1.0,
 	    NoteKey key = NoteKey()
 	);

@@ -54,6 +54,12 @@ namespace H2Core
         uint32_t ticks_per_beat;  /// Number of ticks in a single beat
         double beats_per_minute;  /// The song tempo (beats per minute)
 
+	/**
+	 * Constructors
+	 */
+	TransportPosition();
+	TransportPosition(const TransportPosition& orig);
+
         /**
          * Round struct so that bbt_offset is 0 and frame refers to the exact
          * B:b.t.  Can be rounded to nearest bar, beat, or tick.
@@ -71,6 +77,15 @@ namespace H2Core
         TransportPosition& operator--();
 
         /**
+	 * Advance/rewind one tick.  Note that this does not adjust
+	 * bbt_offset to zero.  Use round(), floor(), or ceil() for that.
+	 */
+	friend TransportPosition operator+(const TransportPosition& pos, int ticks);
+	friend TransportPosition operator-(const TransportPosition& pos, int ticks);
+	TransportPosition& operator+=(int ticks);
+	TransportPosition& operator-=(int ticks);
+
+        /**
          * Convenience calculations
          */
         inline double frames_per_tick() const {
@@ -80,7 +95,11 @@ namespace H2Core
         inline uint32_t tick_in_bar() const {
             return beat * ticks_per_beat + tick;
         }
+
     };
+
+TransportPosition operator+(const TransportPosition& pos, int ticks);
+TransportPosition operator-(const TransportPosition& pos, int ticks);
 
 }
 

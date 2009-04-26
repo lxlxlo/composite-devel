@@ -126,31 +126,58 @@ private:
 
 public:
 	int process( SeqScript& seq, const TransportPosition& pos, uint32_t nframes ) {
+		// Set up quantization.
+		uint32_t quant_frame;
+
+		{
+			// TODO:  This seems too complicated for what we're doing...
+			Preferences *pref = Preferences::getInstance();
+			TransportPosition quant(pos);
+			quant.ceil(TransportPosition::TICK);
+
+			double res = (double)pref->getPatternEditorGridResolution();
+			double trip_f = pref->isPatternEditorUsingTriplets() ? (2.0/3.0) : 1.0; // Triplet factor
+			double fquant_ticks = quant.ticks_per_beat * (4.0 / res) * trip_f;  // Round to scalar * beat resolution
+			int quant_ticks = round(fquant_ticks) - quant.tick;
+			if( quant_ticks > 0 ) {
+				quant += quant_ticks;
+			}
+
+			quant_frame = quant.frame - pos.frame;
+		}
+
+		// Add events to 'seq'
 		QMutexLocker mx(&__mutex);
-		EvList::const_iterator k;
+		EvList::iterator k;
 		for( k=__events.begin() ; k!=__events.end() ; ++k ) {
+			if( k->quantize ) {
+				k->frame = quant_frame;
+			}
 			seq.insert(*k);
 		}
 		__events.clear();
+		return 0;
 	}
 
-	void note_on( Note* pNote) {
+	void note_on( const Note* pNote, bool quantize = false ) {
 		SeqEvent ev;
 		QMutexLocker mx(&__mutex);
 		ev.frame = 0;
 		ev.type = SeqEvent::NOTE_ON;
 		ev.note = *pNote;
+		ev.quantize = quantize;
 		ev.instrument_index =
 			Hydrogen::get_instance()->getSong()
 			->get_instrument_list()->get_pos( pNote->get_instrument() );
 	}
 
-	void note_off( Note* pNote ) {
+	void note_off( const Note* pNote, bool quantize = false ) {
 		SeqEvent ev;
 		QMutexLocker mx(&__mutex);
 		ev.frame = 0;
 		ev.type = SeqEvent::NOTE_OFF;
 		ev.note = *pNote;
+		ev.quantize = quantize;
 		ev.instrument_index =
 			Hydrogen::get_instance()->getSong()
 			->get_instrument_list()->get_pos( pNote->get_instrument() );
@@ -262,6 +289,7 @@ int  m_audioEngineState = STATE_UNINITIALIZED;	///< Audio engine state
 
 int m_nSelectedPatternNumber;
 int m_nSelectedInstrumentNumber;
+bool m_sendPatternChange;
 
 #ifdef LADSPA_SUPPORT
 float m_fFXPeak_L[MAX_FX];
@@ -736,10 +764,10 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 
 	AudioEngine::get_instance()->unlock();
 
-        #warning "We used to send a notification that the pattern changed"
-// 	if ( sendPatternChange ) {
-// 		EventQueue::get_instance()->push_event( EVENT_PATTERN_CHANGED, -1 );
-// 	}
+ 	if ( m_sendPatternChange ) {
+ 		EventQueue::get_instance()->push_event( EVENT_PATTERN_CHANGED, -1 );
+		m_sendPatternChange = false;
+ 	}
 
         // Increment the transport
         xport->processed_frames(nframes);
@@ -782,6 +810,9 @@ int audioEngine_song_sequence_process(
 
 	while( cur.frame < end_frame ) {
 		this_tick = cur.tick_in_bar();
+		if( this_tick == 0 ) {
+			m_sendPatternChange = true;
+		}
 		pat_grp = pattern_group_index_for_bar(pSong, pos.bar);
 		patterns = pSong->get_pattern_group_vector()->at(pat_grp);
 
@@ -878,18 +909,19 @@ void audioEngine_setSong( Song *newSong )
 {
 	_WARNINGLOG( QString( "Set song: %1" ).arg( newSong->__name ) );
 
+	while( m_pSong != 0 ) {
+		audioEngine_removeSong();
+	}
+
 	AudioEngine::get_instance()->lock( "audioEngine_setSong" );
 
 	m_pTransport->stop();
-	audioEngine_stop( false );
+	audioEngine_stop( false );  // Also clears all note queues.
 
 	// check current state
 	if ( m_audioEngineState != STATE_PREPARED ) {
 		_ERRORLOG( "Error the audio engine is not in PREPARED state" );
 	}
-
-	m_pPlayingPatterns->clear();
-	m_pNextPatterns->clear();
 
 	EventQueue::get_instance()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );
 	EventQueue::get_instance()->push_event( EVENT_PATTERN_CHANGED, -1 );
@@ -1687,6 +1719,9 @@ void Hydrogen::sequencer_stop()
 
 void Hydrogen::setSong( Song *pSong )
 {
+	while( m_pSong != 0 ) {
+		removeSong();
+	}
 	audioEngine_setSong( pSong );
 }
 
@@ -1724,136 +1759,20 @@ void Hydrogen::addRealtimeNote( int instrument,
 				float velocity,
 				float pan_L,
 				float pan_R,
-				float pitch,
-				bool forcePlay )
+				float /* pitch */,
+				bool /* forcePlay */)
 {
-	UNUSED( pitch );
-
 	Preferences *pref = Preferences::getInstance();
-	unsigned int realcolumn = 0;
-	unsigned res = pref->getPatternEditorGridResolution();
-	int nBase = pref->isPatternEditorUsingTriplets() ? 3 : 4;
-	int scalar = ( 4 * MAX_NOTES ) / ( res * nBase );
-	bool hearnote = forcePlay;
 
-	AudioEngine::get_instance()->lock( "Hydrogen::addRealtimeNote" );
+	Instrument* i = getSong()->get_instrument_list()->get(instrument);
+	Note note( i,
+		   velocity,
+		   pan_L,
+		   pan_R,
+		   -1
+		);
+	m_GuiInput.note_on(&note, pref->getQuantizeEvents());
 
-	Song *song = getSong();
-	if ( instrument >= ( int )song->get_instrument_list()->get_size() ) {
-		// unused instrument
-		AudioEngine::get_instance()->unlock();
-		return;
-	}
-
-	Pattern* currentPattern = NULL;
-	PatternList *pPatternList = m_pSong->get_pattern_list();
-	if ( ( m_nSelectedPatternNumber != -1 )
-	     && ( m_nSelectedPatternNumber < ( int )pPatternList->get_size() ) ) {
-		currentPattern = pPatternList->get( m_nSelectedPatternNumber );
-	}
-
-	// Get current column and compensate for "lookahead"
-	unsigned int column = getTickPosition();
-	unsigned int lookaheadTicks = m_nLookaheadFrames
-		/ m_pAudioDriver->m_transport.m_nTickSize;
-	if ( column >= lookaheadTicks ) {
-		column -= lookaheadTicks;
-	} else {
-		lookaheadTicks %= currentPattern->get_length();
-		column = (column + currentPattern->get_length() - lookaheadTicks)
-			% currentPattern->get_length();
-	}
-
-	realcolumn = getRealtimeTickPosition();
-
-	// quantize it to scale
-	int qcolumn = ( int )::round( column / ( double )scalar ) * scalar;
-	if ( qcolumn == MAX_NOTES ) qcolumn = 0;
-
-	if ( pref->getQuantizeEvents() ) {
-		column = qcolumn;
-	}
-
-
-	unsigned position = column;
-
-	Instrument *instrRef = 0;
-	if ( song ) {
-		instrRef = song->get_instrument_list()->get( instrument );
-	}
-
-	if ( currentPattern && ( getState() == STATE_PLAYING ) ) {
-		bool bNoteAlreadyExist = false;
-		for ( unsigned nNote = 0 ;
-		      nNote < currentPattern->get_length() ;
-		      nNote++ ) {
-			Pattern::note_map_t::iterator pos;
-			for ( pos = currentPattern->note_map.lower_bound( nNote ) ;
-			      pos != currentPattern->note_map.upper_bound( nNote ) ;
-			      ++pos ) {
-				Note *pNote = pos->second;
-				if ( pNote!=NULL ) {
-					if ( pNote->get_instrument() == instrRef
-					     && nNote==column ) {
-						bNoteAlreadyExist = true;
-						break;
-					}
-				}
-			}
-		}
-
-		if ( bNoteAlreadyExist ) {
-			// in this case, we'll leave the note alone
-			// hear note only if not playing too
-			if ( pref->getHearNewNotes()
-			     && getState() == STATE_READY ) {
-				hearnote = true;
-			}
-		} else if ( !pref->getRecordEvents() ) {
-			if ( pref->getHearNewNotes()
-			     && ( getState() == STATE_READY
-				  || getState() == STATE_PLAYING ) ) {
-				hearnote = true;
-			}
-		} else {
-			// create the new note
-			Note *note = new Note( instrRef,
-					       position,
-					       velocity,
-					       pan_L,
-					       pan_R,
-					       -1,
-					       0 );
-			currentPattern->note_map.insert(
-				std::make_pair( column, note )
-				);
-
-			// hear note if its not in the future
-			if ( pref->getHearNewNotes()
-			     && position <= getTickPosition() ) {
-				hearnote = true;
-			}
-
-			song->__is_modified = true;
-
-			EventQueue::get_instance()->push_event( EVENT_PATTERN_MODIFIED, -1 );
-		}
-	} else if ( pref->getHearNewNotes() ) {
-		hearnote = true;
-	}
-
-	if ( hearnote && instrRef ) {
-		Note *note2 = new Note( instrRef,
-					realcolumn,
-					velocity,
-					pan_L,
-					pan_R,
-					-1,
-					0 );
-		midi_noteOn( note2 );
-	}
-
-	AudioEngine::get_instance()->unlock(); // unlock the audio engine
 }
 
 
