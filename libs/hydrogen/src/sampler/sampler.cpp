@@ -145,6 +145,9 @@ void SamplerPrivate::handle_note_on(const SeqEvent& ev)
 	pInstr->enqueue();
 	current_notes.push_back( ev.note );
 	current_notes.back().m_nSilenceOffset = ev.frame;
+	current_notes.back().m_uInstrumentIndex = ev.instrument_index;
+	assert(ev.instrument_index >= 0);
+	assert(ev.instrument_index < MAX_INSTRUMENTS);
 }
 
 void SamplerPrivate::handle_note_off(const SeqEvent& ev)
@@ -441,7 +444,7 @@ int SamplerPrivate::render_note_no_resample(
 	int nInitialSamplePos = ( int )note.m_fSamplePosition;
 	int nSamplePos = nInitialSamplePos;
 	int nTimes = nInitialBufferPos + nAvail_bytes;
-	int nInstrument = pSong->get_instrument_list()->get_pos( note.get_instrument() );
+	int nInstrument = note.m_uInstrumentIndex;
 
 	// filter
 	bool bUseLPF = note.get_instrument()->is_filter_active();
@@ -596,7 +599,7 @@ int SamplerPrivate::render_note_resample(
 	float fInitialSamplePos = note.m_fSamplePosition;
 	float fSamplePos = note.m_fSamplePosition;
 	int nTimes = nInitialBufferPos + nAvail_bytes;
-	int nInstrument = pSong->get_instrument_list()->get_pos( note.get_instrument() );
+	int nInstrument = note.m_uInstrumentIndex;
 
 	// filter
 	bool bUseLPF = note.get_instrument()->is_filter_active();

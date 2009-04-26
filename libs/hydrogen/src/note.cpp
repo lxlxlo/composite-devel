@@ -42,6 +42,7 @@ Note::Note(
 		, m_nSilenceOffset( 0 )
 		, m_nReleaseOffset( 0 )
 		, m_fSamplePosition( 0.0 )
+		, m_uInstrumentIndex( (unsigned)-1 )
 		, m_noteKey( key )
 		, m_fCutoff( 1.0 )
 		, m_fResonance( 0.0 )
@@ -70,6 +71,7 @@ Note::Note( const Note* pNote )
 	m_nSilenceOffset          = pNote->m_nSilenceOffset;
 	m_nReleaseOffset          = pNote->m_nReleaseOffset;
 	m_fSamplePosition         = pNote->m_fSamplePosition;
+	m_uInstrumentIndex        = pNote->m_uInstrumentIndex;
 	m_noteKey                 = pNote->m_noteKey;
 	// m_adsr copied in set_instrument()
 	m_fCutoff                 = pNote->m_fCutoff;

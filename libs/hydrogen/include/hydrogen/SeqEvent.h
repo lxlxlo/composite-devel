@@ -37,6 +37,7 @@ namespace H2Core
         frame_type frame;
         enum { NOTE_ON, NOTE_OFF, ALL_OFF } type;
 	Note note;
+	unsigned instrument_index;  // For tracking outputs.
     };
 
     bool less(SeqEvent a, SeqEvent b) {
