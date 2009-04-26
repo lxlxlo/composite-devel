@@ -146,30 +146,6 @@ float* PortAudioDriver::getOut_R()
 	return m_pOut_R;
 }
 
-void PortAudioDriver::updateTransportInfo()
-{
-}
-
-void PortAudioDriver::play()
-{
-	m_transport.m_status = TransportInfo::ROLLING;
-}
-
-void PortAudioDriver::stop()
-{
-	m_transport.m_status = TransportInfo::STOPPED;
-}
-
-void PortAudioDriver::locate( unsigned long nFrame )
-{
-	m_transport.m_nFrames = nFrame;
-}
-
-void PortAudioDriver::setBpm( float fBPM )
-{
-	m_transport.m_nBPM = fBPM;
-}
-
 };
 
 #endif

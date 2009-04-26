@@ -22,8 +22,6 @@
 #ifndef H2_AUDIO_OUTPUT_H
 #define H2_AUDIO_OUTPUT_H
 
-
-#include <hydrogen/IO/TransportInfo.h>
 #include <hydrogen/Object.h>
 
 namespace H2Core
@@ -35,8 +33,6 @@ namespace H2Core
 class AudioOutput : public Object
 {
 public:
-	TransportInfo m_transport;		// Transport info
-
 	AudioOutput( const QString& sClassName )
 			: Object( sClassName )
 			, __track_out_enabled( false ) { }
@@ -50,13 +46,6 @@ public:
 	virtual unsigned getSampleRate() = 0;
 	virtual float* getOut_L() = 0;
 	virtual float* getOut_R() = 0;
-
-	virtual void updateTransportInfo() = 0;
-	virtual void play() = 0;
-	virtual void stop() = 0;
-	virtual void locate( unsigned long nFrame ) = 0;
-	virtual void setBpm( float fBPM ) = 0;
-
 
 	bool has_track_outs() {
 		return __track_out_enabled;

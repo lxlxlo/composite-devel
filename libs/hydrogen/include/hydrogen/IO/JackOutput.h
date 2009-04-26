@@ -31,7 +31,6 @@
 
 #include <pthread.h>
 #include <jack/jack.h>
-#include <jack/transport.h>
 
 #include <hydrogen/globals.h>
 #include <hydrogen/hydrogen.h>
@@ -58,19 +57,9 @@ public:
 	int connect();
 	void disconnect();
 	void deactivate();
-	// Workaround for Ardour transport bug.  See jack_client.cpp
-	unsigned getArdourTransportAdjustment();
 	unsigned getBufferSize();
 	unsigned getSampleRate();
 	int getNumTracks();
-
-	jack_transport_state_t getTransportState() {
-		return m_JackTransportState;
-	}
-	jack_position_t getTransportPos() {
-		return m_JackTransportPos;
-	}
-
 
 	void setPortName( int nPort, bool bLeftChannel, const QString& sName );
 	void makeTrackOutputs( Song * );
@@ -90,39 +79,8 @@ public:
 
 	int init( unsigned bufferSize );
 
-	virtual void play();
-	virtual void stop();
-	virtual void locate( unsigned long nFrame );
-	virtual void updateTransportInfo();
-	virtual void setBpm( float fBPM );
-	void calculateFrameOffset();
-	void locateInNCycles( unsigned long frame, int cycles_to_wait = 2 );
-
-//jack timebase callback
-	void initTimeMaster();
- 	void com_release();
-//~ jack timebase callback
-
-protected:
-//jack timebase callback
-	static void jack_timebase_callback(jack_transport_state_t state,
-                                           jack_nframes_t nframes,
-                                           jack_position_t *pos,
-                                           int new_pos,
-                                           void *arg);
-
-	void jack_timebase_callback_impl(jack_transport_state_t state,
-                                         jack_nframes_t nframes,
-                                         jack_position_t *pos,
-                                         int new_pos);
-//~ jack timebase callback
 private:
 	H2Core::Hydrogen *m_pEngine;
-	void relocateBBT();
-	long long bbt_frame_offset;
-	int must_relocate;         	// A countdown to wait for valid information from another Time Master.
-	int locate_countdown;      	// (Unrelated) countdown, for postponing a call to 'locate'.
-	unsigned long locate_frame;	// The frame to locate to (used in 'locateInNCycles'.)
 
 	JackProcessCallback processCallback;
 	jack_port_t *output_port_1;
@@ -133,22 +91,7 @@ private:
 	jack_port_t *track_output_ports_L[MAX_INSTRUMENTS];
 	jack_port_t *track_output_ports_R[MAX_INSTRUMENTS];
 
-	jack_transport_state_t m_JackTransportState;
-	jack_position_t m_JackTransportPos;
-
 	bool connect_out_flag;
-
-//jack timebase callback
-	jack_nframes_t m_jack_frame_current,
-       		           m_jack_frame_last;
-	jack_transport_state_t m_JackTransportStateLast;
-	double m_jack_tick;
-
-	bool m_jack_running;
-	bool m_jack_master;
-	bool cond;
-//~ jack timebase callback
-
 };
 
 #else

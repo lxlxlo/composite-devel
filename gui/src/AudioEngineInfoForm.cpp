@@ -29,6 +29,7 @@
 #include <hydrogen/Pattern.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/hydrogen.h>
+#include <hydrogen/Transport.h>
 #include <hydrogen/IO/MidiInput.h>
 #include <hydrogen/IO/AudioOutput.h>
 #include <hydrogen/sampler/Sampler.h>
@@ -143,16 +144,19 @@ void AudioEngineInfoForm::updateInfo()
 		driverLbl->setText(audioDriverName);
 
 		// Audio driver buffer size
-		sprintf(tmp, "%d", driver->getBufferSize());
-		bufferSizeLbl->setText(QString(tmp));
+		bufferSizeLbl->setText(
+                    QString("%1").arg(driver->getBufferSize())
+                    );
 
 		// Audio driver sampleRate
-		sprintf(tmp, "%d", driver->getSampleRate());
-		sampleRateLbl->setText(QString(tmp));
+		sampleRateLbl->setText(
+                    QString("%1").arg(driver->getSampleRate())
+                    );
 
 		// Number of frames
-		sprintf(tmp, "%d", (int)driver->m_transport.m_nFrames );
-		nFramesLbl->setText(tmp);
+		nFramesLbl->setText(
+                    QString("%1").arg(Transport::get_instance()->get_current_frame())
+                    );
 	}
 	else {
 		driverLbl->setText( "NULL driver" );

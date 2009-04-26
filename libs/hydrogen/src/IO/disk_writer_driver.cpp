@@ -24,6 +24,7 @@
 #include <hydrogen/Preferences.h>
 #include <hydrogen/event_queue.h>
 #include <hydrogen/hydrogen.h>
+#include <hydrogen/Transport.h>
 
 #include <pthread.h>
 #include <cassert>
@@ -37,10 +38,12 @@ void* diskWriterDriver_thread( void* param )
 {
 	DiskWriterDriver *pDriver = ( DiskWriterDriver* )param;
 	_INFOLOG( "DiskWriterDriver thread start" );
+        Transport* xport = Transport::get_instance();
+        TransportPosition xpos;
 
 	// always rolling, no user interaction
-	pDriver->m_transport.m_status = TransportInfo::ROLLING;
-
+        xport->locate(0);
+        xport->start();
 
 	SF_INFO soundInfo;
 	soundInfo.samplerate = pDriver->m_nSampleRate;
@@ -59,6 +62,8 @@ void* diskWriterDriver_thread( void* param )
 
 	float *pData_L = pDriver->m_pOut_L;
 	float *pData_R = pDriver->m_pOut_R;
+
+        uint32_t report_interval = pDriver->m_nBufferSize * 64;
 
 	while ( pDriver->m_processCallback( pDriver->m_nBufferSize, NULL ) == 0 ) {
 		// process...
@@ -88,14 +93,17 @@ void* diskWriterDriver_thread( void* param )
 			_ERRORLOG( "Error during sf_write_float" );
 		}
 
-		if ( ( pDriver->m_transport.m_nFrames % 65536 ) == 0 ) {
+                // Since we're calling the position AFTER the process cycle, this
+                // position actually refers to the *next* process cycle.
+                xport->get_position(&xpos);
+		if ( (xpos.frame % report_interval) == 0 ) {
 			int nPatterns = Hydrogen::get_instance()->getSong()->get_pattern_group_vector()->size();
 			int nCurrentPatternPos = Hydrogen::get_instance()->getPatternPos();
 			assert( nCurrentPatternPos != -1 );
 
 			float fPercent = ( float ) nCurrentPatternPos / ( float )nPatterns * 100.0;
 			EventQueue::get_instance()->push_event( EVENT_PROGRESS, ( int )fPercent );
-			_INFOLOG( QString( "DiskWriterDriver: %1%, transport frames:%2" ).arg( fPercent ).arg( pDriver->m_transport.m_nFrames ) );
+			_INFOLOG( QString( "DiskWriterDriver: %1%, transport frames:%2" ).arg( fPercent ).arg( xpos.frame ) );
 		}
 	}
 	EventQueue::get_instance()->push_event( EVENT_PROGRESS, 100 );
@@ -183,42 +191,6 @@ unsigned DiskWriterDriver::getSampleRate()
 }
 
 
-
-void DiskWriterDriver::play()
-{
-	m_transport.m_status = TransportInfo::ROLLING;
-}
-
-
-
-void DiskWriterDriver::stop()
-{
-	m_transport.m_status = TransportInfo::STOPPED;
-}
-
-
-
-void DiskWriterDriver::locate( unsigned long nFrame )
-{
-	INFOLOG( QString( "Locate: %1" ).arg( nFrame ) );
-	m_transport.m_nFrames = nFrame;
-}
-
-
-
-void DiskWriterDriver::updateTransportInfo()
-{
-//	errorLog( "[updateTransportInfo] not implemented yet" );
-	// not used
-}
-
-
-
-void DiskWriterDriver::setBpm( float fBPM )
-{
-	INFOLOG( QString( "SetBpm: %1" ).arg( fBPM ) );
-	m_transport.m_nBPM = fBPM;
-}
 
 
 };

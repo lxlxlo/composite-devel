@@ -56,7 +56,6 @@
 #include <hydrogen/IO/NullDriver.h>
 #include <hydrogen/IO/MidiInput.h>
 #include <hydrogen/IO/CoreMidiDriver.h>
-#include <hydrogen/IO/TransportInfo.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/data_path.h>
 #include <hydrogen/sampler/Sampler.h>
@@ -70,6 +69,29 @@
 #include "IO/PortMidiDriver.h"
 #include "IO/CoreAudioDriver.h"
 
+/************************
+ * DEAD VARIABLES 
+ ************************
+ * These are variables that are in the process of
+ * being removed in the transport redesign.
+ */
+#if 0
+//jack time master
+float m_nNewBpmJTM = 120;
+unsigned long m_nHumantimeFrames = 0;
+//~ jack time master
+int m_nPatternStartTick = -1;
+int m_nPatternTickPosition = 0;
+int m_nLookaheadFrames = 0;
+
+// used in findPatternInTick
+int m_nSongSizeInTicks = 0;
+
+struct timeval m_currentTickTime;
+
+unsigned long m_nRealtimeFrames = 0;
+#endif // 0
+/****** END OF DEAD VARIABLES ********/
 
 namespace H2Core
 {
@@ -101,11 +123,6 @@ float beatCountBpm;			///< bpm
 int m_nCoutOffset = 0;			///ms default 0
 int m_nStartOffset = 0;			///ms default 0
 //~ beatcounter
-
-//jack time master
-float m_nNewBpmJTM = 120;
-unsigned long m_nHumantimeFrames = 0;
-//~ jack time master
 
 AudioOutput *m_pAudioDriver = NULL;	///< Audio output
 MidiInput *m_pMidiDriver = NULL;	///< MIDI input
@@ -150,27 +167,10 @@ Hydrogen* hydrogenInstance = NULL;   ///< Hydrogen class instance (used for log)
 
 int  m_audioEngineState = STATE_UNINITIALIZED;	///< Audio engine state
 
-
-
 #ifdef LADSPA_SUPPORT
 float m_fFXPeak_L[MAX_FX];
 float m_fFXPeak_R[MAX_FX];
 #endif
-
-
-int m_nPatternStartTick = -1;
-int m_nPatternTickPosition = 0;
-int m_nLookaheadFrames = 0;
-
-// used in findPatternInTick
-int m_nSongSizeInTicks = 0;
-
-struct timeval m_currentTickTime;
-
-unsigned long m_nRealtimeFrames = 0;
-
-
-
 
 // PROTOTYPES
 void	audioEngine_init();
@@ -183,12 +183,11 @@ static void	audioEngine_noteOn( Note *note );
 static void	audioEngine_noteOff( Note *note );
 int	audioEngine_process( uint32_t nframes, void *arg );
 inline void audioEngine_clearNoteQueue();
-inline void audioEngine_process_checkBPMChanged();
 inline void audioEngine_process_playNotes( unsigned long nframes );
 inline void audioEngine_process_transport();
 
 inline unsigned audioEngine_renderNote( Note* pNote, const unsigned& nBufferSize );
-inline int audioEngine_updateNoteQueue( unsigned nFrames );
+    inline void audioEngine_updateNoteQueue( unsigned nFrames, const TransportPosition& pos );
 inline void audioEngine_prepNoteQueue();
 
 inline int findPatternInTick( int tick, bool loopMode, int *patternStartTick );
@@ -433,46 +432,6 @@ void audioEngine_stop( bool bLockEngine )
 	}
 }
 
-//
-///  Update Tick size and frame position in the audio driver from Song->__bpm
-//
-inline void audioEngine_process_checkBPMChanged()
-{
-
-	if ( ( m_audioEngineState == STATE_READY ) || ( m_audioEngineState == STATE_PLAYING ) ) {
-
-		float fNewTickSize =
-			m_pAudioDriver->getSampleRate() * 60.0
-			/ m_pSong->__bpm
-			/ m_pSong->__resolution;
-
-		if ( fNewTickSize != m_pAudioDriver->m_transport.m_nTickSize ) {
-			// cerco di convertire ...
-			float fTickNumber =
-				( float )m_pAudioDriver->m_transport.m_nFrames
-				/ ( float )m_pAudioDriver->m_transport.m_nTickSize;
-
-			m_pAudioDriver->m_transport.m_nTickSize = fNewTickSize;
-
-			if ( m_pAudioDriver->m_transport.m_nTickSize == 0 ) {
-				return;
-			}
-
-			_WARNINGLOG( "Tempo change: Recomputing ticksize and frame position" );
-			long long nNewFrames = ( long long )( fTickNumber * fNewTickSize );
-			// update frame position
-			m_pAudioDriver->m_transport.m_nFrames = nNewFrames;
-#ifdef JACK_SUPPORT
-			if ( "JackOutput" == m_pAudioDriver->get_class_name()
-			     && m_audioEngineState == STATE_PLAYING ) {
-				static_cast< JackOutput* >( m_pAudioDriver )
-					->calculateFrameOffset();
-			}
-#endif
-		}
-	}
-}
-
 inline void audioEngine_process_playNotes( unsigned long nframes )
 {
 	unsigned int framepos;
@@ -709,48 +668,16 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 
 	timeval startTimeval = currentTime2();
 
-	if ( m_nBufferSize != nframes ) {
-		_INFOLOG(
-			QString( "Buffer size changed. Old size = %1, new size = %2" )
-			.arg( m_nBufferSize )
-			.arg( nframes )
-			);
-		m_nBufferSize = nframes;
-	}
+        Transport* xport = Transport::get_instance();
+        TransportPosition pos;
+        xport->get_position(&pos);
 
-	// m_pAudioDriver->bpm updates Song->__bpm. (!!(Calls audioEngine_seek))
-	audioEngine_process_transport();
 	audioEngine_process_clearAudioBuffers( nframes );
-	audioEngine_process_checkBPMChanged(); // m_pSong->__bpm decides tick size
 
-	bool sendPatternChange = false;
 	// always update note queue.. could come from pattern or realtime input
 	// (midi, keyboard)
-	int res2 = audioEngine_updateNoteQueue( nframes );
-	if ( res2 == -1 ) {	// end of song
-		_INFOLOG( "End of song received, calling engine_stop()" );
-		AudioEngine::get_instance()->unlock();
-		m_pAudioDriver->stop();
-		m_pAudioDriver->locate( 0 ); // locate 0, reposition from start of the song
+	audioEngine_updateNoteQueue( nframes, pos );
 
-		if ( ( m_pAudioDriver->get_class_name() == "DiskWriterDriver" )
-		     || ( m_pAudioDriver->get_class_name() == "FakeDriver" ) ) {
-			_INFOLOG( "End of song." );
-			return 1;	// kill the audio AudioDriver thread
-		}
-#ifdef JACK_SUPPORT
-		else if ( m_pAudioDriver->get_class_name() == "JackOutput" ) {
-			// Do something clever :-s ... Jakob Lund
-			// Mainly to keep sync with Ardour.
-			static_cast<JackOutput*>(m_pAudioDriver)->locateInNCycles( 0 );
-		}
-#endif
-		return 0;
-	} else if ( res2 == 2 ) {	// send pattern change
-		sendPatternChange = true;
-	}
-
-	// play all notes
 	audioEngine_process_playNotes( nframes );
 
 	timeval renderTime_start = currentTime2();
@@ -862,9 +789,13 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 
 	AudioEngine::get_instance()->unlock();
 
-	if ( sendPatternChange ) {
-		EventQueue::get_instance()->push_event( EVENT_PATTERN_CHANGED, -1 );
-	}
+        #warning "We used to send a notification that the pattern changed"
+// 	if ( sendPatternChange ) {
+// 		EventQueue::get_instance()->push_event( EVENT_PATTERN_CHANGED, -1 );
+// 	}
+
+        // Increment the transport
+        xport->processed_frames(nframes);
 
 	return 0;
 }
@@ -1023,11 +954,7 @@ void audioEngine_removeSong()
 	EventQueue::get_instance()->push_event( EVENT_STATE, STATE_PREPARED );
 }
 
-
-
-// return -1 = end of song
-// return 2 = send pattern changed event!!
-inline int audioEngine_updateNoteQueue( unsigned nFrames )
+inline void audioEngine_updateNoteQueue( unsigned nFrames, const TransportPosition& pos )
 {
 	static int nLastTick = -1;
 	bool bSendPatternChange = false;
@@ -1608,6 +1535,9 @@ void audioEngine_startAudioDrivers()
 			m_pAudioDriver->connect();
 		}
 
+                #warning "Caching output port buffer pointers is deprecated in " \
+                    "JACK.  JACK 2.0 will require that output ports get a new " \
+                    "buffer pointer for every process() cycle."
 		if ( ( m_pMainBuffer_L = m_pAudioDriver->getOut_L() ) == NULL ) {
 			_ERRORLOG( "m_pMainBuffer_L == NULL" );
 		}

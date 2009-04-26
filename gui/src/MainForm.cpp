@@ -24,6 +24,7 @@
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/playlist.h>
 #include <hydrogen/audio_engine.h>
+#include <hydrogen/adsr.h>
 #include <hydrogen/smf/SMF.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/LocalFileMng.h>

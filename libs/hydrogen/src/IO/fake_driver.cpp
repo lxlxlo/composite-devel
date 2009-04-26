@@ -20,6 +20,7 @@
  *
  */
 
+#include <hydrogen/Transport.h>
 #include "FakeDriver.h"
 
 namespace H2Core
@@ -57,8 +58,8 @@ int FakeDriver::connect()
 {
 	INFOLOG( "connect" );
 
-	// 	// always rolling, no user interaction
-	m_transport.m_status = TransportInfo::ROLLING;
+        Transport::get_instance()->locate(0);
+        Transport::get_instance()->start();
 
 	return 0;
 }
@@ -92,34 +93,5 @@ float* FakeDriver::getOut_R()
 	return m_pOut_R;
 }
 
-
-void FakeDriver::play()
-{
-	m_transport.m_status = TransportInfo::ROLLING;
-
-	while ( m_processCallback( m_nBufferSize, NULL ) == 0 ) {
-		// process...
-	}
-}
-
-void FakeDriver::stop()
-{
-	m_transport.m_status = TransportInfo::STOPPED;
-}
-
-void FakeDriver::locate( unsigned long nFrame )
-{
-	m_transport.m_nFrames = nFrame;
-}
-
-void FakeDriver::updateTransportInfo()
-{
-	// not used
-}
-
-void FakeDriver::setBpm( float fBPM )
-{
-	m_transport.m_nBPM = fBPM;
-}
 
 };

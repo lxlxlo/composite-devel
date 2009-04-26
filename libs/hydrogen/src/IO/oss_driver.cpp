@@ -290,34 +290,6 @@ float* OssDriver::getOut_R()
 	return out_R;
 }
 
-
-void OssDriver::play()
-{
-	m_transport.m_status = TransportInfo::ROLLING;
-}
-
-void OssDriver::stop()
-{
-	m_transport.m_status = TransportInfo::STOPPED;
-}
-
-void OssDriver::locate( unsigned long nFrame )
-{
-	m_transport.m_nFrames = nFrame;
-}
-
-
-void OssDriver::updateTransportInfo()
-{
-	// not used
-}
-
-void OssDriver::setBpm( float fBPM )
-{
-	INFOLOG( QString( "setBpm: %1" ).arg( fBPM ) );
-	m_transport.m_nBPM = fBPM;
-}
-
 };
 
 #endif // OSS support

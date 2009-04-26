@@ -289,37 +289,6 @@ float* AlsaAudioDriver::getOut_R()
 	return m_pOut_R;
 }
 
-
-void AlsaAudioDriver::updateTransportInfo()
-{
-	//errorLog( "[updateTransportInfo] not implemented yet" );
-}
-
-void AlsaAudioDriver::play()
-{
-	INFOLOG( "play" );
-	m_transport.m_status = TransportInfo::ROLLING;
-}
-
-void AlsaAudioDriver::stop()
-{
-	INFOLOG( "stop" );
-	m_transport.m_status = TransportInfo::STOPPED;
-}
-
-void AlsaAudioDriver::locate( unsigned long nFrame )
-{
-//	infoLog( "[locate] " + to_string( nFrame ) );
-	m_transport.m_nFrames = nFrame;
-//	m_transport.printInfo();
-}
-
-void AlsaAudioDriver::setBpm( float fBPM )
-{
-//	warningLog( "[setBpm] " + to_string(fBPM) );
-	m_transport.m_nBPM = fBPM;
-}
-
 };
 
 #endif // ALSA_SUPPORT

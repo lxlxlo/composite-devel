@@ -38,6 +38,7 @@
 #include "InstrumentEditor/InstrumentEditorPanel.h"
 
 #include <hydrogen/hydrogen.h>
+#include <hydrogen/Transport.h>
 #include <hydrogen/audio_engine.h>
 #include <hydrogen/IO/JackOutput.h>
 #include <hydrogen/Preferences.h>
@@ -553,9 +554,7 @@ void PlayerControl::updatePlayerControl()
 	//~ jack transport master
 
 	// time
-	float fFrames = m_pEngine->getAudioOutput()->m_transport.m_nFrames;
-	if ( Preferences::getInstance()->m_bJackTransportMode == Preferences::USE_JACK_TRANSPORT )
-		fFrames =  m_pEngine->getHumantimeFrames();
+	float fFrames = Transport::get_instance()->get_current_frame();
 	float fSampleRate = m_pEngine->getAudioOutput()->getSampleRate();
 	if ( fSampleRate != 0 ) {
 		float fSeconds = fFrames / fSampleRate;
