@@ -93,13 +93,14 @@ public:
 	float m_fLowPassFilterBuffer_R;		///< Low pass filter buffer
 	//~ filter
 
+	#warning "TODO: Check these defaults"
 	Note(
-	    Instrument *pInstrument,
-	    float fVelocity,
-	    float fPan_L,
-	    float fPan_R,
-	    int nLength,
-	    float fPitch,
+	    Instrument *pInstrument = 0,
+	    float fVelocity = 1.0,
+	    float fPan_L = 1.0,
+	    float fPan_R = 1.0,
+	    int nLength = 0,
+	    float fPitch = 1.0,
 	    NoteKey key = NoteKey()
 	);
 

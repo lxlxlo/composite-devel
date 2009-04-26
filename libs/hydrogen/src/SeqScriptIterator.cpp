@@ -1,7 +1,7 @@
 
-#include "SeqScriptIterator.h"
-#include "SeqEvent.h"
-#include "SeqScript.h"
+#include <hydrogen/SeqScriptIterator.h>
+#include <hydrogen/SeqEvent.h>
+#include <hydrogen/SeqScript.h>
 
 #include <cassert>
 
