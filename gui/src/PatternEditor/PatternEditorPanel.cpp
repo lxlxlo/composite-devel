@@ -26,6 +26,7 @@
 #include <hydrogen/Pattern.h>
 #include <hydrogen/audio_engine.h>
 #include <hydrogen/event_queue.h>
+#include <hydrogen/Transport.h>
 using namespace H2Core;
 
 
@@ -673,11 +674,10 @@ void PatternEditorPanel::quantizeEventsBtnClick(Button *ref)
 }
 
 
-
-
 void PatternEditorPanel::stateChangedEvent(int state)
 {
-	if ( state == STATE_READY) {
+	Transport* xport = Hydrogen::get_instance()->get_transport();
+	if ( (state == STATE_READY) && (xport->get_state() != TransportPosition::ROLLING) ) {
 		m_bEnablePatternResize = true;
 	}
 	else {
@@ -685,7 +685,17 @@ void PatternEditorPanel::stateChangedEvent(int state)
 	}
 }
 
+void PatternEditorPanel::transportEvent(TransportPosition::State state)
+{
+	int h2state = Hydrogen::get_instance()->getState();
+	if( (h2state == STATE_READY) && (state != TransportPosition::ROLLING) ) {
+		m_bEnablePatternResize = true;
+	}
+	else {
+		m_bEnablePatternResize = false;
+	}
 
+}
 
 void PatternEditorPanel::resizeEvent( QResizeEvent *ev )
 {

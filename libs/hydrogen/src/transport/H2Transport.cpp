@@ -20,6 +20,7 @@
  *
  */
 
+#include <hydrogen/event_queue.h>
 #include "H2Transport.h"
 #include "SimpleTransportMaster.h"
 
@@ -58,11 +59,13 @@ int H2Transport::locate(uint32_t bar, uint32_t beat, uint32_t tick)
 
 void H2Transport::start(void)
 {
+    EventQueue::get_instance()->push_event( EVENT_TRANSPORT, (int)TransportPosition::ROLLING );
     if(d->xport) d->xport->start();
 }
 
 void H2Transport::stop(void)
 {
+    EventQueue::get_instance()->push_event( EVENT_TRANSPORT, (int)TransportPosition::STOPPED );
     if(d->xport) d->xport->stop();
 }
 

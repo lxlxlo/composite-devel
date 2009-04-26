@@ -91,6 +91,7 @@
 
 #include <hydrogen/Transport.h>
 #include "transport/H2Transport.h"
+#include "transport/songhelpers.h"
 #include <hydrogen/SeqEvent.h>
 #include <hydrogen/SeqScript.h>
 #include <hydrogen/SeqScriptIterator.h>
@@ -280,15 +281,12 @@ int	audioEngine_process( uint32_t nframes, void *arg );
 int	audioEngine_song_sequence_process( SeqScript& seq, const TransportPosition& pos, uint32_t nframes );
 inline void audioEngine_clearNoteQueue();
 inline void audioEngine_process_playNotes( unsigned long nframes );
-inline void audioEngine_process_transport();
 
 inline unsigned audioEngine_renderNote( Note* pNote, const unsigned& nBufferSize );
     inline void audioEngine_updateNoteQueue( unsigned nFrames, const TransportPosition& pos );
 inline void audioEngine_prepNoteQueue();
 
 inline int findPatternInTick( int tick, bool loopMode, int *patternStartTick );
-
-void audioEngine_seek( long long nFrames, bool bLoopMode = false );
 
 void audioEngine_restartAudioDrivers();
 void audioEngine_startAudioDrivers();
@@ -441,14 +439,8 @@ int audioEngine_start( bool bLockEngine, unsigned nTotalFrames )
 	// prepare the tickSize for this song
 	updateTickSize();
 
-	// change the current audio engine state
-	m_audioEngineState = STATE_PLAYING;
 	*/
 	m_pTransport->start();
-	#warning "Need to announce that we're playing"
-	/*
-	EventQueue::get_instance()->push_event( EVENT_STATE, STATE_PLAYING );
-	*/
 
 	if ( bLockEngine ) {
 		AudioEngine::get_instance()->unlock();
@@ -492,6 +484,9 @@ void audioEngine_stop( bool bLockEngine )
 	}
 }
 
+#if 0
+//// THIS IS DEAD CODE.  BUT, I NEED TO REFER TO IT
+//// WHEN RE-IMPLEMENTING LOOKAHEAD AND RANDOM PITCH.
 inline void audioEngine_process_playNotes( unsigned long nframes )
 {
 	unsigned int framepos;
@@ -576,97 +571,7 @@ inline void audioEngine_process_playNotes( unsigned long nframes )
 		}
 	}
 }
-
-
-void audioEngine_seek( long long nFrames, bool bLoopMode )
-{
-	if ( m_pAudioDriver->m_transport.m_nFrames == nFrames ) {
-		return;
-	}
-
-	if ( nFrames < 0 ) {
-		_ERRORLOG( "nFrames < 0" );
-	}
-
-	char tmp[200];
-	sprintf( tmp, "seek in %lld (old pos = %d)",
-		 nFrames,
-		 ( int )m_pAudioDriver->m_transport.m_nFrames );
-	_INFOLOG( tmp );
-
-	m_pAudioDriver->m_transport.m_nFrames = nFrames;
-
-	int tickNumber_start = ( unsigned )(
-		m_pAudioDriver->m_transport.m_nFrames
-		/ m_pAudioDriver->m_transport.m_nTickSize );
-//	sprintf(tmp, "[audioEngine_seek()] tickNumber_start = %d", tickNumber_start);
-//	hydrogenInstance->infoLog(tmp);
-
-	bool loop = m_pSong->is_loop_enabled();
-
-	if ( bLoopMode ) {
-		loop = true;
-	}
-	
-	m_nSongPos = findPatternInTick( tickNumber_start, loop, &m_nPatternStartTick );
-//	sprintf(tmp, "[audioEngine_seek()] m_nSongPos = %d", m_nSongPos);
-//	hydrogenInstance->infoLog(tmp);
-
-	audioEngine_clearNoteQueue();
-}
-
-
-
-inline void audioEngine_process_transport()
-{
-	if ( ( m_audioEngineState == STATE_READY )
-	     || ( m_audioEngineState == STATE_PLAYING ) ) {
-		m_pAudioDriver->updateTransportInfo();
-		unsigned long nNewFrames = m_pAudioDriver->m_transport.m_nFrames;
-
-		// ??? audioEngine_seek returns IMMEDIATELY
-		// when nNewFrames == m_pAudioDriver->m_transport.m_nFrames ???
-		// audioEngine_seek( nNewFrames, true );
-
-		switch ( m_pAudioDriver->m_transport.m_status ) {
-		case TransportInfo::ROLLING:
-
-			if ( m_audioEngineState == STATE_READY ) {
-				audioEngine_start( false, nNewFrames );	// no engine lock
-			}
-
-			if ( m_pSong->__bpm != m_pAudioDriver->m_transport.m_nBPM ) {
-				_INFOLOG(
-					QString( "song bpm: (%1) gets transport bpm: (%2)" )
-					.arg( m_pSong->__bpm )
-					.arg( m_pAudioDriver->m_transport.m_nBPM ) );
-
-				m_pSong->__bpm = m_pAudioDriver->m_transport.m_nBPM;
-			}
-
-			m_nRealtimeFrames = m_pAudioDriver->m_transport.m_nFrames;
-			break;
-
-
-		case TransportInfo::STOPPED:
-
-			if ( m_audioEngineState == STATE_PLAYING ) {
-				audioEngine_stop( false );	// no engine lock
-			}
-
-			if ( m_pSong->__bpm != m_pAudioDriver->m_transport.m_nBPM ) {
-				m_pSong->__bpm = m_pAudioDriver->m_transport.m_nBPM;
-			}
-
-			// go ahead and increment the realtimeframes by buffersize
-			// to support our realtime keyboard and midi event timing
-			m_nRealtimeFrames += m_nBufferSize;
-			break;
-		}
-	}
-}
-
-
+#endif // 0
 
 void audioEngine_clearNoteQueue()
 {
@@ -686,8 +591,7 @@ inline void audioEngine_process_clearAudioBuffers( uint32_t nFrames )
 		memset( m_pMainBuffer_R, 0, nFrames * sizeof( float ) );
 	}
 
-	if ( ( m_audioEngineState == STATE_READY )
-	     || ( m_audioEngineState == STATE_PLAYING ) ) {
+	if ( m_audioEngineState == STATE_READY ) {
 #ifdef LADSPA_SUPPORT
 		Effects* pEffects = Effects::getInstance();
 		for ( unsigned i = 0; i < MAX_FX; ++i ) {	// clear FX buffers
@@ -721,7 +625,7 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
         xport->get_position(&pos);
 
 	// PROCESS ALL INPUT SOURCES
-	m_GuiInput->process(m_queue, pos, nframes);
+	m_GuiInput.process(m_queue, pos, nframes);
 	#warning "TODO: get MidiDriver::process() in the mix."
 	// TODO: m_pMidiDriver->process(m_queue, pos, nframes);
 	audioEngine_song_sequence_process(m_queue, pos, nframes);
@@ -759,8 +663,7 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 	timeval ladspaTime_start = renderTime_end;
 #ifdef LADSPA_SUPPORT
 	// Process LADSPA FX
-	if ( ( m_audioEngineState == STATE_READY )
-	     || ( m_audioEngineState == STATE_PLAYING ) ) {
+	if ( m_audioEngineState == STATE_READY ) {
 		for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
 			LadspaFX *pFX = Effects::getInstance()->getLadspaFX( nFX );
 			if ( ( pFX ) && ( pFX->isEnabled() ) ) {
@@ -791,8 +694,7 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 	// update master peaks
 	float val_L;
 	float val_R;
-	if ( m_audioEngineState == STATE_PLAYING
-	     || m_audioEngineState == STATE_READY ) {
+	if ( m_audioEngineState == STATE_READY ) {
 		for ( unsigned i = 0; i < nframes; ++i ) {
 			val_L = m_pMainBuffer_L[i];
 			val_R = m_pMainBuffer_R[i];
@@ -805,11 +707,6 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 		}
 	}
 
-	// update total frames number
-	if ( m_audioEngineState == STATE_PLAYING ) {
-		m_pAudioDriver->m_transport.m_nFrames += nframes;
-	}
-
 //	float fRenderTime = (renderTime_end.tv_sec - renderTime_start.tv_sec) * 1000.0 + (renderTime_end.tv_usec - renderTime_start.tv_usec) / 1000.0;
 	float fLadspaTime =
 		( ladspaTime_end.tv_sec - ladspaTime_start.tv_sec ) * 1000.0
@@ -820,8 +717,7 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 		( finishTimeval.tv_sec - startTimeval.tv_sec ) * 1000.0
 		+ ( finishTimeval.tv_usec - startTimeval.tv_usec ) / 1000.0;
 
-	float sampleRate = ( float )m_pAudioDriver->getSampleRate();
-	m_fMaxProcessTime = 1000.0 / ( sampleRate / nframes );
+	m_fMaxProcessTime = 1000.0 / ( (float)pos.frame_rate / nframes );
 
 #ifdef CONFIG_DEBUG
 	if ( m_fProcessTime > m_fMaxProcessTime ) {
@@ -853,6 +749,7 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 
 // This loads up song events into the SeqScript 'seq'.
 #warning "audioEngine_song_sequence_process() does not have any lookahead implemented."
+#warning "audioEngine_song_sequence_process() does not have pattern mode."
 int audioEngine_song_sequence_process(
 	SeqScript& seq,
 	const TransportPosition& pos,
@@ -896,13 +793,10 @@ int audioEngine_song_sequence_process(
 				pNote = n->second;
 				ev.frame = cur.frame;
 				ev.type = SeqEvent::NOTE_ON;
-				ev.channel = 0;
-				#warning "get_pitch() returns a float.  Need to sort out the"
-				#warning "whole pitch/instrument thing."
-				ev.note = pNote->get_pitch();
-				ev.velocity = pNote->get_velocity();
-				ev.pan_l = pNote->get_pan_l();
-				ev.pan_r = pNote->get_pan_r();
+				ev.note = *pNote;
+				ev.instrument_index =
+					Hydrogen::get_instance()->getSong()
+					->get_instrument_list()->get_pos( pNote->get_instrument() );
 				if( pNote->get_length() < 0 ) {
 					length = default_note_length;
 				} else {
@@ -1068,6 +962,9 @@ void audioEngine_removeSong()
 	EventQueue::get_instance()->push_event( EVENT_STATE, STATE_PREPARED );
 }
 
+#if 0
+//// This is dead code, but I may want to refer to it
+//// when re-implementing features like lookahead
 inline void audioEngine_updateNoteQueue( unsigned nFrames, const TransportPosition& pos )
 {
 	static int nLastTick = -1;
@@ -1360,9 +1257,11 @@ inline void audioEngine_updateNoteQueue( unsigned nFrames, const TransportPositi
 	}
 	return 0;
 }
+#endif
 
-
-
+#if 0
+//// This is dead code.  Obsoleted by new transport.
+//// Left here... just in case.  :-)
 /// restituisce l'indice relativo al patternGroup in base al tick
 inline int findPatternInTick( int nTick, bool bLoopMode, int *pPatternStartTick )
 {
@@ -1423,7 +1322,7 @@ inline int findPatternInTick( int nTick, bool bLoopMode, int *pPatternStartTick 
 	_ERRORLOG( err );
 	return -1;
 }
-
+#endif
 
 
 void audioEngine_noteOn( Note *note )
@@ -1663,10 +1562,7 @@ void audioEngine_stopAudioDrivers()
 
 	AudioEngine::get_instance()->lock( "audioEngine_stopAudioDrivers" );
 
-	// check current state
-	if ( m_audioEngineState == STATE_PLAYING ) {
-		audioEngine_stop();
-	}
+	Hydrogen::get_instance()->get_transport()->stop();
 
 	if ( ( m_audioEngineState != STATE_PREPARED )
 	     && ( m_audioEngineState != STATE_READY ) ) {
@@ -1750,9 +1646,7 @@ Hydrogen::Hydrogen()
 Hydrogen::~Hydrogen()
 {
 	_INFOLOG( "[~Hydrogen]" );
-	if ( m_audioEngineState == STATE_PLAYING ) {
-		audioEngine_stop();
-	}
+	m_pTransport->stop();
 	removeSong();
 	audioEngine_stopAudioDrivers();
 	audioEngine_destroy();
@@ -2084,9 +1978,7 @@ void Hydrogen::restartDrivers()
 /// Export a song to a wav file, returns the elapsed time in mSec
 void Hydrogen::startExportSong( const QString& filename )
 {
-	if ( getState() == STATE_PLAYING ) {
-		sequencer_stop();
-	}
+	m_pTransport->stop();
 	Preferences *pPref = Preferences::getInstance();
 
 	m_oldEngineMode = m_pSong->get_mode();

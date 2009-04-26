@@ -27,6 +27,7 @@
 #include <QtGui>
 
 #include <hydrogen/Object.h>
+#include <hydrogen/TransportPosition.h>
 
 #include "../EventListener.h"
 
@@ -70,6 +71,7 @@ class PatternEditorPanel : public QWidget, public EventListener, public Object
 		virtual void selectedPatternChangedEvent();
 		virtual void selectedInstrumentChangedEvent();
 		virtual void stateChangedEvent(int nState);
+		virtual void transportEvent(H2Core::TransportPosition::State state);
 		//~ Implements EventListener interface
 
 	private slots:

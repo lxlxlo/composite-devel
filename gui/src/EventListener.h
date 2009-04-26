@@ -23,6 +23,7 @@
 #define EVENT_LISTENER
 
 #include <hydrogen/globals.h>
+#include <hydrogen/TransportPosition.h>
 
 class EventListener
 {
@@ -38,6 +39,7 @@ class EventListener
 		virtual void errorEvent( int nErrorCode ) { UNUSED( nErrorCode ); }
 		virtual void metronomeEvent( int nValue ) { UNUSED( nValue ); }
 		virtual void progressEvent( int nValue ) { UNUSED( nValue ); }
+		virtual void transportEvent( H2Core::TransportPosition::State state ) { UNUSED( state ); }
 
 		virtual ~EventListener() {}
 };

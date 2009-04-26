@@ -423,6 +423,10 @@ void HydrogenApp::onEventQueueTimer()
 					pListener->progressEvent( event.value );
 					break;
 
+				case EVENT_TRANSPORT:
+					pListener->transportEvent( (TransportPosition::State)event.value );
+					break;
+
 				default:
 					ERRORLOG( "[onEventQueueTimer] Unhandled event: " + to_string( event.type ) );
 			}
