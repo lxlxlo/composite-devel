@@ -39,8 +39,9 @@ Note::Note(
     NoteKey key
 )
 		: Object( "Note" )
+		, m_nSilenceOffset( 0 )
+		, m_nReleaseOffset( 0 )
 		, m_fSamplePosition( 0.0 )
-		, m_nHumanizeDelay( 0 )
 		, m_noteKey( key )
 		, m_fCutoff( 1.0 )
 		, m_fResonance( 0.0 )
@@ -48,6 +49,7 @@ Note::Note(
 		, m_fBandPassFilterBuffer_R( 0.0 )
 		, m_fLowPassFilterBuffer_L( 0.0 )
 		, m_fLowPassFilterBuffer_R( 0.0 )
+		, m_nHumanizeDelay( 0 )
 		, __velocity( velocity )
 		, __leadlag( 0.0 )
 {
@@ -65,22 +67,25 @@ Note::Note(
 Note::Note( const Note* pNote )
 		: Object( "Note" )
 {
-	__velocity	=	pNote->get_velocity();
-	set_pan_l(	pNote->get_pan_l()	);
-	set_pan_r(	pNote->get_pan_r()	);
-	set_leadlag(    pNote->get_leadlag()    );
-	set_length(	pNote->get_length()	);
-	set_pitch(	pNote->get_pitch()	);
-	m_noteKey	=	pNote->m_noteKey;
-	m_fCutoff	=	pNote->m_fCutoff;
-	m_fResonance	=	pNote->m_fResonance;
-	m_fBandPassFilterBuffer_L	= 	pNote->m_fBandPassFilterBuffer_L;
-	m_fBandPassFilterBuffer_R	= 	pNote->m_fBandPassFilterBuffer_R;
-	m_fLowPassFilterBuffer_L	=	pNote->m_fLowPassFilterBuffer_L;
-	m_fLowPassFilterBuffer_R	=	pNote->m_fLowPassFilterBuffer_R;
-	m_nHumanizeDelay		= 	pNote->m_nHumanizeDelay;
-	m_fSamplePosition		=	pNote->m_fSamplePosition;
-	set_instrument( pNote->__instrument );
+	m_nSilenceOffset          = pNote->m_nSilenceOffset;
+	m_nReleaseOffset          = pNote->m_nReleaseOffset;
+	m_fSamplePosition         = pNote->m_fSamplePosition;
+	m_noteKey                 = pNote->m_noteKey;
+	// m_adsr copied in set_instrument()
+	m_fCutoff                 = pNote->m_fCutoff;
+	m_fResonance              = pNote->m_fResonance;
+	m_fBandPassFilterBuffer_L = pNote->m_fBandPassFilterBuffer_L;
+	m_fBandPassFilterBuffer_R = pNote->m_fBandPassFilterBuffer_R;
+	m_fLowPassFilterBuffer_L  = pNote->m_fLowPassFilterBuffer_L;
+	m_fLowPassFilterBuffer_R  = pNote->m_fLowPassFilterBuffer_R;
+	m_nHumanizeDelay          = pNote->m_nHumanizeDelay;
+	set_instrument(             pNote->__instrument );
+	__velocity                = pNote->get_velocity();
+	set_pan_l(                  pNote->get_pan_l() );
+	set_pan_r(                  pNote->get_pan_r() );
+	set_leadlag(                pNote->get_leadlag() );
+	set_length(                 pNote->get_length() );
+	set_pitch(                  pNote->get_pitch() );
 }
 
 
@@ -121,7 +126,7 @@ void Note::set_instrument( Instrument* instrument )
 
 
 
-void Note::dumpInfo()
+void Note::dumpInfo() const
 {
 	INFOLOG( "humanize offset" + to_string(m_nHumanizeDelay) + "\t instr: " + __instrument->get_name()+ "\t key: " + keyToString( m_noteKey ) + "\t pitch: " + to_string( get_pitch() ) );
 }

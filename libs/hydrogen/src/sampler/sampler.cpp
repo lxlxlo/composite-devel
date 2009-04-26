@@ -22,6 +22,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <list>
 
 #include <hydrogen/IO/AudioOutput.h>
 #include <hydrogen/IO/JackOutput.h>
@@ -35,13 +36,13 @@
 #include <hydrogen/note.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/sample.h>
-#include <hydrogen/Song.h>
+#include <hydrogen/SeqScriptIterator.h>
 
 #include <hydrogen/fx/Effects.h>
 #include <hydrogen/sampler/Sampler.h>
+#include <hydrogen/TransportPosition.h>
 
-namespace H2Core
-{
+using namespace H2Core;
 
 inline static float linear_interpolation( float fVal_A, float fVal_B, float fVal )
 {
@@ -50,25 +51,129 @@ inline static float linear_interpolation( float fVal_A, float fVal_B, float fVal
 //	return fVal_A + ((fVal_B - fVal_A) * fVal);
 }
 
+struct H2Core::SamplerPrivate : public Object
+{
+	Sampler& parent;
+	typedef std::list<Note> NoteList;
+	NoteList current_notes;                // Replaces __playing_notes_queue
+	AudioOutput* audio_output;              // Replaces __audio_output
+	Instrument* preview_instrument;         // Replaces __preview_instrument
+#ifdef JACK_SUPPORT
+	float* track_out_L[ MAX_INSTRUMENTS ];  // Replaces __track_out_L
+	float* track_out_R[ MAX_INSTRUMENTS ];  // Replaces __track_out_R
+#endif
+	SamplerPrivate(Sampler* par) :
+		Object( "SamplerPrivate" ),
+		parent( *par ),
+		audio_output( 0 ),
+		preview_instrument( 0 )
+		{}
 
+	// Add/Remove notes from current_notes based on event 'ev'
+	void handle_event(const SeqEvent& ev);
+
+	// These are utils for handle_event().
+	void panic();  // Cease all sounc
+	void handle_note_on(const SeqEvent& ev);
+	void handle_note_off(const SeqEvent& ev);
+
+	// Actually render the specific note(s) to the buffers.
+	int render_note(Note& note, uint32_t nFrames, uint32_t frame_rate);
+	int render_note_no_resample(
+		Sample *pSample,
+		Note& note,
+		int nFrames,
+		float cost_L,
+		float cost_R,
+		float cost_track_L,
+		float cost_track_R,
+		float fSendFXLevel_L,
+		float fSendFXLevel_R
+		);
+	int render_note_resample(
+		Sample *pSample,
+		Note& note,
+		int nFrames,
+		uint32_t frame_rate,
+		float cost_L,
+		float cost_R,
+		float cost_track_L,
+		float cost_track_R,
+		float fLayerPitch,
+		float fSendFXLevel_L,
+		float fSendFXLevel_R
+		);
+
+}; // class SamplerPrivate
+
+void SamplerPrivate::handle_event(const SeqEvent& ev)
+{
+	switch(ev.type) {
+	case SeqEvent::NOTE_ON:
+		handle_note_on(ev);
+		break;
+	case SeqEvent::NOTE_OFF:
+		handle_note_off(ev);
+		break;
+	case SeqEvent::ALL_OFF:
+		panic();
+		break;
+	}
+}
+
+void SamplerPrivate::panic()
+{
+	parent.stop_playing_notes(0);
+}
+
+void SamplerPrivate::handle_note_on(const SeqEvent& ev)
+{
+	// Respect the mute groups.
+	Instrument *pInstr = ev.note.get_instrument();
+	if ( pInstr->get_mute_group() != -1 ) {
+		// remove all notes using the same mute group
+		NoteList::iterator j, prev;
+		Instrument *otherInst = 0;
+		for ( j = current_notes.begin() ; j != current_notes.end() ; ++j ) {
+			otherInst = j->get_instrument();
+			if( (otherInst != pInstr)
+			    && (otherInst->get_mute_group() == pInstr->get_mute_group())) {
+				j->m_adsr.release();
+			}
+		}
+	}
+	pInstr->enqueue();
+	current_notes.push_back( ev.note );
+	current_notes.back().m_nSilenceOffset = ev.frame;
+}
+
+void SamplerPrivate::handle_note_off(const SeqEvent& ev)
+{
+	NoteList::iterator k;
+	for( k=current_notes.begin() ; k!=current_notes.end() ; ++k ) {
+		if( k->get_instrument() == ev.note.get_instrument() ) {
+			k->m_nReleaseOffset = ev.frame;
+		}
+	}
+}
 
 Sampler::Sampler()
 		: Object( "Sampler" )
-		, __main_out_L( NULL )
-		, __main_out_R( NULL )
-		, __audio_output( NULL )
-		, __preview_instrument( NULL )
+		, __main_out_L( 0 )
+		, __main_out_R( 0 )
 {
 	INFOLOG( "INIT" );
+
+	d = new SamplerPrivate(this);
 
 	__main_out_L = new float[ MAX_BUFFER_SIZE ];
 	__main_out_R = new float[ MAX_BUFFER_SIZE ];
 
 	// instrument used in file preview
 	QString sEmptySampleFilename = DataPath::get_data_path() + "/emptySample.wav";
-	__preview_instrument = new Instrument( sEmptySampleFilename, "preview", new ADSR() );
-	__preview_instrument->set_volume( 0.8 );
-	__preview_instrument->set_layer( new InstrumentLayer( Sample::load( sEmptySampleFilename ) ), 0 );
+	d->preview_instrument = new Instrument( sEmptySampleFilename, "preview", new ADSR() );
+	d->preview_instrument->set_volume( 0.8 );
+	d->preview_instrument->set_layer( new InstrumentLayer( Sample::load( sEmptySampleFilename ) ), 0 );
 }
 
 
@@ -80,15 +185,29 @@ Sampler::~Sampler()
 	delete[] __main_out_L;
 	delete[] __main_out_R;
 
-	delete __preview_instrument;
-	__preview_instrument = NULL;
+	delete d->preview_instrument;
+	d->preview_instrument = NULL;
 }
 
-// perche' viene passata anche la canzone? E' davvero necessaria?
-void Sampler::process( uint32_t nFrames, Song* pSong )
+void Sampler::panic()
+{
+	d->panic();
+}
+
+int Sampler::get_playing_notes_number()
+{
+	return d->current_notes.size();
+}
+
+// Do not use B:b.t or frame info from pos.
+// This param may be replaced with 'frame_rate' instead.
+void Sampler::process( SeqScriptConstIterator beg,
+		       SeqScriptConstIterator end,
+		       const TransportPosition& pos,
+		       uint32_t nFrames )
 {
 	//infoLog( "[process]" );
-	assert( __audio_output );
+	assert( d->audio_output );
 
 	memset( __main_out_L, 0, nFrames * sizeof( float ) );
 	memset( __main_out_R, 0, nFrames * sizeof( float ) );
@@ -96,16 +215,16 @@ void Sampler::process( uint32_t nFrames, Song* pSong )
 
 #ifdef JACK_SUPPORT
 	JackOutput* jao;
-	jao = dynamic_cast<JackOutput*>(__audio_output);
+	jao = dynamic_cast<JackOutput*>(d->audio_output);
 	if (jao) {
 		int numtracks = jao->getNumTracks();
 
 		if ( jao->has_track_outs() ) {
 			for(int nTrack = 0; nTrack < numtracks; nTrack++) {
-				memset( __track_out_L[nTrack],
+				memset( d->track_out_L[nTrack],
 					0,
 					jao->getBufferSize( ) * sizeof( float ) );
-				memset( __track_out_R[nTrack],
+				memset( d->track_out_R[nTrack],
 					0,
 					jao->getBufferSize( ) * sizeof( float ) );
 			}
@@ -115,92 +234,40 @@ void Sampler::process( uint32_t nFrames, Song* pSong )
 
 	// Max notes limit
 	int m_nMaxNotes = Preferences::getInstance()->m_nMaxNotes;
-	while ( ( int )__playing_notes_queue.size() > m_nMaxNotes ) {
-		Note *oldNote = __playing_notes_queue[ 0 ];
-		__playing_notes_queue.erase( __playing_notes_queue.begin() );
-		oldNote->get_instrument()->dequeue();
-		delete oldNote;	// FIXME: send note-off instead of removing the note from the list?
+	while ( ( int )d->current_notes.size() > m_nMaxNotes ) {
+		d->current_notes.front().get_instrument()->dequeue();
+		d->current_notes.pop_front();
 	}
 
+	// Handle new events from the sequencer (add/remove notes from the "currently playing"
+	// list.
+	SeqScriptConstIterator ev;
+	for( ev = beg ; ev != end ; ++ev ) {
+		d->handle_event(*ev);
+	}
 
-	// eseguo tutte le note nella lista di note in esecuzione
-	unsigned i = 0;
-	Note* pNote;
-	while ( i < __playing_notes_queue.size() ) {
-		pNote = __playing_notes_queue[ i ];		// recupero una nuova nota
-		unsigned res = __render_note( pNote, nFrames, pSong );
-		if ( res == 1 ) {	// la nota e' finita
-			__playing_notes_queue.erase( __playing_notes_queue.begin() + i );
-			pNote->get_instrument()->dequeue();
-			delete pNote;
-			pNote = NULL;
+	// Play all of the currently playing notes.
+	SamplerPrivate::NoteList::iterator k, die;
+	for( k=d->current_notes.begin() ; k != d->current_notes.end() ; /*++k*/ ) {
+		unsigned res = d->render_note( *k, nFrames, pos.frame_rate );
+		if( res == 1 ) { // Note is finished playing
+			die = k;  ++k;
+			die->get_instrument()->dequeue();
+			d->current_notes.erase(die);
 		} else {
-			++i; // carico la prox nota
+			++k;
 		}
 	}
 }
-
-
-
-void Sampler::note_on( Note *note )
-{
-	//infoLog( "[noteOn]" );
-	assert( note );
-
-	// mute groups
-	Instrument *pInstr = note->get_instrument();
-	if ( pInstr->get_mute_group() != -1 ) {
-		// remove all notes using the same mute group
-		for ( unsigned j = 0; j < __playing_notes_queue.size(); j++ ) {	// delete older note
-			Note *pNote = __playing_notes_queue[ j ];
-
-			if ( ( pNote->get_instrument() != pInstr )  && ( pNote->get_instrument()->get_mute_group() == pInstr->get_mute_group() ) ) {
-				//warningLog("release");
-				pNote->m_adsr.release();
-			}
-		}
-	}
-	
-	pInstr->enqueue();
-	__playing_notes_queue.push_back( note );
-}
-
-
-
-void Sampler::note_off( Note* note )
-{
-	assert(note);
-	Instrument *pInstr = note->get_instrument();
-	// find the notes using the same instrument, and release them
-	for ( unsigned j = 0; j < __playing_notes_queue.size(); j++ ) {
-		Note *pNote = __playing_notes_queue[ j ];
-		if ( pNote->get_instrument() == pInstr ) {
-			pNote->m_adsr.release();
-		}
-	}
-}
-
-
 
 /// Render a note
 /// Return 0: the note is not ended
 /// Return 1: the note is ended
-unsigned Sampler::__render_note( Note* pNote, unsigned nBufferSize, Song* pSong )
+int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_rate )
 {
-	//infoLog( "[renderNote] instr: " + pNote->getInstrument()->m_sName );
-	assert( pSong );
+	//infoLog( "[renderNote] instr: " + note.getInstrument()->m_sName );
 
-	unsigned int nFramepos;
-	Hydrogen* pEngine = Hydrogen::get_instance();
-	if (  pEngine->getState() == STATE_PLAYING ) {
-		nFramepos = __audio_output->m_transport.m_nFrames;
-	} else {
-		// use this to support realtime events when not playing
-		nFramepos = pEngine->getRealtimeFrames();
-	}
-
-
-	Instrument *pInstr = pNote->get_instrument();
+	Instrument *pInstr = note.get_instrument();
 	if ( !pInstr ) {
 		ERRORLOG( "NULL instrument" );
 		return 1;
@@ -215,7 +282,8 @@ unsigned Sampler::__render_note( Note* pNote, unsigned nBufferSize, Song* pSong 
 		InstrumentLayer *pLayer = pInstr->get_layer( nLayer );
 		if ( pLayer == NULL ) continue;
 
-		if ( ( pNote->get_velocity() >= pLayer->get_start_velocity() ) && ( pNote->get_velocity() <= pLayer->get_end_velocity() ) ) {
+		if ( ( note.get_velocity() >= pLayer->get_start_velocity() )
+		     && ( note.get_velocity() <= pLayer->get_end_velocity() ) ) {
 			pSample = pLayer->get_sample();
 			fLayerGain = pLayer->get_gain();
 			fLayerPitch = pLayer->get_pitch();
@@ -223,34 +291,16 @@ unsigned Sampler::__render_note( Note* pNote, unsigned nBufferSize, Song* pSong 
 		}
 	}
 	if ( !pSample ) {
-		QString dummy = QString( "NULL sample for instrument %1. Note velocity: %2" ).arg( pInstr->get_name() ).arg( pNote->get_velocity() );
+		QString dummy = QString( "NULL sample for instrument %1. Note velocity: %2" )
+			.arg( pInstr->get_name() )
+			.arg( note.get_velocity() );
 		WARNINGLOG( dummy );
 		return 1;
 	}
 
-	if ( pNote->m_fSamplePosition >= pSample->get_n_frames() ) {
+	if ( note.m_fSamplePosition >= pSample->get_n_frames() ) {
 		WARNINGLOG( "sample position out of bounds. The layer has been resized during note play?" );
 		return 1;
-	}
-
-	int noteStartInFrames = ( int ) ( pNote->get_position() * __audio_output->m_transport.m_nTickSize ) + pNote->m_nHumanizeDelay;
-
-	int nInitialSilence = 0;
-	if ( noteStartInFrames > ( int ) nFramepos ) {	// scrivo silenzio prima dell'inizio della nota
-		nInitialSilence = noteStartInFrames - nFramepos;
-		int nFrames = nBufferSize - nInitialSilence;
-		if ( nFrames < 0 ) {
-			int noteStartInFramesNoHumanize = ( int )pNote->get_position() * __audio_output->m_transport.m_nTickSize;
-			if ( noteStartInFramesNoHumanize > ( int )( nFramepos + nBufferSize ) ) {
-				// this note is not valid. it's in the future...let's skip it....
-				ERRORLOG( QString( "Note pos in the future?? Current frames: %1, note frame pos: %2" ).arg( nFramepos ).arg(noteStartInFramesNoHumanize ) );
-				//pNote->dumpInfo();
-				return 1;
-			}
-			// delay note execution
-			//INFOLOG( "Delaying note execution. noteStartInFrames: " + to_string( noteStartInFrames ) + ", nFramePos: " + to_string( nFramepos ) );
-			return 0;
-		}
 	}
 
 	float cost_L = 1.0f;
@@ -260,7 +310,7 @@ unsigned Sampler::__render_note( Note* pNote, unsigned nBufferSize, Song* pSong 
 	float fSendFXLevel_L = 1.0f;
 	float fSendFXLevel_R = 1.0f;
 
-	if ( pInstr->is_muted() || pSong->__is_muted ) {	// is instrument muted?
+	if ( pInstr->is_muted() ) {                             // is instrument muted?
 		cost_L = 0.0;
 		cost_R = 0.0;
                 if ( Preferences::getInstance()->m_nJackTrackOutputMode == 0 ) {
@@ -272,8 +322,8 @@ unsigned Sampler::__render_note( Note* pNote, unsigned nBufferSize, Song* pSong 
 		fSendFXLevel_L = 0.0f;
 		fSendFXLevel_R = 0.0f;
 	} else {	// Precompute some values...
-		cost_L = cost_L * pNote->get_velocity();		// note velocity
-		cost_L = cost_L * pNote->get_pan_l();		// note pan
+		cost_L = cost_L * note.get_velocity();		// note velocity
+		cost_L = cost_L * note.get_pan_l();		// note pan
 		cost_L = cost_L * fLayerGain;				// layer gain
 		cost_L = cost_L * pInstr->get_pan_l();		// instrument pan
 		cost_L = cost_L * pInstr->get_gain();		// instrument gain
@@ -284,12 +334,15 @@ unsigned Sampler::__render_note( Note* pNote, unsigned nBufferSize, Song* pSong 
 		// Post-Fader
 			cost_track_L = cost_L * 2;
 		}
+		#warning "WTF is song volume???"
+		/*
 		cost_L = cost_L * pSong->get_volume();	// song volume
+		*/
 		cost_L = cost_L * 2; // max pan is 0.5
 
 
-		cost_R = cost_R * pNote->get_velocity();		// note velocity
-		cost_R = cost_R * pNote->get_pan_r();		// note pan
+		cost_R = cost_R * note.get_velocity();		// note velocity
+		cost_R = cost_R * note.get_pan_r();		// note pan
 		cost_R = cost_R * fLayerGain;				// layer gain
 		cost_R = cost_R * pInstr->get_pan_r();		// instrument pan
 		cost_R = cost_R * pInstr->get_gain();		// instrument gain
@@ -300,13 +353,16 @@ unsigned Sampler::__render_note( Note* pNote, unsigned nBufferSize, Song* pSong 
 		// Post-Fader
 			cost_track_R = cost_R * 2;
 		}
+		#warning "WTF is song volume???"
+		/*
 		cost_R = cost_R * pSong->get_volume();	// song pan
+		*/
 		cost_R = cost_R * 2; // max pan is 0.5
 	}
 
 	// direct track outputs only use velocity
 	if ( Preferences::getInstance()->m_nJackTrackOutputMode == 1 ) {
-		cost_track_L = cost_track_L * pNote->get_velocity();
+		cost_track_L = cost_track_L * note.get_velocity();
 		cost_track_L = cost_track_L * fLayerGain;
 		cost_track_R = cost_track_L;
 	}
@@ -316,69 +372,87 @@ unsigned Sampler::__render_note( Note* pNote, unsigned nBufferSize, Song* pSong 
 	//	constant^12 = 2, so constant = 2^(1/12) = 1.059463.
 	//	float nStep = 1.0;1.0594630943593
 
-	float fTotalPitch = pNote->m_noteKey.m_nOctave * 12 + pNote->m_noteKey.m_key;
-	fTotalPitch += pNote->get_pitch();
+	float fTotalPitch = note.m_noteKey.m_nOctave * 12 + note.m_noteKey.m_key;
+	fTotalPitch += note.get_pitch();
 	fTotalPitch += fLayerPitch;
 
 	//_INFOLOG( "total pitch: " + to_string( fTotalPitch ) );
 
-	if ( fTotalPitch == 0.0 && pSample->get_sample_rate() == __audio_output->getSampleRate() ) {	// NO RESAMPLE
-		return __render_note_no_resample( pSample, pNote, nBufferSize, nInitialSilence, cost_L, cost_R, cost_track_L, cost_track_R, fSendFXLevel_L, fSendFXLevel_R, pSong );
-	} else {	// RESAMPLE
-		return __render_note_resample( pSample, pNote, nBufferSize, nInitialSilence, cost_L, cost_R, cost_track_L, cost_track_R, fLayerPitch, fSendFXLevel_L, fSendFXLevel_R, pSong );
+	if ( fTotalPitch == 0.0
+	     && pSample->get_sample_rate() == frame_rate ) {
+		// NO RESAMPLE
+		return render_note_no_resample(
+			pSample,
+			note,
+			nFrames,
+			cost_L,
+			cost_R,
+			cost_track_L,
+			cost_track_R,
+			fSendFXLevel_L,
+			fSendFXLevel_R
+			);
+	} else {
+		// RESAMPLE
+		return render_note_resample(
+			pSample,
+			note,
+			nFrames,
+			frame_rate,
+			cost_L,
+			cost_R,
+			cost_track_L,
+			cost_track_R,
+			fLayerPitch,
+			fSendFXLevel_L,
+			fSendFXLevel_R
+			);
 	}
-}
+} // SamplerPrivate::render_note()
 
 
 
 
-int Sampler::__render_note_no_resample(
+int SamplerPrivate::render_note_no_resample(
     Sample *pSample,
-    Note *pNote,
-    int nBufferSize,
-    int nInitialSilence,
+    Note& note,
+    int nFrames,
     float cost_L,
     float cost_R,
     float cost_track_L,
     float cost_track_R,
     float fSendFXLevel_L,
-    float fSendFXLevel_R,
-    Song* pSong
+    float fSendFXLevel_R
 )
 {
 	int retValue = 1; // the note is ended
 
-	int nNoteLength = -1;
-	if ( pNote->get_length() != -1 ) {
-		nNoteLength = ( int )( pNote->get_length() * __audio_output->m_transport.m_nTickSize );
-	}
+	int nAvail_bytes = pSample->get_n_frames() - ( int )note.m_fSamplePosition;   // verifico 
 
-	int nAvail_bytes = pSample->get_n_frames() - ( int )pNote->m_fSamplePosition;	// verifico il numero di frame disponibili ancora da eseguire
-
-	if ( nAvail_bytes > nBufferSize - nInitialSilence ) {	// il sample e' piu' grande del buffersize
+	if ( nAvail_bytes > nFrames - note.m_nSilenceOffset ) {   // il sample e' piu' grande del buff
 		// imposto il numero dei bytes disponibili uguale al buffersize
-		nAvail_bytes = nBufferSize - nInitialSilence;
+		nAvail_bytes = nFrames - note.m_nSilenceOffset;
 		retValue = 0; // the note is not ended yet
 	}
+	
+	//ADSR *pADSR = note.m_pADSR;
 
-	//ADSR *pADSR = pNote->m_pADSR;
-
-	int nInitialBufferPos = nInitialSilence;
-	int nInitialSamplePos = ( int )pNote->m_fSamplePosition;
+	int nInitialBufferPos = note.m_nSilenceOffset;
+	int nInitialSamplePos = ( int )note.m_fSamplePosition;
 	int nSamplePos = nInitialSamplePos;
 	int nTimes = nInitialBufferPos + nAvail_bytes;
-	int nInstrument = pSong->get_instrument_list()->get_pos( pNote->get_instrument() );
+	int nInstrument = pSong->get_instrument_list()->get_pos( note.get_instrument() );
 
 	// filter
-	bool bUseLPF = pNote->get_instrument()->is_filter_active();
-	float fResonance = pNote->get_instrument()->get_filter_resonance();
-	float fCutoff = pNote->get_instrument()->get_filter_cutoff();
+	bool bUseLPF = note.get_instrument()->is_filter_active();
+	float fResonance = note.get_instrument()->get_filter_resonance();
+	float fCutoff = note.get_instrument()->get_filter_cutoff();
 
 	float *pSample_data_L = pSample->get_data_l();
 	float *pSample_data_R = pSample->get_data_r();
 
-	float fInstrPeak_L = pNote->get_instrument()->get_peak_l(); // this value will be reset to 0 by the mixer..
-	float fInstrPeak_R = pNote->get_instrument()->get_peak_r(); // this value will be reset to 0 by the mixer..
+	float fInstrPeak_L = note.get_instrument()->get_peak_l(); // this value will be reset to 0 by the mixer..
+	float fInstrPeak_R = note.get_instrument()->get_peak_r(); // this value will be reset to 0 by the mixer..
 
 	float fADSRValue;
 	float fVal_L;
@@ -395,34 +469,35 @@ int Sampler::__render_note_no_resample(
 
 
 	for ( int nBufferPos = nInitialBufferPos; nBufferPos < nTimes; ++nBufferPos ) {
-		if ( ( nNoteLength != -1 ) && ( nNoteLength <= pNote->m_fSamplePosition )  ) {
-			if ( pNote->m_adsr.release() == 0 ) {
+		if( note.m_nReleaseOffset != (uint32_t)-1
+		    && nBufferPos >= note.m_nReleaseOffset ) {
+			if ( note.m_adsr.release() == 0 ) {
 				retValue = 1;	// the note is ended
 			}
 		}
 
-		fADSRValue = pNote->m_adsr.get_value( 1 );
+		fADSRValue = note.m_adsr.get_value( 1 );
 		fVal_L = pSample_data_L[ nSamplePos ] * fADSRValue;
 		fVal_R = pSample_data_R[ nSamplePos ] * fADSRValue;
 
 		// Low pass resonant filter
 		if ( bUseLPF ) {
-			pNote->m_fBandPassFilterBuffer_L = fResonance * pNote->m_fBandPassFilterBuffer_L + fCutoff * ( fVal_L - pNote->m_fLowPassFilterBuffer_L );
-			pNote->m_fLowPassFilterBuffer_L += fCutoff * pNote->m_fBandPassFilterBuffer_L;
-			fVal_L = pNote->m_fLowPassFilterBuffer_L;
+			note.m_fBandPassFilterBuffer_L = fResonance * note.m_fBandPassFilterBuffer_L + fCutoff * ( fVal_L - note.m_fLowPassFilterBuffer_L );
+			note.m_fLowPassFilterBuffer_L += fCutoff * note.m_fBandPassFilterBuffer_L;
+			fVal_L = note.m_fLowPassFilterBuffer_L;
 
-			pNote->m_fBandPassFilterBuffer_R = fResonance * pNote->m_fBandPassFilterBuffer_R + fCutoff * ( fVal_R - pNote->m_fLowPassFilterBuffer_R );
-			pNote->m_fLowPassFilterBuffer_R += fCutoff * pNote->m_fBandPassFilterBuffer_R;
-			fVal_R = pNote->m_fLowPassFilterBuffer_R;
+			note.m_fBandPassFilterBuffer_R = fResonance * note.m_fBandPassFilterBuffer_R + fCutoff * ( fVal_R - note.m_fLowPassFilterBuffer_R );
+			note.m_fLowPassFilterBuffer_R += fCutoff * note.m_fBandPassFilterBuffer_R;
+			fVal_R = note.m_fLowPassFilterBuffer_R;
 		}
 
 #ifdef JACK_SUPPORT
-		if ( __audio_output->has_track_outs()
-		     && dynamic_cast<JackOutput*>(__audio_output) ) {
-                        assert( __track_out_L[ nInstrument ] );
-                        assert( __track_out_R[ nInstrument ] );
-			__track_out_L[ nInstrument ][nBufferPos] += fVal_L * cost_track_L;
-			__track_out_R[ nInstrument ][nBufferPos] += fVal_R * cost_track_R;
+		if ( audio_output->has_track_outs()
+		     && dynamic_cast<JackOutput*>(audio_output) ) {
+                        assert( track_out_L[ nInstrument ] );
+                        assert( track_out_R[ nInstrument ] );
+			track_out_L[ nInstrument ][nBufferPos] += fVal_L * cost_track_L;
+			track_out_R[ nInstrument ][nBufferPos] += fVal_R * cost_track_R;
 		}
 #endif
 
@@ -438,14 +513,15 @@ int Sampler::__render_note_no_resample(
 		}
 
 		// to main mix
-		__main_out_L[nBufferPos] += fVal_L;
-		__main_out_R[nBufferPos] += fVal_R;
+		parent.__main_out_L[nBufferPos] += fVal_L;
+		parent.__main_out_R[nBufferPos] += fVal_R;
 
 		++nSamplePos;
 	}
-	pNote->m_fSamplePosition += nAvail_bytes;
-	pNote->get_instrument()->set_peak_l( fInstrPeak_L );
-	pNote->get_instrument()->set_peak_r( fInstrPeak_R );
+	note.m_fSamplePosition += nAvail_bytes;
+	note.m_nSilenceOffset = 0;
+	note.get_instrument()->set_peak_l( fInstrPeak_L );
+	note.get_instrument()->set_peak_r( fInstrPeak_R );
 
 
 #ifdef LADSPA_SUPPORT
@@ -453,7 +529,7 @@ int Sampler::__render_note_no_resample(
 	for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
 		LadspaFX *pFX = Effects::getInstance()->getLadspaFX( nFX );
 
-		float fLevel = pNote->get_instrument()->get_fx_level( nFX );
+		float fLevel = note.get_instrument()->get_fx_level( nFX );
 
 		if ( ( pFX ) && ( fLevel != 0.0 ) ) {
 			fLevel = fLevel * pFX->getVolume();
@@ -483,60 +559,55 @@ int Sampler::__render_note_no_resample(
 
 
 
-int Sampler::__render_note_resample(
+int SamplerPrivate::render_note_resample(
     Sample *pSample,
-    Note *pNote,
-    int nBufferSize,
-    int nInitialSilence,
+    Note& note,
+    int nFrames,
+    uint32_t frame_rate,
     float cost_L,
     float cost_R,
     float cost_track_L,
     float cost_track_R,
     float fLayerPitch,
     float fSendFXLevel_L,
-    float fSendFXLevel_R,
-    Song* pSong
+    float fSendFXLevel_R
 )
 {
-	int nNoteLength = -1;
-	if ( pNote->get_length() != -1 ) {
-		nNoteLength = ( int )( pNote->get_length() * __audio_output->m_transport.m_nTickSize );
-	}
-	float fNotePitch = pNote->get_pitch() + fLayerPitch;
-	fNotePitch += pNote->m_noteKey.m_nOctave * 12 + pNote->m_noteKey.m_key;
+	float fNotePitch = note.get_pitch() + fLayerPitch;
+	fNotePitch += note.m_noteKey.m_nOctave * 12 + note.m_noteKey.m_key;
 
 	//_INFOLOG( "pitch: " + to_string( fNotePitch ) );
 
 	float fStep = pow( 1.0594630943593, ( double )fNotePitch );
-	fStep *= ( float )pSample->get_sample_rate() / __audio_output->getSampleRate(); // Adjust for audio driver sample rate
+	fStep *= ( float )pSample->get_sample_rate() / frame_rate; // Adjust for audio driver sample rate
 
-	int nAvail_bytes = ( int )( ( float )( pSample->get_n_frames() - pNote->m_fSamplePosition ) / fStep );	// verifico il numero di frame disponibili ancora da eseguire
+	int nAvail_bytes = ( int )( ( float )( pSample->get_n_frames() - note.m_fSamplePosition ) / fStep );	// verifico il numero di frame disponibili ancora da eseguire
 
 	int retValue = 1; // the note is ended
-	if ( nAvail_bytes > nBufferSize - nInitialSilence ) {	// il sample e' piu' grande del buffersize
+	if ( nAvail_bytes > nFrames - note.m_nSilenceOffset ) {	// il sample e' piu' grande del buffersize
 		// imposto il numero dei bytes disponibili uguale al buffersize
-		nAvail_bytes = nBufferSize - nInitialSilence;
+		nAvail_bytes = nFrames - note.m_nSilenceOffset;
 		retValue = 0; // the note is not ended yet
 	}
 
-//	ADSR *pADSR = pNote->m_pADSR;
+//	ADSR *pADSR = note.m_pADSR;
 
-	int nInitialBufferPos = nInitialSilence;
-	float fInitialSamplePos = pNote->m_fSamplePosition;
-	float fSamplePos = pNote->m_fSamplePosition;
+	int nInitialBufferPos = note.m_nSilenceOffset;
+	float fInitialSamplePos = note.m_fSamplePosition;
+	float fSamplePos = note.m_fSamplePosition;
 	int nTimes = nInitialBufferPos + nAvail_bytes;
-	int nInstrument = pSong->get_instrument_list()->get_pos( pNote->get_instrument() );
+	int nInstrument = pSong->get_instrument_list()->get_pos( note.get_instrument() );
 
 	// filter
-	bool bUseLPF = pNote->get_instrument()->is_filter_active();
-	float fResonance = pNote->get_instrument()->get_filter_resonance();
-	float fCutoff = pNote->get_instrument()->get_filter_cutoff();
+	bool bUseLPF = note.get_instrument()->is_filter_active();
+	float fResonance = note.get_instrument()->get_filter_resonance();
+	float fCutoff = note.get_instrument()->get_filter_cutoff();
 
 	float *pSample_data_L = pSample->get_data_l();
 	float *pSample_data_R = pSample->get_data_r();
 
-	float fInstrPeak_L = pNote->get_instrument()->get_peak_l(); // this value will be reset to 0 by the mixer..
-	float fInstrPeak_R = pNote->get_instrument()->get_peak_r(); // this value will be reset to 0 by the mixer..
+	float fInstrPeak_L = note.get_instrument()->get_peak_l(); // this value will be reset to 0 by the mixer..
+	float fInstrPeak_R = note.get_instrument()->get_peak_r(); // this value will be reset to 0 by the mixer..
 
 	float fADSRValue = 1.0;
 	float fVal_L;
@@ -554,8 +625,10 @@ int Sampler::__render_note_resample(
 
 
 	for ( int nBufferPos = nInitialBufferPos; nBufferPos < nTimes; ++nBufferPos ) {
-		if ( ( nNoteLength != -1 ) && ( nNoteLength <= pNote->m_fSamplePosition )  ) {
-			if ( pNote->m_adsr.release() == 0 ) {
+		if( note.m_nReleaseOffset != (uint32_t)-1
+		    && nBufferPos >= note.m_nReleaseOffset )
+		{
+			if ( note.m_adsr.release() == 0 ) {
 				retValue = 1;	// the note is ended
 			}
 		}
@@ -571,29 +644,29 @@ int Sampler::__render_note_resample(
 		}
 
 		// ADSR envelope
-		fADSRValue = pNote->m_adsr.get_value( fStep );
+		fADSRValue = note.m_adsr.get_value( fStep );
 		fVal_L = fVal_L * fADSRValue;
 		fVal_R = fVal_R * fADSRValue;
 
 		// Low pass resonant filter
 		if ( bUseLPF ) {
-			pNote->m_fBandPassFilterBuffer_L = fResonance * pNote->m_fBandPassFilterBuffer_L + fCutoff * ( fVal_L - pNote->m_fLowPassFilterBuffer_L );
-			pNote->m_fLowPassFilterBuffer_L += fCutoff * pNote->m_fBandPassFilterBuffer_L;
-			fVal_L = pNote->m_fLowPassFilterBuffer_L;
+			note.m_fBandPassFilterBuffer_L = fResonance * note.m_fBandPassFilterBuffer_L + fCutoff * ( fVal_L - note.m_fLowPassFilterBuffer_L );
+			note.m_fLowPassFilterBuffer_L += fCutoff * note.m_fBandPassFilterBuffer_L;
+			fVal_L = note.m_fLowPassFilterBuffer_L;
 
-			pNote->m_fBandPassFilterBuffer_R = fResonance * pNote->m_fBandPassFilterBuffer_R + fCutoff * ( fVal_R - pNote->m_fLowPassFilterBuffer_R );
-			pNote->m_fLowPassFilterBuffer_R += fCutoff * pNote->m_fBandPassFilterBuffer_R;
-			fVal_R = pNote->m_fLowPassFilterBuffer_R;
+			note.m_fBandPassFilterBuffer_R = fResonance * note.m_fBandPassFilterBuffer_R + fCutoff * ( fVal_R - note.m_fLowPassFilterBuffer_R );
+			note.m_fLowPassFilterBuffer_R += fCutoff * note.m_fBandPassFilterBuffer_R;
+			fVal_R = note.m_fLowPassFilterBuffer_R;
 		}
 
 
 #ifdef JACK_SUPPORT
-		if ( __audio_output->has_track_outs()
-			&& dynamic_cast<JackOutput*>(__audio_output) ) {
-			assert( __track_out_L[ nInstrument ] );
-                        assert( __track_out_R[ nInstrument ] );
-			__track_out_L[ nInstrument ][nBufferPos] += (fVal_L * cost_track_L);
-			__track_out_R[ nInstrument ][nBufferPos] += (fVal_R * cost_track_R);
+		if ( audio_output->has_track_outs()
+			&& dynamic_cast<JackOutput*>(audio_output) ) {
+			assert( track_out_L[ nInstrument ] );
+                        assert( track_out_R[ nInstrument ] );
+			track_out_L[ nInstrument ][nBufferPos] += (fVal_L * cost_track_L);
+			track_out_R[ nInstrument ][nBufferPos] += (fVal_R * cost_track_R);
 		}
 #endif
 
@@ -609,14 +682,14 @@ int Sampler::__render_note_resample(
 		}
 
 		// to main mix
-		__main_out_L[nBufferPos] += fVal_L;
-		__main_out_R[nBufferPos] += fVal_R;
+		parent.__main_out_L[nBufferPos] += fVal_L;
+		parent.__main_out_R[nBufferPos] += fVal_R;
 
 		fSamplePos += fStep;
 	}
-	pNote->m_fSamplePosition += nAvail_bytes * fStep;
-	pNote->get_instrument()->set_peak_l( fInstrPeak_L );
-	pNote->get_instrument()->set_peak_r( fInstrPeak_R );
+	note.m_fSamplePosition += nAvail_bytes * fStep;
+	note.get_instrument()->set_peak_l( fInstrPeak_L );
+	note.get_instrument()->set_peak_r( fInstrPeak_R );
 
 
 
@@ -624,7 +697,7 @@ int Sampler::__render_note_resample(
 	// LADSPA
 	for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
 		LadspaFX *pFX = Effects::getInstance()->getLadspaFX( nFX );
-		float fLevel = pNote->get_instrument()->get_fx_level( nFX );
+		float fLevel = note.get_instrument()->get_fx_level( nFX );
 		if ( ( pFX ) && ( fLevel != 0.0 ) ) {
 			fLevel = fLevel * pFX->getVolume();
 
@@ -662,36 +735,43 @@ int Sampler::__render_note_resample(
 	return retValue;
 }
 
+void note_on( Note* note )
+{
+	assert(false);
+}
+
+void note_off( Note* note )
+{
+	assert(false);
+}
 
 void Sampler::stop_playing_notes( Instrument* instrument )
 {
 	/*
 	// send a note-off event to all notes present in the playing note queue
-	for ( int i = 0; i < __playing_notes_queue.size(); ++i ) {
-		Note *pNote = __playing_notes_queue[ i ];
-		pNote->m_pADSR->release();
+	for ( int i = 0; i < d->current_notes.size(); ++i ) {
+		Note *pNote = d->current_notes[ i ];
+		note.m_pADSR->release();
 	}
 	*/
 
 	if ( instrument ) { // stop all notes using this instrument
-		for ( unsigned i = 0; i < __playing_notes_queue.size(); ) {
-			Note *pNote = __playing_notes_queue[ i ];
-			assert( pNote );
-			if ( pNote->get_instrument() == instrument ) {
-				delete pNote;
+		SamplerPrivate::NoteList::iterator k, die;
+		for( k=d->current_notes.begin() ; k!=d->current_notes.end() ; /* ++k */ ) {
+			if( k->get_instrument() == instrument ) {
+				die = k; ++k;
+				d->current_notes.erase(die);
 				instrument->dequeue();
-				__playing_notes_queue.erase( __playing_notes_queue.begin() + i );
+			} else {
+				++k;
 			}
-			++i;
 		}
 	} else { // stop all notes
-		// delete all copied notes in the playing notes queue
-		for ( unsigned i = 0; i < __playing_notes_queue.size(); ++i ) {
-			Note *pNote = __playing_notes_queue[i];
-			pNote->get_instrument()->dequeue();
-			delete pNote;
+		SamplerPrivate::NoteList::iterator k;
+		for( k=d->current_notes.begin() ; k!=d->current_notes.end() ; ++k ) {
+			k->get_instrument()->dequeue();
 		}
-		__playing_notes_queue.clear();
+		d->current_notes.clear();
 	}
 }
 
@@ -702,14 +782,14 @@ void Sampler::preview_sample( Sample* sample, int length )
 {
 	AudioEngine::get_instance()->lock( "Sampler::previewSample" );
 
-	InstrumentLayer *pLayer = __preview_instrument->get_layer( 0 );
+	InstrumentLayer *pLayer = d->preview_instrument->get_layer( 0 );
 
 	Sample *pOldSample = pLayer->get_sample();
 	pLayer->set_sample( sample );
 
-	Note *previewNote = new Note( __preview_instrument, 0, 1.0, 0.5, 0.5, length, 0 );
+	Note *previewNote = new Note( d->preview_instrument, 0, 1.0, 0.5, 0.5, 0 );
 
-	stop_playing_notes( __preview_instrument );
+	stop_playing_notes( d->preview_instrument );
 	note_on( previewNote );
 	delete pOldSample;
 
@@ -723,12 +803,12 @@ void Sampler::preview_instrument( Instrument* instr )
 	Instrument * old_preview;
 	AudioEngine::get_instance()->lock( "Sampler::previewInstrument" );
 
-	stop_playing_notes( __preview_instrument );
+	stop_playing_notes( d->preview_instrument );
 
-	old_preview = __preview_instrument;
-	__preview_instrument = instr;
+	old_preview = d->preview_instrument;
+	d->preview_instrument = instr;
 
-	Note *previewNote = new Note( __preview_instrument, 0, 1.0, 0.5, 0.5, MAX_NOTES, 0 );
+	Note *previewNote = new Note( d->preview_instrument, 0, 1.0, 0.5, 0.5, 0 );
 
 	note_on( previewNote );	// exclusive note
 	AudioEngine::get_instance()->unlock();
@@ -739,7 +819,7 @@ void Sampler::preview_instrument( Instrument* instr )
 
 void Sampler::set_audio_output( AudioOutput* audio_output )
 {
-	__audio_output = audio_output;
+	d->audio_output = audio_output;
 }
 
 void Sampler::makeTrackOutputQueues( )
@@ -748,22 +828,17 @@ void Sampler::makeTrackOutputQueues( )
 
 #ifdef JACK_SUPPORT
 	JackOutput* jao = 0;
-	if (__audio_output && __audio_output->has_track_outs() ) {
-		jao = dynamic_cast<JackOutput*>(__audio_output);
+	if (d->audio_output && d->audio_output->has_track_outs() ) {
+		jao = dynamic_cast<JackOutput*>(d->audio_output);
 	}
 	if ( jao ) {
 		for (int nTrack = 0; nTrack < jao->getNumTracks( ); nTrack++) {
-			__track_out_L[nTrack] = jao->getTrackOut_L( nTrack );
-			assert( __track_out_L[ nTrack ] );
-			__track_out_R[nTrack] = jao->getTrackOut_R( nTrack );
-			assert( __track_out_R[ nTrack ] );
+			d->track_out_L[nTrack] = jao->getTrackOut_L( nTrack );
+			assert( d->track_out_L[ nTrack ] );
+			d->track_out_R[nTrack] = jao->getTrackOut_R( nTrack );
+			assert( d->track_out_R[ nTrack ] );
 		}
 	}
 #endif // JACK_SUPPORT
 
 }
-
-
-
-};
-

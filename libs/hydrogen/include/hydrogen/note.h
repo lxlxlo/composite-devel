@@ -78,12 +78,12 @@ class Note : public Object
 {
 public:
 
+	// These are used exclusively by the Sampler
+	uint32_t m_nSilenceOffset; ///< Used when scheduling note start in process() cycle
+	uint32_t m_nReleaseOffset; ///< Used when scheduling not lengths.
 	float m_fSamplePosition; ///< Place marker for overlapping process() cycles
-	int m_nHumanizeDelay;	///< Used in "humanize" function
 	NoteKey m_noteKey;
-
 	ADSR m_adsr;
-
 	// Low pass resonant filter
 	float m_fCutoff;		///< Filter cutoff (0..1)
 	float m_fResonance;	///< Filter resonant frequency (0..1)
@@ -93,13 +93,16 @@ public:
 	float m_fLowPassFilterBuffer_R;		///< Low pass filter buffer
 	//~ filter
 
+	// This is used exclusively by the Sequencer (Hydrogen)
+	int m_nHumanizeDelay;	///< Used in "humanize" function
+
 	#warning "TODO: Check these defaults"
 	Note(
 	    Instrument *pInstrument = 0,
 	    float fVelocity = 1.0,
-	    float fPan_L = 1.0,
-	    float fPan_R = 1.0,
-	    int nLength = 0,
+	    float fPan_L = 0.5,
+	    float fPan_R = 0.5,
+	    int nLength = 0,                 // Length is in *ticks*
 	    float fPitch = 1.0,
 	    NoteKey key = NoteKey()
 	);
@@ -112,11 +115,11 @@ public:
 	Note* copy();
 
 	void set_instrument( Instrument* instrument );
-	Instrument* get_instrument() {
+	Instrument* get_instrument() const {
 		return __instrument;
 	}
 
-	void dumpInfo();
+	void dumpInfo() const;
 	static NoteKey stringToKey( const QString& sKey );
 	static QString keyToString( NoteKey key );
 
@@ -197,10 +200,10 @@ private:
 	float __pan_r;			///< Pan of the note (right volume) [0..1]
 	float __leadlag;		///< Lead or lag offset of the note
 
-	int __length;
+	int __length;                   ///< Length in ticks.  Used by the sequencer (Hydrogen)
 	float __pitch;
-};
+}; // class Note
 
-};
+} // namespace H2Core
 
 #endif

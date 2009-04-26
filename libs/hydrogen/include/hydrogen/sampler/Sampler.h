@@ -26,6 +26,7 @@
 
 #include <hydrogen/Object.h>
 #include <hydrogen/globals.h>
+#include <hydrogen/SeqScriptIterator.h>
 
 #include <inttypes.h>
 #include <vector>
@@ -36,10 +37,12 @@ namespace H2Core
 {
 
 class Note;
-class Song;
 class Sample;
 class Instrument;
 class AudioOutput;
+
+struct SamplerPrivate;
+struct TransportPosition;
 
 ///
 /// Waveform based sampler.
@@ -53,19 +56,19 @@ public:
 	Sampler();
 	~Sampler();
 
-	void process( uint32_t nFrames, Song* pSong );
-
-	/// Start playing a note
-	void note_on( Note *note );
-
-	/// Stop playing a note.
-	void note_off( Note *note );
+	void process( SeqScriptConstIterator beg,
+		      SeqScriptConstIterator end,
+		      const TransportPosition& pos,
+		      uint32_t nFrames );
 
 	void stop_playing_notes( Instrument *instr = NULL );
+	void panic();
 
-	int get_playing_notes_number() {
-		return __playing_notes_queue.size();
-	}
+	#warning "TODO: what do I do with these (Sampler::note_on/off)?"
+	void note_on(Note *note);
+	void note_off(Note *note);
+
+	int get_playing_notes_number();
 
 	void preview_sample( Sample* sample, int length );
 	void preview_instrument( Instrument* instr );
@@ -73,53 +76,11 @@ public:
 	void set_audio_output( AudioOutput* audio_output );
 	void makeTrackOutputQueues();
 
-
 private:
-	std::vector<Note*> __playing_notes_queue;
-	static Sampler* __instance;
-	AudioOutput* __audio_output;
+	SamplerPrivate *d;
+}; // class Sampler
 
-	/// Instrument used for the preview feature.
-	Instrument* __preview_instrument;
-
-#ifdef JACK_SUPPORT
-	float* __track_out_L[ MAX_INSTRUMENTS ];
-	float* __track_out_R[ MAX_INSTRUMENTS ];
-#endif
-
-	unsigned __render_note( Note* pNote, unsigned nBufferSize, Song* pSong );
-
-	int __render_note_no_resample(
-	    Sample *pSample,
-	    Note *pNote,
-	    int nBufferSize,
-	    int nInitialSilence,
-	    float cost_L,
-	    float cost_R,
-	    float cost_track_L,
-	    float cost_track_R,
-	    float fSendFXLevel_L,
-	    float fSendFXLevel_R,
-	    Song* pSong
-	);
-
-	int __render_note_resample(
-	    Sample *pSample,
-	    Note *pNote,
-	    int nBufferSize,
-	    int nInitialSilence,
-	    float cost_L,
-	    float cost_R,
-	    float cost_track_L,
-	    float cost_track_R,
-	    float fLayerPitch,
-	    float fSendFXLevel_L,
-	    float fSendFXLevel_R,
-	    Song* pSong
-	);
-};
-
-} // namespace
+} // namespace H2Core
 
 #endif
 

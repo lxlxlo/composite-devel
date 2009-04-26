@@ -39,7 +39,9 @@ namespace H2Core
         typedef _SeqScriptIterator _Self;
         typedef _Script _Parent;
 
-        _SeqScriptIterator(_Script& s);
+	_SeqScriptIterator();
+        _SeqScriptIterator(_Script* s);
+	_SeqScriptIterator(const _Self& o);
         virtual ~_SeqScriptIterator();
 
         reference operator*() const;
@@ -51,8 +53,11 @@ namespace H2Core
         _Self& operator-=(difference_type n);
         _Self operator-(difference_type n) const;
         reference operator[](difference_type n) const;
+
+	bool operator!=(const _Self& o) const;
+
     private:
-        _Parent& q;
+        _Parent* q;
     };
 
     typedef _SeqScriptIterator<SeqEvent,

@@ -132,21 +132,21 @@ void SeqScript::insert_note(const SeqScript::value_type& event, SeqScript::frame
 /// nframes.
 SeqScriptConstIterator SeqScript::begin_const() const
 {
-    static SeqScriptConstIterator foo(*this);
+    static SeqScriptConstIterator foo(this);
     assert(false);
     return foo;
 }
 
 SeqScriptConstIterator SeqScript::end_const() const
 {
-    static SeqScriptConstIterator foo(*this);
+    static SeqScriptConstIterator foo(this);
     assert(false);
     return foo;
 }
 
 SeqScriptConstIterator SeqScript::end_const(SeqScript::frame_type nframes) const
 {
-    static SeqScriptConstIterator foo(*this);
+    static SeqScriptConstIterator foo(this);
     assert(false);
     return foo;
 }

@@ -19,7 +19,19 @@ namespace H2Core
 #define _Self _SeqScriptIterator<E,S>
 
     template <typename E, typename S>
-    _SeqScriptIterator<E,S>::_SeqScriptIterator(S& s) : q(s)
+    _SeqScriptIterator<E,S>::_SeqScriptIterator() : q(0)
+    {
+        assert(false);
+    }
+
+    template <typename E, typename S>
+    _SeqScriptIterator<E,S>::_SeqScriptIterator(S* s) : q(s)
+    {
+        assert(false);
+    }
+
+    template <typename E, typename S>
+    _SeqScriptIterator<E,S>::_SeqScriptIterator(const _SeqScriptIterator<E,S>& o) : q(o.q)
     {
         assert(false);
     }
@@ -34,14 +46,14 @@ namespace H2Core
     typename _Self::reference _SeqScriptIterator<E,S>::operator*() const
     {
         assert(false);
-        return q.at(0);
+        return q->at(0);
     }
 
     template <typename E, typename S>
     typename _Self::pointer _SeqScriptIterator<E,S>::operator->() const
     {
         assert(false);
-        return &(q.at(0));
+        return &(q->at(0));
     }
 
     template <typename E, typename S>
@@ -90,7 +102,14 @@ namespace H2Core
     typename _Self::reference _SeqScriptIterator<E,S>::operator[](difference_type n) const
     {
         assert(false);
-        return q.at(0);
+        return q->at(0);
+    }
+
+    template <typename E, typename S>
+    bool _SeqScriptIterator<E,S>::operator!=(const _Self& o) const
+    {
+        assert(false);
+        return true;
     }
 
     template class _SeqScriptIterator<SeqEvent, SeqScript>;
