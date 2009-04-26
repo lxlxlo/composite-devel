@@ -19,70 +19,48 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef TRANSPORT_H
-#define TRANSPORT_H
+#ifndef H2CORE_TRANSPORT_H
+#define H2CORE_TRANSPORT_H
 
-#include <hydrogen/TransportMasterInterface.h>
+#include <stdint.h>  // int32_t, uint32_t
 
 namespace H2Core
 {
-    class TransportPrivate;
     class Song;
+    class TransportPosition;
 
     /**
-     * This is the only transport that Hydrogen shall directly interact with.
-     * It shall manage all transport backends (Internal, Jack, whatever).
-     *
-     * From the sequencer's point of view, it is expected to be used like this:
-     *
-     * int process(uint32_t nFrames) {
-     *     TransportPosition pos;        // Defined in TransportMasterInterface.h
-     *     Transport* xport = Transport::get_instance();
-     *     xport->get_position(&pos);
-     *
-     *     // Sequence notes based on [Bar:beat.tick] + bbt_offset
-     *     // and **NOT** based on the frame number.
-     *
-     *     // Tell the transport to move to the next cycle
-     *     xport->processed_frames(nFrames);
-     * }
+     * This is the base class for a transport master.  It will be used and
+     * controlled by the main transport.  A Transport Master is the one actually
+     * in charge of the bars, beats, and ticks.
      */
-    class Transport : public TransportMasterInterface
+    class Transport
     {
     public:
-        // Singleton access
-        static Transport* get_instance();
+        virtual ~Transport() {}
 
         // Normal transport controls
-        virtual int locate(uint32_t frame);
-        virtual int locate(uint32_t bar, uint32_t beat, uint32_t tick);
-        virtual void start(void);
-        virtual void stop(void);
-        virtual void get_position(TransportPosition* pos);
+        virtual int locate(uint32_t frame) = 0;
+        virtual int locate(uint32_t bar, uint32_t beat, uint32_t tick) = 0;
+        virtual void start(void) = 0;
+        virtual void stop(void) = 0;
+        virtual void get_position(TransportPosition* pos) =0;
 
         // Interface for sequencer.  At the end of process(), declare the number
         // of frames processed.  This is needed so that the internal transport
         // master can keep track of time.
-        virtual void processed_frames(uint32_t nFrames);
-        virtual void set_current_song(Song* s);
+        virtual void processed_frames(uint32_t nFrames) = 0;
+        virtual void set_current_song(Song* s) = 0;
 
         // Convenience interface (mostly for GUI)
-        virtual uint32_t get_current_frame(void);
-
-        // Interface for application (i.e. GUI)
-        // * get list of transport models
-        // * set current transport model
-        // * possibly set parameters on transport models.
-
-    private:
-        Transport();
-        virtual ~Transport();
-
-        static Transport* _instance;
-        TransportPrivate* d;
+        /**
+         * Returns an approximation of the current frame number.  It is expected
+         * that this function be fast... so an approximation within a process()
+         * cycle or two is fine.
+         */
+        virtual uint32_t get_current_frame(void) = 0;
     };
-
 
 }
 
-#endif // TRANSPORT_H
+#endif // H2CORE_TRANSPORT_H

@@ -39,7 +39,7 @@ void* diskWriterDriver_thread( void* param )
 {
 	DiskWriterDriver *pDriver = ( DiskWriterDriver* )param;
 	_INFOLOG( "DiskWriterDriver thread start" );
-        Transport* xport = Transport::get_instance();
+        Transport* xport = Hydrogen::get_instance()->get_transport();
         TransportPosition xpos;
 
 	// always rolling, no user interaction

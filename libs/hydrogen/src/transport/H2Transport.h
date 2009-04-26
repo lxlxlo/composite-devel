@@ -19,38 +19,37 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef JACKTRANSPORTMASTER_H
-#define JACKTRANSPORTMASTER_H
+#ifndef H2CORE_H2TRANSPORT_H
+#define H2CORE_H2TRANSPORT_H
 
 #include <hydrogen/Transport.h>
 
 namespace H2Core
 {
-    struct TransportPosition;
-    class JackTransportMasterPrivate;
+    class H2TransportPrivate;
+    class Song;
 
     /**
-     * This class is the interface between Hydrogen and the JACK Transport.  it
-     * is *NOT* the JACK Transport Master.  It is a Jack Transport Client.  This
-     * is used whether Hydrogen is the JACK transport master or not.
+     * This is the only transport that Hydrogen shall directly interact with.
+     * It shall manage all transport backends (Internal, Jack, whatever).
      *
-     * When Hydrogen is a JACK transport slave, it looks like this:
+     * From the sequencer's point of view, it is expected to be used like this:
      *
-     * jackd --> jack_position_t --> JackTransportMaster
-     *            --> H2Core::Transport --> Sequencer (Hydrogen)
+     * int process(uint32_t nFrames) {
+     *     TransportPosition pos;        // Defined in TransportMasterInterface.h
+     *     Transport* xport = Hydrogen::get_instance()->get_transport();
+     *     xport->get_position(&pos);
      *
-     * When Hydrogen is the JACK transport master, it looks like this:
+     *     // Sequence notes based on [Bar:beat.tick] + bbt_offset
+     *     // and **NOT** based on the frame number.
      *
-     * HydrogenBasicTransportMaster --> JackTimebaseCallback --> jackd
-     *    --> jack_position_t --> JackTransportMaster
-     *           --> H2Core::Transport --> Sequencer (Hydrogen)
+     *     // Tell the transport to move to the next cycle
+     *     xport->processed_frames(nFrames);
+     * }
      */
-    class JackTransportMaster : public Transport
+    class H2Transport : public Transport
     {
     public:
-        JackTransportMaster();
-        virtual ~JackTransportMaster() {}
-
         // Normal transport controls
         virtual int locate(uint32_t frame);
         virtual int locate(uint32_t bar, uint32_t beat, uint32_t tick);
@@ -67,11 +66,19 @@ namespace H2Core
         // Convenience interface (mostly for GUI)
         virtual uint32_t get_current_frame(void);
 
+        // Interface for application (i.e. GUI)
+        // * get list of transport models
+        // * set current transport model
+        // * possibly set parameters on transport models.
+
     private:
-        JackTransportMasterPrivate* d;
+        H2Transport();
+        virtual ~H2Transport();
+
+        H2TransportPrivate* d;
     };
 
 
 }
 
-#endif // JACKTRANSPORTMASTER_H
+#endif // H2CORE_H2TRANSPORT_H

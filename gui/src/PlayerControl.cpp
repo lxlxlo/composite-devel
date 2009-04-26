@@ -554,7 +554,7 @@ void PlayerControl::updatePlayerControl()
 	//~ jack transport master
 
 	// time
-	float fFrames = Transport::get_instance()->get_current_frame();
+	float fFrames = Hydrogen::get_instance()->get_transport()->get_current_frame();
 	float fSampleRate = m_pEngine->getAudioOutput()->getSampleRate();
 	if ( fSampleRate != 0 ) {
 		float fSeconds = fFrames / fSampleRate;

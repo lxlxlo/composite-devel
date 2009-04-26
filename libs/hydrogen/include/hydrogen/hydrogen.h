@@ -43,6 +43,8 @@ inline int randomValue( int max );
 namespace H2Core
 {
 
+class Transport;
+
 ///
 /// Hydrogen Audio Engine.
 ///
@@ -53,6 +55,9 @@ public:
 	static Hydrogen* get_instance();
 
 	~Hydrogen();
+
+// ***** ACCESS TO TRANSPORT ******
+	Transport* get_transport(); // Never returns null
 
 // ***** SEQUENCER ********
 	/// Start the internal sequencer

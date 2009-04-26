@@ -20,6 +20,35 @@
  *
  */
 
+#error "README:"
+/*
+ In redesigning the Sampler, the following responsibilities were
+ shifted over to the Sequencer (H2Core::Hydrogen):
+
+   o Must explicitly schedule Note On/Off events.  If Off event
+     omitted, the note will stop when the sample ends.
+
+   o Must supply a valid TransportPosition.
+
+   o SeqEvent::frame is always relative to the current process()
+     cycle.
+
+   o in Sampler::process(beg, end, pos, nFrames), beg and end
+     must be for this process() cycle only.  It will not be
+     checked.
+
+   o Sequencer is responsible for all scheduling the effects of all
+     humanize, lead/lag, et al features.
+
+   o It is undefined yet what to do for sample preview.  People need
+     some level of access to Sampler in an "anytime, anywhere"
+     fashion.  However, ATM it is not thread safe.  Currently, Sampler
+     has no mutexes or any other kind of lock.  I'd like to keep it
+     this way.  But this may mean that all "preview" features need to
+     be handled by the Sequencer somehow.
+
+ */
+
 #include "config.h"
 
 #ifdef WIN32
@@ -668,7 +697,7 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 
 	timeval startTimeval = currentTime2();
 
-        Transport* xport = Transport::get_instance();
+        Transport* xport = Hydrogen::get_instance()->get_transport();
         TransportPosition pos;
         xport->get_position(&pos);
 

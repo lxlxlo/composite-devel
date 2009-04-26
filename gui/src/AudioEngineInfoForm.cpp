@@ -155,7 +155,7 @@ void AudioEngineInfoForm::updateInfo()
 
 		// Number of frames
 		nFramesLbl->setText(
-                    QString("%1").arg(Transport::get_instance()->get_current_frame())
+                    QString("%1").arg(Hydrogen::get_instance()->get_transport()->get_current_frame())
                     );
 	}
 	else {

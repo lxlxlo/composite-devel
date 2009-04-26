@@ -22,7 +22,7 @@
 #ifndef SIMPLETRANSPORTMASTER_H
 #define SIMPLETRANPOSRTMASTER_H
 
-#include <hydrogen/TransportMasterInterface.h>
+#include <hydrogen/Transport.h>
 
 namespace H2Core
 {
@@ -32,7 +32,7 @@ namespace H2Core
     /**
      * This defines a very simple transport master for Hydrogen.
      */
-    class SimpleTransportMaster : public TransportMasterInterface
+    class SimpleTransportMaster : public Transport
     {
     public:
         SimpleTransportMaster();

@@ -20,71 +20,63 @@
  *
  */
 
-#include <hydrogen/Transport.h>
+#include "H2Transport.h"
 #include "SimpleTransportMaster.h"
 
 using namespace H2Core;
 
-#warning "Don't do a global object like this."
-Transport* Transport::_instance = new Transport();
-
-class H2Core::TransportPrivate
+class H2Core::H2TransportPrivate
 {
 public:
-    TransportMasterInterface* xport;
+    Transport* xport;
 };
 
-Transport::Transport() :
+H2Transport::H2Transport() :
     d(0)    
 {
-    d = new TransportPrivate;
+    d = new H2TransportPrivate;
     d->xport = new SimpleTransportMaster;
 }
 
-Transport::~Transport()
+H2Transport::~H2Transport()
 {
     delete d->xport;
     delete d;
 }
 
-Transport* Transport::get_instance(void)
-{
-    return _instance;
-}
-
-int Transport::locate(uint32_t frame)
+int H2Transport::locate(uint32_t frame)
 {
     if(d->xport) return d->xport->locate(frame);
     return -1;
 }
 
-int Transport::locate(uint32_t bar, uint32_t beat, uint32_t tick)
+int H2Transport::locate(uint32_t bar, uint32_t beat, uint32_t tick)
 {
     if(d->xport) return d->xport->locate(bar, beat, tick);
     return -1;
 }
 
-void Transport::start(void)
+void H2Transport::start(void)
 {
     if(d->xport) d->xport->start();
 }
 
-void Transport::stop(void)
+void H2Transport::stop(void)
 {
     if(d->xport) d->xport->stop();
 }
 
-void Transport::get_position(TransportPosition* pos)
+void H2Transport::get_position(TransportPosition* pos)
 {
     if(d->xport) d->xport->get_position(pos);
 }
 
-void Transport::processed_frames(uint32_t nFrames)
+void H2Transport::processed_frames(uint32_t nFrames)
 {
     if(d->xport) d->xport->processed_frames(nFrames);
 }
 
-void Transport::set_current_song(Song* s)
+void H2Transport::set_current_song(Song* s)
 {
     if(d->xport) d->xport->set_current_song(s);
 }

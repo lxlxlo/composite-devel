@@ -20,6 +20,7 @@
  *
  */
 
+#include <hydrogen/hydrogen.h>
 #include <hydrogen/Transport.h>
 #include "FakeDriver.h"
 
@@ -58,8 +59,8 @@ int FakeDriver::connect()
 {
 	INFOLOG( "connect" );
 
-        Transport::get_instance()->locate(0);
-        Transport::get_instance()->start();
+        Hydrogen::get_instance()->get_transport()->locate(0);
+        Hydrogen::get_instance()->get_transport()->start();
 
 	return 0;
 }
