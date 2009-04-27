@@ -2368,111 +2368,21 @@ void Hydrogen::handleBeatCounter()
 //~ beatcounter
 
 // jack transport master
-unsigned long Hydrogen::getHumantimeFrames()
+
+bool Hydrogen::setJackTimeMaster(bool if_none_already)
 {
-	return m_nHumantimeFrames;
+	return m_pTransport->setJackTimeMaster(if_none_already);
 }
 
-void Hydrogen::setHumantimeFrames(unsigned long hframes)
+void Hydrogen::clearJackTimeMaster()
 {
-	m_nHumantimeFrames = hframes;
+	m_pTransport->clearJackTimeMaster();
 }
 
-
-
-#ifdef JACK_SUPPORT
-void Hydrogen::offJackMaster()
+bool Hydrogen::getJackTimeMaster()
 {
-	static_cast< JackOutput* >( m_pAudioDriver )->com_release();
+	return m_pTransport->getJackTimeMaster();
 }
-
-void Hydrogen::onJackMaster()
-{
-	static_cast< JackOutput* >( m_pAudioDriver )->initTimeMaster();
-}
-
-unsigned long Hydrogen::getTimeMasterFrames()
-{
-	float allframes = 0 ;
-
-	if ( m_pAudioDriver->m_transport.m_status == TransportInfo::STOPPED ){
-
-		int oldtick = getTickPosition();
-		for (int i = 0; i <= getPatternPos(); i++){
-			float framesforposition =
-				(long)getTickForHumanPosition(i)
-				* (float)m_pAudioDriver->m_transport.m_nTickSize;
-			allframes = framesforposition + allframes;
-		}
-		unsigned long framesfortimemaster = (unsigned int)(
-			allframes
-			+ oldtick * (float)m_pAudioDriver->m_transport.m_nTickSize
-			);
-		m_nHumantimeFrames = framesfortimemaster;
-		return framesfortimemaster;
-	}else
-	{
-	return m_nHumantimeFrames;
-	}
-}
-#endif
-
-long Hydrogen::getTickForHumanPosition( int humanpos )
-{
-	std::vector< PatternList* > * columns = m_pSong->get_pattern_group_vector();
-	
-	int nPatternGroups = columns->size();
-	if ( humanpos >= nPatternGroups ) {
-		if ( m_pSong->is_loop_enabled() ) {
-			humanpos = humanpos % nPatternGroups;
-		} else {
-			return -1;
-		}
-	}
-
-// 	std::vector<PatternList*> *pColumns =
-//		m_pSong->get_pattern_group_vector()[ humanpos - 1 ]
-//			.get( 0 )->get_length();
-	
-//	ERRORLOG( "Kick me!" );
-	if ( humanpos == 0 ) return 0;
-	Pattern *pPattern = columns->at( humanpos - 1 )->get( 0 );
-	if ( pPattern ) {
-		return pPattern->get_length();
-	} else {
-		return MAX_NOTES;
-	}
-// 	int nPatternSize;
-	
-// 	pColumns
-	
-/*	Pattern *pPattern = NULL;
-	for ( int i = 0; i < humanpos; ++i ) {
-		PatternList *pColumn = ( *pColumns )[ i ];
-		pPattern = pColumn->get( 0 );
-		if ( pPattern ) {
-			nPatternSize = pPattern->get_length();
-		} else {
-			nPatternSize = MAX_NOTES;
-		}
-
-		humanTick = nPatternSize;
-	}*/
-// 	return humanTick;
-}
-
-
-
-float Hydrogen::getNewBpmJTM()
-{
-	return m_nNewBpmJTM;
-}
-
-void Hydrogen::setNewBpmJTM( float bpmJTM )
-{
-	m_nNewBpmJTM = bpmJTM;
-}
-
 
 //~ jack transport master
 

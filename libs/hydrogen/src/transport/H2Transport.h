@@ -67,6 +67,11 @@ namespace H2Core
         virtual uint32_t get_current_frame(void);
 	virtual TransportPosition::State get_state(void);
 
+	// Special Methods for Jack Transport.
+	bool setJackTimeMaster(bool if_none_already = false);
+	void clearJackTimeMaster();
+	bool getJackTimeMaster();
+
         // Interface for application (i.e. GUI)
         // * get list of transport models
         // * set current transport model

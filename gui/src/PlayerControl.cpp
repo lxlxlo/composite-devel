@@ -539,7 +539,7 @@ void PlayerControl::updatePlayerControl()
 				else
 				{
 					m_pJackMasterBtn->setPressed(false);
-					Hydrogen::get_instance()->offJackMaster();	
+					Hydrogen::get_instance()->clearJackTimeMaster();	
 					pPref->m_bJackMasterMode = Preferences::NO_JACK_TIME_MASTER;
 				}
 				//m_pJackTransportBtn->setPressed(true);
@@ -844,7 +844,7 @@ void PlayerControl::jackMasterBtnClicked( Button* )
 		pPref->m_bJackMasterMode = Preferences::USE_JACK_TIME_MASTER;
 		AudioEngine::get_instance()->unlock();
 		(HydrogenApp::getInstance())->setStatusBarMessage(trUtf8(" Jack-Time-Master mode = On"), 5000);
-		Hydrogen::get_instance()->onJackMaster();
+		Hydrogen::get_instance()->setJackTimeMaster(false);
 		
 	}
 	else {
@@ -853,7 +853,7 @@ void PlayerControl::jackMasterBtnClicked( Button* )
 		AudioEngine::get_instance()->unlock();
 		(HydrogenApp::getInstance())->setStatusBarMessage(trUtf8(" Jack-Time-Master mode = Off"), 5000);
 		//m_pControlsBBTPanel->hide();
-		Hydrogen::get_instance()->offJackMaster();
+		Hydrogen::get_instance()->clearJackTimeMaster();
 	}
 
 	if (pPref->m_sAudioDriver != "Jack") {

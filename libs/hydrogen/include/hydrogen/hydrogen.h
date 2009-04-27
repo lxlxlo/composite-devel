@@ -192,14 +192,11 @@ public:
 	void setBcOffsetAdjust();
 
 	/// jack time master
-	unsigned long getHumantimeFrames();
-	void setHumantimeFrames(unsigned long hframes);
-	void offJackMaster();
-	void onJackMaster();
-	unsigned long getTimeMasterFrames();
-	long getTickForHumanPosition( int humanpos );
-	float getNewBpmJTM();
-	void setNewBpmJTM( float bpmJTM);
+	bool setJackTimeMaster(bool if_none_already = false);  // Returns true if we became master
+	void clearJackTimeMaster();
+	bool getJackTimeMaster();    /* Note:  There's no way to know for sure
+	                                if we are _actually_ the JACK time master. */
+	///~jack time master
 
 	void __panic();
 	
