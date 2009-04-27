@@ -1771,48 +1771,18 @@ unsigned long Hydrogen::getTickPosition()
 	return pos.tick + pos.beat * pos.ticks_per_beat;
 }
 
-
-
-unsigned long Hydrogen::getRealtimeTickPosition()
-{
-	//unsigned long initTick = audioEngine_getTickPosition();
-	unsigned int initTick = ( unsigned int )( m_nRealtimeFrames
-						  / m_pAudioDriver->m_transport.m_nTickSize );
-	unsigned long retTick;
-
-	struct timeval currtime;
-	struct timeval deltatime;
-
-	double sampleRate = ( double ) m_pAudioDriver->getSampleRate();
-	gettimeofday ( &currtime, NULL );
-
-	timersub( &currtime, &m_currentTickTime, &deltatime );
-
-	// add a buffers worth for jitter resistance
-	double deltaSec =
-		( double ) deltatime.tv_sec
-		+ ( deltatime.tv_usec / 1000000.0 )
-		+ ( m_pAudioDriver->getBufferSize() / ( double )sampleRate );
-
-	retTick = ( unsigned long ) ( ( sampleRate
-					/ ( double ) m_pAudioDriver->m_transport.m_nTickSize )
-				      * deltaSec );
-
-	retTick = initTick + retTick;
-
-	return retTick;
-}
-
-
-
 PatternList* Hydrogen::getCurrentPatternList()
 {
-	return m_pPlayingPatterns;
+	TransportPosition pos;
+	m_transport->get_position(&pos);
+	return m_pSong->get_pattern_group_vector()[pos.bar];
 }
 
 PatternList * Hydrogen::getNextPatterns()
 {
-	return m_pNextPatterns;
+	TransportPosition pos;
+	m_transport->get_position(&pos);
+	return m_pSong->get_pattern_group_vector()[pos.bar + 1];
 }
 
 /// Set the next pattern (Pattern mode only)
@@ -1983,18 +1953,6 @@ int Hydrogen::getState()
 {
 	return m_audioEngineState;
 }
-
-
-
-void Hydrogen::setCurrentPatternList( PatternList *pPatternList )
-{
-	AudioEngine::get_instance()->lock( "Hydrogen::setCurrentPatternList" );
-	m_pPlayingPatterns = pPatternList;
-	EventQueue::get_instance()->push_event( EVENT_PATTERN_CHANGED, -1 );
-	AudioEngine::get_instance()->unlock();
-}
-
-
 
 float Hydrogen::getProcessTime()
 {
@@ -2175,11 +2133,6 @@ void Hydrogen::raiseError( unsigned nErrorCode )
 	audioEngine_raiseError( nErrorCode );
 }
 
-
-unsigned long Hydrogen::getTotalFrames()
-{
-	return m_pAudioDriver->m_transport.m_nFrames;
-}
 
 unsigned long Hydrogen::getRealtimeFrames()
 {
@@ -2521,21 +2474,7 @@ void Hydrogen::setNewBpmJTM( float bpmJTM )
 }
 
 
-void Hydrogen::ComputeHumantimeFrames(uint32_t nFrames)
-{
-	if ( ( m_audioEngineState == STATE_PLAYING ) )
-	m_nHumantimeFrames = nFrames + m_nHumantimeFrames;
-}
-
-
 //~ jack transport master
-
-void Hydrogen::triggerRelocateDuringPlay()
-{
-	if ( m_pSong->get_mode() == Song::PATTERN_MODE )
-		m_nPatternStartTick = -1; // This forces the barline position 
-}
-
 
 void Hydrogen::togglePlaysSelected()
 {

@@ -100,21 +100,16 @@ public:
 
 
 	unsigned long getTickPosition();
-	unsigned long getRealtimeTickPosition();
-	unsigned long getTotalFrames();
 	unsigned long getRealtimeFrames();
 
 
 	PatternList * getCurrentPatternList();
-	void setCurrentPatternList( PatternList * pPatternList );
 
 	PatternList * getNextPatterns();
 
 	int getPatternPos();
 	void setPatternPos( int pos );
 	
-	void triggerRelocateDuringPlay();
-
 	long getTickForPosition( int );
 
 	void restartDrivers();
@@ -205,7 +200,6 @@ public:
 	long getTickForHumanPosition( int humanpos );
 	float getNewBpmJTM();
 	void setNewBpmJTM( float bpmJTM);
-	void ComputeHumantimeFrames(uint32_t nFrames);
 
 	void __panic();
 	
