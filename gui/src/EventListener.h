@@ -40,6 +40,7 @@ class EventListener
 		virtual void metronomeEvent( int nValue ) { UNUSED( nValue ); }
 		virtual void progressEvent( int nValue ) { UNUSED( nValue ); }
 		virtual void transportEvent( H2Core::TransportPosition::State state ) { UNUSED( state ); }
+		virtual void jackTimeMasterEvent( int nValue ) { UNUSED( nValue ); }
 
 		virtual ~EventListener() {}
 };

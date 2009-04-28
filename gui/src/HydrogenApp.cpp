@@ -427,6 +427,10 @@ void HydrogenApp::onEventQueueTimer()
 					pListener->transportEvent( (TransportPosition::State)event.value );
 					break;
 
+				case EVENT_JACK_TIME_MASTER:
+					pListener->jackTimeMasterEvent( event.value );
+					break;
+
 				default:
 					ERRORLOG( "[onEventQueueTimer] Unhandled event: " + to_string( event.type ) );
 			}

@@ -42,6 +42,7 @@
 #include <hydrogen/audio_engine.h>
 #include <hydrogen/IO/JackOutput.h>
 #include <hydrogen/Preferences.h>
+#include <hydrogen/JackTimeMasterEvents.h>
 using namespace H2Core;
 
 
@@ -833,26 +834,36 @@ void PlayerControl::jackTransportBtnClicked( Button* )
 }
 
 
+void PlayerControl::jackTimeMasterEvent( int data )
+{
+	switch( data ) {
+	case JACK_TIME_MASTER_NOW:
+		m_pJackMasterBtn->setPressed(true);
+		break;
+	case JACK_TIME_MASTER_NO_MORE:
+		m_pJackMasterBtn->setPressed(false);
+		break;
+	}
+}
+
 //jack time master
 void PlayerControl::jackMasterBtnClicked( Button* )
 {	
 #ifdef JACK_SUPPORT
 	Preferences *pPref = Preferences::getInstance();
 
+	// This function just manipulates Hydrogen.
+	// The widget updates itself by the EventListener
 	if (m_pJackMasterBtn->isPressed()) {
-		AudioEngine::get_instance()->lock( "PlayerControl::jackMasterBtnClicked" );
-		pPref->m_bJackMasterMode = Preferences::USE_JACK_TIME_MASTER;
-		AudioEngine::get_instance()->unlock();
-		(HydrogenApp::getInstance())->setStatusBarMessage(trUtf8(" Jack-Time-Master mode = On"), 5000);
+		// Set as time master.
 		Hydrogen::get_instance()->setJackTimeMaster(false);
-		
+		pPref->m_bJackMasterMode = Preferences::USE_JACK_TIME_MASTER;
+		HydrogenApp::getInstance()->setStatusBarMessage(trUtf8(" Jack-Time-Master mode = On"), 5000);
 	}
 	else {
-		AudioEngine::get_instance()->lock( "PlayerControl::jackMasterBtnClicked" );
+		// Clear time master.
 		pPref->m_bJackMasterMode = Preferences::NO_JACK_TIME_MASTER;
-		AudioEngine::get_instance()->unlock();
 		(HydrogenApp::getInstance())->setStatusBarMessage(trUtf8(" Jack-Time-Master mode = Off"), 5000);
-		//m_pControlsBBTPanel->hide();
 		Hydrogen::get_instance()->clearJackTimeMaster();
 	}
 

@@ -19,63 +19,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-#ifndef EVENT_QUEUE_H
-#define EVENT_QUEUE_H
-
-#include <hydrogen/Object.h>
-
-#define MAX_EVENTS 1024
+#ifndef H2CORE_JACKTIMEMASTEREVENTS_H
+#define H2CORE_JACKTIMEMASTEREVENTS_H
 
 namespace H2Core
 {
 
-enum EventType {
-	EVENT_NONE,
-	EVENT_STATE,
-	EVENT_PATTERN_CHANGED,
-	EVENT_PATTERN_MODIFIED,
-	EVENT_SELECTED_PATTERN_CHANGED,
-	EVENT_SELECTED_INSTRUMENT_CHANGED,
-	EVENT_MIDI_ACTIVITY,
-	EVENT_XRUN,
-	EVENT_NOTEON,
-	EVENT_ERROR,
-	EVENT_METRONOME,
-	EVENT_PROGRESS,
-	EVENT_TRANSPORT,
-	EVENT_JACK_TIME_MASTER
-};
+// Jack Time Master States
+#define JACK_TIME_MASTER_NO_MORE 0
+#define JACK_TIME_MASTER_NOW 1
 
+} // namespace H2Core
 
-class Event
-{
-public:
-	EventType type;
-	int value;
-};
-
-///
-/// Event queue: is the way the engine talks to the GUI
-///
-class EventQueue : public Object
-{
-public:
-	static EventQueue* get_instance();
-	~EventQueue();
-
-	void push_event( EventType type, int nValue );
-	Event pop_event();
-
-private:
-	EventQueue();
-	static EventQueue *__instance;
-
-	int __read_index;
-	int __write_index;
-	Event __events_buffer[ MAX_EVENTS ];
-};
-
-};
-
-#endif
+#endif // H2CORE_JACKTIMEMASTEREVENTS_H

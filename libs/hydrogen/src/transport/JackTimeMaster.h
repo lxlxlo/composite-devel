@@ -24,6 +24,7 @@
 
 #include <QtCore/QMutex>
 #include <jack/transport.h>
+#include <hydrogen/JackTimeMasterEvents.h>
 
 namespace H2Core
 {
@@ -56,6 +57,10 @@ namespace H2Core
 	bool* m_pBeat;
 	QMutex m_mutex;
     }; // class JackTimeMaster
+
+/////////////////////////////////////////////////////////////
+// FOR THE EVENT QUEUE DEFINES, SEE JackTimeMasterEvents.h //
+/////////////////////////////////////////////////////////////
 
 } // namespace H2Core
 

@@ -91,7 +91,7 @@ void H2Transport::get_position(TransportPosition* pos)
 void H2Transport::processed_frames(uint32_t nFrames)
 {
     if( d->heartbeat_jtm == false && d->presumed_jtm == true ) {
-	EventQueue::get_instance()->push_event( EVENT_JACK_MASTER, JACK_MASTER_NO_MORE );
+	EventQueue::get_instance()->push_event( EVENT_JACK_TIME_MASTER, JACK_TIME_MASTER_NO_MORE );
 	d->presumed_jtm = false;
     }
     d->heartbeat_jtm = false;
@@ -126,17 +126,25 @@ TransportPosition::State H2Transport::get_state()
 
 bool H2Transport::setJackTimeMaster(bool if_none_already)
 {
+    bool rv;
+
     if( ! d->jtm.get() ) {
 	d->jtm.reset( new JackTimeMaster );
 	d->jtm->set_current_song( d->pSong );
     }
-    return d->jtm->setMaster(if_none_already);
+
+    rv = d->jtm->setMaster(if_none_already);
+    if( rv ) {
+	EventQueue::get_instance()->push_event( EVENT_JACK_TIME_MASTER, JACK_TIME_MASTER_NOW );
+    }
+    return rv;
 }
 
 void H2Transport::clearJackTimeMaster()
 {
     if( d->jtm.get() ) {
 	d->jtm->clearMaster();
+	EventQueue::get_instance()->push_event( EVENT_JACK_TIME_MASTER, JACK_TIME_MASTER_NO_MORE );
     }
 }
 

@@ -77,7 +77,7 @@ class MetronomeWidget : public QWidget, public Object, public EventListener
 ///
 /// Player control panel
 ///
-class PlayerControl : public QLabel, public Object
+class PlayerControl : public QLabel, public Object, public EventListener
 {
 	Q_OBJECT
 	public:
@@ -86,6 +86,9 @@ class PlayerControl : public QLabel, public Object
 
 		void showMessage( const QString& msg, int msec );
 		void showScrollMessage( const QString& msg, int msec, bool test );
+
+		// EventListener callback
+		void jackTimeMasterEvent( int data );
 
 	private slots:
 		void playBtnClicked(Button* ref);
