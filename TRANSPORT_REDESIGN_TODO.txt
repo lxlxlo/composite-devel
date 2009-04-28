@@ -1,0 +1,51 @@
+TO-DO LIST FOR TRANSPORT REDESIGN
+=================================
+2009-04-27
+
+INLINE TODO MARKERS
+-------------------
+
+While coding, these are the markers used for "FIX ME LATER":
+
+    #warning "SOME MESSAGE ABOUT FIXING THIS LATER"
+
+    assert(false)
+
+    // TODO: some message
+
+    /* TODO: some message
+     */
+
+As of this writing (2009-04-27), the status is:
+
+    #warning:       18 locations
+    assert(false):  31 locations
+    TODO comment:   10 locations
+
+SPECIFIC TASKS
+--------------
+
+(.) Re-implement Pattern mode with new transport.  This is
+    what hydrogen.cpp lacks to compile.
+
+(.) After Hydrogen compiles, start creating unit tests to
+    audit the behavior of all the classes (especially the
+    new ones).  Do this before even writing SeqScript.
+    ("Write your tests first.")
+
+(.) Implement SeqScript and SeqScriptIterator
+
+(.) Re-implement randomization logic (do this in
+    hydrogen.cpp:audioEngine_song_sequence_process())
+    This includes humanization, random pitch, lead/lag, etc.
+
+(.) audioEngine_song_sequence_process() needs its own class,
+    this will expecially be evident when it starts having
+    subroutines, cursors, state variables, etc.
+
+(.) Implement a loop counter in TransportPosition.  The running
+    clock in the UI will probably want this.
+
+(.) Implement the Song->Jack Transport mapping in JackTimeMaster.
+
+(.) Delete this file when all the tasks are complete.  :-)
