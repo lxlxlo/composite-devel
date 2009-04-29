@@ -178,6 +178,29 @@ public:
 		__song_mode = mode;
 	}
 
+	// PATTERN MODE METHODS
+	// ====================
+
+	// Queue next pattern to play when this one gets done.
+	// You may queue only one.  Only non-neg. integers make sense.
+	void set_next_pattern(int pos);
+
+	// Clear out the "next pattern" queue.  The name of
+	// this function is plural for future compatibility.
+	void clear_queued_patterns();
+
+	// Returns the current pattern that is playing in pattern
+	// mode.  Return 0 if there are none, or we are in song mode.
+	Pattern* get_playing_pattern();
+
+	// This method should *ONLY* be used by the sequencer.
+	// This signals to the Song class that the current pattern
+	// is done playing, and to switch to the next pattern if
+	// there are any queued.
+	void go_to_next_pattern();
+
+	//~PATTERN MODE METHODS
+
 private:
 	float __volume;						///< volume of the song (0.0..1.0)
 	float __metronome_volume;				///< Metronome volume
@@ -192,6 +215,9 @@ private:
 	float __swing_factor;
 
 	SongMode __song_mode;
+	int __current_pattern;  // Pattern mode
+	int __next_pattern;     // Pattern mode
+
 };
 
 

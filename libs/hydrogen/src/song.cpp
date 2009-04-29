@@ -62,6 +62,8 @@ Song::Song( const QString& name, const QString& author, float bpm, float volume 
 		, __humanize_velocity_value( 0.0 )
 		, __swing_factor( 0.0 )
 		, __song_mode( PATTERN_MODE )
+		, __current_pattern( 0 )
+		, __next_pattern( -1 )
 {
 	INFOLOG( QString( "INIT '%1'" ).arg( __name ) );
 
@@ -202,7 +204,50 @@ void Song::set_swing_factor( float factor )
 	__swing_factor = factor;
 }
 
+void Song::set_next_pattern(int pos)
+{
+	if( (pos >= 0) && ((unsigned)pos < __pattern_list->get_size()) ) {
+		__next_pattern = pos;
+	}
+}
 
+void Song::clear_queued_patterns()
+{
+	__next_pattern = -1;
+}
+
+Pattern* Song::get_playing_pattern()
+{
+	int p = __current_pattern;
+	int n = __next_pattern;
+	// Check if p is invalid.  If so, try to use n if it's
+	// valid.
+	if( (p < 0) || ((unsigned)p > __pattern_list->get_size()) ) {
+		if( (n >= 0) && ((unsigned)n < __pattern_list->get_size()) ) {
+			p = n;
+			__current_pattern = n;
+			__next_pattern = -1;
+		} else {
+			p = 0;
+			__current_pattern = 0;
+			__next_pattern = -1;
+		}
+	}
+	assert(p >= 0);
+	if( (unsigned)p < __pattern_list->get_size() ) {
+		return __pattern_list->get(p);
+	}
+	return 0;
+}
+
+void Song::go_to_next_pattern()
+{
+	int n = __next_pattern;
+	if( (n >= 0) && ((unsigned)n < __pattern_list->get_size()) ) {
+		__current_pattern = n;
+	}
+	__next_pattern = -1;
+}
 
 //::::::::::::::::::::
 

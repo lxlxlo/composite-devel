@@ -48,4 +48,6 @@ SPECIFIC TASKS
 
 (.) Implement the Song->Jack Transport mapping in JackTimeMaster.
 
+(.) Integrate songhelpers.cpp into H2Core::Song.
+
 (.) Delete this file when all the tasks are complete.  :-)

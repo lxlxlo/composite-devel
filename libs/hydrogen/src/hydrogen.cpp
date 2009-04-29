@@ -261,7 +261,7 @@ MidiInput *m_pMidiDriver = NULL;	///< MIDI input
 
 Song *m_pSong;				///< Current song
 Instrument *m_pMetronomeInstrument = NULL;	///< Metronome instrument
-
+unsigned long m_nFreeRollingFrameCounter;
 
 // Buffers used in the process function
 float *m_pMainBuffer_L = NULL;
@@ -362,6 +362,7 @@ void audioEngine_init()
 		return;
 	}
 
+	m_nFreeRollingFrameCounter = 0;
 	m_pSong = NULL;
 	m_nSelectedPatternNumber = 0;
 	m_nSelectedInstrumentNumber = 0;
@@ -622,6 +623,8 @@ inline void audioEngine_process_clearAudioBuffers( uint32_t nFrames )
 /// Main audio processing function. Called by audio drivers.
 int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 {
+	m_nFreeRollingFrameCounter += nframes;
+
 	if ( AudioEngine::get_instance()->try_lock( "audioEngine_process" ) == false ) {
 		return 0;
 	}
@@ -922,12 +925,6 @@ void audioEngine_setSong( Song *newSong )
 	// setup LADSPA FX
 	audioEngine_setupLadspaFX( m_pAudioDriver->getBufferSize() );
 
-	// find the first pattern and set as current
-	if ( m_pSong->get_pattern_list()->get_size() > 0 ) {
-		m_pPlayingPatterns->add( m_pSong->get_pattern_list()->get( 0 ) );
-	}
-
-
 	audioEngine_renameJackPorts();
 
 	// change the current audio engine state
@@ -958,9 +955,6 @@ void audioEngine_removeSong()
 
 	m_pSong = NULL;
 	m_pTransport->set_current_song(0);
-
-	m_pPlayingPatterns->clear();
-	m_pNextPatterns->clear();
 
 	audioEngine_clearNoteQueue();
 
@@ -1774,49 +1768,21 @@ unsigned long Hydrogen::getTickPosition()
 PatternList* Hydrogen::getCurrentPatternList()
 {
 	TransportPosition pos;
-	m_transport->get_position(&pos);
-	return m_pSong->get_pattern_group_vector()[pos.bar];
+	m_pTransport->get_position(&pos);
+	return m_pSong->get_pattern_group_vector()->at(pos.bar);
 }
 
 PatternList * Hydrogen::getNextPatterns()
 {
 	TransportPosition pos;
-	m_transport->get_position(&pos);
-	return m_pSong->get_pattern_group_vector()[pos.bar + 1];
+	m_pTransport->get_position(&pos);
+	return m_pSong->get_pattern_group_vector()->at(pos.bar + 1);
 }
 
 /// Set the next pattern (Pattern mode only)
-void Hydrogen::sequencer_setNextPattern( int pos, bool appendPattern, bool deletePattern )
+void Hydrogen::sequencer_setNextPattern( int pos, bool /*appendPattern*/, bool /*deletePattern*/ )
 {
-	m_bAppendNextPattern = appendPattern;
-	m_bDeleteNextPattern = deletePattern;
-
-	AudioEngine::get_instance()->lock( "Hydrogen::sequencer_setNextPattern" );
-
-	if ( m_pSong && m_pSong->get_mode() == Song::PATTERN_MODE ) {
-		PatternList *patternList = m_pSong->get_pattern_list();
-		Pattern * p = patternList->get( pos );
-		if ( ( pos >= 0 ) && ( pos < ( int )patternList->get_size() ) ) {
-			// if p is already on the next pattern list, delete it.
-			if ( m_pNextPatterns->del( p ) == NULL ) {
-// 				WARNINGLOG( "Adding to nextPatterns" );
-				m_pNextPatterns->add( p );
-			}/* else {
-// 				WARNINGLOG( "Removing " + to_string(pos) );
-			}*/
-		} else {
-			_ERRORLOG( QString( "pos not in patternList range. pos=%1 "
-					    "patternListSize=%2" )
-				   .arg( pos )
-				   .arg( patternList->get_size() ) );
-			m_pNextPatterns->clear();
-		}
-	} else {
-		_ERRORLOG( "can't set next pattern in song mode" );
-		m_pNextPatterns->clear();
-	}
-
-	AudioEngine::get_instance()->unlock();
+	m_pSong->set_next_pattern(pos);
 }
 
 
@@ -1864,11 +1830,7 @@ void Hydrogen::startExportSong( const QString& filename )
 	AudioEngine::get_instance()->get_sampler()->set_audio_output( m_pAudioDriver );
 
 	// reset
-	m_transport->locate( 0 );
-	m_nSongPos = 0;
-	m_nPatternTickPosition = 0;
-	m_audioEngineState = STATE_PLAYING;
-	m_nPatternStartTick = -1;
+	m_pTransport->locate( 0 );
 
 	int res = m_pAudioDriver->init( pPref->m_nBufferSize );
 	if ( res != 0 ) {
@@ -1881,7 +1843,7 @@ void Hydrogen::startExportSong( const QString& filename )
 
 	audioEngine_setupLadspaFX( m_pAudioDriver->getBufferSize() );
 
-	audioEngine_seek( 0, false );
+	m_pTransport->locate(0);
 
 	res = m_pAudioDriver->connect();
 	if ( res != 0 ) {
@@ -1911,8 +1873,6 @@ void Hydrogen::stopExportSong()
 	m_pSong->set_mode( m_oldEngineMode );
 	m_pSong->set_loop_enabled( m_bOldLoopEnabled );
 
-	m_nSongPos = -1;
-	m_nPatternTickPosition = 0;
 	audioEngine_startAudioDrivers();
 
 }
@@ -2136,7 +2096,7 @@ void Hydrogen::raiseError( unsigned nErrorCode )
 
 unsigned long Hydrogen::getRealtimeFrames()
 {
-	return m_nRealtimeFrames;
+	return m_nFreeRollingFrameCounter;
 }
 
 /**
@@ -2185,32 +2145,8 @@ long Hydrogen::getTickForPosition( int pos )
 /// Set the position in the song
 void Hydrogen::setPatternPos( int pos )
 {
-	AudioEngine::get_instance()->lock( "Hydrogen::setPatternPos" );
-
-	long totalTick = getTickForPosition( pos );
-	if ( totalTick < 0 ) {
-		AudioEngine::get_instance()->unlock();
-		return;
-	}
-
-	if ( getState() != STATE_PLAYING ) {
-		// find pattern immediately when not playing
-//		int dummy;
-// 		m_nSongPos = findPatternInTick( totalTick,
-//					        m_pSong->is_loop_enabled(),
-//					        &dummy );
-		m_nSongPos = pos;
-		m_nPatternTickPosition = 0;
-	}
-	m_pAudioDriver->locate(
-		( int ) ( totalTick * m_pAudioDriver->m_transport.m_nTickSize )
-		);
-
-	AudioEngine::get_instance()->unlock();
+	m_pTransport->locate(pos, 0, 0);
 }
-
-
-
 
 void Hydrogen::getLadspaFXPeak( int nFX, float *fL, float *fR )
 {
@@ -2386,29 +2322,20 @@ bool Hydrogen::getJackTimeMaster()
 
 //~ jack transport master
 
+/**
+ * Toggles between SINGLE-PATTERN pattern mode, and STACKED pattern
+ * mode.  In stacked pattern mode, more than one pattern may be
+ * playing at once.  Also called "Live" mode.
+ */
 void Hydrogen::togglePlaysSelected()
 {
-	if ( getSong()->get_mode() != Song::PATTERN_MODE )
-		return;
-	Preferences * P = Preferences::getInstance();
-	
-	AudioEngine::get_instance()->lock( "Live mode" );
-	
+	Preferences* P = Preferences::getInstance();
 	bool isPlaysSelected = P->patternModePlaysSelected();
 
-	if (isPlaysSelected)
-	{
-		m_pPlayingPatterns->clear();
-		Pattern * pSelectedPattern =
-			m_pSong
-			->get_pattern_list()
-			->get(m_nSelectedPatternNumber);
-		m_pPlayingPatterns->add( pSelectedPattern );
-	}
+	// NEED TO IMPLEMENT!!
+	assert(false);
 
 	P->setPatternModePlaysSelected( !isPlaysSelected );
-	
-	AudioEngine::get_instance()->unlock();
 	
 }
 
