@@ -29,7 +29,9 @@
 
 using namespace H2Core;
 
-extern JackOutput* jackDriverInstance;  // H2Core::JackOutput
+namespace H2Core {
+    extern JackOutput* jackDriverInstance;  // H2Core::JackOutput (../IO/jack_output.cpp)
+}
 
 bool jack_is_up(void)
 {
