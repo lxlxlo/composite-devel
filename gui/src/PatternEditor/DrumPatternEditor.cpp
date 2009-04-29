@@ -192,7 +192,7 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 			Preferences *pref = Preferences::getInstance();
 			if ( pref->getHearNewNotes() ) {
 				Note *pNote2 = new Note( pSelectedInstrument, fVelocity, fPan_L, fPan_R, nLength, fPitch);
-				AudioEngine::get_instance()->get_sampler()->note_on(pNote2);
+				Hydrogen::get_instance()->midi_noteOn(pNote2);
 			}
 		}
 		pSong->__is_modified = true;

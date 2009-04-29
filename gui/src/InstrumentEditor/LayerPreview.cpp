@@ -201,7 +201,7 @@ void LayerPreview::mousePressEvent(QMouseEvent *ev)
 
 		Note *note = new Note( m_pInstrument, fVelocity, fPan_L, fPan_R, nLength, fPitch );
 		note->set_instrument( m_pInstrument );
-		AudioEngine::get_instance()->get_sampler()->note_on(note);
+		Hydrogen::get_instance()->midi_noteOn(note);
 
 		for ( int i = 0; i < MAX_LAYERS; i++ ) {
 			InstrumentLayer *pLayer = m_pInstrument->get_layer( i );
@@ -226,7 +226,7 @@ void LayerPreview::mousePressEvent(QMouseEvent *ev)
 
 		if ( m_pInstrument->get_layer( m_nSelectedLayer ) ) {
 			Note *note = new Note( m_pInstrument , m_pInstrument->get_layer( m_nSelectedLayer )->get_end_velocity() - 0.01, fPan_L, fPan_R, nLength, fPitch );
-			AudioEngine::get_instance()->get_sampler()->note_on(note);
+			Hydrogen::get_instance()->midi_noteOn(note);
 		}
 
 		if ( pLayer ) {

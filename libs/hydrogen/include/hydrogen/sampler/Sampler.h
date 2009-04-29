@@ -64,10 +64,6 @@ public:
 	void stop_playing_notes( Instrument *instr = NULL );
 	void panic();
 
-	#warning "TODO: what do I do with these (Sampler::note_on/off)?"
-	void note_on(Note *note);
-	void note_off(Note *note);
-
 	int get_playing_notes_number();
 
 	void preview_sample( Sample* sample, int length );
