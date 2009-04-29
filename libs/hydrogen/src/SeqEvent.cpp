@@ -19,38 +19,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef H2CORE_SEQEVENT_H
-#define H2CORE_SEQEVENT_H
 
-#include <stdint.h>  // int32_t, uint32_t
-#include <hydrogen/note.h>
+#include <hydrogen/SeqEvent.h>
 
-namespace H2Core
+using namespace H2Core;
+
+// NOTE: SeqEvent is fully defined in the header SeqEvent.h
+
+bool H2Core::less(SeqEvent a, SeqEvent b)
 {
-    /**
-     * A container that maps a frame and a note object.
-     */
-    struct SeqEvent
-    {
-        typedef uint32_t frame_type;
-
-        frame_type frame;
-        enum { NOTE_ON, NOTE_OFF, ALL_OFF } type;
-	Note note;
-	bool quantize;
-	unsigned instrument_index;  // For tracking outputs.
-
-	SeqEvent() :
-	    frame(0),
-	    type(NOTE_ON),
-	    note(),
-	    quantize(false),
-	    instrument_index(0)
-	    {}
-    };
-
-    bool less(SeqEvent a, SeqEvent b);
-
-} // namespace H2Core
-
-#endif // H2CORE_SEQEVENT_H
+    return a.frame < b.frame;
+}
