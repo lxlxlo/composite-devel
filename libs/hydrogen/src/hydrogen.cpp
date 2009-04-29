@@ -630,6 +630,7 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 	}
 
 	if( Hydrogen::get_instance()->getState() != STATE_READY ) {
+		AudioEngine::get_instance()->unlock();
 		return 0;
 	}
 
