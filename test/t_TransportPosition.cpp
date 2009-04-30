@@ -21,7 +21,6 @@
  */
 
 #include <hydrogen/TransportPosition.h>
-#define BOOST_TEST_MODULE t_TransportPosition
 #include <boost/test/unit_test.hpp>
 
 #include <cmath>
