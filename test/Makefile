@@ -1,6 +1,6 @@
 
 all: t_Hydrogen
-	./t_Hydrogen --log_level=all --report_level=detailed
+	./t_Hydrogen --log_level=message --report_level=short
 
 clean:
 	rm -rf t_Hydrogen *.o
