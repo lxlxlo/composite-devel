@@ -31,6 +31,21 @@ using namespace H2Core;
 // "BOOST_CHECK( foo )" is too much typing....
 #define TX BOOST_CHECK
 
+struct Fixture
+{
+    TransportPosition p;
+
+    Fixture() : p() {
+	p.frame_rate = 48000;
+	p.beats_per_bar = 4;
+	p.beat_type = 4;
+	p.ticks_per_beat = 192;
+	p.beats_per_minute = 120.0;
+    }
+
+    ~Fixture() {}
+};
+
 BOOST_AUTO_TEST_CASE( t_001_defaults )
 {
     TransportPosition p;
@@ -46,16 +61,39 @@ BOOST_AUTO_TEST_CASE( t_001_defaults )
     TX( p.bar_start_tick == 0 );
 }
 
-BOOST_AUTO_TEST_CASE( t_002_increment )
+BOOST_AUTO_TEST_CASE( t_002_frames_per_tick )
 {
-    TransportPosition p;
+    Fixture f;
+    TransportPosition& p = f.p;
 
-    p.frame_rate = 48000;
-    p.beats_per_bar = 4;
-    p.beat_type = 4;
-    p.ticks_per_beat = 192;
-    p.beats_per_minute = 120.0;
-    
+    TX( p.frames_per_tick() == 125.0 );
+
+    p.frame_rate = 123456;
+    p.ticks_per_beat = 48;
+    p.beats_per_minute = 33.12;
+    TX( round(p.frames_per_tick()) == 4659.0 );
+
+}
+
+BOOST_AUTO_TEST_CASE( t_003_tick_in_bar )
+{
+    Fixture f;
+    TransportPosition& p = f.p;
+
+    TX(p.tick_in_bar() == 0);
+    p.tick = 191;
+    TX(p.tick_in_bar() == 191);
+    p.beat = 2;
+    TX(p.tick_in_bar() == 383);
+    p.bar = 9;
+    TX(p.tick_in_bar() == 383);
+}
+
+BOOST_AUTO_TEST_CASE( t_004_increment )
+{
+    Fixture f;
+    TransportPosition& p = f.p;
+
     double frames_per_tick = double(p.frame_rate) * (60.0/p.beats_per_minute) / p.ticks_per_beat;
     int k;
 
