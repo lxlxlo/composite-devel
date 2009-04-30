@@ -91,11 +91,11 @@
 
 #include <hydrogen/Transport.h>
 #include "transport/H2Transport.h"
-#include "transport/songhelpers.h"
 #include <hydrogen/SeqEvent.h>
 #include <hydrogen/SeqScript.h>
 #include <hydrogen/SeqScriptIterator.h>
 #include "BeatCounter.h"
+#include "SongSequencer.h"
 
 #include "IO/OssDriver.h"
 #include "IO/FakeDriver.h"
@@ -253,6 +253,7 @@ H2Transport* m_pTransport = 0;
 // sent to the Sampler.
 SeqScript m_queue;
 GuiInputQueue m_GuiInput;
+SongSequencer m_SongSequencer;
 
 BeatCounter m_BeatCounter;
 
@@ -290,7 +291,6 @@ void	audioEngine_removeSong();
 static void	audioEngine_noteOn( Note *note );
 static void	audioEngine_noteOff( Note *note );
 int	audioEngine_process( uint32_t nframes, void *arg );
-int	audioEngine_song_sequence_process( SeqScript& seq, const TransportPosition& pos, uint32_t nframes );
 inline void audioEngine_clearNoteQueue();
 inline void audioEngine_process_playNotes( unsigned long nframes );
 
@@ -349,7 +349,6 @@ void updateTickSize()
 		( sampleRate * 60.0 /  m_pSong->__bpm / m_pSong->__resolution );
 }
 */
-
 
 void audioEngine_init()
 {
@@ -644,7 +643,7 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 	m_GuiInput.process(m_queue, pos, nframes);
 	#warning "TODO: get MidiDriver::process() in the mix."
 	// TODO: m_pMidiDriver->process(m_queue, pos, nframes);
-	audioEngine_song_sequence_process(m_queue, pos, nframes);
+	m_SongSequencer.process(m_queue, pos, nframes, m_sendPatternChange);
 
 	// PROCESS ALL OUTPUTS
 
@@ -763,73 +762,6 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 	return 0;
 }
 
-// This loads up song events into the SeqScript 'seq'.
-#warning "audioEngine_song_sequence_process() does not have any lookahead implemented."
-#warning "audioEngine_song_sequence_process() does not have pattern mode."
-int audioEngine_song_sequence_process(
-	SeqScript& seq,
-	const TransportPosition& pos,
-	uint32_t nframes
-	)
-{
-	Song* pSong = m_pSong;
-	TransportPosition cur;
-	uint32_t end_frame = pos.frame + nframes;  // 1 past end of this process() cycle
-	uint32_t this_tick;
-	Note* pNote;
-	SeqEvent ev;
-	uint32_t pat_grp;
-	PatternList* patterns;
-	Pattern::note_map_t::const_iterator n;
-	int k;
-	uint32_t default_note_length, length;
-
-	if( m_pSong == 0 ) {
-		return 0;
-	}
-	if( pos.state != TransportPosition::ROLLING) {
-		return 0;
-	}
-
-	cur = pos;
-	cur.ceil(TransportPosition::TICK);
-	// Default note length is -1, meaning "play till there's no more sample."
-	default_note_length = (uint32_t)-1;
-
-	while( cur.frame < end_frame ) {
-		this_tick = cur.tick_in_bar();
-		if( this_tick == 0 ) {
-			m_sendPatternChange = true;
-		}
-		pat_grp = pattern_group_index_for_bar(pSong, pos.bar);
-		patterns = pSong->get_pattern_group_vector()->at(pat_grp);
-
-		for( k=0 ; unsigned(k) < patterns->get_size() ; ++k ) {
-			for( n = patterns->get(k)->note_map.begin() ;
-			     n != patterns->get(k)->note_map.end() ;
-			     ++n ) {
-				if( n->first != this_tick ) continue;
-				pNote = n->second;
-				ev.frame = cur.frame;
-				ev.type = SeqEvent::NOTE_ON;
-				ev.note = *pNote;
-				ev.instrument_index =
-					Hydrogen::get_instance()->getSong()
-					->get_instrument_list()->get_pos( pNote->get_instrument() );
-				if( pNote->get_length() < 0 ) {
-					length = default_note_length;
-				} else {
-					length = unsigned(pNote->get_length()) * cur.frames_per_tick();
-				}
-				seq.insert_note(ev, length);
-			}
-		}
-		++cur;
-	}
-
-	return 0;
-}
-
 void audioEngine_setupLadspaFX( unsigned nBufferSize )
 {
 	//_INFOLOG( "buffersize=" + to_string(nBufferSize) );
@@ -922,6 +854,7 @@ void audioEngine_setSong( Song *newSong )
 	assert( m_pSong == NULL );
 	m_pSong = newSong;
 	m_pTransport->set_current_song(newSong);
+	m_SongSequencer.set_current_song(newSong);
 
 	// setup LADSPA FX
 	audioEngine_setupLadspaFX( m_pAudioDriver->getBufferSize() );
@@ -956,6 +889,7 @@ void audioEngine_removeSong()
 
 	m_pSong = NULL;
 	m_pTransport->set_current_song(0);
+	m_SongSequencer.set_current_song(0);
 
 	audioEngine_clearNoteQueue();
 
