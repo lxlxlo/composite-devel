@@ -32,7 +32,8 @@ using namespace H2Core;
 
 struct Fixture
 {
-    TransportPosition p;
+    TransportPosition p;  // This is the "normal" one.
+    TransportPosition x;  // This one has an odd setup.
 
     Fixture() : p() {
 	p.frame_rate = 48000;
@@ -40,15 +41,31 @@ struct Fixture
 	p.beat_type = 4;
 	p.ticks_per_beat = 192;
 	p.beats_per_minute = 120.0;
+
+	// x init.
+	x.state = TransportPosition::ROLLING;
+	x.new_position = true;
+	x.frame = 8273901;
+	x.frame_rate = 196123;
+	x.bar = 349;
+	x.beat = 5;
+	x.tick = 18;
+	x.bbt_offset = 115;
+	x.bar_start_tick = 349;
+	x.beats_per_bar = 7;
+	x.beat_type = 8;
+	x.ticks_per_beat = 99;
+	x.beats_per_minute = 543.2;
+	
     }
 
     ~Fixture() {}
 };
 
+BOOST_FIXTURE_TEST_SUITE( t_TransportPosition, Fixture );
+
 BOOST_AUTO_TEST_CASE( t_001_defaults )
 {
-    TransportPosition p;
-
     // Test the defaults
     TX( p.state == TransportPosition::STOPPED );
     TX( p.new_position == true );
@@ -62,9 +79,6 @@ BOOST_AUTO_TEST_CASE( t_001_defaults )
 
 BOOST_AUTO_TEST_CASE( t_002_frames_per_tick )
 {
-    Fixture f;
-    TransportPosition& p = f.p;
-
     TX( p.frames_per_tick() == 125.0 );
 
     p.frame_rate = 123456;
@@ -72,13 +86,11 @@ BOOST_AUTO_TEST_CASE( t_002_frames_per_tick )
     p.beats_per_minute = 33.12;
     TX( round(p.frames_per_tick()) == 4659.0 );
 
+    TX( round(x.frames_per_tick()*100.0) == 21882.0 );
 }
 
 BOOST_AUTO_TEST_CASE( t_003_tick_in_bar )
 {
-    Fixture f;
-    TransportPosition& p = f.p;
-
     TX(p.tick_in_bar() == 0);
     p.tick = 191;
     TX(p.tick_in_bar() == 191);
@@ -86,13 +98,12 @@ BOOST_AUTO_TEST_CASE( t_003_tick_in_bar )
     TX(p.tick_in_bar() == 383);
     p.bar = 9;
     TX(p.tick_in_bar() == 383);
+
+    TX(x.tick_in_bar() == 414);
 }
 
 BOOST_AUTO_TEST_CASE( t_004_increment )
 {
-    Fixture f;
-    TransportPosition& p = f.p;
-
     double frames_per_tick = double(p.frame_rate) * (60.0/p.beats_per_minute) / p.ticks_per_beat;
     int k;
 
@@ -116,10 +127,53 @@ BOOST_AUTO_TEST_CASE( t_004_increment )
     TX( 2 == p.beat );
     TX( 0 == p.tick );
     TX( round(frame) == p.frame );
+
+    TX( false ); // Do some tests with the 'x' object.
 }
 
-// TODO: decrement
-// TODO: round
-// TODO: ceil      --- note that this is known to have a bug.
-// TODO: floor
-// TODO: etc.... :-)
+BOOST_AUTO_TEST_CASE( t_005_decrement )
+{
+    TX( false );  // Need to implement test
+}
+
+BOOST_AUTO_TEST_CASE( t_006_round )
+{
+    TX( false );  // Need to implement test
+}
+
+BOOST_AUTO_TEST_CASE( t_007_floor )
+{
+    TX( false );  // Need to implement test
+}
+
+BOOST_AUTO_TEST_CASE( t_008_ceil )
+{
+    TX( false );  // Need to implement test
+}
+
+BOOST_AUTO_TEST_CASE( t_009_operator_plus )
+{
+    TX( false );  // Need to implement test
+}
+
+BOOST_AUTO_TEST_CASE( t_010_operator_minus )
+{
+    TX( false );  // Need to implement test
+}
+
+BOOST_AUTO_TEST_CASE( t_010_operator_plus_equals )
+{
+    TX( false );  // Need to implement test
+}
+
+BOOST_AUTO_TEST_CASE( t_011_operator_minus_equals )
+{
+    TX( false );  // Need to implement test
+}
+
+BOOST_AUTO_TEST_CASE( t_012_copy_constructor )
+{
+    TX( false );  // Need to implement test
+}
+
+BOOST_AUTO_TEST_SUITE_END()
