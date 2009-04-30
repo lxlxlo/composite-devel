@@ -93,7 +93,7 @@ namespace H2Core
         }
 
         inline uint32_t tick_in_bar() const {
-            return beat * ticks_per_beat + tick;
+            return (beat-1) * ticks_per_beat + tick;
         }
 
     };
