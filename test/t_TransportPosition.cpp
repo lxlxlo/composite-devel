@@ -30,12 +30,12 @@ using namespace H2Core;
 // "BOOST_CHECK( foo )" is too much typing....
 #define TX BOOST_CHECK
 
-struct Fixture
+struct t_TransportPosition_Fixture
 {
     TransportPosition p;  // This is the "normal" one.
     TransportPosition x;  // This one has an odd setup.
 
-    Fixture() : p() {
+    t_TransportPosition_Fixture() : p() {
 	p.frame_rate = 48000;
 	p.beats_per_bar = 4;
 	p.beat_type = 4;
@@ -59,10 +59,10 @@ struct Fixture
 	
     }
 
-    ~Fixture() {}
+    ~t_TransportPosition_Fixture() {}
 };
 
-BOOST_FIXTURE_TEST_SUITE( t_TransportPosition, Fixture );
+BOOST_FIXTURE_TEST_SUITE( t_TransportPosition, t_TransportPosition_Fixture );
 
 BOOST_AUTO_TEST_CASE( t_001_defaults )
 {

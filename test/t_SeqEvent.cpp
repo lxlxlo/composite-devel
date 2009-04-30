@@ -30,12 +30,12 @@ using namespace H2Core;
 // "BOOST_CHECK( foo )" is too much typing....
 #define TX BOOST_CHECK
 
-struct Fixture
+struct t_SeqEvent_Fixture
 {
     SeqEvent ev;  // This is the "normal" one.
     SeqEvent xev; // This is the odd one.
 
-    Fixture() : ev(), xev() {
+    t_SeqEvent_Fixture() : ev(), xev() {
 
 	xev.frame = 0xFEEEEEEE;
 	xev.type = SeqEvent::ALL_OFF;
@@ -43,10 +43,10 @@ struct Fixture
 	xev.instrument_index = 0xFF;
     }
 
-    ~Fixture() {}
+    ~t_SeqEvent_Fixture() {}
 };
 
-BOOST_FIXTURE_TEST_SUITE( t_SeqEvent, Fixture );
+BOOST_FIXTURE_TEST_SUITE( t_SeqEvent, t_SeqEvent_Fixture );
 
 BOOST_AUTO_TEST_CASE( t_001_defaults )
 {
