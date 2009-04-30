@@ -24,6 +24,9 @@
 #include "version.h"
 
 #include <cassert>
+#include <QtCore/QMutex>
+#include <QtCore/QMutexLocker>
+#include <algorithm>
 
 #include "xml/tinyxml.h"
 
@@ -42,6 +45,82 @@
 
 namespace H2Core
 {
+
+// Container for a vector that is thread-safe and
+// contains unique values.
+class PatternModeList
+{
+public:
+	typedef int value_type;
+	typedef std::vector<value_type> list_type;
+	typedef list_type::iterator iterator;
+
+	PatternModeList();
+
+	void reserve(size_t size);
+	size_t size();
+	void add(value_type d);
+	void remove(value_type d);
+	void clear();
+
+	// Iterator access is inherently not thread-safe.
+	// To work around this, lock the mutex to ensure that
+	// the vector doesn't change while using the iterator.
+	QMutex& get_mutex();  // Warning: Only use this for begin()/end().
+                              // If you call any of the other methods, with
+	                      // the mutex locked, you will get a deadlock.
+	iterator begin();
+	iterator end();
+
+private:
+	QMutex __mutex;
+	list_type __vec;
+};
+
+class PatternModeManager
+{
+public:
+	typedef PatternModeList PatternModeList_t;
+
+	PatternModeManager();
+
+	Song::PatternModeType get_pattern_mode_type();
+	void set_pattern_mode_type(Song::PatternModeType t);
+	void toggle_pattern_mode_type();
+
+	// Manipulate the pattern lists and queues.
+	// Patterns may only be added/removed once, so subsequent add/remove
+	// operations will have no affect.
+	// If 'pos' is not in the range 0 <= pos <= __pattern_list->get_size(),
+	// these will silently ignore the request.
+	void append_pattern(int pos);      // Appends pattern to the current group on next cycle.
+	void remove_pattern(int pos);      // Remove the pattern from the current group on next cycle.
+	void reset_patterns();             // Clears out the current and "next" queues.
+	void set_next_pattern(int pos);    // Sched. a pattern to replace the current group.
+	                                   // ...clears out any that are currently queued.
+	void append_next_pattern(int pos); // Adds pattern to the "next" queued patterns.
+	void remove_next_pattern(int pos); // Removes pattern from the "next" queue
+	void clear_queued_patterns();      // Clears out the "next" queued patterns.
+
+	// Returns the current patterns that are playing in pattern
+	// mode.  Return 0 if there are none, or we are in song mode.
+	void get_playing_patterns(PatternModeList_t::list_type& pats);
+
+	// This method should *ONLY* be used by the sequencer.
+	// This signals to the Song class that the current pattern
+	// is done playing, and to switch to the next pattern if
+	// there are any queued.
+	void go_to_next_patterns();
+
+
+private:
+	Song::PatternModeType __type;
+	QMutex __mutex;  // Locked when accessing more than one of the lists.
+	PatternModeList_t __current;
+	PatternModeList_t __append;
+	PatternModeList_t __delete;
+	PatternModeList_t __next;
+};
 
 Song::Song( const QString& name, const QString& author, float bpm, float volume )
 		: Object( "Song" )
@@ -62,8 +141,6 @@ Song::Song( const QString& name, const QString& author, float bpm, float volume 
 		, __humanize_velocity_value( 0.0 )
 		, __swing_factor( 0.0 )
 		, __song_mode( PATTERN_MODE )
-		, __current_pattern( 0 )
-		, __next_pattern( -1 )
 {
 	INFOLOG( QString( "INIT '%1'" ).arg( __name ) );
 
@@ -71,6 +148,8 @@ Song::Song( const QString& name, const QString& author, float bpm, float volume 
 	//m_fDelayFXWetLevel = 0.8;
 	//m_fDelayFXFeedback = 0.5;
 	//m_nDelayFXTime = MAX_NOTES / 8;
+
+	__pat_mode = new PatternModeManager();
 }
 
 
@@ -204,49 +283,90 @@ void Song::set_swing_factor( float factor )
 	__swing_factor = factor;
 }
 
+// PATTERN MODE METHODS
+
+Song::PatternModeType Song::get_pattern_mode_type()
+{
+	return __pat_mode->get_pattern_mode_type();
+}
+
+/*
+static void prune_vector(PatternModeList_t vec)
+{
+	if(vec.size() > 1) {
+		PatternModeList_t::iterator two;
+		two = vec.begin();
+		++two;
+		vec.erase(two, vec.end());
+	}
+	return;
+}
+*/
+
+void Song::set_pattern_mode_type(Song::PatternModeType t)
+{
+	__pat_mode->set_pattern_mode_type(t);
+}
+
+void Song::toggle_pattern_mode_type()
+{
+	__pat_mode->toggle_pattern_mode_type();
+}
+
+void Song::append_pattern(int pos)
+{
+	__pat_mode->append_pattern(pos);
+}
+
+void Song::remove_pattern(int pos)
+{
+	__pat_mode->remove_pattern(pos);
+}
+
+void Song::reset_patterns()
+{
+	__pat_mode->reset_patterns();
+}
+
 void Song::set_next_pattern(int pos)
 {
-	if( (pos >= 0) && ((unsigned)pos < __pattern_list->get_size()) ) {
-		__next_pattern = pos;
-	}
+	__pat_mode->set_next_pattern(pos);
+}
+
+void Song::append_next_pattern(int pos)
+{
+	__pat_mode->append_next_pattern(pos);
+}
+
+void Song::remove_next_pattern(int pos)
+{
+	__pat_mode->remove_next_pattern(pos);
 }
 
 void Song::clear_queued_patterns()
 {
-	__next_pattern = -1;
+	__pat_mode->clear_queued_patterns();
 }
 
-Pattern* Song::get_playing_pattern()
+// Copies the currently playing patterns into rv.
+void Song::get_playing_patterns(PatternList& rv)
 {
-	int p = __current_pattern;
-	int n = __next_pattern;
-	// Check if p is invalid.  If so, try to use n if it's
-	// valid.
-	if( (p < 0) || ((unsigned)p > __pattern_list->get_size()) ) {
-		if( (n >= 0) && ((unsigned)n < __pattern_list->get_size()) ) {
-			p = n;
-			__current_pattern = n;
-			__next_pattern = -1;
+	PatternModeList::list_type vec;
+	PatternModeList::list_type::iterator k;
+	__pat_mode->get_playing_patterns(vec);
+	rv.clear();
+	for( k = vec.begin() ; k != vec.end() ; ++k ) {
+		if( (*k > 0) && (*k < __pattern_list->get_size()) ) {
+			rv.add( __pattern_list->get(*k) );
 		} else {
-			p = 0;
-			__current_pattern = 0;
-			__next_pattern = -1;
+			remove_pattern(*k);
 		}
 	}
-	assert(p >= 0);
-	if( (unsigned)p < __pattern_list->get_size() ) {
-		return __pattern_list->get(p);
-	}
-	return 0;
 }
 
-void Song::go_to_next_pattern()
+void Song::go_to_next_patterns()
 {
-	int n = __next_pattern;
-	if( (n >= 0) && ((unsigned)n < __pattern_list->get_size()) ) {
-		__current_pattern = n;
-	}
-	__next_pattern = -1;
+	__pat_mode->go_to_next_patterns();
 }
 
 //::::::::::::::::::::
@@ -737,8 +857,200 @@ Pattern* SongReader::getPattern( TiXmlNode* pattern, InstrumentList* instrList )
 	return pPattern;
 }
 
-};
+////////////////////////////////////////////////////////////////
+// PatternModeList
+////////////////////////////////////////////////////////////////
 
+PatternModeList::PatternModeList()
+{
+}
 
+void PatternModeList::reserve(size_t size)
+{
+	QMutexLocker mx(&__mutex);
+	__vec.reserve(size);
+}
 
+size_t PatternModeList::size()
+{
+	return __vec.size();
+}
 
+void PatternModeList::add(PatternModeList::value_type d)
+{
+	QMutexLocker mx(&__mutex);
+	iterator k = find(__vec.begin(), __vec.end(), d);
+	if( k != __vec.end() ) {
+		__vec.push_back(d);
+	}
+}
+
+void PatternModeList::remove(PatternModeList::value_type d)
+{
+	QMutexLocker mx(&__mutex);
+	iterator k;
+	while(true) {
+		k = find(__vec.begin(), __vec.end(), d);
+		if( k != __vec.end() ) {
+			__vec.erase(k);
+		} else {
+			break;
+		}
+	}
+}
+
+void PatternModeList::clear()
+{
+	QMutexLocker mx(&__mutex);
+	__vec.clear();
+}
+
+QMutex& PatternModeList::get_mutex()
+{
+	return __mutex;
+}
+
+// This method is *not* thread safe and must be protected by
+// an external mutex.
+PatternModeList::iterator PatternModeList::begin()
+{
+	return __vec.begin();
+}
+
+// This method is *not* thread safe and must be protected by
+// an external mutex.
+PatternModeList::iterator PatternModeList::end()
+{
+	return __vec.end();
+}
+
+///////////////////////////////////////////////////////////////////////
+// PatternModeManager
+///////////////////////////////////////////////////////////////////////
+
+PatternModeManager::PatternModeManager() :
+	__type( Song::SINGLE )
+{
+	__current.reserve(64);
+	__append.reserve(64);
+	__delete.reserve(64);
+	__next.reserve(64);
+}
+
+Song::PatternModeType PatternModeManager::get_pattern_mode_type()
+{
+	return __type;
+}
+
+void PatternModeManager::set_pattern_mode_type(Song::PatternModeType t)
+{
+	__type = t;
+}
+
+void PatternModeManager::toggle_pattern_mode_type()
+{
+	Song::PatternModeType t = get_pattern_mode_type();
+	if( t == Song::SINGLE ) {
+		set_pattern_mode_type( Song::STACKED );
+	} else {
+		set_pattern_mode_type( Song::SINGLE );
+	}
+}
+
+void PatternModeManager::append_pattern(int pos)
+{
+	if( __type == Song::SINGLE ) {
+		__append.clear();
+	}
+	__append.add(pos);
+}
+
+void PatternModeManager::remove_pattern(int pos)
+{
+	__delete.add(pos);
+}
+
+void PatternModeManager::reset_patterns()
+{
+	QMutexLocker mx(&__mutex);
+	__append.clear();
+	__delete.clear();
+	__next.clear();
+	__append.add(0);
+	QMutexLocker cmx(&__current.get_mutex());
+	PatternModeList_t::iterator k;
+	for( k = __current.begin() ; k != __current.end() ; ++k ) {
+		__delete.add(*k);
+	}
+}
+
+void PatternModeManager::set_next_pattern(int pos)
+{
+	__next.clear();
+	__next.add(pos);
+}
+
+void PatternModeManager::append_next_pattern(int pos)
+{
+	if( __type == Song::SINGLE ) {
+		__next.clear();
+	}
+	__next.add(pos);
+}
+
+void PatternModeManager::remove_next_pattern(int pos)
+{
+	__next.remove(pos);
+}
+
+void PatternModeManager::clear_queued_patterns()
+{
+	__next.clear();
+}
+
+void PatternModeManager::get_playing_patterns(PatternModeList_t::list_type& pats)
+{
+	QMutexLocker mx(&__current.get_mutex());
+	PatternModeList_t::iterator k;
+	pats.clear();
+	if( __type == Song::SINGLE ) {
+		pats.push_back( *__current.begin() );
+		return;
+	}
+	assert( __type == Song::STACKED );
+	for(k = __current.begin() ; k != __current.end() ; ++k ) {
+		pats.push_back(*k);
+		if( __type == Song::SINGLE ) break;
+	}
+}
+
+void PatternModeManager::go_to_next_patterns()
+{
+	QMutexLocker mx(&__mutex);
+
+	if( __next.size() != 0 ) {
+		__append.clear();
+		__delete.clear();
+		__current.clear();
+		QMutexLocker nmx(&__next.get_mutex());
+		PatternModeList_t::iterator k;
+		for( k = __next.begin() ; k != __next.end() ; ++k ) {
+			__current.add(*k);
+			if( __type == Song::SINGLE ) break;
+		}		
+	} else {
+		PatternModeList_t::iterator k;
+		QMutexLocker dmx(&__delete.get_mutex());
+		for( k = __delete.begin() ; k != __delete.end() ; ++k ) {
+			__delete.add(*k);
+		}
+		dmx.unlock();
+		QMutexLocker amx(&__append.get_mutex());
+		for( k = __append.begin() ; k != __append.end() ; ++k ) {
+			if( __current.size() >= 1 ) break;
+			__current.add(*k);
+		}
+	}
+}
+
+} // namespace H2Core

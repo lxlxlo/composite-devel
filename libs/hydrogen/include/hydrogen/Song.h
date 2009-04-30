@@ -43,6 +43,7 @@ class InstrumentList;
 class Pattern;
 class Song;
 class PatternList;
+class PatternModeManager;  // Private to Song.  See song.cpp
 
 /**
 \ingroup H2CORE
@@ -181,23 +182,40 @@ public:
 	// PATTERN MODE METHODS
 	// ====================
 
-	// Queue next pattern to play when this one gets done.
-	// You may queue only one.  Only non-neg. integers make sense.
-	void set_next_pattern(int pos);
+	// NOTE:  Pattern Mode options (lists of patterns, pattern mode
+	// type) does not persist with the Song file.  These are set
+	// and manipulated by the session.
 
-	// Clear out the "next pattern" queue.  The name of
-	// this function is plural for future compatibility.
-	void clear_queued_patterns();
+	enum PatternModeType { SINGLE, STACKED };
 
-	// Returns the current pattern that is playing in pattern
-	// mode.  Return 0 if there are none, or we are in song mode.
-	Pattern* get_playing_pattern();
+	PatternModeType get_pattern_mode_type();
+	void set_pattern_mode_type(PatternModeType t);
+	void toggle_pattern_mode_type();
+
+	// Manipulate the pattern lists and queues.
+	// Patterns may only be added/removed once, so subsequent add/remove
+	// operations will have no affect.
+	// If 'pos' is not in the range 0 <= pos <= __pattern_list->get_size(),
+	// these will silently ignore the request.
+	void append_pattern(int pos);      // Appends pattern to the current group on next cycle.
+	void remove_pattern(int pos);      // Remove the pattern from the current group on next cycle.
+	void reset_patterns();             // Clears out the current and "next" queues.
+	void set_next_pattern(int pos);    // Sched. a pattern to replace the current group.
+	                                   // ...clears out any that are currently queued.
+	void append_next_pattern(int pos); // Adds pattern to the "next" queued patterns.
+	void remove_next_pattern(int pos); // Removes pattern from the "next" queue
+	void clear_queued_patterns();      // Clears out the "next" queued patterns.
+
+	// Copies the currently playing patterns into rv.
+	// This only makes sense in pattern mode.  Otherwise,
+	// this function returns nonsense.
+	void get_playing_patterns(PatternList& rv);
 
 	// This method should *ONLY* be used by the sequencer.
 	// This signals to the Song class that the current pattern
 	// is done playing, and to switch to the next pattern if
 	// there are any queued.
-	void go_to_next_pattern();
+	void go_to_next_patterns();
 
 	//~PATTERN MODE METHODS
 
@@ -215,9 +233,8 @@ private:
 	float __swing_factor;
 
 	SongMode __song_mode;
-	int __current_pattern;  // Pattern mode
-	int __next_pattern;     // Pattern mode
 
+	PatternModeManager* __pat_mode;
 };
 
 
