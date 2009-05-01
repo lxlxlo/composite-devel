@@ -172,6 +172,8 @@ def get_hydrogen_lib( opts ):
 	env = Environment( options = opts ) 
 	if str(env['lash']) == "1": includes.append( "/usr/include/lash-1.0")
 
+        # Alwasys build the tests in debug.
+        cppflags += ['-Wall',  '-g2', '-ggdb', '-O0'] 
 
 	#location of qt4.py
 	qt4ToolLocation="."
@@ -197,6 +199,65 @@ def get_hydrogen_lib( opts ):
 
 	static_lib = env.StaticLibrary(target = 'hydrogen', source = src )
 	return static_lib
+
+def runUnitTest(env, target, source):
+    app = str(source[0].abspath)
+    if not subprocess.call(app):
+        open(str(target[0], 'w').write("PASSED\n"))
+
+# Courtesy Dov Grobgeld 2005-12-18 on the scons Wiki
+def builder_unit_test(target, source, env):
+    app = str(source[0].abspath)
+    if os.spawnl(os.P_WAIT, app, app, "--log_level=message", "--report_level=short")==0:
+        open(str(target[0]),'w').write("PASSED\n")
+    else:
+        return 1
+
+
+def get_hydrogen_lib_tests( h2lib, opts ):
+	includes, cppflags, ldflags = get_platform_flags( opts )
+
+	includes.append( "libs/hydrogen/include" )
+	
+	env = Environment( options = opts ) 
+	if str(env['lash']) == "1": includes.append( "/usr/include/lash-1.0")
+
+
+	#location of qt4.py
+	qt4ToolLocation="."
+
+        ldflags.append( "-L." )
+        cppflags.append( "-DBOOST_TEST_DYN_LINK" )
+
+	env = Environment(options = opts , tools=['default','qt4'], toolpath=[qt4ToolLocation], ENV=os.environ, CPPPATH = includes, CPPFLAGS = cppflags, CCFLAGS = "", LINKFLAGS=ldflags )
+	env.EnableQt4Modules( ['QtCore', 'QtGui'], debug=False)
+	env.CacheDir( "scons_cache" )
+	
+        env.Append( LIBS = "hydrogen" )
+        env.Append( LIBS = "boost_unit_test_framework" )
+
+        if str(env['jack']) == "1":
+            env.ParseConfig('pkg-config --modversion jack', get_jack_api_flags)
+
+
+	#env.Decider is not known in older scons version
+	try:
+		env.Decider( "MD5-timestamp" )
+	except AttributeError:
+		env.SourceSignatures('MD5')
+
+        # Create a builder for unit tests
+        bld = Builder(action = builder_unit_test)
+        env.Append(BUILDERS = {'Test' :  bld})
+
+	src = scanFiles( "test", ['*.cpp', '*.cc', '*.c' ], [ 'moc_'] )
+
+        tests = env.Program(target = 't_Hydrogen', source = src)
+        env.Alias("test", tests)
+        env.Test("tests.passed", tests)
+        env.Alias("test", "tests.passed")
+
+	return tests
 
 
 def install_images( arg , dir , files):
@@ -512,5 +573,6 @@ version.close()
 
 libhyd = get_hydrogen_lib( opts )
 app = get_hydrogen_gui( libhyd , opts )
+tests = get_hydrogen_lib_tests( libhyd, opts )
 
 opts.Save("scache.conf",env)
