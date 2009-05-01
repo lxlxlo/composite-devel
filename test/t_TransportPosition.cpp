@@ -133,6 +133,20 @@ BOOST_AUTO_TEST_CASE( THIS(004_increment) )
     TX( 2 == p.beat );
     TX( 0 == p.tick );
     TX( round(frame) == p.frame );
+    ++p;
+    frame += frames_per_tick;
+    TX( 1 == p.bar );
+    TX( 2 == p.beat );
+    TX( 1 == p.tick );
+    TX( round(frame) == p.frame );
+    p.bar = 99;
+    p.beat = 3;
+    ++p;
+    frame += frames_per_tick;
+    TX( 99 == p.bar );
+    TX( 3 == p.beat );
+    TX( 2 == p.tick );
+    TX( round(frame) == p.frame );
 
     TX( false ); // Do some tests with the 'x' object.
 }
