@@ -120,8 +120,6 @@ BOOST_AUTO_TEST_CASE( THIS(004_increment) )
     for( k=1 ; k<p.ticks_per_beat ; ++k ) {
 	++p;
 	frame += frames_per_tick;
-	BOOST_TEST_MESSAGE( "frame = " << frame << "  p.frame = " << p.frame );
-	// TODO:  Known bug:  ++ is not changing p.frame.  It's supposed to.
 	TX( 1 == p.bar );
 	TX( 1 == p.beat );	    
 	TX( k == p.tick );
