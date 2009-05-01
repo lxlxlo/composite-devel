@@ -504,6 +504,11 @@ if str(env['flac']) == "1" and not conf.CheckCHeader('FLAC/all.h'):
     print 'FLAC must be installed!'
     Exit(1)
 
+#boost:  If building a 'test', make sure we have Boost UTF
+if 'test' in COMMAND_LINE_TARGETS and not conf.CheckCXXHeader("boost/test/unit_test.hpp"):
+    print "To build tests, you must have the Boost Unit Test Framework installed."
+    Exit(1)
+
 
 print ""
 print "================================================================="
