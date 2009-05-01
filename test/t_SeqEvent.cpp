@@ -25,30 +25,38 @@
 
 #include <cmath>
 
+#define THIS_NAMESPACE t_SeqEvent
+#define THIS(x) t_SeqEvent##_##x
+
 using namespace H2Core;
 
 // "BOOST_CHECK( foo )" is too much typing....
 #define TX BOOST_CHECK
 
-struct t_SeqEvent_Fixture
+namespace THIS_NAMESPACE
 {
-    SeqEvent ev;  // This is the "normal" one.
-    SeqEvent xev; // This is the odd one.
 
-    t_SeqEvent_Fixture() : ev(), xev() {
+    struct Fixture
+    {
+	SeqEvent ev;  // This is the "normal" one.
+	SeqEvent xev; // This is the odd one.
 
-	xev.frame = 0xFEEEEEEE;
-	xev.type = SeqEvent::ALL_OFF;
-	xev.quantize = true;
-	xev.instrument_index = 0xFF;
-    }
+	Fixture() : ev(), xev() {
 
-    ~t_SeqEvent_Fixture() {}
-};
+	    xev.frame = 0xFEEEEEEE;
+	    xev.type = SeqEvent::ALL_OFF;
+	    xev.quantize = true;
+	    xev.instrument_index = 0xFF;
+	}
 
-BOOST_FIXTURE_TEST_SUITE( t_SeqEvent, t_SeqEvent_Fixture );
+	~Fixture() {}
+    };
 
-BOOST_AUTO_TEST_CASE( t_001_defaults )
+} // namespace THIS_NAMESPACE
+
+BOOST_FIXTURE_TEST_SUITE( t_SeqEvent, Fixture );
+
+BOOST_AUTO_TEST_CASE( THIS(001_defaults) )
 {
     // Test the defaults
     TX( ev.frame == 0 );
@@ -57,7 +65,7 @@ BOOST_AUTO_TEST_CASE( t_001_defaults )
     TX( ev.instrument_index == 0 );
 }
 
-BOOST_AUTO_TEST_CASE( t_002_copy )
+BOOST_AUTO_TEST_CASE( THIS(002_copy) )
 {
     SeqEvent cp;
     cp = ev;
@@ -99,7 +107,7 @@ BOOST_AUTO_TEST_CASE( t_002_copy )
     TX( xev.instrument_index == 0 );
 }
 
-BOOST_AUTO_TEST_CASE( t_003_less )
+BOOST_AUTO_TEST_CASE( THIS(003_less) )
 {
     TX( less(ev, xev) );    
     TX( ! less(ev, xev) );
