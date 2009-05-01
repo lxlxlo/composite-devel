@@ -21,6 +21,7 @@
  */
 
 #include <hydrogen/TransportPosition.h>
+#include <cmath>
 
 using namespace H2Core;
 
@@ -164,7 +165,7 @@ void TransportPosition::floor(TransportPosition::snap_type s)
 TransportPosition& TransportPosition::operator++()
 {
     ++tick;
-    frame += frames_per_tick();
+    frame += ::round(frames_per_tick());
     if( tick >= ticks_per_beat ) {
 	beat += tick / ticks_per_beat;
 	tick %= ticks_per_beat;
@@ -180,7 +181,7 @@ TransportPosition& TransportPosition::operator--()
 {
     if( tick > 0 ) {
 	--tick;
-	uint32_t fpt = frames_per_tick();
+	uint32_t fpt = ::round(frames_per_tick());
 	if( frame > fpt ) {
 	    frame -= fpt;
 	} else {
