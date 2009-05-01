@@ -110,13 +110,13 @@ BOOST_AUTO_TEST_CASE( THIS(002_copy) )
 BOOST_AUTO_TEST_CASE( THIS(003_less) )
 {
     TX( less(ev, xev) );    
-    TX( ! less(ev, xev) );
+    TX( ! less(xev, ev) );
     xev.frame = ev.frame;
     TX( ! less(ev, xev) );
     TX( ! less(ev, xev) );
     ev.frame = xev.frame+1;
     TX( ! less(ev, xev) );
-    TX( less(ev, xev) );
+    TX( less(xev, ev) );
 }
 
 BOOST_AUTO_TEST_SUITE_END()
