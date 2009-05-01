@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE( THIS(004_increment) )
 
     TX( p.frame == 0 );
     double frame = 0.0;
-    for( k=1 ; k<p.ticks_per_beat ; ++k ) {
+    for( k=1 ; (unsigned)k<p.ticks_per_beat ; ++k ) {
 	++p;
 	frame += frames_per_tick;
 	TX( 1 == p.bar );
@@ -148,7 +148,40 @@ BOOST_AUTO_TEST_CASE( THIS(004_increment) )
     TX( 2 == p.tick );
     TX( round(frame) == p.frame );
 
-    TX( false ); // Do some tests with the 'x' object.
+    // Tests with 'x'
+    frame = x.frame;
+    frames_per_tick = x.frames_per_tick();
+    for( k=x.tick+1 ; (unsigned)k < x.ticks_per_beat ; ++k ) {
+	++x;
+	frame += frames_per_tick;
+	TX( 349 == x.bar );
+	TX( 5 == x.beat );
+	TX( k == x.tick );
+	TX( 115 == x.bbt_offset );
+	TX( round(frame) == x.frame );  // This fails because roundoff errors are cropping up.
+                                        // Need a way to manage this...
+                                        //   * either keep track of the mantissa
+                                        //   * or try to define/limit our roundoff error.
+    }
+    TX( x.tick == 98 );
+    ++x;
+    frame += frames_per_tick;
+    TX( 349 == x.bar );
+    TX( 6 == x.beat );
+    TX( 0 == x.tick );
+    TX( 115 == x.bbt_offset );
+    TX( round(frame) == x.frame );
+
+    x.beat = 7;
+    x.tick = 98;
+    ++x;
+    frame += frames_per_tick;
+    TX( 350 == x.bar );
+    TX( 1 == x.beat );
+    TX( 0 == x.tick );
+    TX( 115 == x.bbt_offset );
+    TX( round(frame) == x.frame );  // this is also because of roundoff error.
+    BOOST_MESSAGE( "Frame drift = " << (frame - x.frame) );
 }
 
 BOOST_AUTO_TEST_CASE( THIS(005_decrement) )
