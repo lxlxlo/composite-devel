@@ -21,9 +21,22 @@
  */
 
 #include <hydrogen/TransportPosition.h>
+#include <cstdlib> // rand()
 #include <cmath>
 
 using namespace H2Core;
+
+/**
+ * Returns a random number in the range [-0.5, 0.5]
+ *
+ * This is used primarily for frame adjustment calculations to
+ * mitigate drifting from roundoff errors without actually
+ * keeping track of a fractional frame value.
+ */
+inline double dither()
+{
+    return double(rand())/double(RAND_MAX) - 0.5;
+}
 
 TransportPosition::TransportPosition() :
     state( STOPPED ),
@@ -165,7 +178,7 @@ void TransportPosition::floor(TransportPosition::snap_type s)
 TransportPosition& TransportPosition::operator++()
 {
     ++tick;
-    frame += ::round(frames_per_tick());
+    frame += ::round(frames_per_tick() + dither());
     if( tick >= ticks_per_beat ) {
 	beat += tick / ticks_per_beat;
 	tick %= ticks_per_beat;
@@ -181,7 +194,7 @@ TransportPosition& TransportPosition::operator--()
 {
     if( tick > 0 ) {
 	--tick;
-	uint32_t fpt = ::round(frames_per_tick());
+	uint32_t fpt = ::round(frames_per_tick() + dither());
 	if( frame > fpt ) {
 	    frame -= fpt;
 	} else {
