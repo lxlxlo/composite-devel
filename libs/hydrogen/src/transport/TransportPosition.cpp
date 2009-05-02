@@ -194,12 +194,6 @@ TransportPosition& TransportPosition::operator--()
 {
     if( tick > 0 ) {
 	--tick;
-	uint32_t fpt = ::round(frames_per_tick() + dither());
-	if( frame > fpt ) {
-	    frame -= fpt;
-	} else {
-	    frame = 0;
-	}
     } else {
 	tick = ticks_per_beat - 1;
 	if( beat > 1 ) {
@@ -212,6 +206,12 @@ TransportPosition& TransportPosition::operator--()
 		bar = 1;
 	    }
 	}
+    }
+    uint32_t fpt = ::round(frames_per_tick() + dither());
+    if( frame > fpt ) {
+	frame -= fpt;
+    } else {
+	frame = 0;
     }
     return *this;
 }
