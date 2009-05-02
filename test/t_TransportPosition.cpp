@@ -61,7 +61,6 @@ namespace THIS_NAMESPACE
 	    x.beat_type = 8;
 	    x.ticks_per_beat = 99;
 	    x.beats_per_minute = 543.2;
-	
 	}
 
 	~Fixture() {}
@@ -72,7 +71,7 @@ using namespace THIS_NAMESPACE;
 
 BOOST_FIXTURE_TEST_SUITE( THIS_NAMESPACE, Fixture );
 
-BOOST_AUTO_TEST_CASE( THIS(001_defaults) )
+BOOST_AUTO_TEST_CASE( THIS(000_defaults) )
 {
     // Test the defaults
     TX( p.state == TransportPosition::STOPPED );
@@ -83,6 +82,57 @@ BOOST_AUTO_TEST_CASE( THIS(001_defaults) )
     TX( p.tick == 0 );
     TX( p.bbt_offset == 0 );
     TX( p.bar_start_tick == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( THIS(001_copy_constructor) )
+{
+    TransportPosition y, z;
+
+    TX( y.state == TransportPosition::STOPPED );
+    TX( y.new_position == true );
+    TX( y.frame == 0 );
+    TX( y.bar == 1 );
+    TX( y.beat == 1 );
+    TX( y.tick == 0 );
+    TX( y.bbt_offset == 0 );
+    TX( y.bar_start_tick == 0 );
+
+    TX( z.state == TransportPosition::STOPPED );
+    TX( z.new_position == true );
+    TX( z.frame == 0 );
+    TX( z.bar == 1 );
+    TX( z.beat == 1 );
+    TX( z.tick == 0 );
+    TX( z.bbt_offset == 0 );
+    TX( z.bar_start_tick == 0 );
+
+    p.frame = 12345;
+    p.bar = 21;
+    p.beat = 39;
+    p.tick = -1;
+    y = p;
+    TX( 12345 == y.frame );
+    TX( 21 == y.bar );
+    TX( -1 == y.tick );
+    p.tick = 5;
+    y.tick = 123;
+    TX( 5 == p.tick );
+    TX( 123 == y.tick );
+
+    z = x;
+    TX( TransportPosition::ROLLING == z.state );
+    TX( true == z.new_position );
+    TX( 8273901 == z.frame );
+    TX( 196123 == z.frame_rate );
+    TX( 349 == z.bar );
+    TX( 5 == z.beat );
+    TX( 18 == z.tick );
+    TX( 115 == z.bbt_offset );
+    TX( 349 == z.bar_start_tick );
+    TX( 7 == z.beats_per_bar );
+    TX( 8 == z.beat_type );
+    TX( 99 == z.ticks_per_beat );
+    TX( 543.2 == z.beats_per_minute );
 }
 
 BOOST_AUTO_TEST_CASE( THIS(002_frames_per_tick) )
@@ -179,25 +229,203 @@ BOOST_AUTO_TEST_CASE( THIS(004_increment) )
     TX( 0 == x.tick );
     TX( 115 == x.bbt_offset );
     TX( fabs( frame - double(x.frame) ) < max_drift );  // this is also because of roundoff error.
-    BOOST_MESSAGE( "Frame drift = " << (frame - x.frame) );
+    BOOST_MESSAGE( "++ drift = " << (frame - x.frame) );
 }
 
 BOOST_AUTO_TEST_CASE( THIS(005_decrement) )
 {
-    TX( false );  // Need to implement test
+    --p;
+    TX( 0 == p.frame );
+    TX( 1 == p.bar );
+    TX( 1 == p.beat );
+    TX( 0 == p.tick );
+    TX( 0 == p.bbt_offset );
+    TX( 0 == p.bar_start_tick );
+    ++p;
+    --p;
+    TX( 0 == p.frame );
+    TX( 1 == p.bar );
+    TX( 1 == p.beat );
+    TX( 0 == p.tick );
+    TX( 0 == p.bbt_offset );
+    TX( 0 == p.bar_start_tick );
+
+    p.bar = 5;
+    p.beat = 2;
+    p.tick = 1;
+    --p; --p;
+    TX( 0 == p.frame );
+    TX( 5 == p.bar );
+    TX( 1 == p.beat );
+    TX( 191 == p.tick );
+
+    double frame = 0.0;
+    double fpt = p.frames_per_tick();
+    p.frame = 1000.0;
+    p.bar = 5;
+    p.beat = 2;
+    p.tick = 1;
+    frame = p.frame;
+    --p; --p;
+    frame -= 2.0 * fpt;
+    TX( frame >= 0.0 );
+    TX( round(frame) == p.frame );
+    TX( 5 == p.bar );
+    TX( 1 == p.beat );
+    TX( 191 == p.tick );
+
+    frame = 100000.0;
+    p.frame = frame;
+    p.bar = 100;
+    p.beat = 1;
+    p.tick = 0;
+    int k = p.ticks_per_beat * p.beats_per_bar;
+    frame -= fpt * k;
+    while( k > 0 ) {
+	--k; --p;
+    }
+    double drift = fabs( frame - double(p.frame) );
+    BOOST_MESSAGE( "-- drift @ 768 = " << drift );
+    TX( fabs(drift) < 10.0 );
+    TX( p.bar == 99 );
+    TX( p.beat == 1 );
+    TX( p.tick == 0 );
+
+    // Using the 'x' object
+    fpt = x.frames_per_tick();
+    frame = x.frame;
+    --x;
+    frame -= fpt;
+    TX( fabs(frame - x.frame) <= 1.0 );
+
+    for( k=2374 ; k > 0 ; --k ) --x;
+    frame -= fpt * 2374.0;
+    drift = frame - double(x.frame);
+    BOOST_MESSAGE( "-- drift @ 2375 = " << drift );
+    TX( fabs(drift) < 50.0 );
+    TX( 346 == x.bar );
+    TX( 2 == x.beat );
+    TX( 19 == x.tick );
+	
 }
 
-BOOST_AUTO_TEST_CASE( THIS(006_round) )
+BOOST_AUTO_TEST_CASE( THIS(006_floor) )
+{
+    p.floor(TransportPosition::TICK);
+    TX( 1 == p.bar );
+    TX( 1 == p.beat );
+    TX( 0 == p.tick );
+    TX( 0 == p.frame );
+    p.floor(TransportPosition::BEAT);
+    TX( 1 == p.bar );
+    TX( 1 == p.beat );
+    TX( 0 == p.tick );
+    TX( 0 == p.frame );
+    p.floor(TransportPosition::BAR);
+    TX( 1 == p.bar );
+    TX( 1 == p.beat );
+    TX( 0 == p.tick );
+    TX( 0 == p.frame );
+
+    double fpt = p.frames_per_tick();
+    p.tick = 1;
+    p.bbt_offset = 921;
+    p.frame = round(fpt);
+    p.floor(TransportPosition::TICK);
+    TX( 1 == p.bar );
+    TX( 1 == p.beat );
+    TX( 1 == p.tick );
+    TX( 0 == p.frame );
+    TX( 0 == p.bbt_offset );
+    p.tick = 1;
+    p.bbt_offset = 921;
+    p.frame = round(fpt);
+    p.floor(TransportPosition::BEAT);
+    TX( 1 == p.bar );
+    TX( 1 == p.beat );
+    TX( 0 == p.tick );
+    TX( 0 == p.frame );
+    TX( 0 == p.bbt_offset );
+    p.tick = 1;
+    p.bbt_offset = 921;
+    p.frame = round(fpt);
+    p.floor(TransportPosition::BAR);
+    TX( 1 == p.bar );
+    TX( 1 == p.beat );
+    TX( 0 == p.tick );
+    TX( 0 == p.frame );
+    TX( 0 == p.bbt_offset );
+
+    p.tick = 1;
+    p.bbt_offset = 921;
+    p.frame = round(fpt/2.0);
+    p.floor(TransportPosition::BAR);
+    TX( 1 == p.bar );
+    TX( 1 == p.beat );
+    TX( 0 == p.tick );
+    TX( 0 == p.frame );
+    TX( 0 == p.bbt_offset );
+
+    TransportPosition tmp = x;
+    double lastframe = tmp.frame;
+    tmp.floor(TransportPosition::TICK);
+    TX( tmp.bar == 349 );
+    TX( tmp.beat == 5 );
+    TX( tmp.tick == 18 );
+    TX( tmp.bbt_offset == 0 );
+    lastframe -= 115.0;
+    TX( tmp.frame == round(lastframe) );
+    // Repeating when already floored should
+    // give the same result.
+    tmp.floor(TransportPosition::TICK);
+    TX( tmp.bar == 349 );
+    TX( tmp.beat == 5 );
+    TX( tmp.tick == 18 );
+    TX( tmp.bbt_offset == 0 );
+    TX( tmp.frame == round(lastframe) );
+
+    tmp = x;
+    tmp.floor(TransportPosition::BEAT);
+    TX( tmp.bar == 349 );
+    TX( tmp.beat == 5 );
+    TX( tmp.tick == 0 );
+    TX( tmp.bbt_offset == 0 );
+    lastframe -= 18.0 * tmp.frames_per_tick();
+    TX( tmp.frame == round(lastframe) );
+    // Repeating when already floored should
+    // give the same result.
+    tmp.floor(TransportPosition::BEAT);
+    TX( tmp.bar == 349 );
+    TX( tmp.beat == 5 );
+    TX( tmp.tick == 0 );
+    TX( tmp.bbt_offset == 0 );
+    TX( tmp.frame == round(lastframe) );
+
+    tmp = x;
+    tmp.floor(TransportPosition::BAR);
+    TX( tmp.bar == 349 );
+    TX( tmp.beat == 1 );
+    TX( tmp.tick == 0 );
+    TX( tmp.bbt_offset == 0 );
+    lastframe -= 4.0 * 99.0 * tmp.frames_per_tick();
+    TX( tmp.frame == round(lastframe) );
+    // Repeating when already floored should
+    // give the same result.
+    tmp.floor(TransportPosition::BAR);
+    TX( tmp.bar == 349 );
+    TX( tmp.beat == 1 );
+    TX( tmp.tick == 0 );
+    TX( tmp.bbt_offset == 0 );
+    TX( tmp.frame == round(lastframe) );
+
+}
+
+BOOST_AUTO_TEST_CASE( THIS(007_ceil) )
 {
     TX( false );  // Need to implement test
 }
 
-BOOST_AUTO_TEST_CASE( THIS(007_floor) )
-{
-    TX( false );  // Need to implement test
-}
-
-BOOST_AUTO_TEST_CASE( THIS(008_ceil) )
+BOOST_AUTO_TEST_CASE( THIS(008_round) )
 {
     TX( false );  // Need to implement test
 }
@@ -218,11 +446,6 @@ BOOST_AUTO_TEST_CASE( THIS(010_operator_plus_equals) )
 }
 
 BOOST_AUTO_TEST_CASE( THIS(011_operator_minus_equals) )
-{
-    TX( false );  // Need to implement test
-}
-
-BOOST_AUTO_TEST_CASE( THIS(012_copy_constructor) )
 {
     TX( false );  // Need to implement test
 }
