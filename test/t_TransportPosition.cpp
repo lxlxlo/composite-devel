@@ -46,6 +46,7 @@ namespace THIS_NAMESPACE
 	    p.beat_type = 4;
 	    p.ticks_per_beat = 192;
 	    p.beats_per_minute = 120.0;
+	    // MEMO: p.frames_per_tick() == 125.0
 
 	    // x init.
 	    x.state = TransportPosition::ROLLING;
@@ -61,10 +62,107 @@ namespace THIS_NAMESPACE
 	    x.beat_type = 8;
 	    x.ticks_per_beat = 99;
 	    x.beats_per_minute = 543.2;
+	    // MEMO: x.frames_per_tick() == 214.35600481992236
 	}
 
 	~Fixture() {}
     };
+
+/**********************************************************************
+ * NOTE ON COMPARING FRAMES AND FRAME ADJUSTMENT
+ * =============================================
+ *
+ * Suppose you are summing x(n+1) = x(n) + e where x(i) and e are real
+ * numbers, and x(0) is known.
+ * 
+ * If you calculate like this: x(n+1) = round(x(n) + e) you will
+ * consistantly drift away from the actual answer.  However, this is
+ * common to do in frame adjustment calculations where the tempo does
+ * not align with the frame rate.  The maximum error in this situation
+ * is 0.5 * n.
+ *
+ * To mitigate this error (without keeping track of decimal
+ * bbt_offsets), TransportPosition uses dithering.  A random number
+ * between [-.5, .5) is added to the number before rounding.  So:
+ *
+ * x(n+1) = round( x(n) + e + dither() )
+ *
+ * Theoretically, all of the dither()'s should sum up to zero and you
+ * would (usually) have no error over large 'n'.  However, it's not
+ * exactly the case.  In order to have tests that always pass, it
+ * would be nice to know what the tolerance is for error when
+ * comparing expected frame values to calculated frame values.
+ *
+ * To find a boundary for the error introduced by dithering (as
+ * opposed to the error introduced by rounding), I ran about 5000 sets
+ * with e between 0 and 11, and max n = 100000... taking the maximum
+ * errors for various slots.  (E.g. max error for n = [90, 100])
+ *
+ * I hand-fit [1] a couple of equations that always bounded the data.
+ * They are as follows:
+ *
+ *     max_err = 2.1 * Nops^.50   { Nops in [0, 400] }
+ *     max_err = 4.3 * Nops^.435  { Nops in (400, 100000] }
+ *
+ * Tabulated, here's what this function evaluates to:
+ *
+ *     MAXIMUM FRAME DRIFT (+/- frames)
+ *     ================================
+ *      Nops  | dither | no dither
+ *     -------+--------+-----------
+ *          1 |    2.1 |        1
+ *         10 |    6.6 |        5
+ *        100 |   21.0 |       50
+ *       1000 |   86.8 |      500
+ *      10000 |  236.3 |     5000
+ *     100000 | 1751.7 |    50000
+ *
+ * Note that these are WORST CASE.  It is typically much better.
+ * (E.g. over 100 ops I usually get 4.5 frames of drift). [2]
+ *
+ * [1] "Chi-by-eye."
+ *
+ * [2] As it happens, the fractional part of 'e' is the biggest factor
+ *     the determines how much error you will get.  If e is close to a
+ *     whole number, you will get very little error by dithering.
+ *     When e is midway between two numbers, you are more likely to
+ *     get larger errors.
+ *
+ **********************************************************************
+ */
+
+    static inline bool check_frame_drift(double TrueVal,
+					 uint32_t Frame,
+					 size_t Nops,
+					 int Line)
+    {
+	double max_drift = 0.0;
+	bool rv;
+
+	double ActDrift = TrueVal - double(Frame);
+	if( Nops <= 1 ) {
+	    max_drift = 1.0;
+	} else if( Nops <= 400 ) {
+	    max_drift = 2.1 * sqrt(double(Nops));
+	} else {
+	    max_drift = 4.3 * pow(double(Nops), .435);
+	}
+
+	rv = (fabs(ActDrift) < max_drift);
+
+	if( ! rv ) {
+	    BOOST_MESSAGE("In " << __FILE__ << "(" << Line << ") "
+			  << "Too much drift: True(" << TrueVal << ") "
+			  << "- Frame(" << Frame << ") = " << ActDrift
+			  << " [Limit is +/- " << max_drift
+			  << " for " << Nops << " ops]");
+	}
+
+	return rv;
+    }
+
+#define DRIFT(t, f, n) check_frame_drift(t, f, n, __LINE__)
+
 } // namespace THIS_NAMESPACE
 
 using namespace THIS_NAMESPACE;
@@ -173,7 +271,7 @@ BOOST_AUTO_TEST_CASE( THIS(004_increment) )
 	TX( 1 == p.bar );
 	TX( 1 == p.beat );	    
 	TX( k == p.tick );
-	TX( round(frame) == p.frame );
+	TX( DRIFT(frame, p.frame, 1) );
     }
 
     TX( p.tick == 191 );
@@ -182,13 +280,13 @@ BOOST_AUTO_TEST_CASE( THIS(004_increment) )
     TX( 1 == p.bar );
     TX( 2 == p.beat );
     TX( 0 == p.tick );
-    TX( round(frame) == p.frame );
+    TX( DRIFT(frame, p.frame, 2) );
     ++p;
     frame += frames_per_tick;
     TX( 1 == p.bar );
     TX( 2 == p.beat );
     TX( 1 == p.tick );
-    TX( round(frame) == p.frame );
+    TX( DRIFT(frame, p.frame, 3) );
     p.bar = 99;
     p.beat = 3;
     ++p;
@@ -196,12 +294,11 @@ BOOST_AUTO_TEST_CASE( THIS(004_increment) )
     TX( 99 == p.bar );
     TX( 3 == p.beat );
     TX( 2 == p.tick );
-    TX( round(frame) == p.frame );
+    TX( DRIFT(frame, p.frame, 4) );
 
     // Tests with 'x'
     frame = x.frame;
     frames_per_tick = x.frames_per_tick();
-    double max_drift = 6.0;
     for( k=x.tick+1 ; (unsigned)k < x.ticks_per_beat ; ++k ) {
 	++x;
 	frame += frames_per_tick;
@@ -209,7 +306,7 @@ BOOST_AUTO_TEST_CASE( THIS(004_increment) )
 	TX( 5 == x.beat );
 	TX( k == x.tick );
 	TX( 115 == x.bbt_offset );
-	TX( fabs( frame - double(x.frame) ) < max_drift );
+	TX( DRIFT( frame, x.frame, k ) );
     }
     TX( x.tick == 98 );
     ++x;
@@ -218,7 +315,7 @@ BOOST_AUTO_TEST_CASE( THIS(004_increment) )
     TX( 6 == x.beat );
     TX( 0 == x.tick );
     TX( 115 == x.bbt_offset );
-    TX( fabs( frame - double(x.frame) ) < max_drift );
+    TX( DRIFT( frame, x.frame, k+1 ) );
 
     x.beat = 7;
     x.tick = 98;
@@ -228,7 +325,7 @@ BOOST_AUTO_TEST_CASE( THIS(004_increment) )
     TX( 1 == x.beat );
     TX( 0 == x.tick );
     TX( 115 == x.bbt_offset );
-    TX( fabs( frame - double(x.frame) ) < max_drift );  // this is also because of roundoff error.
+    TX( DRIFT( frame, x.frame, k+2 ) );
     BOOST_MESSAGE( "++ drift = " << (frame - x.frame) );
 }
 
@@ -269,7 +366,7 @@ BOOST_AUTO_TEST_CASE( THIS(005_decrement) )
     --p; --p;
     frame -= 2.0 * fpt;
     TX( frame >= 0.0 );
-    TX( round(frame) == p.frame );
+    TX( DRIFT(frame, p.frame, 2) );
     TX( 5 == p.bar );
     TX( 1 == p.beat );
     TX( 191 == p.tick );
@@ -374,7 +471,7 @@ BOOST_AUTO_TEST_CASE( THIS(006_floor) )
     TX( tmp.tick == 18 );
     TX( tmp.bbt_offset == 0 );
     lastframe -= 115.0;
-    TX( tmp.frame == round(lastframe) );
+    TX( DRIFT(lastframe, tmp.frame, 1) );
     // Repeating when already floored should
     // give the same result.
     tmp.floor(TransportPosition::TICK);
@@ -382,7 +479,7 @@ BOOST_AUTO_TEST_CASE( THIS(006_floor) )
     TX( tmp.beat == 5 );
     TX( tmp.tick == 18 );
     TX( tmp.bbt_offset == 0 );
-    TX( tmp.frame == round(lastframe) );
+    TX( DRIFT(lastframe, tmp.frame, 1) );
 
     tmp = x;
     tmp.floor(TransportPosition::BEAT);
@@ -391,7 +488,7 @@ BOOST_AUTO_TEST_CASE( THIS(006_floor) )
     TX( tmp.tick == 0 );
     TX( tmp.bbt_offset == 0 );
     lastframe -= 18.0 * tmp.frames_per_tick();
-    TX( tmp.frame == round(lastframe) );
+    TX( DRIFT(lastframe, tmp.frame, 1) );
     // Repeating when already floored should
     // give the same result.
     tmp.floor(TransportPosition::BEAT);
@@ -399,7 +496,7 @@ BOOST_AUTO_TEST_CASE( THIS(006_floor) )
     TX( tmp.beat == 5 );
     TX( tmp.tick == 0 );
     TX( tmp.bbt_offset == 0 );
-    TX( tmp.frame == round(lastframe) );
+    TX( DRIFT(lastframe, tmp.frame, 1) );
 
     tmp = x;
     tmp.floor(TransportPosition::BAR);
@@ -408,7 +505,7 @@ BOOST_AUTO_TEST_CASE( THIS(006_floor) )
     TX( tmp.tick == 0 );
     TX( tmp.bbt_offset == 0 );
     lastframe -= 4.0 * 99.0 * tmp.frames_per_tick();
-    TX( tmp.frame == round(lastframe) );
+    TX( DRIFT(lastframe, tmp.frame, 1) );
     // Repeating when already floored should
     // give the same result.
     tmp.floor(TransportPosition::BAR);
@@ -416,13 +513,118 @@ BOOST_AUTO_TEST_CASE( THIS(006_floor) )
     TX( tmp.beat == 1 );
     TX( tmp.tick == 0 );
     TX( tmp.bbt_offset == 0 );
-    TX( tmp.frame == round(lastframe) );
+    TX( DRIFT(lastframe, tmp.frame, 1) );
 
 }
 
 BOOST_AUTO_TEST_CASE( THIS(007_ceil) )
 {
-    TX( false );  // Need to implement test
+    p.ceil(TransportPosition::TICK);
+    TX( 1 == p.bar );
+    TX( 1 == p.beat );
+    TX( 0 == p.tick );
+    TX( 0 == p.frame );
+    p.ceil(TransportPosition::BEAT);
+    TX( 1 == p.bar );
+    TX( 1 == p.beat );
+    TX( 0 == p.tick );
+    TX( 0 == p.frame );
+    p.ceil(TransportPosition::BAR);
+    TX( 1 == p.bar );
+    TX( 1 == p.beat );
+    TX( 0 == p.tick );
+    TX( 0 == p.frame );
+
+    double fpt = p.frames_per_tick();
+    p.tick = 1;
+    p.bbt_offset = 75;
+    p.frame = round(fpt);
+    p.ceil(TransportPosition::TICK);
+    TX( 1 == p.bar );
+    TX( 1 == p.beat );
+    TX( 2 == p.tick );
+    TX( DRIFT(fpt, p.frame, 1) );
+    TX( 0 == p.bbt_offset );
+    p.tick = 1;
+    p.bbt_offset = 921;
+    p.frame = round(fpt);
+    p.floor(TransportPosition::BEAT);
+    TX( 1 == p.bar );
+    TX( 1 == p.beat );
+    TX( 0 == p.tick );
+    TX( 0 == p.frame );
+    TX( 0 == p.bbt_offset );
+    p.tick = 1;
+    p.bbt_offset = 921;
+    p.frame = round(fpt);
+    p.floor(TransportPosition::BAR);
+    TX( 1 == p.bar );
+    TX( 1 == p.beat );
+    TX( 0 == p.tick );
+    TX( 0 == p.frame );
+    TX( 0 == p.bbt_offset );
+
+    p.tick = 1;
+    p.bbt_offset = 921;
+    p.frame = round(fpt/2.0);
+    p.floor(TransportPosition::BAR);
+    TX( 1 == p.bar );
+    TX( 1 == p.beat );
+    TX( 0 == p.tick );
+    TX( 0 == p.frame );
+    TX( 0 == p.bbt_offset );
+
+    TransportPosition tmp = x;
+    double lastframe = tmp.frame;
+    tmp.floor(TransportPosition::TICK);
+    TX( tmp.bar == 349 );
+    TX( tmp.beat == 5 );
+    TX( tmp.tick == 18 );
+    TX( tmp.bbt_offset == 0 );
+    lastframe -= 115.0;
+    TX( DRIFT(lastframe, tmp.frame, 1) );
+    // Repeating when already floored should
+    // give the same result.
+    tmp.floor(TransportPosition::TICK);
+    TX( tmp.bar == 349 );
+    TX( tmp.beat == 5 );
+    TX( tmp.tick == 18 );
+    TX( tmp.bbt_offset == 0 );
+    TX( DRIFT(lastframe, tmp.frame, 1) );
+
+    tmp = x;
+    tmp.floor(TransportPosition::BEAT);
+    TX( tmp.bar == 349 );
+    TX( tmp.beat == 5 );
+    TX( tmp.tick == 0 );
+    TX( tmp.bbt_offset == 0 );
+    lastframe -= 18.0 * tmp.frames_per_tick();
+    TX( DRIFT(lastframe, tmp.frame, 1) );
+    // Repeating when already floored should
+    // give the same result.
+    tmp.floor(TransportPosition::BEAT);
+    TX( tmp.bar == 349 );
+    TX( tmp.beat == 5 );
+    TX( tmp.tick == 0 );
+    TX( tmp.bbt_offset == 0 );
+    TX( DRIFT(lastframe, tmp.frame, 1) );
+
+    tmp = x;
+    tmp.floor(TransportPosition::BAR);
+    TX( tmp.bar == 349 );
+    TX( tmp.beat == 1 );
+    TX( tmp.tick == 0 );
+    TX( tmp.bbt_offset == 0 );
+    lastframe -= 4.0 * 99.0 * tmp.frames_per_tick();
+    TX( DRIFT(lastframe, tmp.frame, 1) );
+    // Repeating when already floored should
+    // give the same result.
+    tmp.floor(TransportPosition::BAR);
+    TX( tmp.bar == 349 );
+    TX( tmp.beat == 1 );
+    TX( tmp.tick == 0 );
+    TX( tmp.bbt_offset == 0 );
+    TX( DRIFT(lastframe, tmp.frame, 1) );
 }
 
 BOOST_AUTO_TEST_CASE( THIS(008_round) )
