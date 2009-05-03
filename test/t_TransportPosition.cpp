@@ -431,7 +431,7 @@ BOOST_AUTO_TEST_CASE( THIS(006_floor) )
     p.floor(TransportPosition::TICK);
     TX( 1 == p.bar );
     TX( 1 == p.beat );
-    TX( 1 == p.tick );
+    TX( 0 == p.tick );
     TX( 0 == p.frame );
     TX( 0 == p.bbt_offset );
     p.tick = 1;
@@ -504,7 +504,8 @@ BOOST_AUTO_TEST_CASE( THIS(006_floor) )
     TX( tmp.beat == 1 );
     TX( tmp.tick == 0 );
     TX( tmp.bbt_offset == 0 );
-    lastframe -= 4.0 * 99.0 * tmp.frames_per_tick();
+    lastframe = x.frame - 4.0 * 99.0 * tmp.frames_per_tick()
+	- x.tick * tmp.frames_per_tick() - x.bbt_offset;
     TX( DRIFT(lastframe, tmp.frame, 1) );
     // Repeating when already floored should
     // give the same result.
@@ -536,14 +537,16 @@ BOOST_AUTO_TEST_CASE( THIS(007_ceil) )
     TX( 0 == p.frame );
 
     double fpt = p.frames_per_tick();
+    double frame;
     p.tick = 1;
     p.bbt_offset = 75;
     p.frame = round(fpt);
+    frame = p.frame + fpt - p.bbt_offset;
     p.ceil(TransportPosition::TICK);
     TX( 1 == p.bar );
     TX( 1 == p.beat );
     TX( 2 == p.tick );
-    TX( DRIFT(fpt, p.frame, 1) );
+    TX( DRIFT(frame, p.frame, 1) );
     TX( 0 == p.bbt_offset );
     p.tick = 1;
     p.bbt_offset = 921;
@@ -579,7 +582,7 @@ BOOST_AUTO_TEST_CASE( THIS(007_ceil) )
     tmp.ceil(TransportPosition::TICK);
     TX( tmp.bar == 349 );
     TX( tmp.beat == 5 );
-    TX( tmp.tick == 18 );
+    TX( tmp.tick == 19 );
     TX( tmp.bbt_offset == 0 );
     lastframe += (x.frames_per_tick() - 115.0);
     TX( DRIFT(lastframe, tmp.frame, 1) );
@@ -588,7 +591,7 @@ BOOST_AUTO_TEST_CASE( THIS(007_ceil) )
     tmp.ceil(TransportPosition::TICK);
     TX( tmp.bar == 349 );
     TX( tmp.beat == 5 );
-    TX( tmp.tick == 18 );
+    TX( tmp.tick == 19 );
     TX( tmp.bbt_offset == 0 );
     TX( DRIFT(lastframe, tmp.frame, 1) );
 
@@ -610,12 +613,14 @@ BOOST_AUTO_TEST_CASE( THIS(007_ceil) )
     TX( DRIFT(lastframe, tmp.frame, 1) );
 
     tmp = x;
+    lastframe = tmp.frame;
+    lastframe += ((3.0 * 99.0) + (99.0 - 18.0)) * tmp.frames_per_tick()
+	+ (tmp.frames_per_tick() - tmp.bbt_offset);
     tmp.ceil(TransportPosition::BAR);
     TX( tmp.bar == 350 );
     TX( tmp.beat == 1 );
     TX( tmp.tick == 0 );
     TX( tmp.bbt_offset == 0 );
-    lastframe += 2.0 * 99.0 * tmp.frames_per_tick();
     TX( DRIFT(lastframe, tmp.frame, 1) );
     // Repeating when already ceiled should
     // give the same result.
@@ -727,8 +732,8 @@ BOOST_AUTO_TEST_CASE( THIS(009_operator_plus) )
 	a = a + 1;
 	TX( 1 == a.bar );
 	TX( 1 == a.beat );
-	TX( k == unsigned(a.tick) );
-	TX( DRIFT( double(k) * fpt, a.frame, k ) );
+	TX( (k+1) == unsigned(a.tick) );
+	TX( DRIFT( double(k+1) * fpt, a.frame, k ) );
     }
     TX( 191 == a.tick );
     ++k;

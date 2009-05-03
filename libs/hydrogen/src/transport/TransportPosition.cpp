@@ -38,6 +38,48 @@ inline double dither()
     return double(rand())/double(RAND_MAX) - 0.5;
 }
 
+/**
+ * This should probably be a member function... but for
+ * now it's here to avoid recompiling all of hydrogen.
+ */
+static void normalize(TransportPosition& p)
+{
+    double fpt = p.frames_per_tick();
+    /* bbt_offset is unsigned.  If it's ever signed, then....
+    while(p.bbt_offset < 0) {
+	++p.tick;
+	p.bbt_offset += ::round(fpt + dither());
+    }
+    */
+    while( p.bbt_offset > fpt ) {
+	--p.tick;
+	p.bbt_offset -= ::round(fpt + dither());
+    }
+    while(p.tick < 0) {
+	--p.beat;
+	p.tick += p.ticks_per_beat;
+    }
+    while((p.tick > 0) && (unsigned(p.tick) >= p.ticks_per_beat)) {
+	++p.beat;
+	p.tick -= p.ticks_per_beat;
+    }
+    while(p.beat < 1) {
+	--p.bar;
+	p.beat += p.beats_per_bar;
+    }
+    while(p.beat > p.beats_per_bar) {
+	++p.bar;
+	p.beat -= p.beats_per_bar;
+    }
+    if( p.bar < 1 ) {
+	p.bar = 1;
+	p.beat = 1;
+	p.tick = 0;
+	p.bbt_offset = 0;
+	p.frame = 0;
+    }    
+}
+
 TransportPosition::TransportPosition() :
     state( STOPPED ),
     new_position( true ),
@@ -100,64 +142,79 @@ void TransportPosition::round(TransportPosition::snap_type s)
     }
 }
 
-#warning "Need to implement TransportPosition::ceil() and ::floor()"
 void TransportPosition::ceil(TransportPosition::snap_type s)
 {
+    double df;
+    double fpt = frames_per_tick();
+    normalize(*this);
     switch(s) {
     case BAR:
-	ceil(BEAT);
-	frame += (frames_per_tick() * ticks_per_beat * (beats_per_bar - beat) );
+	if((beat == 1) && (tick == 0) && (bbt_offset == 0)) break;
+	df = ((1 + beats_per_bar - beat) * ticks_per_beat
+	      + (ticks_per_beat - tick)) * fpt
+	    + (fpt - bbt_offset);
+	frame += ::round(df + dither());
 	++bar;
 	beat = 1;
-	break;
-    case BEAT:
-	ceil(TICK);
-	frame += (frames_per_tick() * (ticks_per_beat-tick));
-	++beat;
 	tick = 0;
-	break;
-    case TICK:
-	frame += (frames_per_tick() - bbt_offset);
-	++tick;
 	bbt_offset = 0;
 	break;
-    }
-    while( tick >= ticks_per_beat ) {
+    case BEAT:
+	if((tick == 0) && (bbt_offset == 0)) break;
+	df = (ticks_per_beat - tick) * fpt
+	    + (fpt - bbt_offset);
+	frame += ::round(df + dither());
 	++beat;
-	tick -= ticks_per_beat;
-    }
-    while( beat > beats_per_bar ) {
-	++bar;
-	beat -= beats_per_bar;
+	tick = 0;
+	bbt_offset = 0;
+	normalize(*this);
+	break;
+    case TICK:
+	if(bbt_offset == 0) break;
+	df = (fpt - bbt_offset);
+	frame += ::round(df + dither());
+	++tick;
+	bbt_offset = 0;
+	normalize(*this);
+	break;
     }
 }
 
 void TransportPosition::floor(TransportPosition::snap_type s)
 {
-    uint32_t tmp;
+    double df;
+    double fpt = frames_per_tick();
+
+    normalize(*this);  // Code is assuming that we are normalized.
     switch(s) {
     case BAR:
-	floor(BEAT);
-	tmp = frames_per_tick() * ticks_per_beat * (beat-1);
-	if( tmp > frame ) {
-	    frame -= tmp;
+	df = ((beat - 1) * ticks_per_beat
+	      + tick) * fpt
+	    + bbt_offset;
+	df = ::round(df + dither());
+	if( frame > df ) {
+	    frame -= df;
 	} else {
 	    frame = 0;
 	}
 	beat = 1;
+	tick = 0;
+	bbt_offset = 0;
 	break;
     case BEAT:
-	floor(TICK);
-	tmp = frames_per_tick() * tick;
-	if( tmp > frame ) {
-	    frame -= tmp;
+	df = tick * fpt
+	    + bbt_offset;
+	df = ::round(df + dither());
+	if( frame > df ) {
+	    frame -= df;
 	} else {
 	    frame = 0;
 	}
 	tick = 0;
+	bbt_offset = 0;
 	break;
     case TICK:
-	if( bbt_offset > frame ) {
+	if( frame > bbt_offset ) {
 	    frame -= bbt_offset;
 	} else {
 	    frame = 0;
@@ -165,54 +222,26 @@ void TransportPosition::floor(TransportPosition::snap_type s)
 	bbt_offset = 0;
 	break;
     }
-    while( tick < 0 ) {
-	--beat;
-	tick += ticks_per_beat;
-    }
-    while( beat < 1 ) {
-	--bar;
-	beat += beats_per_bar;
-    }
 }
 
 TransportPosition& TransportPosition::operator++()
 {
     ++tick;
     frame += ::round(frames_per_tick() + dither());
-    if( tick >= ticks_per_beat ) {
-	beat += tick / ticks_per_beat;
-	tick %= ticks_per_beat;
-	if( beat > beats_per_bar ) {
-	    bar += ((beat-1) / beats_per_bar);
-	    beat = 1 + ((beat-1) % beats_per_bar);
-	}
-    }
+    normalize(*this);
     return *this;
 }
 
 TransportPosition& TransportPosition::operator--()
 {
-    if( tick > 0 ) {
-	--tick;
-    } else {
-	tick = ticks_per_beat - 1;
-	if( beat > 1 ) {
-	    --beat;
-	} else {
-	    beat = beats_per_bar;
-	    if( bar > 1 ) {
-		--bar;
-	    } else {
-		bar = 1;
-	    }
-	}
-    }
+    --tick;
     uint32_t fpt = ::round(frames_per_tick() + dither());
     if( frame > fpt ) {
 	frame -= fpt;
     } else {
 	frame = 0;
     }
+    normalize(*this);
     return *this;
 }
 
@@ -230,23 +259,14 @@ TransportPosition H2Core::operator-(const TransportPosition& pos, int ticks)
 
 TransportPosition& TransportPosition::operator+=(int ticks)
 {
+    double df = ticks * frames_per_tick();
     tick += ticks;
-    while( tick < 0 ) {
-	--beat;
-	tick += ticks_per_beat;
+    if( (df < 0.0) && (-df > frame) ) {
+	frame = 0;
+    } else {
+	frame += df;
     }
-    while( beat < 1 ) {
-	--bar;
-	beat += beats_per_bar;
-    }
-    while( tick >= ticks_per_beat ) {
-	++beat;
-	tick -= ticks_per_beat;
-    }
-    while( beat > beats_per_bar ) {
-	++bar;
-	beat -= beats_per_bar;
-    }
+    normalize(*this);
     return *this;
 }
 
