@@ -629,7 +629,83 @@ BOOST_AUTO_TEST_CASE( THIS(007_ceil) )
 
 BOOST_AUTO_TEST_CASE( THIS(008_round) )
 {
-    TX( false );  // Need to implement test
+    TransportPosition a;
+    double frame;
+
+    a = p;
+    a.round(TransportPosition::TICK);
+    TX( 0 == a.frame );
+    TX( 1 == a.bar );
+    TX( 1 == a.beat );
+    TX( 0 == a.tick );
+    TX( 0 == a.bbt_offset );
+    a.round(TransportPosition::BEAT);
+    TX( 0 == a.frame );
+    TX( 1 == a.bar );
+    TX( 1 == a.beat );
+    TX( 0 == a.tick );
+    TX( 0 == a.bbt_offset );
+    a.round(TransportPosition::BAR);
+    TX( 0 == a.frame );
+    TX( 1 == a.bar );
+    TX( 1 == a.beat );
+    TX( 0 == a.tick );
+    TX( 0 == a.bbt_offset );
+
+    a = p;
+    a.bbt_offset = a.frames_per_tick() / 4.0;
+    a.round(TransportPosition::TICK);
+    TX( 0 == a.frame );
+    TX( 1 == a.bar );
+    TX( 1 == a.beat );
+    TX( 0 == a.tick );
+    TX( 0 == a.bbt_offset );
+    a.bbt_offset = a.frames_per_tick() * 3.0 / 4.0;
+    a.round(TransportPosition::TICK);
+    TX( DRIFT( a.frames_per_tick() - double(a.bbt_offset), a.frame, 1 ) );
+    TX( 1 == a.bar );
+    TX( 1 == a.beat );
+    TX( 1 == a.tick );
+    TX( 0 == a.bbt_offset );
+    // Re-rounding should not change anything
+    a.round(TransportPosition::TICK);
+    TX( DRIFT( a.frames_per_tick() - double(a.bbt_offset), a.frame, 1 ) );
+    TX( 1 == a.bar );
+    TX( 1 == a.beat );
+    TX( 1 == a.tick );
+    TX( 0 == a.bbt_offset );
+
+    // Could use more checks near the zero-point,
+    // but we'll move on.
+
+    a = x;
+    frame = a.frame;
+    frame += a.frames_per_tick() - a.bbt_offset;
+    a.round(TransportPosition::TICK);
+    TX( 349 == a.bar );
+    TX( 5 == a.beat );
+    TX( 19 == a.tick );
+    TX( 0 == a.bbt_offset );
+    TX( DRIFT( frame, a.frame, 1 ) );
+
+    frame -= a.frames_per_tick() * double(a.tick);
+    a.round(TransportPosition::BEAT);
+    TX( 349 == a.bar );
+    TX( 5 == a.beat );
+    TX( 0 == a.tick );
+    TX( 0 == a.bbt_offset );
+    TX( DRIFT( frame, a.frame, 2 ) );
+
+    frame += a.frames_per_tick() * 99.0 * 3.0;
+    a.round(TransportPosition::BAR);
+    TX( 350 == a.bar );
+    TX( 1 == a.beat );
+    TX( 0 == a.tick );
+    TX( 0 == a.bbt_offset );
+    TX( DRIFT( frame, a.frame, 3 ) );
+
+    // Could use more checks... but we'll move on.
+
 }
 
 BOOST_AUTO_TEST_CASE( THIS(009_operator_plus) )
