@@ -710,22 +710,228 @@ BOOST_AUTO_TEST_CASE( THIS(008_round) )
 
 BOOST_AUTO_TEST_CASE( THIS(009_operator_plus) )
 {
-    TX( false );  // Need to implement test
+    unsigned k;
+    TransportPosition a;
+    double fpt;
+
+    a = p + (-51);
+    TX( 1 == a.bar );
+    TX( 1 == a.beat );
+    TX( 0 == a.tick );
+    TX( 0 == a.bbt_offset );
+    TX( 0 == a.frame );
+
+    a = p;
+    fpt = a.frames_per_tick();
+    for( k=0 ; k<192 ; ++k ) {
+	a = a + 1;
+	TX( 1 == a.bar );
+	TX( 1 == a.beat );
+	TX( k == unsigned(a.tick) );
+	TX( DRIFT( double(k) * fpt, a.frame, k ) );
+    }
+    TX( 191 == a.tick );
+    ++k;
+    a = a + 1;
+    TX( 1 == a.bar );
+    TX( 2 == a.beat );
+    TX( 0 == a.tick );
+    TX( DRIFT( double(k) * fpt, a.frame, k ) );
+
+    k = 192 * 2 + 30;
+    a = p + k;
+    TX( 1 == a.bar );
+    TX( 3 == a.beat );
+    TX( 30 == a.tick );
+    TX( DRIFT( double(k) * fpt, a.frame, 1 ) );
+
+    k = 99 * 5 + 64;
+    a = x + k;
+    TX( 350 == a.bar );
+    TX( 3 == a.beat );
+    TX( 82 == a.tick );
+    TX( 115 == a.bbt_offset );
+    TX( DRIFT( double(x.frame) + double(k) * fpt, a.frame, 1 ) );
+
+    a = x + (-k);
+    TX( 349 == a.bar );
+    TX( 5 == a.beat );
+    TX( 18 == a.tick );
+    TX( 115 == a.bbt_offset );
+    TX( DRIFT( double(x.frame), a.frame, 2 ) );
 }
 
 BOOST_AUTO_TEST_CASE( THIS(010_operator_minus) )
 {
-    TX( false );  // Need to implement test
+    unsigned k;
+    TransportPosition a;
+    double fpt;
+
+    a = p - 51;
+    TX( 1 == a.bar );
+    TX( 1 == a.beat );
+    TX( 0 == a.tick );
+    TX( 0 == a.bbt_offset );
+    TX( 0 == a.frame );
+
+    a = p;
+    a.bar = 2;
+    a.beat = 1;
+    a.tick = 0;
+    a.frame = 2000;
+    fpt = a.frames_per_tick();
+    for( k=192 ; k>0 ; --k ) {
+	a = a - 1;
+	TX( 1 == a.bar );
+	TX( 4 == a.beat );
+	TX( (k-1) == unsigned(a.tick) );
+	TX( DRIFT( 2000.0 - (double(k) * fpt), a.frame, (193-k) ) );
+    }
+    TX( 1 == a.tick );
+    a = a - 1;
+    TX( 0 == a.tick );
+    a = a - 1;
+    k = 193;
+    TX( 1 == a.bar );
+    TX( 3 == a.beat );
+    TX( 191 == a.tick );
+    TX( DRIFT( 2000.0 - (double(k) * fpt), a.frame, k ) );
+
+    k = 99 * 2 + 30;
+    a = x - k;
+    fpt = x.frames_per_tick();
+    TX( 349 == a.bar );
+    TX( 2 == a.beat );
+    TX( 77 == a.tick );
+    TX( 115 == a.bbt_offset );
+    TX( DRIFT( double(x.frame) - (double(k) * fpt), a.frame, 1 ) );
+
+    k = 99 * 5 + 64;
+    a = x - k;
+    TX( 348 == a.bar );
+    TX( 7 == a.beat );
+    TX( 53 == a.tick );
+    TX( 115 == a.bbt_offset );
+    TX( DRIFT( double(x.frame) - double(k) * fpt, a.frame, 1 ) );
+
+    a = x + (-k);
+    TX( 349 == a.bar );
+    TX( 5 == a.beat );
+    TX( 18 == a.tick );
+    TX( 115 == a.bbt_offset );
+    TX( DRIFT( double(x.frame), a.frame, 2 ) );
 }
 
 BOOST_AUTO_TEST_CASE( THIS(010_operator_plus_equals) )
 {
-    TX( false );  // Need to implement test
+    unsigned k;
+    TransportPosition a;
+    double fpt;
+
+    a = p;
+    fpt = a.frames_per_tick();
+    for( k=0 ; k<192 ; ++k ) {
+	a += 1;
+	TX( 1 == a.bar );
+	TX( 1 == a.beat );
+	TX( k == unsigned(a.tick) );
+	TX( DRIFT( double(k) * fpt, a.frame, k ) );
+    }
+    TX( 191 == a.tick );
+    ++k;
+    a += 1;
+    TX( 1 == a.bar );
+    TX( 2 == a.beat );
+    TX( 0 == a.tick );
+    TX( DRIFT( double(k) * fpt, a.frame, k ) );
+
+    k = 192 * 2 + 30;
+    a = p;
+    a += k;
+    TX( 1 == a.bar );
+    TX( 3 == a.beat );
+    TX( 30 == a.tick );
+    TX( DRIFT( double(k) * fpt, a.frame, 1 ) );
+
+    k = 99 * 5 + 64;
+    a = x;
+    a += k;
+    TX( 350 == a.bar );
+    TX( 3 == a.beat );
+    TX( 82 == a.tick );
+    TX( 115 == a.bbt_offset );
+    TX( DRIFT( double(x.frame) + double(k) * fpt, a.frame, 1 ) );
+
+    a += (-k);
+    TX( 349 == a.bar );
+    TX( 5 == a.beat );
+    TX( 18 == a.tick );
+    TX( 115 == a.bbt_offset );
+    TX( DRIFT( double(x.frame), a.frame, 2 ) );
 }
 
 BOOST_AUTO_TEST_CASE( THIS(011_operator_minus_equals) )
 {
-    TX( false );  // Need to implement test
+    unsigned k;
+    TransportPosition a;
+    double fpt;
+
+    a = p;
+    a -= 51;
+    TX( 1 == a.bar );
+    TX( 1 == a.beat );
+    TX( 0 == a.tick );
+    TX( 0 == a.bbt_offset );
+    TX( 0 == a.frame );
+
+    a = p;
+    a.bar = 2;
+    a.beat = 1;
+    a.tick = 0;
+    a.frame = 2000;
+    fpt = a.frames_per_tick();
+    for( k=192 ; k>0 ; --k ) {
+	a -= 1;
+	TX( 1 == a.bar );
+	TX( 4 == a.beat );
+	TX( (k-1) == unsigned(a.tick) );
+	TX( DRIFT( 2000.0 - (double(k) * fpt), a.frame, (193-k) ) );
+    }
+    TX( 1 == a.tick );
+    a -= 1;
+    TX( 0 == a.tick );
+    a -= 1;
+    k = 193;
+    TX( 1 == a.bar );
+    TX( 3 == a.beat );
+    TX( 191 == a.tick );
+    TX( DRIFT( 2000.0 - (double(k) * fpt), a.frame, k ) );
+
+    k = 99 * 2 + 30;
+    a = x;
+    a -= k;
+    fpt = x.frames_per_tick();
+    TX( 349 == a.bar );
+    TX( 2 == a.beat );
+    TX( 77 == a.tick );
+    TX( 115 == a.bbt_offset );
+    TX( DRIFT( double(x.frame) - (double(k) * fpt), a.frame, 1 ) );
+
+    k = 99 * 5 + 64;
+    a = x;
+    a -= k;
+    TX( 348 == a.bar );
+    TX( 7 == a.beat );
+    TX( 53 == a.tick );
+    TX( 115 == a.bbt_offset );
+    TX( DRIFT( double(x.frame) - double(k) * fpt, a.frame, 1 ) );
+
+    a -= (-k);
+    TX( 349 == a.bar );
+    TX( 5 == a.beat );
+    TX( 18 == a.tick );
+    TX( 115 == a.bbt_offset );
+    TX( DRIFT( double(x.frame), a.frame, 2 ) );
 }
 
 BOOST_AUTO_TEST_SUITE_END()
