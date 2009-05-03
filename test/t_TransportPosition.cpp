@@ -548,7 +548,7 @@ BOOST_AUTO_TEST_CASE( THIS(007_ceil) )
     p.tick = 1;
     p.bbt_offset = 921;
     p.frame = round(fpt);
-    p.floor(TransportPosition::BEAT);
+    p.ceil(TransportPosition::BEAT);
     TX( 1 == p.bar );
     TX( 1 == p.beat );
     TX( 0 == p.tick );
@@ -557,7 +557,7 @@ BOOST_AUTO_TEST_CASE( THIS(007_ceil) )
     p.tick = 1;
     p.bbt_offset = 921;
     p.frame = round(fpt);
-    p.floor(TransportPosition::BAR);
+    p.ceil(TransportPosition::BAR);
     TX( 1 == p.bar );
     TX( 1 == p.beat );
     TX( 0 == p.tick );
@@ -567,7 +567,7 @@ BOOST_AUTO_TEST_CASE( THIS(007_ceil) )
     p.tick = 1;
     p.bbt_offset = 921;
     p.frame = round(fpt/2.0);
-    p.floor(TransportPosition::BAR);
+    p.ceil(TransportPosition::BAR);
     TX( 1 == p.bar );
     TX( 1 == p.beat );
     TX( 0 == p.tick );
@@ -576,16 +576,16 @@ BOOST_AUTO_TEST_CASE( THIS(007_ceil) )
 
     TransportPosition tmp = x;
     double lastframe = tmp.frame;
-    tmp.floor(TransportPosition::TICK);
+    tmp.ceil(TransportPosition::TICK);
     TX( tmp.bar == 349 );
     TX( tmp.beat == 5 );
     TX( tmp.tick == 18 );
     TX( tmp.bbt_offset == 0 );
-    lastframe -= 115.0;
+    lastframe += (x.frames_per_tick() - 115.0);
     TX( DRIFT(lastframe, tmp.frame, 1) );
-    // Repeating when already floored should
+    // Repeating when already ceiled should
     // give the same result.
-    tmp.floor(TransportPosition::TICK);
+    tmp.ceil(TransportPosition::TICK);
     TX( tmp.bar == 349 );
     TX( tmp.beat == 5 );
     TX( tmp.tick == 18 );
@@ -593,34 +593,34 @@ BOOST_AUTO_TEST_CASE( THIS(007_ceil) )
     TX( DRIFT(lastframe, tmp.frame, 1) );
 
     tmp = x;
-    tmp.floor(TransportPosition::BEAT);
+    tmp.ceil(TransportPosition::BEAT);
     TX( tmp.bar == 349 );
-    TX( tmp.beat == 5 );
+    TX( tmp.beat == 6 );
     TX( tmp.tick == 0 );
     TX( tmp.bbt_offset == 0 );
-    lastframe -= 18.0 * tmp.frames_per_tick();
+    lastframe += (99.0 - 18.0) * tmp.frames_per_tick();
     TX( DRIFT(lastframe, tmp.frame, 1) );
-    // Repeating when already floored should
+    // Repeating when already ceiled should
     // give the same result.
-    tmp.floor(TransportPosition::BEAT);
+    tmp.ceil(TransportPosition::BEAT);
     TX( tmp.bar == 349 );
-    TX( tmp.beat == 5 );
+    TX( tmp.beat == 6 );
     TX( tmp.tick == 0 );
     TX( tmp.bbt_offset == 0 );
     TX( DRIFT(lastframe, tmp.frame, 1) );
 
     tmp = x;
-    tmp.floor(TransportPosition::BAR);
-    TX( tmp.bar == 349 );
+    tmp.ceil(TransportPosition::BAR);
+    TX( tmp.bar == 350 );
     TX( tmp.beat == 1 );
     TX( tmp.tick == 0 );
     TX( tmp.bbt_offset == 0 );
-    lastframe -= 4.0 * 99.0 * tmp.frames_per_tick();
+    lastframe += 2.0 * 99.0 * tmp.frames_per_tick();
     TX( DRIFT(lastframe, tmp.frame, 1) );
-    // Repeating when already floored should
+    // Repeating when already ceiled should
     // give the same result.
-    tmp.floor(TransportPosition::BAR);
-    TX( tmp.bar == 349 );
+    tmp.ceil(TransportPosition::BAR);
+    TX( tmp.bar == 350 );
     TX( tmp.beat == 1 );
     TX( tmp.tick == 0 );
     TX( tmp.bbt_offset == 0 );
