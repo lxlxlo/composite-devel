@@ -819,6 +819,7 @@ BOOST_AUTO_TEST_CASE( THIS(100_operator_plus) )
     unsigned k;
     TransportPosition a;
     double fpt;
+    double frame;
 
     a = p + (-51);
     TX( 1 == a.bar );
@@ -829,7 +830,7 @@ BOOST_AUTO_TEST_CASE( THIS(100_operator_plus) )
 
     a = p;
     fpt = a.frames_per_tick();
-    for( k=0 ; k<192 ; ++k ) {
+    for( k=0 ; k<191 ; ++k ) {
 	a = a + 1;
 	TX( 1 == a.bar );
 	TX( 1 == a.beat );
@@ -851,20 +852,23 @@ BOOST_AUTO_TEST_CASE( THIS(100_operator_plus) )
     TX( 30 == a.tick );
     TX( DRIFT( double(k) * fpt, a.frame, 1 ) );
 
+
     k = 99 * 5 + 64;
     a = x + k;
+    frame = x.frame + (99*5 + 64) * x.frames_per_tick();
     TX( 350 == a.bar );
     TX( 3 == a.beat );
     TX( 82 == a.tick );
     TX( 115 == a.bbt_offset );
-    TX( DRIFT( double(x.frame) + double(k) * fpt, a.frame, 1 ) );
+    TX( DRIFT( frame, a.frame, 1 ) );
 
-    a = x + (-k);
+    a = a + (-k);
+    frame = x.frame;
     TX( 349 == a.bar );
     TX( 5 == a.beat );
     TX( 18 == a.tick );
     TX( 115 == a.bbt_offset );
-    TX( DRIFT( double(x.frame), a.frame, 2 ) );
+    TX( DRIFT( frame, a.frame, 2 ) );
 }
 
 BOOST_AUTO_TEST_CASE( THIS(110_operator_minus) )
@@ -884,43 +888,41 @@ BOOST_AUTO_TEST_CASE( THIS(110_operator_minus) )
     a.bar = 2;
     a.beat = 1;
     a.tick = 0;
-    a.frame = 2000;
+    a.frame = 2000000;
     fpt = a.frames_per_tick();
     for( k=192 ; k>0 ; --k ) {
 	a = a - 1;
 	TX( 1 == a.bar );
 	TX( 4 == a.beat );
 	TX( (k-1) == unsigned(a.tick) );
-	TX( DRIFT( 2000.0 - (double(k) * fpt), a.frame, (193-k) ) );
+	TX( DRIFT( 2000000.0 - (double(192-k+1) * fpt), a.frame, (193-k) ) );
     }
-    TX( 1 == a.tick );
-    a = a - 1;
     TX( 0 == a.tick );
     a = a - 1;
     k = 193;
     TX( 1 == a.bar );
     TX( 3 == a.beat );
     TX( 191 == a.tick );
-    TX( DRIFT( 2000.0 - (double(k) * fpt), a.frame, k ) );
+    TX( DRIFT( 2000000.0 - (double(k) * fpt), a.frame, k ) );
 
     k = 99 * 2 + 30;
     a = x - k;
     fpt = x.frames_per_tick();
     TX( 349 == a.bar );
     TX( 2 == a.beat );
-    TX( 77 == a.tick );
+    TX( 87 == a.tick );
     TX( 115 == a.bbt_offset );
     TX( DRIFT( double(x.frame) - (double(k) * fpt), a.frame, 1 ) );
 
     k = 99 * 5 + 64;
     a = x - k;
     TX( 348 == a.bar );
-    TX( 7 == a.beat );
+    TX( 6 == a.beat );
     TX( 53 == a.tick );
     TX( 115 == a.bbt_offset );
     TX( DRIFT( double(x.frame) - double(k) * fpt, a.frame, 1 ) );
 
-    a = x + (-k);
+    a = a - (-k);
     TX( 349 == a.bar );
     TX( 5 == a.beat );
     TX( 18 == a.tick );
