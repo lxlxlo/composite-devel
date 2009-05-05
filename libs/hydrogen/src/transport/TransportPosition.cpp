@@ -117,7 +117,7 @@ TransportPosition::TransportPosition(const TransportPosition& o) :
 void TransportPosition::round(TransportPosition::snap_type s)
 {
     double d_tick = double(tick) + double(bbt_offset)/double(frames_per_tick());
-    double d_beat = double(beat) + d_tick / double(ticks_per_beat);
+    double d_beat = double(beat - 1) + d_tick / double(ticks_per_beat);
     switch(s) {
     case BAR:
 	if( d_beat >= double(beats_per_bar)/2.0) {
@@ -150,9 +150,10 @@ void TransportPosition::ceil(TransportPosition::snap_type s)
     switch(s) {
     case BAR:
 	if((beat == 1) && (tick == 0) && (bbt_offset == 0)) break;
-	df = ((1 + beats_per_bar - beat) * ticks_per_beat
-	      + (ticks_per_beat - tick)) * fpt
-	    + (fpt - bbt_offset);
+	df = (beats_per_bar * ticks_per_beat) * fpt; // Frames in full measure.
+	df -= ((beat-1) * ticks_per_beat
+	       + tick) * fpt
+	    + bbt_offset;
 	frame += ::round(df + dither());
 	++bar;
 	beat = 1;
@@ -161,8 +162,8 @@ void TransportPosition::ceil(TransportPosition::snap_type s)
 	break;
     case BEAT:
 	if((tick == 0) && (bbt_offset == 0)) break;
-	df = (ticks_per_beat - tick) * fpt
-	    + (fpt - bbt_offset);
+	df = ticks_per_beat * fpt; // Frames in full beat
+	df -= tick * fpt + bbt_offset;
 	frame += ::round(df + dither());
 	++beat;
 	tick = 0;

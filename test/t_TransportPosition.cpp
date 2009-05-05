@@ -148,7 +148,7 @@ namespace THIS_NAMESPACE
 	    max_drift = 4.3 * pow(double(Nops), .435);
 	}
 
-	rv = (fabs(ActDrift) < max_drift);
+	rv = (fabs(ActDrift) <= max_drift);
 
 	if( ! rv ) {
 	    BOOST_MESSAGE("In " << __FILE__ << "(" << Line << ") "
@@ -596,12 +596,13 @@ BOOST_AUTO_TEST_CASE( THIS(007_ceil) )
     TX( DRIFT(lastframe, tmp.frame, 1) );
 
     tmp = x;
+    lastframe = tmp.frame;
     tmp.ceil(TransportPosition::BEAT);
     TX( tmp.bar == 349 );
     TX( tmp.beat == 6 );
     TX( tmp.tick == 0 );
     TX( tmp.bbt_offset == 0 );
-    lastframe += (99.0 - 18.0) * tmp.frames_per_tick();
+    lastframe += (99.0 - 18.0) * tmp.frames_per_tick() - 115.0;
     TX( DRIFT(lastframe, tmp.frame, 1) );
     // Repeating when already ceiled should
     // give the same result.
@@ -614,8 +615,8 @@ BOOST_AUTO_TEST_CASE( THIS(007_ceil) )
 
     tmp = x;
     lastframe = tmp.frame;
-    lastframe += ((3.0 * 99.0) + (99.0 - 18.0)) * tmp.frames_per_tick()
-	+ (tmp.frames_per_tick() - tmp.bbt_offset);
+    lastframe += ((2.0 * 99.0) + (99.0 - 18.0)) * tmp.frames_per_tick()
+	- tmp.bbt_offset;
     tmp.ceil(TransportPosition::BAR);
     TX( tmp.bar == 350 );
     TX( tmp.beat == 1 );
@@ -666,15 +667,16 @@ BOOST_AUTO_TEST_CASE( THIS(008_round) )
     TX( 0 == a.tick );
     TX( 0 == a.bbt_offset );
     a.bbt_offset = a.frames_per_tick() * 3.0 / 4.0;
+    frame = a.frame + round(a.frames_per_tick() / 4.0);
     a.round(TransportPosition::TICK);
-    TX( DRIFT( a.frames_per_tick() - double(a.bbt_offset), a.frame, 1 ) );
+    TX( DRIFT( frame, a.frame, 1 ) );
     TX( 1 == a.bar );
     TX( 1 == a.beat );
     TX( 1 == a.tick );
     TX( 0 == a.bbt_offset );
     // Re-rounding should not change anything
     a.round(TransportPosition::TICK);
-    TX( DRIFT( a.frames_per_tick() - double(a.bbt_offset), a.frame, 1 ) );
+    TX( DRIFT( frame, a.frame, 1 ) );
     TX( 1 == a.bar );
     TX( 1 == a.beat );
     TX( 1 == a.tick );
