@@ -47,13 +47,17 @@ void TransportPosition::normalize()
     double fpt = frames_per_tick();
     /* bbt_offset is unsigned.  If it's ever signed, then....
     while(bbt_offset < 0) {
-	++tick;
+	--tick;
 	bbt_offset += ::round(fpt + dither());
     }
     */
-    while( bbt_offset > fpt ) {
-	--tick;
-	bbt_offset -= ::round(fpt + dither());
+    if( bbt_offset > fpt ) {
+	double n, f;
+	f = fpt * modf(double(bbt_offset)/fpt, &n);
+	f += dither();
+	tick += int(n);
+	frame += bbt_offset - f;	
+	bbt_offset = f;
     }
     while(tick < 0) {
 	--beat;
@@ -64,11 +68,19 @@ void TransportPosition::normalize()
 	tick -= ticks_per_beat;
     }
     while(beat < 1) {
+	uint32_t ticks;
 	--bar;
+	ticks = beats_per_bar * ticks_per_beat;
+	if( bar_start_tick > ticks ) {
+	    bar_start_tick -= ticks;
+	} else {
+	    bar_start_tick = 0;
+	}
 	beat += beats_per_bar;
     }
     while(beat > beats_per_bar) {
 	++bar;
+	bar_start_tick += beats_per_bar * ticks_per_beat;
 	beat -= beats_per_bar;
     }
     if( bar < 1 ) {
@@ -76,6 +88,7 @@ void TransportPosition::normalize()
 	beat = 1;
 	tick = 0;
 	bbt_offset = 0;
+	bar_start_tick = 0;
 	frame = 0;
     }    
 }
@@ -159,6 +172,7 @@ void TransportPosition::ceil(TransportPosition::snap_type s)
 	beat = 1;
 	tick = 0;
 	bbt_offset = 0;
+	bar_start_tick += beats_per_bar * ticks_per_beat;
 	break;
     case BEAT:
 	if((tick == 0) && (bbt_offset == 0)) break;
@@ -185,6 +199,7 @@ void TransportPosition::floor(TransportPosition::snap_type s)
 {
     double df;
     double fpt = frames_per_tick();
+    double ticks;
 
     normalize();  // Code is assuming that we are normalized.
     switch(s) {
@@ -201,6 +216,12 @@ void TransportPosition::floor(TransportPosition::snap_type s)
 	beat = 1;
 	tick = 0;
 	bbt_offset = 0;
+	ticks = beats_per_bar * ticks_per_beat;
+	if( bar_start_tick > ticks ) {
+	    bar_start_tick -= ticks;
+	} else {
+	    bar_start_tick = 0;
+	}
 	break;
     case BEAT:
 	df = tick * fpt

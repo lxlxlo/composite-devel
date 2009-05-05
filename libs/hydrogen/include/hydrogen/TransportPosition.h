@@ -43,12 +43,15 @@ namespace H2Core
                                   /// other fields (esp. B:b:t).
         uint32_t frame_rate;      /// The audio sample rate (frames per second)
         int32_t bar;              /// The current measure (1, 2, 3...)
+	                          ///   see also bar_start_tick
         int32_t beat;             /// The current beat in measure (1, 2, 3...)
         int32_t tick;             /// The current tick in beat (0, 1, 2...)
         uint32_t bbt_offset;      /// bar, beat, and tick refer to bbt_offset
                                   /// frames BEFORE the current process cycle.
         uint32_t bar_start_tick;  /// Absolute number of ticks elapsed in song
                                   /// at the start of this bar.
+	                          /// WARNING:  If you manually adjust 'bar',
+	                          /// you must also manually adjust 'bar_start_tick'.
         uint8_t beats_per_bar;    /// The top number in the time signature
         uint8_t beat_type;        /// The bottom number in the time signature
         uint32_t ticks_per_beat;  /// Number of ticks in a single beat
@@ -92,6 +95,14 @@ namespace H2Core
 	 * For example, if you are in 4/4.48 time and the current
 	 * B:b:t is 5:6.-5, this function will normalize the tick
 	 * (5:5.0) and then normalize the beat, giving 6:1.0.
+	 *
+	 * Important notes:
+	 *
+	 *   o Will *NOT* adjust frame, unless bbt_offset >= frames_per_tick().
+	 *
+	 *   o If you manually adjust 'bar,' you *MUST* manually
+	 *     adjust bar_start_tick.  There's no way for normalize()
+	 *     to know that you have changed the bar number.
 	 */
 	void normalize();
 

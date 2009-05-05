@@ -62,7 +62,7 @@ namespace THIS_NAMESPACE
 	    x.beat_type = 8;
 	    x.ticks_per_beat = 99;
 	    x.beats_per_minute = 543.2;
-	    // MEMO: x.frames_per_tick() == 214.35600481992236
+	    // MEMO: x.frames_per_tick() == 218.81889588075154
 	}
 
 	~Fixture() {}
@@ -260,7 +260,97 @@ BOOST_AUTO_TEST_CASE( THIS(003_tick_in_bar) )
 
 BOOST_AUTO_TEST_CASE( THIS(003b_normalize) )
 {
-    TX(false);  // Need to add tests.
+    TransportPosition a;
+    double frame;
+
+    // NOTE: normalize() only changes the frame position if it adjusts
+    // bbt_offset.
+
+    a = p;
+    a.tick += 192 * 6 + 101;
+    a.normalize();
+    TX( 2 == a.bar );
+    TX( 3 == a.beat );
+    TX( 101 == a.tick );
+    TX( 192 * 4 == a.bar_start_tick );
+    TX( DRIFT(0, a.frame, 1) );
+
+    a.beat -= 4;
+    a.normalize();
+    TX( 1 == a.bar );
+    TX( 3 == a.beat );
+    TX( 101 == a.tick );
+    TX( 0 == a.bar_start_tick );
+    TX( DRIFT(0, a.frame, 2) );
+
+    a.bar += 5;
+    a.normalize();
+    TX( 6 == a.bar );
+    TX( 3 == a.beat );
+    TX( 101 == a.tick );
+    TX( 0 == a.bar_start_tick ); // If you manually change bar, you also have
+                                 // to manually adjust bar_start_tick
+    TX( DRIFT(0, a.frame, 3) );
+
+    a = p;
+    frame = a.frame;
+    a.bbt_offset = 6 * 192 * 125 + 50;
+    frame += a.bbt_offset - 50;
+    a.normalize();
+    TX( 2 == a.bar );
+    TX( 3 == a.beat );
+    TX( 0 == a.tick );
+    TX( DRIFT(50.0, a.bbt_offset, 1) );
+    TX( 192 * 4 == a.bar_start_tick );
+    TX( DRIFT(frame, a.frame, 1) );
+
+    a = x;
+    frame = a.frame;
+    a.tick -= 99 * 12 + 65;
+    a.normalize();
+    TX( 347 == a.bar );
+    TX( 6 == a.beat );
+    TX( 52 == a.tick );
+    TX( 115 == a.bbt_offset );
+    TX( 0 == a.bar_start_tick );
+    TX( DRIFT(frame, a.frame, 1) );
+
+    a = x;
+    frame = a.frame;
+    a.beat += 13;
+    a.normalize();
+    TX( 351 == a.bar );
+    TX( 4 == a.beat );
+    TX( 18 == a.tick );
+    TX( 115 == a.bbt_offset );
+    TX( 349 + 2 * 7 * 99 == a.bar_start_tick );
+    TX( DRIFT(frame, a.frame, 1) );
+
+    a = x;
+    a.bar_start_tick = 70000;
+    a.bar -= 11;
+    a.normalize();  // Does not change bar start tick
+    TX( 338 == a.bar );
+    TX( 5 == a.beat );
+    TX( 18 == a.tick );
+    TX( 115 == a.bbt_offset );
+    TX( 70000 == a.bar_start_tick );
+
+    a = x;                // 349:5.18.115 (70000)  349.59816096502567
+    a.bar_start_tick = 70000;
+    frame = a.frame;
+    a.bar += 3;           // 352:5.18.115 (70000)  352.59816096502567
+    a.beat -= 29;         // 348:4.18.115 (67228)  348.45530382216856
+    a.tick += 999;        // 349:7.27.115 (67921)  349.89686226372697
+    a.bbt_offset += 3114; // 349:7.41.165 (67921)  349.91739754005869
+    frame += 3114.0 - 165.0 + 115.0;
+    a.normalize();
+    TX( 349 == a.bar );
+    TX( 7 == a.beat );
+    TX( 41 == a.tick );
+    TX( 165 == a.bbt_offset );
+    TX( 67921 == a.bar_start_tick );
+    TX( DRIFT(frame, a.frame, 1) );    
 }
 
 BOOST_AUTO_TEST_CASE( THIS(004_increment) )
@@ -436,8 +526,8 @@ BOOST_AUTO_TEST_CASE( THIS(006_floor) )
     p.floor(TransportPosition::TICK);
     TX( 1 == p.bar );
     TX( 1 == p.beat );
-    TX( 0 == p.tick );
-    TX( 0 == p.frame );
+    TX( 8 == p.tick );
+    TX( DRIFT(954.0, p.frame, 1) );
     TX( 0 == p.bbt_offset );
     p.tick = 1;
     p.bbt_offset = 921;
@@ -558,29 +648,33 @@ BOOST_AUTO_TEST_CASE( THIS(007_ceil) )
     p.frame = round(fpt);
     p.ceil(TransportPosition::BEAT);
     TX( 1 == p.bar );
-    TX( 1 == p.beat );
+    TX( 2 == p.beat );
     TX( 0 == p.tick );
-    TX( 0 == p.frame );
+    TX( DRIFT(23953.0, p.frame, 2) ); // 2 internal ops.
     TX( 0 == p.bbt_offset );
     p.tick = 1;
     p.bbt_offset = 921;
     p.frame = round(fpt);
     p.ceil(TransportPosition::BAR);
-    TX( 1 == p.bar );
+    TX( 2 == p.bar );
     TX( 1 == p.beat );
     TX( 0 == p.tick );
-    TX( 0 == p.frame );
+    TX( DRIFT(71955.0, p.frame, 2) ); // 2 internal ops
     TX( 0 == p.bbt_offset );
+    TX( 192 * 4 == p.bar_start_tick );
 
     p.tick = 1;
     p.bbt_offset = 921;
     p.frame = round(fpt/2.0);
     p.ceil(TransportPosition::BAR);
-    TX( 1 == p.bar );
+    TX( 3 == p.bar );
     TX( 1 == p.beat );
     TX( 0 == p.tick );
-    TX( 0 == p.frame );
+    TX( DRIFT(95891.0, p.frame, 2) );
     TX( 0 == p.bbt_offset );
+    TX( 192 * 4 * 2 == p.bar_start_tick );
+
+    // TODO:  ADD MORE TESTS FOR BAR START TICK
 
     TransportPosition tmp = x;
     double lastframe = tmp.frame;
