@@ -21,17 +21,12 @@
  */
 
 #include <hydrogen/TransportPosition.h>
-#include <boost/test/unit_test.hpp>
-
 #include <cmath>
 
 #define THIS_NAMESPACE t_TransportPosition
-#define THIS(x) t_TransportPosition##_##x
+#include "test_macros.h"
 
 using namespace H2Core;
-
-// "BOOST_CHECK( foo )" is too much typing....
-#define TX BOOST_CHECK
 
 namespace THIS_NAMESPACE
 {
@@ -167,98 +162,98 @@ namespace THIS_NAMESPACE
 
 using namespace THIS_NAMESPACE;
 
-BOOST_FIXTURE_TEST_SUITE( THIS_NAMESPACE, Fixture );
+TEST_BEGIN( Fixture );
 
-BOOST_AUTO_TEST_CASE( THIS(000_defaults) )
+TEST_CASE( 000_defaults )
 {
     // Test the defaults
-    TX( p.state == TransportPosition::STOPPED );
-    TX( p.new_position == true );
-    TX( p.frame == 0 );
-    TX( p.bar == 1 );
-    TX( p.beat == 1 );
-    TX( p.tick == 0 );
-    TX( p.bbt_offset == 0 );
-    TX( p.bar_start_tick == 0 );
+    CK( p.state == TransportPosition::STOPPED );
+    CK( p.new_position == true );
+    CK( p.frame == 0 );
+    CK( p.bar == 1 );
+    CK( p.beat == 1 );
+    CK( p.tick == 0 );
+    CK( p.bbt_offset == 0 );
+    CK( p.bar_start_tick == 0 );
 }
 
-BOOST_AUTO_TEST_CASE( THIS(010_copy_constructor) )
+TEST_CASE( 010_copy_constructor )
 {
     TransportPosition y, z;
 
-    TX( y.state == TransportPosition::STOPPED );
-    TX( y.new_position == true );
-    TX( y.frame == 0 );
-    TX( y.bar == 1 );
-    TX( y.beat == 1 );
-    TX( y.tick == 0 );
-    TX( y.bbt_offset == 0 );
-    TX( y.bar_start_tick == 0 );
+    CK( y.state == TransportPosition::STOPPED );
+    CK( y.new_position == true );
+    CK( y.frame == 0 );
+    CK( y.bar == 1 );
+    CK( y.beat == 1 );
+    CK( y.tick == 0 );
+    CK( y.bbt_offset == 0 );
+    CK( y.bar_start_tick == 0 );
 
-    TX( z.state == TransportPosition::STOPPED );
-    TX( z.new_position == true );
-    TX( z.frame == 0 );
-    TX( z.bar == 1 );
-    TX( z.beat == 1 );
-    TX( z.tick == 0 );
-    TX( z.bbt_offset == 0 );
-    TX( z.bar_start_tick == 0 );
+    CK( z.state == TransportPosition::STOPPED );
+    CK( z.new_position == true );
+    CK( z.frame == 0 );
+    CK( z.bar == 1 );
+    CK( z.beat == 1 );
+    CK( z.tick == 0 );
+    CK( z.bbt_offset == 0 );
+    CK( z.bar_start_tick == 0 );
 
     p.frame = 12345;
     p.bar = 21;
     p.beat = 39;
     p.tick = -1;
     y = p;
-    TX( 12345 == y.frame );
-    TX( 21 == y.bar );
-    TX( -1 == y.tick );
+    CK( 12345 == y.frame );
+    CK( 21 == y.bar );
+    CK( -1 == y.tick );
     p.tick = 5;
     y.tick = 123;
-    TX( 5 == p.tick );
-    TX( 123 == y.tick );
+    CK( 5 == p.tick );
+    CK( 123 == y.tick );
 
     z = x;
-    TX( TransportPosition::ROLLING == z.state );
-    TX( true == z.new_position );
-    TX( 8273901 == z.frame );
-    TX( 196123 == z.frame_rate );
-    TX( 349 == z.bar );
-    TX( 5 == z.beat );
-    TX( 18 == z.tick );
-    TX( 115 == z.bbt_offset );
-    TX( 349 == z.bar_start_tick );
-    TX( 7 == z.beats_per_bar );
-    TX( 8 == z.beat_type );
-    TX( 99 == z.ticks_per_beat );
-    TX( 543.2 == z.beats_per_minute );
+    CK( TransportPosition::ROLLING == z.state );
+    CK( true == z.new_position );
+    CK( 8273901 == z.frame );
+    CK( 196123 == z.frame_rate );
+    CK( 349 == z.bar );
+    CK( 5 == z.beat );
+    CK( 18 == z.tick );
+    CK( 115 == z.bbt_offset );
+    CK( 349 == z.bar_start_tick );
+    CK( 7 == z.beats_per_bar );
+    CK( 8 == z.beat_type );
+    CK( 99 == z.ticks_per_beat );
+    CK( 543.2 == z.beats_per_minute );
 }
 
-BOOST_AUTO_TEST_CASE( THIS(020_frames_per_tick) )
+TEST_CASE( 020_frames_per_tick )
 {
-    TX( p.frames_per_tick() == 125.0 );
+    CK( p.frames_per_tick() == 125.0 );
 
     p.frame_rate = 123456;
     p.ticks_per_beat = 48;
     p.beats_per_minute = 33.12;
-    TX( round(p.frames_per_tick()) == 4659.0 );
+    CK( round(p.frames_per_tick()) == 4659.0 );
 
-    TX( round(x.frames_per_tick()*100.0) == 21882.0 );
+    CK( round(x.frames_per_tick()*100.0) == 21882.0 );
 }
 
-BOOST_AUTO_TEST_CASE( THIS(030_tick_in_bar) )
+TEST_CASE( 030_tick_in_bar )
 {
-    TX(p.tick_in_bar() == 0);
+    CK(p.tick_in_bar() == 0);
     p.tick = 191;
-    TX(p.tick_in_bar() == 191);
+    CK(p.tick_in_bar() == 191);
     p.beat = 2;
-    TX(p.tick_in_bar() == 383);
+    CK(p.tick_in_bar() == 383);
     p.bar = 9;
-    TX(p.tick_in_bar() == 383);
+    CK(p.tick_in_bar() == 383);
 
-    TX(x.tick_in_bar() == 414);
+    CK(x.tick_in_bar() == 414);
 }
 
-BOOST_AUTO_TEST_CASE( THIS(040_normalize) )
+TEST_CASE( 040_normalize )
 {
     TransportPosition a;
     double frame;
@@ -269,72 +264,72 @@ BOOST_AUTO_TEST_CASE( THIS(040_normalize) )
     a = p;
     a.tick += 192 * 6 + 101;
     a.normalize();
-    TX( 2 == a.bar );
-    TX( 3 == a.beat );
-    TX( 101 == a.tick );
-    TX( 192 * 4 == a.bar_start_tick );
-    TX( DRIFT(0, a.frame, 1) );
+    CK( 2 == a.bar );
+    CK( 3 == a.beat );
+    CK( 101 == a.tick );
+    CK( 192 * 4 == a.bar_start_tick );
+    CK( DRIFT(0, a.frame, 1) );
 
     a.beat -= 4;
     a.normalize();
-    TX( 1 == a.bar );
-    TX( 3 == a.beat );
-    TX( 101 == a.tick );
-    TX( 0 == a.bar_start_tick );
-    TX( DRIFT(0, a.frame, 2) );
+    CK( 1 == a.bar );
+    CK( 3 == a.beat );
+    CK( 101 == a.tick );
+    CK( 0 == a.bar_start_tick );
+    CK( DRIFT(0, a.frame, 2) );
 
     a.bar += 5;
     a.normalize();
-    TX( 6 == a.bar );
-    TX( 3 == a.beat );
-    TX( 101 == a.tick );
-    TX( 0 == a.bar_start_tick ); // If you manually change bar, you also have
+    CK( 6 == a.bar );
+    CK( 3 == a.beat );
+    CK( 101 == a.tick );
+    CK( 0 == a.bar_start_tick ); // If you manually change bar, you also have
                                  // to manually adjust bar_start_tick
-    TX( DRIFT(0, a.frame, 3) );
+    CK( DRIFT(0, a.frame, 3) );
 
     a = p;
     frame = a.frame;
     a.bbt_offset = 6 * 192 * 125 + 50;
     frame += a.bbt_offset - 50;
     a.normalize();
-    TX( 2 == a.bar );
-    TX( 3 == a.beat );
-    TX( 0 == a.tick );
-    TX( DRIFT(50.0, a.bbt_offset, 1) );
-    TX( 192 * 4 == a.bar_start_tick );
-    TX( DRIFT(frame, a.frame, 1) );
+    CK( 2 == a.bar );
+    CK( 3 == a.beat );
+    CK( 0 == a.tick );
+    CK( DRIFT(50.0, a.bbt_offset, 1) );
+    CK( 192 * 4 == a.bar_start_tick );
+    CK( DRIFT(frame, a.frame, 1) );
 
     a = x;
     frame = a.frame;
     a.tick -= 99 * 12 + 65;
     a.normalize();
-    TX( 347 == a.bar );
-    TX( 6 == a.beat );
-    TX( 52 == a.tick );
-    TX( 115 == a.bbt_offset );
-    TX( 0 == a.bar_start_tick );
-    TX( DRIFT(frame, a.frame, 1) );
+    CK( 347 == a.bar );
+    CK( 6 == a.beat );
+    CK( 52 == a.tick );
+    CK( 115 == a.bbt_offset );
+    CK( 0 == a.bar_start_tick );
+    CK( DRIFT(frame, a.frame, 1) );
 
     a = x;
     frame = a.frame;
     a.beat += 13;
     a.normalize();
-    TX( 351 == a.bar );
-    TX( 4 == a.beat );
-    TX( 18 == a.tick );
-    TX( 115 == a.bbt_offset );
-    TX( 349 + 2 * 7 * 99 == a.bar_start_tick );
-    TX( DRIFT(frame, a.frame, 1) );
+    CK( 351 == a.bar );
+    CK( 4 == a.beat );
+    CK( 18 == a.tick );
+    CK( 115 == a.bbt_offset );
+    CK( 349 + 2 * 7 * 99 == a.bar_start_tick );
+    CK( DRIFT(frame, a.frame, 1) );
 
     a = x;
     a.bar_start_tick = 70000;
     a.bar -= 11;
     a.normalize();  // Does not change bar start tick
-    TX( 338 == a.bar );
-    TX( 5 == a.beat );
-    TX( 18 == a.tick );
-    TX( 115 == a.bbt_offset );
-    TX( 70000 == a.bar_start_tick );
+    CK( 338 == a.bar );
+    CK( 5 == a.beat );
+    CK( 18 == a.tick );
+    CK( 115 == a.bbt_offset );
+    CK( 70000 == a.bar_start_tick );
 
     a = x;                // 349:5.18.115 (70000)  349.59816096502567
     a.bar_start_tick = 70000;
@@ -345,51 +340,51 @@ BOOST_AUTO_TEST_CASE( THIS(040_normalize) )
     a.bbt_offset += 3114; // 349:7.41.165 (67921)  349.91739754005869
     frame += 3114.0 - 165.0 + 115.0;
     a.normalize();
-    TX( 349 == a.bar );
-    TX( 7 == a.beat );
-    TX( 41 == a.tick );
-    TX( 165 == a.bbt_offset );
-    TX( 67921 == a.bar_start_tick );
-    TX( DRIFT(frame, a.frame, 1) );    
+    CK( 349 == a.bar );
+    CK( 7 == a.beat );
+    CK( 41 == a.tick );
+    CK( 165 == a.bbt_offset );
+    CK( 67921 == a.bar_start_tick );
+    CK( DRIFT(frame, a.frame, 1) );    
 }
 
-BOOST_AUTO_TEST_CASE( THIS(050_increment) )
+TEST_CASE( 050_increment )
 {
     double frames_per_tick = double(p.frame_rate) * (60.0/p.beats_per_minute) / p.ticks_per_beat;
     int k;
 
-    TX( p.frame == 0 );
+    CK( p.frame == 0 );
     double frame = 0.0;
     for( k=1 ; (unsigned)k<p.ticks_per_beat ; ++k ) {
 	++p;
 	frame += frames_per_tick;
-	TX( 1 == p.bar );
-	TX( 1 == p.beat );	    
-	TX( k == p.tick );
-	TX( DRIFT(frame, p.frame, 1) );
+	CK( 1 == p.bar );
+	CK( 1 == p.beat );	    
+	CK( k == p.tick );
+	CK( DRIFT(frame, p.frame, 1) );
     }
 
-    TX( p.tick == 191 );
+    CK( p.tick == 191 );
     ++p;
     frame += frames_per_tick;
-    TX( 1 == p.bar );
-    TX( 2 == p.beat );
-    TX( 0 == p.tick );
-    TX( DRIFT(frame, p.frame, 2) );
+    CK( 1 == p.bar );
+    CK( 2 == p.beat );
+    CK( 0 == p.tick );
+    CK( DRIFT(frame, p.frame, 2) );
     ++p;
     frame += frames_per_tick;
-    TX( 1 == p.bar );
-    TX( 2 == p.beat );
-    TX( 1 == p.tick );
-    TX( DRIFT(frame, p.frame, 3) );
+    CK( 1 == p.bar );
+    CK( 2 == p.beat );
+    CK( 1 == p.tick );
+    CK( DRIFT(frame, p.frame, 3) );
     p.bar = 99;
     p.beat = 3;
     ++p;
     frame += frames_per_tick;
-    TX( 99 == p.bar );
-    TX( 3 == p.beat );
-    TX( 2 == p.tick );
-    TX( DRIFT(frame, p.frame, 4) );
+    CK( 99 == p.bar );
+    CK( 3 == p.beat );
+    CK( 2 == p.tick );
+    CK( DRIFT(frame, p.frame, 4) );
 
     // Tests with 'x'
     frame = x.frame;
@@ -397,59 +392,59 @@ BOOST_AUTO_TEST_CASE( THIS(050_increment) )
     for( k=x.tick+1 ; (unsigned)k < x.ticks_per_beat ; ++k ) {
 	++x;
 	frame += frames_per_tick;
-	TX( 349 == x.bar );
-	TX( 5 == x.beat );
-	TX( k == x.tick );
-	TX( 115 == x.bbt_offset );
-	TX( DRIFT( frame, x.frame, k ) );
+	CK( 349 == x.bar );
+	CK( 5 == x.beat );
+	CK( k == x.tick );
+	CK( 115 == x.bbt_offset );
+	CK( DRIFT( frame, x.frame, k ) );
     }
-    TX( x.tick == 98 );
+    CK( x.tick == 98 );
     ++x;
     frame += frames_per_tick;
-    TX( 349 == x.bar );
-    TX( 6 == x.beat );
-    TX( 0 == x.tick );
-    TX( 115 == x.bbt_offset );
-    TX( DRIFT( frame, x.frame, k+1 ) );
+    CK( 349 == x.bar );
+    CK( 6 == x.beat );
+    CK( 0 == x.tick );
+    CK( 115 == x.bbt_offset );
+    CK( DRIFT( frame, x.frame, k+1 ) );
 
     x.beat = 7;
     x.tick = 98;
     ++x;
     frame += frames_per_tick;
-    TX( 350 == x.bar );
-    TX( 1 == x.beat );
-    TX( 0 == x.tick );
-    TX( 115 == x.bbt_offset );
-    TX( DRIFT( frame, x.frame, k+2 ) );
+    CK( 350 == x.bar );
+    CK( 1 == x.beat );
+    CK( 0 == x.tick );
+    CK( 115 == x.bbt_offset );
+    CK( DRIFT( frame, x.frame, k+2 ) );
     BOOST_MESSAGE( "++ drift = " << (frame - x.frame) );
 }
 
-BOOST_AUTO_TEST_CASE( THIS(060_decrement) )
+TEST_CASE( 060_decrement )
 {
     --p;
-    TX( 0 == p.frame );
-    TX( 1 == p.bar );
-    TX( 1 == p.beat );
-    TX( 0 == p.tick );
-    TX( 0 == p.bbt_offset );
-    TX( 0 == p.bar_start_tick );
+    CK( 0 == p.frame );
+    CK( 1 == p.bar );
+    CK( 1 == p.beat );
+    CK( 0 == p.tick );
+    CK( 0 == p.bbt_offset );
+    CK( 0 == p.bar_start_tick );
     ++p;
     --p;
-    TX( 0 == p.frame );
-    TX( 1 == p.bar );
-    TX( 1 == p.beat );
-    TX( 0 == p.tick );
-    TX( 0 == p.bbt_offset );
-    TX( 0 == p.bar_start_tick );
+    CK( 0 == p.frame );
+    CK( 1 == p.bar );
+    CK( 1 == p.beat );
+    CK( 0 == p.tick );
+    CK( 0 == p.bbt_offset );
+    CK( 0 == p.bar_start_tick );
 
     p.bar = 5;
     p.beat = 2;
     p.tick = 1;
     --p; --p;
-    TX( 0 == p.frame );
-    TX( 5 == p.bar );
-    TX( 1 == p.beat );
-    TX( 191 == p.tick );
+    CK( 0 == p.frame );
+    CK( 5 == p.bar );
+    CK( 1 == p.beat );
+    CK( 191 == p.tick );
 
     double frame = 0.0;
     double fpt = p.frames_per_tick();
@@ -460,11 +455,11 @@ BOOST_AUTO_TEST_CASE( THIS(060_decrement) )
     frame = p.frame;
     --p; --p;
     frame -= 2.0 * fpt;
-    TX( frame >= 0.0 );
-    TX( DRIFT(frame, p.frame, 2) );
-    TX( 5 == p.bar );
-    TX( 1 == p.beat );
-    TX( 191 == p.tick );
+    CK( frame >= 0.0 );
+    CK( DRIFT(frame, p.frame, 2) );
+    CK( 5 == p.bar );
+    CK( 1 == p.beat );
+    CK( 191 == p.tick );
 
     frame = 100000.0;
     p.frame = frame;
@@ -478,158 +473,158 @@ BOOST_AUTO_TEST_CASE( THIS(060_decrement) )
     }
     double drift = fabs( frame - double(p.frame) );
     BOOST_MESSAGE( "-- drift @ 768 = " << drift );
-    TX( fabs(drift) < 10.0 );
-    TX( p.bar == 99 );
-    TX( p.beat == 1 );
-    TX( p.tick == 0 );
+    CK( fabs(drift) < 10.0 );
+    CK( p.bar == 99 );
+    CK( p.beat == 1 );
+    CK( p.tick == 0 );
 
     // Using the 'x' object
     fpt = x.frames_per_tick();
     frame = x.frame;
     --x;
     frame -= fpt;
-    TX( fabs(frame - x.frame) <= 1.0 );
+    CK( fabs(frame - x.frame) <= 1.0 );
 
     for( k=2374 ; k > 0 ; --k ) --x;
     frame -= fpt * 2374.0;
     drift = frame - double(x.frame);
     BOOST_MESSAGE( "-- drift @ 2375 = " << drift );
-    TX( fabs(drift) < 50.0 );
-    TX( 346 == x.bar );
-    TX( 2 == x.beat );
-    TX( 19 == x.tick );
+    CK( fabs(drift) < 50.0 );
+    CK( 346 == x.bar );
+    CK( 2 == x.beat );
+    CK( 19 == x.tick );
 	
 }
 
-BOOST_AUTO_TEST_CASE( THIS(070_floor) )
+TEST_CASE( 070_floor )
 {
     p.floor(TransportPosition::TICK);
-    TX( 1 == p.bar );
-    TX( 1 == p.beat );
-    TX( 0 == p.tick );
-    TX( 0 == p.frame );
+    CK( 1 == p.bar );
+    CK( 1 == p.beat );
+    CK( 0 == p.tick );
+    CK( 0 == p.frame );
     p.floor(TransportPosition::BEAT);
-    TX( 1 == p.bar );
-    TX( 1 == p.beat );
-    TX( 0 == p.tick );
-    TX( 0 == p.frame );
+    CK( 1 == p.bar );
+    CK( 1 == p.beat );
+    CK( 0 == p.tick );
+    CK( 0 == p.frame );
     p.floor(TransportPosition::BAR);
-    TX( 1 == p.bar );
-    TX( 1 == p.beat );
-    TX( 0 == p.tick );
-    TX( 0 == p.frame );
+    CK( 1 == p.bar );
+    CK( 1 == p.beat );
+    CK( 0 == p.tick );
+    CK( 0 == p.frame );
 
     double fpt = p.frames_per_tick();
     p.tick = 1;
     p.bbt_offset = 921;
     p.frame = round(fpt);
     p.floor(TransportPosition::TICK);
-    TX( 1 == p.bar );
-    TX( 1 == p.beat );
-    TX( 8 == p.tick );
-    TX( DRIFT(954.0, p.frame, 1) );
-    TX( 0 == p.bbt_offset );
+    CK( 1 == p.bar );
+    CK( 1 == p.beat );
+    CK( 8 == p.tick );
+    CK( DRIFT(954.0, p.frame, 1) );
+    CK( 0 == p.bbt_offset );
     p.tick = 1;
     p.bbt_offset = 921;
     p.frame = round(fpt);
     p.floor(TransportPosition::BEAT);
-    TX( 1 == p.bar );
-    TX( 1 == p.beat );
-    TX( 0 == p.tick );
-    TX( 0 == p.frame );
-    TX( 0 == p.bbt_offset );
+    CK( 1 == p.bar );
+    CK( 1 == p.beat );
+    CK( 0 == p.tick );
+    CK( 0 == p.frame );
+    CK( 0 == p.bbt_offset );
     p.tick = 1;
     p.bbt_offset = 921;
     p.frame = round(fpt);
     p.floor(TransportPosition::BAR);
-    TX( 1 == p.bar );
-    TX( 1 == p.beat );
-    TX( 0 == p.tick );
-    TX( 0 == p.frame );
-    TX( 0 == p.bbt_offset );
+    CK( 1 == p.bar );
+    CK( 1 == p.beat );
+    CK( 0 == p.tick );
+    CK( 0 == p.frame );
+    CK( 0 == p.bbt_offset );
 
     p.tick = 1;
     p.bbt_offset = 921;
     p.frame = round(fpt/2.0);
     p.floor(TransportPosition::BAR);
-    TX( 1 == p.bar );
-    TX( 1 == p.beat );
-    TX( 0 == p.tick );
-    TX( 0 == p.frame );
-    TX( 0 == p.bbt_offset );
+    CK( 1 == p.bar );
+    CK( 1 == p.beat );
+    CK( 0 == p.tick );
+    CK( 0 == p.frame );
+    CK( 0 == p.bbt_offset );
 
     TransportPosition tmp = x;
     double lastframe = tmp.frame;
     tmp.floor(TransportPosition::TICK);
-    TX( tmp.bar == 349 );
-    TX( tmp.beat == 5 );
-    TX( tmp.tick == 18 );
-    TX( tmp.bbt_offset == 0 );
+    CK( tmp.bar == 349 );
+    CK( tmp.beat == 5 );
+    CK( tmp.tick == 18 );
+    CK( tmp.bbt_offset == 0 );
     lastframe -= 115.0;
-    TX( DRIFT(lastframe, tmp.frame, 1) );
+    CK( DRIFT(lastframe, tmp.frame, 1) );
     // Repeating when already floored should
     // give the same result.
     tmp.floor(TransportPosition::TICK);
-    TX( tmp.bar == 349 );
-    TX( tmp.beat == 5 );
-    TX( tmp.tick == 18 );
-    TX( tmp.bbt_offset == 0 );
-    TX( DRIFT(lastframe, tmp.frame, 1) );
+    CK( tmp.bar == 349 );
+    CK( tmp.beat == 5 );
+    CK( tmp.tick == 18 );
+    CK( tmp.bbt_offset == 0 );
+    CK( DRIFT(lastframe, tmp.frame, 1) );
 
     tmp = x;
     tmp.floor(TransportPosition::BEAT);
-    TX( tmp.bar == 349 );
-    TX( tmp.beat == 5 );
-    TX( tmp.tick == 0 );
-    TX( tmp.bbt_offset == 0 );
+    CK( tmp.bar == 349 );
+    CK( tmp.beat == 5 );
+    CK( tmp.tick == 0 );
+    CK( tmp.bbt_offset == 0 );
     lastframe -= 18.0 * tmp.frames_per_tick();
-    TX( DRIFT(lastframe, tmp.frame, 1) );
+    CK( DRIFT(lastframe, tmp.frame, 1) );
     // Repeating when already floored should
     // give the same result.
     tmp.floor(TransportPosition::BEAT);
-    TX( tmp.bar == 349 );
-    TX( tmp.beat == 5 );
-    TX( tmp.tick == 0 );
-    TX( tmp.bbt_offset == 0 );
-    TX( DRIFT(lastframe, tmp.frame, 1) );
+    CK( tmp.bar == 349 );
+    CK( tmp.beat == 5 );
+    CK( tmp.tick == 0 );
+    CK( tmp.bbt_offset == 0 );
+    CK( DRIFT(lastframe, tmp.frame, 1) );
 
     tmp = x;
     tmp.floor(TransportPosition::BAR);
-    TX( tmp.bar == 349 );
-    TX( tmp.beat == 1 );
-    TX( tmp.tick == 0 );
-    TX( tmp.bbt_offset == 0 );
+    CK( tmp.bar == 349 );
+    CK( tmp.beat == 1 );
+    CK( tmp.tick == 0 );
+    CK( tmp.bbt_offset == 0 );
     lastframe = x.frame - 4.0 * 99.0 * tmp.frames_per_tick()
 	- x.tick * tmp.frames_per_tick() - x.bbt_offset;
-    TX( DRIFT(lastframe, tmp.frame, 1) );
+    CK( DRIFT(lastframe, tmp.frame, 1) );
     // Repeating when already floored should
     // give the same result.
     tmp.floor(TransportPosition::BAR);
-    TX( tmp.bar == 349 );
-    TX( tmp.beat == 1 );
-    TX( tmp.tick == 0 );
-    TX( tmp.bbt_offset == 0 );
-    TX( DRIFT(lastframe, tmp.frame, 1) );
+    CK( tmp.bar == 349 );
+    CK( tmp.beat == 1 );
+    CK( tmp.tick == 0 );
+    CK( tmp.bbt_offset == 0 );
+    CK( DRIFT(lastframe, tmp.frame, 1) );
 
 }
 
-BOOST_AUTO_TEST_CASE( THIS(080_ceil) )
+TEST_CASE( 080_ceil )
 {
     p.ceil(TransportPosition::TICK);
-    TX( 1 == p.bar );
-    TX( 1 == p.beat );
-    TX( 0 == p.tick );
-    TX( 0 == p.frame );
+    CK( 1 == p.bar );
+    CK( 1 == p.beat );
+    CK( 0 == p.tick );
+    CK( 0 == p.frame );
     p.ceil(TransportPosition::BEAT);
-    TX( 1 == p.bar );
-    TX( 1 == p.beat );
-    TX( 0 == p.tick );
-    TX( 0 == p.frame );
+    CK( 1 == p.bar );
+    CK( 1 == p.beat );
+    CK( 0 == p.tick );
+    CK( 0 == p.frame );
     p.ceil(TransportPosition::BAR);
-    TX( 1 == p.bar );
-    TX( 1 == p.beat );
-    TX( 0 == p.tick );
-    TX( 0 == p.frame );
+    CK( 1 == p.bar );
+    CK( 1 == p.beat );
+    CK( 0 == p.tick );
+    CK( 0 == p.frame );
 
     double fpt = p.frames_per_tick();
     double frame;
@@ -638,148 +633,148 @@ BOOST_AUTO_TEST_CASE( THIS(080_ceil) )
     p.frame = round(fpt);
     frame = p.frame + fpt - p.bbt_offset;
     p.ceil(TransportPosition::TICK);
-    TX( 1 == p.bar );
-    TX( 1 == p.beat );
-    TX( 2 == p.tick );
-    TX( DRIFT(frame, p.frame, 1) );
-    TX( 0 == p.bbt_offset );
+    CK( 1 == p.bar );
+    CK( 1 == p.beat );
+    CK( 2 == p.tick );
+    CK( DRIFT(frame, p.frame, 1) );
+    CK( 0 == p.bbt_offset );
     p.tick = 1;
     p.bbt_offset = 921;
     p.frame = round(fpt);
     p.ceil(TransportPosition::BEAT);
-    TX( 1 == p.bar );
-    TX( 2 == p.beat );
-    TX( 0 == p.tick );
-    TX( DRIFT(23953.0, p.frame, 2) ); // 2 internal ops.
-    TX( 0 == p.bbt_offset );
+    CK( 1 == p.bar );
+    CK( 2 == p.beat );
+    CK( 0 == p.tick );
+    CK( DRIFT(23953.0, p.frame, 2) ); // 2 internal ops.
+    CK( 0 == p.bbt_offset );
     p.tick = 1;
     p.bbt_offset = 921;
     p.frame = round(fpt);
     p.ceil(TransportPosition::BAR);
-    TX( 2 == p.bar );
-    TX( 1 == p.beat );
-    TX( 0 == p.tick );
-    TX( DRIFT(71955.0, p.frame, 2) ); // 2 internal ops
-    TX( 0 == p.bbt_offset );
-    TX( 192 * 4 == p.bar_start_tick );
+    CK( 2 == p.bar );
+    CK( 1 == p.beat );
+    CK( 0 == p.tick );
+    CK( DRIFT(71955.0, p.frame, 2) ); // 2 internal ops
+    CK( 0 == p.bbt_offset );
+    CK( 192 * 4 == p.bar_start_tick );
 
     p.tick = 1;
     p.bbt_offset = 921;
     p.frame = round(fpt/2.0);
     p.ceil(TransportPosition::BAR);
-    TX( 3 == p.bar );
-    TX( 1 == p.beat );
-    TX( 0 == p.tick );
-    TX( DRIFT(95891.0, p.frame, 2) );
-    TX( 0 == p.bbt_offset );
-    TX( 192 * 4 * 2 == p.bar_start_tick );
+    CK( 3 == p.bar );
+    CK( 1 == p.beat );
+    CK( 0 == p.tick );
+    CK( DRIFT(95891.0, p.frame, 2) );
+    CK( 0 == p.bbt_offset );
+    CK( 192 * 4 * 2 == p.bar_start_tick );
 
     // TODO:  ADD MORE TESTS FOR BAR START TICK
 
     TransportPosition tmp = x;
     double lastframe = tmp.frame;
     tmp.ceil(TransportPosition::TICK);
-    TX( tmp.bar == 349 );
-    TX( tmp.beat == 5 );
-    TX( tmp.tick == 19 );
-    TX( tmp.bbt_offset == 0 );
+    CK( tmp.bar == 349 );
+    CK( tmp.beat == 5 );
+    CK( tmp.tick == 19 );
+    CK( tmp.bbt_offset == 0 );
     lastframe += (x.frames_per_tick() - 115.0);
-    TX( DRIFT(lastframe, tmp.frame, 1) );
+    CK( DRIFT(lastframe, tmp.frame, 1) );
     // Repeating when already ceiled should
     // give the same result.
     tmp.ceil(TransportPosition::TICK);
-    TX( tmp.bar == 349 );
-    TX( tmp.beat == 5 );
-    TX( tmp.tick == 19 );
-    TX( tmp.bbt_offset == 0 );
-    TX( DRIFT(lastframe, tmp.frame, 1) );
+    CK( tmp.bar == 349 );
+    CK( tmp.beat == 5 );
+    CK( tmp.tick == 19 );
+    CK( tmp.bbt_offset == 0 );
+    CK( DRIFT(lastframe, tmp.frame, 1) );
 
     tmp = x;
     lastframe = tmp.frame;
     tmp.ceil(TransportPosition::BEAT);
-    TX( tmp.bar == 349 );
-    TX( tmp.beat == 6 );
-    TX( tmp.tick == 0 );
-    TX( tmp.bbt_offset == 0 );
+    CK( tmp.bar == 349 );
+    CK( tmp.beat == 6 );
+    CK( tmp.tick == 0 );
+    CK( tmp.bbt_offset == 0 );
     lastframe += (99.0 - 18.0) * tmp.frames_per_tick() - 115.0;
-    TX( DRIFT(lastframe, tmp.frame, 1) );
+    CK( DRIFT(lastframe, tmp.frame, 1) );
     // Repeating when already ceiled should
     // give the same result.
     tmp.ceil(TransportPosition::BEAT);
-    TX( tmp.bar == 349 );
-    TX( tmp.beat == 6 );
-    TX( tmp.tick == 0 );
-    TX( tmp.bbt_offset == 0 );
-    TX( DRIFT(lastframe, tmp.frame, 1) );
+    CK( tmp.bar == 349 );
+    CK( tmp.beat == 6 );
+    CK( tmp.tick == 0 );
+    CK( tmp.bbt_offset == 0 );
+    CK( DRIFT(lastframe, tmp.frame, 1) );
 
     tmp = x;
     lastframe = tmp.frame;
     lastframe += ((2.0 * 99.0) + (99.0 - 18.0)) * tmp.frames_per_tick()
 	- tmp.bbt_offset;
     tmp.ceil(TransportPosition::BAR);
-    TX( tmp.bar == 350 );
-    TX( tmp.beat == 1 );
-    TX( tmp.tick == 0 );
-    TX( tmp.bbt_offset == 0 );
-    TX( DRIFT(lastframe, tmp.frame, 1) );
+    CK( tmp.bar == 350 );
+    CK( tmp.beat == 1 );
+    CK( tmp.tick == 0 );
+    CK( tmp.bbt_offset == 0 );
+    CK( DRIFT(lastframe, tmp.frame, 1) );
     // Repeating when already ceiled should
     // give the same result.
     tmp.ceil(TransportPosition::BAR);
-    TX( tmp.bar == 350 );
-    TX( tmp.beat == 1 );
-    TX( tmp.tick == 0 );
-    TX( tmp.bbt_offset == 0 );
-    TX( DRIFT(lastframe, tmp.frame, 1) );
+    CK( tmp.bar == 350 );
+    CK( tmp.beat == 1 );
+    CK( tmp.tick == 0 );
+    CK( tmp.bbt_offset == 0 );
+    CK( DRIFT(lastframe, tmp.frame, 1) );
 }
 
-BOOST_AUTO_TEST_CASE( THIS(090_round) )
+TEST_CASE( 090_round )
 {
     TransportPosition a;
     double frame;
 
     a = p;
     a.round(TransportPosition::TICK);
-    TX( 0 == a.frame );
-    TX( 1 == a.bar );
-    TX( 1 == a.beat );
-    TX( 0 == a.tick );
-    TX( 0 == a.bbt_offset );
+    CK( 0 == a.frame );
+    CK( 1 == a.bar );
+    CK( 1 == a.beat );
+    CK( 0 == a.tick );
+    CK( 0 == a.bbt_offset );
     a.round(TransportPosition::BEAT);
-    TX( 0 == a.frame );
-    TX( 1 == a.bar );
-    TX( 1 == a.beat );
-    TX( 0 == a.tick );
-    TX( 0 == a.bbt_offset );
+    CK( 0 == a.frame );
+    CK( 1 == a.bar );
+    CK( 1 == a.beat );
+    CK( 0 == a.tick );
+    CK( 0 == a.bbt_offset );
     a.round(TransportPosition::BAR);
-    TX( 0 == a.frame );
-    TX( 1 == a.bar );
-    TX( 1 == a.beat );
-    TX( 0 == a.tick );
-    TX( 0 == a.bbt_offset );
+    CK( 0 == a.frame );
+    CK( 1 == a.bar );
+    CK( 1 == a.beat );
+    CK( 0 == a.tick );
+    CK( 0 == a.bbt_offset );
 
     a = p;
     a.bbt_offset = a.frames_per_tick() / 4.0;
     a.round(TransportPosition::TICK);
-    TX( 0 == a.frame );
-    TX( 1 == a.bar );
-    TX( 1 == a.beat );
-    TX( 0 == a.tick );
-    TX( 0 == a.bbt_offset );
+    CK( 0 == a.frame );
+    CK( 1 == a.bar );
+    CK( 1 == a.beat );
+    CK( 0 == a.tick );
+    CK( 0 == a.bbt_offset );
     a.bbt_offset = a.frames_per_tick() * 3.0 / 4.0;
     frame = a.frame + round(a.frames_per_tick() / 4.0);
     a.round(TransportPosition::TICK);
-    TX( DRIFT( frame, a.frame, 1 ) );
-    TX( 1 == a.bar );
-    TX( 1 == a.beat );
-    TX( 1 == a.tick );
-    TX( 0 == a.bbt_offset );
+    CK( DRIFT( frame, a.frame, 1 ) );
+    CK( 1 == a.bar );
+    CK( 1 == a.beat );
+    CK( 1 == a.tick );
+    CK( 0 == a.bbt_offset );
     // Re-rounding should not change anything
     a.round(TransportPosition::TICK);
-    TX( DRIFT( frame, a.frame, 1 ) );
-    TX( 1 == a.bar );
-    TX( 1 == a.beat );
-    TX( 1 == a.tick );
-    TX( 0 == a.bbt_offset );
+    CK( DRIFT( frame, a.frame, 1 ) );
+    CK( 1 == a.bar );
+    CK( 1 == a.beat );
+    CK( 1 == a.tick );
+    CK( 0 == a.bbt_offset );
 
     // Could use more checks near the zero-point,
     // but we'll move on.
@@ -788,33 +783,33 @@ BOOST_AUTO_TEST_CASE( THIS(090_round) )
     frame = a.frame;
     frame += a.frames_per_tick() - a.bbt_offset;
     a.round(TransportPosition::TICK);
-    TX( 349 == a.bar );
-    TX( 5 == a.beat );
-    TX( 19 == a.tick );
-    TX( 0 == a.bbt_offset );
-    TX( DRIFT( frame, a.frame, 1 ) );
+    CK( 349 == a.bar );
+    CK( 5 == a.beat );
+    CK( 19 == a.tick );
+    CK( 0 == a.bbt_offset );
+    CK( DRIFT( frame, a.frame, 1 ) );
 
     frame -= a.frames_per_tick() * double(a.tick);
     a.round(TransportPosition::BEAT);
-    TX( 349 == a.bar );
-    TX( 5 == a.beat );
-    TX( 0 == a.tick );
-    TX( 0 == a.bbt_offset );
-    TX( DRIFT( frame, a.frame, 2 ) );
+    CK( 349 == a.bar );
+    CK( 5 == a.beat );
+    CK( 0 == a.tick );
+    CK( 0 == a.bbt_offset );
+    CK( DRIFT( frame, a.frame, 2 ) );
 
     frame += a.frames_per_tick() * 99.0 * 3.0;
     a.round(TransportPosition::BAR);
-    TX( 350 == a.bar );
-    TX( 1 == a.beat );
-    TX( 0 == a.tick );
-    TX( 0 == a.bbt_offset );
-    TX( DRIFT( frame, a.frame, 3 ) );
+    CK( 350 == a.bar );
+    CK( 1 == a.beat );
+    CK( 0 == a.tick );
+    CK( 0 == a.bbt_offset );
+    CK( DRIFT( frame, a.frame, 3 ) );
 
     // Could use more checks... but we'll move on.
 
 }
 
-BOOST_AUTO_TEST_CASE( THIS(100_operator_plus) )
+TEST_CASE( 100_operator_plus )
 {
     unsigned k;
     TransportPosition a;
@@ -822,67 +817,67 @@ BOOST_AUTO_TEST_CASE( THIS(100_operator_plus) )
     double frame;
 
     a = p + (-51);
-    TX( 1 == a.bar );
-    TX( 1 == a.beat );
-    TX( 0 == a.tick );
-    TX( 0 == a.bbt_offset );
-    TX( 0 == a.frame );
+    CK( 1 == a.bar );
+    CK( 1 == a.beat );
+    CK( 0 == a.tick );
+    CK( 0 == a.bbt_offset );
+    CK( 0 == a.frame );
 
     a = p;
     fpt = a.frames_per_tick();
     for( k=0 ; k<191 ; ++k ) {
 	a = a + 1;
-	TX( 1 == a.bar );
-	TX( 1 == a.beat );
-	TX( (k+1) == unsigned(a.tick) );
-	TX( DRIFT( double(k+1) * fpt, a.frame, k ) );
+	CK( 1 == a.bar );
+	CK( 1 == a.beat );
+	CK( (k+1) == unsigned(a.tick) );
+	CK( DRIFT( double(k+1) * fpt, a.frame, k ) );
     }
-    TX( 191 == a.tick );
+    CK( 191 == a.tick );
     ++k;
     a = a + 1;
-    TX( 1 == a.bar );
-    TX( 2 == a.beat );
-    TX( 0 == a.tick );
-    TX( DRIFT( double(k) * fpt, a.frame, k ) );
+    CK( 1 == a.bar );
+    CK( 2 == a.beat );
+    CK( 0 == a.tick );
+    CK( DRIFT( double(k) * fpt, a.frame, k ) );
 
     k = 192 * 2 + 30;
     a = p + k;
-    TX( 1 == a.bar );
-    TX( 3 == a.beat );
-    TX( 30 == a.tick );
-    TX( DRIFT( double(k) * fpt, a.frame, 1 ) );
+    CK( 1 == a.bar );
+    CK( 3 == a.beat );
+    CK( 30 == a.tick );
+    CK( DRIFT( double(k) * fpt, a.frame, 1 ) );
 
 
     k = 99 * 5 + 64;
     a = x + k;
     frame = x.frame + (99*5 + 64) * x.frames_per_tick();
-    TX( 350 == a.bar );
-    TX( 3 == a.beat );
-    TX( 82 == a.tick );
-    TX( 115 == a.bbt_offset );
-    TX( DRIFT( frame, a.frame, 1 ) );
+    CK( 350 == a.bar );
+    CK( 3 == a.beat );
+    CK( 82 == a.tick );
+    CK( 115 == a.bbt_offset );
+    CK( DRIFT( frame, a.frame, 1 ) );
 
     a = a + (-k);
     frame = x.frame;
-    TX( 349 == a.bar );
-    TX( 5 == a.beat );
-    TX( 18 == a.tick );
-    TX( 115 == a.bbt_offset );
-    TX( DRIFT( frame, a.frame, 2 ) );
+    CK( 349 == a.bar );
+    CK( 5 == a.beat );
+    CK( 18 == a.tick );
+    CK( 115 == a.bbt_offset );
+    CK( DRIFT( frame, a.frame, 2 ) );
 }
 
-BOOST_AUTO_TEST_CASE( THIS(110_operator_minus) )
+TEST_CASE( 110_operator_minus )
 {
     unsigned k;
     TransportPosition a;
     double fpt;
 
     a = p - 51;
-    TX( 1 == a.bar );
-    TX( 1 == a.beat );
-    TX( 0 == a.tick );
-    TX( 0 == a.bbt_offset );
-    TX( 0 == a.frame );
+    CK( 1 == a.bar );
+    CK( 1 == a.beat );
+    CK( 0 == a.tick );
+    CK( 0 == a.bbt_offset );
+    CK( 0 == a.frame );
 
     a = p;
     a.bar = 2;
@@ -892,45 +887,45 @@ BOOST_AUTO_TEST_CASE( THIS(110_operator_minus) )
     fpt = a.frames_per_tick();
     for( k=192 ; k>0 ; --k ) {
 	a = a - 1;
-	TX( 1 == a.bar );
-	TX( 4 == a.beat );
-	TX( (k-1) == unsigned(a.tick) );
-	TX( DRIFT( 2000000.0 - (double(192-k+1) * fpt), a.frame, (193-k) ) );
+	CK( 1 == a.bar );
+	CK( 4 == a.beat );
+	CK( (k-1) == unsigned(a.tick) );
+	CK( DRIFT( 2000000.0 - (double(192-k+1) * fpt), a.frame, (193-k) ) );
     }
-    TX( 0 == a.tick );
+    CK( 0 == a.tick );
     a = a - 1;
     k = 193;
-    TX( 1 == a.bar );
-    TX( 3 == a.beat );
-    TX( 191 == a.tick );
-    TX( DRIFT( 2000000.0 - (double(k) * fpt), a.frame, k ) );
+    CK( 1 == a.bar );
+    CK( 3 == a.beat );
+    CK( 191 == a.tick );
+    CK( DRIFT( 2000000.0 - (double(k) * fpt), a.frame, k ) );
 
     k = 99 * 2 + 30;
     a = x - k;
     fpt = x.frames_per_tick();
-    TX( 349 == a.bar );
-    TX( 2 == a.beat );
-    TX( 87 == a.tick );
-    TX( 115 == a.bbt_offset );
-    TX( DRIFT( double(x.frame) - (double(k) * fpt), a.frame, 1 ) );
+    CK( 349 == a.bar );
+    CK( 2 == a.beat );
+    CK( 87 == a.tick );
+    CK( 115 == a.bbt_offset );
+    CK( DRIFT( double(x.frame) - (double(k) * fpt), a.frame, 1 ) );
 
     k = 99 * 5 + 64;
     a = x - k;
-    TX( 348 == a.bar );
-    TX( 6 == a.beat );
-    TX( 53 == a.tick );
-    TX( 115 == a.bbt_offset );
-    TX( DRIFT( double(x.frame) - double(k) * fpt, a.frame, 1 ) );
+    CK( 348 == a.bar );
+    CK( 6 == a.beat );
+    CK( 53 == a.tick );
+    CK( 115 == a.bbt_offset );
+    CK( DRIFT( double(x.frame) - double(k) * fpt, a.frame, 1 ) );
 
     a = a - (-k);
-    TX( 349 == a.bar );
-    TX( 5 == a.beat );
-    TX( 18 == a.tick );
-    TX( 115 == a.bbt_offset );
-    TX( DRIFT( double(x.frame), a.frame, 2 ) );
+    CK( 349 == a.bar );
+    CK( 5 == a.beat );
+    CK( 18 == a.tick );
+    CK( 115 == a.bbt_offset );
+    CK( DRIFT( double(x.frame), a.frame, 2 ) );
 }
 
-BOOST_AUTO_TEST_CASE( THIS(120_operator_plus_equals) )
+TEST_CASE( 120_operator_plus_equals )
 {
     unsigned k;
     TransportPosition a;
@@ -940,46 +935,46 @@ BOOST_AUTO_TEST_CASE( THIS(120_operator_plus_equals) )
     fpt = a.frames_per_tick();
     for( k=0 ; k<191 ; ++k ) {
 	a += 1;
-	TX( 1 == a.bar );
-	TX( 1 == a.beat );
-	TX( k+1 == unsigned(a.tick) );
-	TX( DRIFT( double(k+1) * fpt, a.frame, k ) );
+	CK( 1 == a.bar );
+	CK( 1 == a.beat );
+	CK( k+1 == unsigned(a.tick) );
+	CK( DRIFT( double(k+1) * fpt, a.frame, k ) );
     }
-    TX( 191 == a.tick );
+    CK( 191 == a.tick );
     ++k;
     a += 1;
-    TX( 1 == a.bar );
-    TX( 2 == a.beat );
-    TX( 0 == a.tick );
-    TX( DRIFT( double(k) * fpt, a.frame, k ) );
+    CK( 1 == a.bar );
+    CK( 2 == a.beat );
+    CK( 0 == a.tick );
+    CK( DRIFT( double(k) * fpt, a.frame, k ) );
 
     k = 192 * 2 + 30;
     a = p;
     a += k;
-    TX( 1 == a.bar );
-    TX( 3 == a.beat );
-    TX( 30 == a.tick );
-    TX( DRIFT( double(k) * fpt, a.frame, 1 ) );
+    CK( 1 == a.bar );
+    CK( 3 == a.beat );
+    CK( 30 == a.tick );
+    CK( DRIFT( double(k) * fpt, a.frame, 1 ) );
 
     k = 99 * 5 + 64;
     a = x;
     a += k;
     fpt = a.frames_per_tick();
-    TX( 350 == a.bar );
-    TX( 3 == a.beat );
-    TX( 82 == a.tick );
-    TX( 115 == a.bbt_offset );
-    TX( DRIFT( double(x.frame) + double(k) * fpt, a.frame, 1 ) );
+    CK( 350 == a.bar );
+    CK( 3 == a.beat );
+    CK( 82 == a.tick );
+    CK( 115 == a.bbt_offset );
+    CK( DRIFT( double(x.frame) + double(k) * fpt, a.frame, 1 ) );
 
     a += (-k);
-    TX( 349 == a.bar );
-    TX( 5 == a.beat );
-    TX( 18 == a.tick );
-    TX( 115 == a.bbt_offset );
-    TX( DRIFT( double(x.frame), a.frame, 2 ) );
+    CK( 349 == a.bar );
+    CK( 5 == a.beat );
+    CK( 18 == a.tick );
+    CK( 115 == a.bbt_offset );
+    CK( DRIFT( double(x.frame), a.frame, 2 ) );
 }
 
-BOOST_AUTO_TEST_CASE( THIS(130_operator_minus_equals) )
+TEST_CASE( 130_operator_minus_equals )
 {
     unsigned k;
     TransportPosition a;
@@ -987,11 +982,11 @@ BOOST_AUTO_TEST_CASE( THIS(130_operator_minus_equals) )
 
     a = p;
     a -= 51;
-    TX( 1 == a.bar );
-    TX( 1 == a.beat );
-    TX( 0 == a.tick );
-    TX( 0 == a.bbt_offset );
-    TX( 0 == a.frame );
+    CK( 1 == a.bar );
+    CK( 1 == a.beat );
+    CK( 0 == a.tick );
+    CK( 0 == a.bbt_offset );
+    CK( 0 == a.frame );
 
     a = p;
     a.bar = 2;
@@ -1001,44 +996,44 @@ BOOST_AUTO_TEST_CASE( THIS(130_operator_minus_equals) )
     fpt = a.frames_per_tick();
     for( k=192 ; k>0 ; --k ) {
 	a -= 1;
-	TX( 1 == a.bar );
-	TX( 4 == a.beat );
-	TX( (k-1) == unsigned(a.tick) );
-	TX( DRIFT( 2000000.0 - (double(192-k+1) * fpt), a.frame, (193-k) ) );
+	CK( 1 == a.bar );
+	CK( 4 == a.beat );
+	CK( (k-1) == unsigned(a.tick) );
+	CK( DRIFT( 2000000.0 - (double(192-k+1) * fpt), a.frame, (193-k) ) );
     }
-    TX( 0 == a.tick );
+    CK( 0 == a.tick );
     a -= 1;
     k = 193;
-    TX( 1 == a.bar );
-    TX( 3 == a.beat );
-    TX( 191 == a.tick );
-    TX( DRIFT( 2000000.0 - (double(k) * fpt), a.frame, k ) );
+    CK( 1 == a.bar );
+    CK( 3 == a.beat );
+    CK( 191 == a.tick );
+    CK( DRIFT( 2000000.0 - (double(k) * fpt), a.frame, k ) );
 
     k = 99 * 2 + 30;
     a = x;
     a -= k;
     fpt = x.frames_per_tick();
-    TX( 349 == a.bar );
-    TX( 2 == a.beat );
-    TX( 87 == a.tick );
-    TX( 115 == a.bbt_offset );
-    TX( DRIFT( double(x.frame) - (double(k) * fpt), a.frame, 1 ) );
+    CK( 349 == a.bar );
+    CK( 2 == a.beat );
+    CK( 87 == a.tick );
+    CK( 115 == a.bbt_offset );
+    CK( DRIFT( double(x.frame) - (double(k) * fpt), a.frame, 1 ) );
 
     k = 99 * 5 + 64;
     a = x;
     a -= k;
-    TX( 348 == a.bar );
-    TX( 6 == a.beat );
-    TX( 53 == a.tick );
-    TX( 115 == a.bbt_offset );
-    TX( DRIFT( double(x.frame) - double(k) * fpt, a.frame, 1 ) );
+    CK( 348 == a.bar );
+    CK( 6 == a.beat );
+    CK( 53 == a.tick );
+    CK( 115 == a.bbt_offset );
+    CK( DRIFT( double(x.frame) - double(k) * fpt, a.frame, 1 ) );
 
     a -= (-k);
-    TX( 349 == a.bar );
-    TX( 5 == a.beat );
-    TX( 18 == a.tick );
-    TX( 115 == a.bbt_offset );
-    TX( DRIFT( double(x.frame), a.frame, 2 ) );
+    CK( 349 == a.bar );
+    CK( 5 == a.beat );
+    CK( 18 == a.tick );
+    CK( 115 == a.bbt_offset );
+    CK( DRIFT( double(x.frame), a.frame, 2 ) );
 }
 
-BOOST_AUTO_TEST_SUITE_END()
+TEST_END()

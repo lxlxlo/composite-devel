@@ -21,17 +21,12 @@
  */
 
 #include <hydrogen/SeqEvent.h>
-#include <boost/test/unit_test.hpp>
-
 #include <cmath>
 
 #define THIS_NAMESPACE t_SeqEvent
-#define THIS(x) t_SeqEvent##_##x
+#include "test_macros.h"
 
 using namespace H2Core;
-
-// "BOOST_CHECK( foo )" is too much typing....
-#define TX BOOST_CHECK
 
 namespace THIS_NAMESPACE
 {
@@ -54,69 +49,69 @@ namespace THIS_NAMESPACE
 
 } // namespace THIS_NAMESPACE
 
-BOOST_FIXTURE_TEST_SUITE( t_SeqEvent, Fixture );
+TEST_BEGIN( Fixture );
 
-BOOST_AUTO_TEST_CASE( THIS(001_defaults) )
+TEST_CASE( 001_defaults )
 {
     // Test the defaults
-    TX( ev.frame == 0 );
-    TX( ev.type == SeqEvent::NOTE_ON );
-    TX( ev.quantize == false );
-    TX( ev.instrument_index == 0 );
+    CK( ev.frame == 0 );
+    CK( ev.type == SeqEvent::NOTE_ON );
+    CK( ev.quantize == false );
+    CK( ev.instrument_index == 0 );
 }
 
-BOOST_AUTO_TEST_CASE( THIS(002_copy) )
+TEST_CASE( 002_copy )
 {
     SeqEvent cp;
     cp = ev;
-    TX( cp.frame == ev.frame );
-    TX( cp.type == ev.type );
-    // TX( cp.note == ev.note );  // TODO
-    TX( cp.quantize == ev.quantize );
-    TX( cp.instrument_index == ev.instrument_index );
+    CK( cp.frame == ev.frame );
+    CK( cp.type == ev.type );
+    // CK( cp.note == ev.note );  // TODO
+    CK( cp.quantize == ev.quantize );
+    CK( cp.instrument_index == ev.instrument_index );
 
     cp = xev;
-    TX( cp.frame == xev.frame );
-    TX( cp.type == xev.type );
-    // TX( cp.note == xev.note ); // TODO
-    TX( cp.quantize == xev.quantize );
-    TX( cp.instrument_index == xev.instrument_index );
+    CK( cp.frame == xev.frame );
+    CK( cp.type == xev.type );
+    // CK( cp.note == xev.note ); // TODO
+    CK( cp.quantize == xev.quantize );
+    CK( cp.instrument_index == xev.instrument_index );
 
     // Verify independence
     ++cp.frame;
     cp.type = SeqEvent::NOTE_OFF;
     cp.quantize = !cp.quantize;
     ++cp.instrument_index;
-    TX( cp.frame != xev.frame );
-    TX( cp.type != xev.type );
-    // TX( cp.note != xev.note ); // TODO
-    TX( cp.quantize != xev.quantize );
-    TX( cp.instrument_index != xev.instrument_index );
+    CK( cp.frame != xev.frame );
+    CK( cp.type != xev.type );
+    // CK( cp.note != xev.note ); // TODO
+    CK( cp.quantize != xev.quantize );
+    CK( cp.instrument_index != xev.instrument_index );
 
     xev = ev;
-    TX( ev.frame == xev.frame );
-    TX( ev.type == xev.type );
-    // TX( ev.note == xev.note ); // TODO
-    TX( ev.quantize == xev.quantize );
-    TX( ev.instrument_index == xev.instrument_index );
+    CK( ev.frame == xev.frame );
+    CK( ev.type == xev.type );
+    // CK( ev.note == xev.note ); // TODO
+    CK( ev.quantize == xev.quantize );
+    CK( ev.instrument_index == xev.instrument_index );
 
     // Confirm xev
-    TX( xev.frame == 0 );
-    TX( xev.type == SeqEvent::NOTE_ON );
-    TX( xev.quantize == false );
-    TX( xev.instrument_index == 0 );
+    CK( xev.frame == 0 );
+    CK( xev.type == SeqEvent::NOTE_ON );
+    CK( xev.quantize == false );
+    CK( xev.instrument_index == 0 );
 }
 
-BOOST_AUTO_TEST_CASE( THIS(003_less) )
+TEST_CASE( 003_less )
 {
-    TX( less(ev, xev) );    
-    TX( ! less(xev, ev) );
+    CK( less(ev, xev) );    
+    CK( ! less(xev, ev) );
     xev.frame = ev.frame;
-    TX( ! less(ev, xev) );
-    TX( ! less(ev, xev) );
+    CK( ! less(ev, xev) );
+    CK( ! less(ev, xev) );
     ev.frame = xev.frame+1;
-    TX( ! less(ev, xev) );
-    TX( less(xev, ev) );
+    CK( ! less(ev, xev) );
+    CK( less(xev, ev) );
 }
 
-BOOST_AUTO_TEST_SUITE_END()
+TEST_END()
