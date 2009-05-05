@@ -938,12 +938,12 @@ BOOST_AUTO_TEST_CASE( THIS(120_operator_plus_equals) )
 
     a = p;
     fpt = a.frames_per_tick();
-    for( k=0 ; k<192 ; ++k ) {
+    for( k=0 ; k<191 ; ++k ) {
 	a += 1;
 	TX( 1 == a.bar );
 	TX( 1 == a.beat );
-	TX( k == unsigned(a.tick) );
-	TX( DRIFT( double(k) * fpt, a.frame, k ) );
+	TX( k+1 == unsigned(a.tick) );
+	TX( DRIFT( double(k+1) * fpt, a.frame, k ) );
     }
     TX( 191 == a.tick );
     ++k;
@@ -964,6 +964,7 @@ BOOST_AUTO_TEST_CASE( THIS(120_operator_plus_equals) )
     k = 99 * 5 + 64;
     a = x;
     a += k;
+    fpt = a.frames_per_tick();
     TX( 350 == a.bar );
     TX( 3 == a.beat );
     TX( 82 == a.tick );
@@ -996,24 +997,22 @@ BOOST_AUTO_TEST_CASE( THIS(130_operator_minus_equals) )
     a.bar = 2;
     a.beat = 1;
     a.tick = 0;
-    a.frame = 2000;
+    a.frame = 2000000;
     fpt = a.frames_per_tick();
     for( k=192 ; k>0 ; --k ) {
 	a -= 1;
 	TX( 1 == a.bar );
 	TX( 4 == a.beat );
 	TX( (k-1) == unsigned(a.tick) );
-	TX( DRIFT( 2000.0 - (double(k) * fpt), a.frame, (193-k) ) );
+	TX( DRIFT( 2000000.0 - (double(192-k+1) * fpt), a.frame, (193-k) ) );
     }
-    TX( 1 == a.tick );
-    a -= 1;
     TX( 0 == a.tick );
     a -= 1;
     k = 193;
     TX( 1 == a.bar );
     TX( 3 == a.beat );
     TX( 191 == a.tick );
-    TX( DRIFT( 2000.0 - (double(k) * fpt), a.frame, k ) );
+    TX( DRIFT( 2000000.0 - (double(k) * fpt), a.frame, k ) );
 
     k = 99 * 2 + 30;
     a = x;
@@ -1021,7 +1020,7 @@ BOOST_AUTO_TEST_CASE( THIS(130_operator_minus_equals) )
     fpt = x.frames_per_tick();
     TX( 349 == a.bar );
     TX( 2 == a.beat );
-    TX( 77 == a.tick );
+    TX( 87 == a.tick );
     TX( 115 == a.bbt_offset );
     TX( DRIFT( double(x.frame) - (double(k) * fpt), a.frame, 1 ) );
 
@@ -1029,7 +1028,7 @@ BOOST_AUTO_TEST_CASE( THIS(130_operator_minus_equals) )
     a = x;
     a -= k;
     TX( 348 == a.bar );
-    TX( 7 == a.beat );
+    TX( 6 == a.beat );
     TX( 53 == a.tick );
     TX( 115 == a.bbt_offset );
     TX( DRIFT( double(x.frame) - double(k) * fpt, a.frame, 1 ) );
