@@ -182,7 +182,7 @@ BOOST_AUTO_TEST_CASE( THIS(000_defaults) )
     TX( p.bar_start_tick == 0 );
 }
 
-BOOST_AUTO_TEST_CASE( THIS(001_copy_constructor) )
+BOOST_AUTO_TEST_CASE( THIS(010_copy_constructor) )
 {
     TransportPosition y, z;
 
@@ -233,7 +233,7 @@ BOOST_AUTO_TEST_CASE( THIS(001_copy_constructor) )
     TX( 543.2 == z.beats_per_minute );
 }
 
-BOOST_AUTO_TEST_CASE( THIS(002_frames_per_tick) )
+BOOST_AUTO_TEST_CASE( THIS(020_frames_per_tick) )
 {
     TX( p.frames_per_tick() == 125.0 );
 
@@ -245,7 +245,7 @@ BOOST_AUTO_TEST_CASE( THIS(002_frames_per_tick) )
     TX( round(x.frames_per_tick()*100.0) == 21882.0 );
 }
 
-BOOST_AUTO_TEST_CASE( THIS(003_tick_in_bar) )
+BOOST_AUTO_TEST_CASE( THIS(030_tick_in_bar) )
 {
     TX(p.tick_in_bar() == 0);
     p.tick = 191;
@@ -258,7 +258,7 @@ BOOST_AUTO_TEST_CASE( THIS(003_tick_in_bar) )
     TX(x.tick_in_bar() == 414);
 }
 
-BOOST_AUTO_TEST_CASE( THIS(003b_normalize) )
+BOOST_AUTO_TEST_CASE( THIS(040_normalize) )
 {
     TransportPosition a;
     double frame;
@@ -353,7 +353,7 @@ BOOST_AUTO_TEST_CASE( THIS(003b_normalize) )
     TX( DRIFT(frame, a.frame, 1) );    
 }
 
-BOOST_AUTO_TEST_CASE( THIS(004_increment) )
+BOOST_AUTO_TEST_CASE( THIS(050_increment) )
 {
     double frames_per_tick = double(p.frame_rate) * (60.0/p.beats_per_minute) / p.ticks_per_beat;
     int k;
@@ -424,7 +424,7 @@ BOOST_AUTO_TEST_CASE( THIS(004_increment) )
     BOOST_MESSAGE( "++ drift = " << (frame - x.frame) );
 }
 
-BOOST_AUTO_TEST_CASE( THIS(005_decrement) )
+BOOST_AUTO_TEST_CASE( THIS(060_decrement) )
 {
     --p;
     TX( 0 == p.frame );
@@ -501,7 +501,7 @@ BOOST_AUTO_TEST_CASE( THIS(005_decrement) )
 	
 }
 
-BOOST_AUTO_TEST_CASE( THIS(006_floor) )
+BOOST_AUTO_TEST_CASE( THIS(070_floor) )
 {
     p.floor(TransportPosition::TICK);
     TX( 1 == p.bar );
@@ -613,7 +613,7 @@ BOOST_AUTO_TEST_CASE( THIS(006_floor) )
 
 }
 
-BOOST_AUTO_TEST_CASE( THIS(007_ceil) )
+BOOST_AUTO_TEST_CASE( THIS(080_ceil) )
 {
     p.ceil(TransportPosition::TICK);
     TX( 1 == p.bar );
@@ -732,7 +732,7 @@ BOOST_AUTO_TEST_CASE( THIS(007_ceil) )
     TX( DRIFT(lastframe, tmp.frame, 1) );
 }
 
-BOOST_AUTO_TEST_CASE( THIS(008_round) )
+BOOST_AUTO_TEST_CASE( THIS(090_round) )
 {
     TransportPosition a;
     double frame;
@@ -814,7 +814,7 @@ BOOST_AUTO_TEST_CASE( THIS(008_round) )
 
 }
 
-BOOST_AUTO_TEST_CASE( THIS(009_operator_plus) )
+BOOST_AUTO_TEST_CASE( THIS(100_operator_plus) )
 {
     unsigned k;
     TransportPosition a;
@@ -867,7 +867,7 @@ BOOST_AUTO_TEST_CASE( THIS(009_operator_plus) )
     TX( DRIFT( double(x.frame), a.frame, 2 ) );
 }
 
-BOOST_AUTO_TEST_CASE( THIS(010_operator_minus) )
+BOOST_AUTO_TEST_CASE( THIS(110_operator_minus) )
 {
     unsigned k;
     TransportPosition a;
@@ -928,7 +928,7 @@ BOOST_AUTO_TEST_CASE( THIS(010_operator_minus) )
     TX( DRIFT( double(x.frame), a.frame, 2 ) );
 }
 
-BOOST_AUTO_TEST_CASE( THIS(010_operator_plus_equals) )
+BOOST_AUTO_TEST_CASE( THIS(120_operator_plus_equals) )
 {
     unsigned k;
     TransportPosition a;
@@ -976,7 +976,7 @@ BOOST_AUTO_TEST_CASE( THIS(010_operator_plus_equals) )
     TX( DRIFT( double(x.frame), a.frame, 2 ) );
 }
 
-BOOST_AUTO_TEST_CASE( THIS(011_operator_minus_equals) )
+BOOST_AUTO_TEST_CASE( THIS(130_operator_minus_equals) )
 {
     unsigned k;
     TransportPosition a;
