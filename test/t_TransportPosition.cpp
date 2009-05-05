@@ -258,6 +258,11 @@ BOOST_AUTO_TEST_CASE( THIS(003_tick_in_bar) )
     TX(x.tick_in_bar() == 414);
 }
 
+BOOST_AUTO_TEST_CASE( THIS(003b_normalize) )
+{
+    TX(false);  // Need to add tests.
+}
+
 BOOST_AUTO_TEST_CASE( THIS(004_increment) )
 {
     double frames_per_tick = double(p.frame_rate) * (60.0/p.beats_per_minute) / p.ticks_per_beat;

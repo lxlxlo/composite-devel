@@ -85,6 +85,16 @@ namespace H2Core
 	TransportPosition& operator+=(int ticks);
 	TransportPosition& operator-=(int ticks);
 
+	/**
+	 * If bar, beat, tick, and bbt_offset are not in-bounds, this
+	 * adjusts each field so that they are.
+	 *
+	 * For example, if you are in 4/4.48 time and the current
+	 * B:b:t is 5:6.-5, this function will normalize the tick
+	 * (5:5.0) and then normalize the beat, giving 6:1.0.
+	 */
+	void normalize();
+
         /**
          * Convenience calculations
          */

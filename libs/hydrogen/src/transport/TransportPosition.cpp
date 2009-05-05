@@ -42,41 +42,41 @@ inline double dither()
  * This should probably be a member function... but for
  * now it's here to avoid recompiling all of hydrogen.
  */
-static void normalize(TransportPosition& p)
+void TransportPosition::normalize()
 {
-    double fpt = p.frames_per_tick();
+    double fpt = frames_per_tick();
     /* bbt_offset is unsigned.  If it's ever signed, then....
-    while(p.bbt_offset < 0) {
-	++p.tick;
-	p.bbt_offset += ::round(fpt + dither());
+    while(bbt_offset < 0) {
+	++tick;
+	bbt_offset += ::round(fpt + dither());
     }
     */
-    while( p.bbt_offset > fpt ) {
-	--p.tick;
-	p.bbt_offset -= ::round(fpt + dither());
+    while( bbt_offset > fpt ) {
+	--tick;
+	bbt_offset -= ::round(fpt + dither());
     }
-    while(p.tick < 0) {
-	--p.beat;
-	p.tick += p.ticks_per_beat;
+    while(tick < 0) {
+	--beat;
+	tick += ticks_per_beat;
     }
-    while((p.tick > 0) && (unsigned(p.tick) >= p.ticks_per_beat)) {
-	++p.beat;
-	p.tick -= p.ticks_per_beat;
+    while((tick > 0) && (unsigned(tick) >= ticks_per_beat)) {
+	++beat;
+	tick -= ticks_per_beat;
     }
-    while(p.beat < 1) {
-	--p.bar;
-	p.beat += p.beats_per_bar;
+    while(beat < 1) {
+	--bar;
+	beat += beats_per_bar;
     }
-    while(p.beat > p.beats_per_bar) {
-	++p.bar;
-	p.beat -= p.beats_per_bar;
+    while(beat > beats_per_bar) {
+	++bar;
+	beat -= beats_per_bar;
     }
-    if( p.bar < 1 ) {
-	p.bar = 1;
-	p.beat = 1;
-	p.tick = 0;
-	p.bbt_offset = 0;
-	p.frame = 0;
+    if( bar < 1 ) {
+	bar = 1;
+	beat = 1;
+	tick = 0;
+	bbt_offset = 0;
+	frame = 0;
     }    
 }
 
@@ -146,7 +146,7 @@ void TransportPosition::ceil(TransportPosition::snap_type s)
 {
     double df;
     double fpt = frames_per_tick();
-    normalize(*this);
+    normalize();
     switch(s) {
     case BAR:
 	if((beat == 1) && (tick == 0) && (bbt_offset == 0)) break;
@@ -168,7 +168,7 @@ void TransportPosition::ceil(TransportPosition::snap_type s)
 	++beat;
 	tick = 0;
 	bbt_offset = 0;
-	normalize(*this);
+	normalize();
 	break;
     case TICK:
 	if(bbt_offset == 0) break;
@@ -176,7 +176,7 @@ void TransportPosition::ceil(TransportPosition::snap_type s)
 	frame += ::round(df + dither());
 	++tick;
 	bbt_offset = 0;
-	normalize(*this);
+	normalize();
 	break;
     }
 }
@@ -186,7 +186,7 @@ void TransportPosition::floor(TransportPosition::snap_type s)
     double df;
     double fpt = frames_per_tick();
 
-    normalize(*this);  // Code is assuming that we are normalized.
+    normalize();  // Code is assuming that we are normalized.
     switch(s) {
     case BAR:
 	df = ((beat - 1) * ticks_per_beat
@@ -229,7 +229,7 @@ TransportPosition& TransportPosition::operator++()
 {
     ++tick;
     frame += ::round(frames_per_tick() + dither());
-    normalize(*this);
+    normalize();
     return *this;
 }
 
@@ -242,7 +242,7 @@ TransportPosition& TransportPosition::operator--()
     } else {
 	frame = 0;
     }
-    normalize(*this);
+    normalize();
     return *this;
 }
 
@@ -267,7 +267,7 @@ TransportPosition& TransportPosition::operator+=(int ticks)
     } else {
 	frame += df;
     }
-    normalize(*this);
+    normalize();
     return *this;
 }
 
