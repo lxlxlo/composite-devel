@@ -26,14 +26,9 @@
 
 #include <cassert>
 
+#include "SeqScriptPrivate.h"
+
 using namespace H2Core;
-
-class SeqScriptPrivate
-{
-public:
-    int data;
-};
-
 
 SeqScript::SeqScript()
 {

@@ -26,7 +26,32 @@ using namespace H2Core;
 
 // NOTE: SeqEvent is fully defined in the header SeqEvent.h
 
-bool H2Core::less(SeqEvent a, SeqEvent b)
+bool SeqEvent::operator==(const SeqEvent& o) const
 {
-    return a.frame < b.frame;
+    return ((frame == o.frame)
+	    && (type == o.type)
+	    && (quantize == o.quantize)
+	    && (instrument_index == o.instrument_index)
+	    && (note.get_instrument() == o.note.get_instrument())
+	    && (note.get_velocity() == o.note.get_velocity()) );
+}
+
+bool SeqEvent::operator!=(const SeqEvent& o) const
+{
+    return ((frame != o.frame)
+	    || (type != o.type)
+	    || (quantize != o.quantize)
+	    || (instrument_index != o.instrument_index)
+	    || (note.get_instrument() != o.note.get_instrument())
+	    || (note.get_velocity() != o.note.get_velocity()) );
+}
+
+bool SeqEvent::operator<(const SeqEvent& o) const
+{
+    return (frame < o.frame);
+}
+
+bool H2Core::less(const SeqEvent& a, const SeqEvent& b)
+{
+    return a < b;
 }

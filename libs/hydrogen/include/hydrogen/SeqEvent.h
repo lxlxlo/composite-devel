@@ -47,9 +47,13 @@ namespace H2Core
 	    quantize(false),
 	    instrument_index(0)
 	    {}
+
+	bool operator==(const SeqEvent& o) const;
+	bool operator!=(const SeqEvent& o) const;
+	bool operator<(const SeqEvent& o) const;
     };
 
-    bool less(SeqEvent a, SeqEvent b);
+    bool less(const SeqEvent& a, const SeqEvent& b);
 
 } // namespace H2Core
 

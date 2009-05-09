@@ -21,7 +21,9 @@
  */
 
 #include <hydrogen/SeqEvent.h>
+#include <hydrogen/instrument.h>
 #include <cmath>
+#include <memory>
 
 #define THIS_NAMESPACE t_SeqEvent
 #include "test_macros.h"
@@ -35,13 +37,18 @@ namespace THIS_NAMESPACE
     {
 	SeqEvent ev;  // This is the "normal" one.
 	SeqEvent xev; // This is the odd one.
+	std::auto_ptr<Instrument> instr;  // Note() won't let us set a null instrument
 
 	Fixture() : ev(), xev() {
+	    instr.reset( Instrument::create_empty() );
+
+	    ev.note.set_instrument( instr.get() );
 
 	    xev.frame = 0xFEEEEEEE;
 	    xev.type = SeqEvent::ALL_OFF;
 	    xev.quantize = true;
 	    xev.instrument_index = 0xFF;
+	    xev.note.set_instrument( instr.get() );
 	}
 
 	~Fixture() {}
@@ -112,6 +119,35 @@ TEST_CASE( 003_less )
     ev.frame = xev.frame+1;
     CK( ! less(ev, xev) );
     CK( less(xev, ev) );
+}
+
+TEST_CASE( 004_compare )
+{
+    SeqEvent a;
+    SeqEvent b = xev;
+
+    a.note.set_instrument( instr.get() );
+
+    CK( a == ev );
+    CK( ev == a );
+    CK( ! (a != ev) );
+    CK( ! (ev != a) );
+
+    CK( b == xev );
+    CK( xev == b );
+    CK( ! (b != xev) );
+    CK( ! (xev != b) );
+
+    CK( ev != xev );
+    CK( xev != ev );
+    CK( ! (ev == xev) );
+    CK( ! (xev == ev) );
+
+    a.frame = 1234;
+    CK( a != ev );
+    CK( ev != a );
+    CK( ! (a == ev) );
+    CK( ! (ev == a) );
 }
 
 TEST_END()
