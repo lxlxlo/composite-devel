@@ -55,6 +55,7 @@ namespace H2Core
         reference operator[](difference_type n) const;
 
 	bool operator!=(const _Self& o) const;
+	bool operator==(const _Self& o) const;
 
     private:
         _Parent* q;

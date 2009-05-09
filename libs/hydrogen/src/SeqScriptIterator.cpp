@@ -112,6 +112,13 @@ namespace H2Core
         return true;
     }
 
+    template <typename E, typename S>
+    bool _SeqScriptIterator<E,S>::operator==(const _Self& o) const
+    {
+        assert(false);
+        return true;
+    }
+
     template class _SeqScriptIterator<SeqEvent, SeqScript>;
     template class _SeqScriptIterator<const SeqEvent, const SeqScript>;
 
