@@ -66,17 +66,16 @@ uint32_t H2Core::pattern_group_index_for_bar(Song* s, uint32_t bar)
 uint32_t H2Core::bar_for_absolute_tick(Song* s, uint32_t abs_tick)
 {
     if( s == 0 ) return -1;
-    uint32_t tick_count = 0;
+    uint32_t tick_count = abs_tick;
     uint32_t bar_count = 1;
     uint32_t tmp;
 
     tmp = ticks_in_bar(s, bar_count);
-    while( (tmp != unsigned(-1)) && (abs_tick < tick_count + tmp) ) {
-        tick_count += tmp;
-        ++bar_count;
-        tmp = ticks_in_bar(s, bar_count);
+    while( tick_count >= tmp ) {
+	tick_count -= tmp;
+	++bar_count;
+	tmp = ticks_in_bar(s, bar_count);
     }
-    if( (tmp == unsigned(-1)) && (abs_tick > tick_count) ) return -1;
     return bar_count;
 }
 
@@ -84,9 +83,10 @@ uint32_t H2Core::bar_start_tick(Song* s, uint32_t bar)
 {
     if( s == 0 ) return -1;
     if( bar > song_bar_count(s) ) return -1;
-    uint32_t count = 0, k;
+    uint32_t count = 0, k = 1;
     while( k < bar ) {
         count += ticks_in_bar(s, k);
+	++k;
     }
     return count;
 }
