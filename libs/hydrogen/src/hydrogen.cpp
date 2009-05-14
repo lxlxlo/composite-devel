@@ -2080,7 +2080,7 @@ long Hydrogen::getTickForPosition( int pos )
 /// Set the position in the song
 void Hydrogen::setPatternPos( int pos )
 {
-	m_pTransport->locate(pos, 0, 0);
+	m_pTransport->locate(pos+1, 0, 0);
 }
 
 void Hydrogen::getLadspaFXPeak( int nFX, float *fL, float *fR )

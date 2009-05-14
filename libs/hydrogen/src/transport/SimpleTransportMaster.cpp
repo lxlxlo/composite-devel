@@ -151,6 +151,11 @@ void SimpleTransportMaster::get_position(TransportPosition* hpos)
 void SimpleTransportMaster::processed_frames(uint32_t nFrames)
 {
     QMutexLocker lk(&d->pos_mutex);
+
+    if( d->pos.state == TransportPosition::STOPPED ) {
+	return;
+    }
+
     double frames_per_tick =
         d->pos.frame_rate
         * 60.0
