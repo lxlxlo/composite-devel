@@ -26,21 +26,20 @@
 
 namespace H2Core
 {
-    class SeqScript;
+    class SeqEventWrapIterator;
 
-    template <typename _Event, typename _Script>
+    template <typename _Event>
     class _SeqScriptIterator
     {
     public:
         typedef _Event value_type;
-        typedef long difference_type;
         typedef _Event* pointer;
         typedef _Event& reference;
         typedef _SeqScriptIterator _Self;
-        typedef _Script _Parent;
+        typedef SeqEventWrapIterator _Internal;
 
 	_SeqScriptIterator();
-        _SeqScriptIterator(_Script* s);
+        _SeqScriptIterator(_Internal s);
 	_SeqScriptIterator(const _Self& o);
         virtual ~_SeqScriptIterator();
 
@@ -48,23 +47,17 @@ namespace H2Core
         pointer operator->() const;
         _Self& operator++();  // prefix
         _Self operator++(int);  // postfix
-        _Self& operator+=(difference_type n);
-        _Self operator+(difference_type n) const;
-        _Self& operator-=(difference_type n);
-        _Self operator-(difference_type n) const;
-        reference operator[](difference_type n) const;
 
 	bool operator!=(const _Self& o) const;
 	bool operator==(const _Self& o) const;
+	_Self& operator=(const _Self& o);
 
     private:
-        _Parent* q;
+        _Internal* d;
     };
 
-    typedef _SeqScriptIterator<SeqEvent,
-                                     SeqScript> SeqScriptIterator;
-    typedef _SeqScriptIterator<const SeqEvent,
-                                     const SeqScript> SeqScriptConstIterator;
+    typedef _SeqScriptIterator<SeqEvent> SeqScriptIterator;
+    typedef _SeqScriptIterator<const SeqEvent> SeqScriptConstIterator;
 
 }
 

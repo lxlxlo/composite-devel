@@ -29,6 +29,8 @@
 #include <cstdlib>
 #include <time.h>
 #include <hydrogen/SeqScript.h>
+#include <hydrogen/instrument.h>
+#include <memory>
 
 // CHANGE THIS TO MATCH YOUR FILE:
 #define THIS_NAMESPACE t_SeqScript
@@ -51,10 +53,26 @@ namespace THIS_NAMESPACE
 	SeqScript x; // Simple object.
 	// Need a more complex object with random insertion.
 
+	std::auto_ptr<Instrument> inst_refs[3];
 	const size_t x_pat_size;
 	pat_t* x_pat;  // null terminated.
 
 	Fixture() : x_pat_size(8) {
+
+	    /*------------------------------------------
+	     * Initialize dummy instruments
+	     *------------------------------------------
+	     */
+
+	    inst_refs[0].reset( Instrument::create_empty() );
+	    inst_refs[1].reset( Instrument::create_empty() );
+	    inst_refs[2].reset( Instrument::create_empty() );
+
+	    /*------------------------------------------
+	     * Initialize master pattern
+	     *------------------------------------------
+	     */
+
 	    // Pattern for X.
 	    //    . . . . . . . .
 	    // 0: X   X   X   X
@@ -87,10 +105,11 @@ namespace THIS_NAMESPACE
 	    for( k=0 ; k < 4*x_pat_size ; ++k ) {
 		SeqEvent tmp;
 		int p = k % x_pat_size;
-		tmp.frame = x_pat[p].frame + 96000 * k/x_pat_size;
+		tmp.frame = x_pat[p].frame + 96000 * (k/x_pat_size);
 		tmp.type = (x_pat[p].on_off) ? SeqEvent::NOTE_ON : SeqEvent::NOTE_OFF;
-		tmp.note.set_instrument(reinterpret_cast<Instrument*>(x_pat[p].inst));
+		tmp.note.set_instrument( inst_refs[ x_pat[p].inst ].get() );
 		tmp.note.set_velocity(x_pat[p].vel);
+		tmp.instrument_index = x_pat[p].inst;
 		x.insert(tmp);
 	    }
 
@@ -113,7 +132,7 @@ TEST_CASE( 010_defaults )
     CK( a.empty() );
     CK( a.size() == 0 );
     CK( a.size( rand() ) == 0 );
-    CK( a.max_size() == 0 );
+    CK( a.max_size() == 1024 );
     CK( a.begin_const() == a.end_const() );
     CK( a.begin_const() == a.end_const( rand() ) );
 
@@ -143,28 +162,30 @@ TEST_CASE( 020_size_and_storage )
 
     CK( ! x.empty() );
     CK( x.size() == 32 );
-    CK( x.size(1024) == 0 );
+    CK( x.size(1024) == 1 );
     CK( x.size(60000) == 4 );
     CK( x.max_size() == 1024 );
     CK( x.begin_const() != x.end_const() );
-    CK( x.begin_const() == x.end_const(1024) );
+    CK( x.begin_const() != x.end_const(1024) );
+    CK( x.end_const() != x.end_const(1024) );
     CK( x.begin_const() != x.end_const(48000) );
+    CK( x.end_const() == x.end_const(999999) );
 
-    // Resizing to larger should not delete contents.
+    // Resizing (in any way) will delete contents.
     x.reserve( 2048 );
-    CK( ! x.empty() );
-    CK( x.size() == 32 );
+    CK( x.empty() );
+    CK( x.size() == 0 );
     CK( x.size(1024) == 0 );
-    CK( x.size(60000) == 4 );
+    CK( x.size(60000) == 0 );
     CK( x.max_size() == 2048 );
-    CK( x.begin_const() != x.end_const() );
+    CK( x.begin_const() == x.end_const() );
     CK( x.begin_const() == x.end_const(1024) );
-    CK( x.begin_const() != x.end_const(48000) );
+    CK( x.begin_const() == x.end_const(48000) );
 
-    x.insert(SeqEvent());
-    CK( x.size() == 33 );
+    x.insert(SeqEvent());  // TODO:  These two lines fail.
+    CK( x.size() == 1 );
 
-    x.clear();
+    x.clear();             // TODO:  This fails on an assertion.
     CK( x.empty() );
     CK( x.size() == 0 );
     CK( x.size(1024) == 0 );
@@ -184,7 +205,7 @@ TEST_CASE( 030_check_sorting )
 	    prev = cur;
 	    continue;
 	}
-	CK( prev->frame < cur->frame );
+	CK( prev->frame <= cur->frame );
 	prev = cur;	
     }
 }
@@ -202,17 +223,17 @@ TEST_CASE( 040_check_contents )
     for( j=0 ; j < 4 ; ++j ) {
 	frame = j * 96000;
 	for( k = 0 ; k < x_pat_size ; ++k ) {
-	    CK( cur->frame == x_pat[k].frame + frame );
-	    CK( cur->type == ((x_pat[k].on_off) ? SeqEvent::NOTE_ON : SeqEvent::NOTE_OFF) );
-	    CK( reinterpret_cast<int>(cur->note.get_instrument()) == x_pat[k].inst );
-	    CK( cur->note.get_velocity() == x_pat[k].vel );
-	    CK( cur->instrument_index == x_pat[k].inst );
-	    ++cur;
 	    CK( cur != x.end_const() );
 	    if( cur == x.end_const() ) {
 		CK( false );
 		break;
 	    }
+	    CK( cur->frame == x_pat[k].frame + frame );
+	    CK( cur->type == ((x_pat[k].on_off) ? SeqEvent::NOTE_ON : SeqEvent::NOTE_OFF) );
+	    CK( cur->note.get_instrument() == inst_refs[ x_pat[k].inst ].get() );
+	    CK( cur->note.get_velocity() == x_pat[k].vel );
+	    CK( cur->instrument_index == x_pat[k].inst );
+	    ++cur;
 	}
     }
 
@@ -259,14 +280,14 @@ TEST_CASE( 050_consumed_pass_1 )
 	count -= 2;       // from frame 84000
 	CK( x.size() == count );
 
-	CK( count > 0 );
+	CK( count >= 0 );
     }
     CK( x.empty() );
 }
 
 TEST_CASE( 060_consumed_pass_2 )
 {
-    CK( false );  // Need to add tests.
+    CK( false );  // TODO:  Need to add tests.
 }
 
 // Need more tests.

@@ -320,4 +320,45 @@ TEST_CASE( 040_frame_adjustment_counts )
 
 }
 
+TEST_CASE( 050_size_and_storage )
+{
+    SeqScriptPrivate a;
+
+    CK( a.empty() );
+
+    a.reserve(128);
+    CK( a.empty() );
+    CK( a.size() == 0 );
+    CK( a.max_size() == 128 );
+    CK( a.begin() == a.end() );
+
+    a.clear(); // Should have no affect.
+    CK( a.empty() );
+    CK( a.size() == 0 );
+    CK( a.max_size() == 128 );
+    CK( a.begin() == a.end() );
+
+    CK( ! x.empty() );
+    CK( x.size() == 32 );
+    CK( x.max_size() == 512 );
+    CK( x.begin() != x.end() );
+
+    // Resizing (in any way) will delete contents.
+    x.reserve( 2048 );
+    CK( x.empty() );
+    CK( x.size() == 0 );
+    CK( x.max_size() == 2048 );
+    CK( x.begin() == x.end() );
+
+    x.insert(SeqEvent());  // TODO:  These two lines fail.
+    CK( x.size() == 1 );
+
+    x.clear();             // TODO:  This fails on an assertion.
+    CK( x.empty() );
+    CK( x.size() == 0 );
+    CK( x.max_size() == 2048 );
+    CK( x.begin() == x.end() );
+    
+}
+
 TEST_END()

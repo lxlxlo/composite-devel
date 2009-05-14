@@ -28,72 +28,70 @@
 namespace H2Core
 {
 
+    struct SeqEventWrap
+    {
+	typedef std::vector<SeqEventWrap>::iterator internal_iterator;
+
+	SeqEvent ev;
+	internal_iterator next;
+	internal_iterator me;
+	bool used;
+
+	SeqEventWrap() : ev(), next(0), used(false) {}
+    }; // struct SeqEventWrap
+
+    class SeqEventWrapIterator  // a bidirectional, Input iterator
+    {
+    public:
+	typedef SeqEventWrapIterator            _Self;
+	typedef SeqEventWrap::internal_iterator internal_iterator;
+	typedef SeqEventWrap                    value_type;
+	typedef SeqEventWrap*                   pointer;
+	typedef SeqEventWrap&                   reference;
+
+	SeqEventWrapIterator() : m_pos(0) {}
+	//SeqEventWrapIterator(pointer p) : m_pos(p) {}
+	SeqEventWrapIterator(const SeqEventWrapIterator& o) : m_pos(o.m_pos) {}
+	SeqEventWrapIterator(internal_iterator i) : m_pos(i) {}
+
+	void reset(internal_iterator p) {
+	    m_pos = p;
+	}
+
+	reference operator*() {
+	    return *m_pos;
+	}
+
+	pointer operator->() {
+	    return &(*m_pos);
+	}
+
+	_Self& operator++() {
+	    m_pos = m_pos->next;
+	    return *this;
+	}
+
+	_Self operator++(int) {
+	    _Self tmp = *this;
+	    m_pos = m_pos->next;
+	    return tmp;
+	}
+
+	bool operator==(const _Self& o) const {
+	    return m_pos == o.m_pos;
+	}
+
+	bool operator!=(const _Self& o) const {
+	    return m_pos != o.m_pos;
+	}
+
+    private:
+	internal_iterator m_pos;
+    };  // class SeqEventWrapIterator
+
     class SeqScriptPrivate
     {
     public:
-	class SeqEventWrapIterator;
-
-	struct SeqEventWrap
-	{
-	    typedef std::vector<SeqEventWrap>::iterator internal_iterator;
-
-	    SeqEvent ev;
-	    internal_iterator next;
-	    internal_iterator me;
-	    bool used;
-
-	    SeqEventWrap() : ev(), next(0), used(false) {}
-	};
-
-	class SeqEventWrapIterator  // a bidirectional, Input iterator
-	{
-	public:
-	    typedef SeqEventWrapIterator            _Self;
-	    typedef SeqEventWrap::internal_iterator internal_iterator;
-	    typedef SeqEventWrap                    value_type;
-	    typedef SeqEventWrap*                   pointer;
-	    typedef SeqEventWrap&                   reference;
-
-	    SeqEventWrapIterator() : m_pos(0) {}
-	    //SeqEventWrapIterator(pointer p) : m_pos(p) {}
-	    SeqEventWrapIterator(const SeqEventWrapIterator& o) : m_pos(o.m_pos) {}
-	    SeqEventWrapIterator(internal_iterator i) : m_pos(i) {}
-
-	    void reset(internal_iterator p) {
-		m_pos = p;
-	    }
-
-	    reference operator*() {
-		return *m_pos;
-	    }
-
-	    pointer operator->() {
-		return &(*m_pos);
-	    }
-
-	    _Self& operator++() {
-		m_pos = m_pos->next;
-		return *this;
-	    }
-
-	    _Self operator++(int) {
-		_Self tmp = *this;
-		m_pos = m_pos->next;
-		return tmp;
-	    }
-
-	    bool operator==(const _Self& o) const {
-		return m_pos == o.m_pos;
-	    }
-
-	    bool operator!=(const _Self& o) const {
-		return m_pos != o.m_pos;
-	    }
-
-	private:
-	    internal_iterator m_pos;
-	};
-
 	typedef std::vector<SeqEventWrap>              internal_sequence_type;
 	typedef internal_sequence_type::iterator       internal_iterator;
 	typedef internal_sequence_type::const_iterator const_internal_iterator;
@@ -125,6 +123,7 @@ namespace H2Core
 	void insert(const SeqEvent& event);
 	void remove(const SeqEvent& event);
 	void remove(iterator pos);
+	void clear();
 	
 	// Iterator access;
 	iterator begin();

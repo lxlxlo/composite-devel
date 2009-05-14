@@ -93,6 +93,9 @@ void SeqScriptPrivate::reserve(size_t events)
     m_vec.clear();
     m_vec.reserve(events);
     m_vec.insert( m_vec.end(), events, SeqEventWrap() );
+    m_list_size = 0;
+    m_free = m_vec.size();
+
     internal_iterator cur;
     for( cur = m_vec.begin() ; cur != m_vec.end() ; ++cur ) {
 	cur->me = cur;
@@ -148,14 +151,29 @@ void SeqScriptPrivate::remove(iterator pos)
     }
 }
 
+void SeqScriptPrivate::clear()
+{
+    QMutexLocker mx(&m_mutex);
+    iterator cur;
+    for( cur = m_head ; cur != m_tail ; ++cur ) {
+	cur->used = false;
+	++m_free;
+	--m_list_size;
+    }
+    assert( m_list_size == 0 );
+    m_next_free = m_vec.begin();
+    m_head.reset( alloc() );
+    m_tail = m_head;
+}
+
 SeqScriptPrivate::iterator SeqScriptPrivate::begin()
 {
-    return iterator(m_head);
+    return m_head;
 }
 
 SeqScriptPrivate::iterator SeqScriptPrivate::end()
 {
-    return iterator(m_tail);
+    return m_tail;
 }
 
 void SeqScriptPrivate::consumed(SeqScriptPrivate::frame_type before_frame)

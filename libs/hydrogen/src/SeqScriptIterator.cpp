@@ -1,11 +1,11 @@
 
 #include <hydrogen/SeqScriptIterator.h>
 #include <hydrogen/SeqEvent.h>
-#include <hydrogen/SeqScript.h>
+#include "SeqScriptPrivate.h"
 
 #include <cassert>
 
-#warning "SeqScriptIterator.cpp needs to be IMPLEMENTED."
+
 
 namespace H2Core
 {
@@ -16,111 +16,79 @@ namespace H2Core
     // These abbreviations and the _Self macro are an attempt to make the code
     // READABLE.  :-)
 
-#define _Self _SeqScriptIterator<E,S>
+#define _Self _SeqScriptIterator<E>
 
-    template <typename E, typename S>
-    _SeqScriptIterator<E,S>::_SeqScriptIterator() : q(0)
+    template <typename E>
+    _SeqScriptIterator<E>::_SeqScriptIterator() : d(0)
     {
-        assert(false);
+	d = new _Internal;
     }
 
-    template <typename E, typename S>
-    _SeqScriptIterator<E,S>::_SeqScriptIterator(S* s) : q(s)
+    template <typename E>
+    _SeqScriptIterator<E>::_SeqScriptIterator(_Internal s) : d(0)
     {
-        assert(false);
+	d = new _Internal(s);
     }
 
-    template <typename E, typename S>
-    _SeqScriptIterator<E,S>::_SeqScriptIterator(const _SeqScriptIterator<E,S>& o) : q(o.q)
+    template <typename E>
+    _SeqScriptIterator<E>::_SeqScriptIterator(const _SeqScriptIterator<E>& o) : d(0)
     {
-        assert(false);
+	d = new _Internal(*o.d);
     }
 
-    template <typename E, typename S>
-    _SeqScriptIterator<E,S>::~_SeqScriptIterator()
+    template <typename E>
+    _SeqScriptIterator<E>::~_SeqScriptIterator()
     {
-        assert(false);
+	delete d;
+	d = 0;
     }
 
-    template <typename E, typename S>
-    typename _Self::reference _SeqScriptIterator<E,S>::operator*() const
+    template <typename E>
+    typename _Self::reference _SeqScriptIterator<E>::operator*() const
     {
-        assert(false);
-        return q->at(0);
+	return static_cast<reference>((*d)->ev);
     }
 
-    template <typename E, typename S>
-    typename _Self::pointer _SeqScriptIterator<E,S>::operator->() const
+    template <typename E>
+    typename _Self::pointer _SeqScriptIterator<E>::operator->() const
     {
-        assert(false);
-        return &(q->at(0));
+	return static_cast<pointer>(&((*d)->ev));
     }
 
-    template <typename E, typename S>
-    _Self& _SeqScriptIterator<E,S>::operator++()
+    template <typename E>
+    _Self& _SeqScriptIterator<E>::operator++()
     {
-        assert(false);
-        return *this;
+	++(*d);
+	return (*this);
     }
 
-    template <typename E, typename S>
-    _Self _SeqScriptIterator<E,S>::operator++(int)
+    template <typename E>
+    _Self _SeqScriptIterator<E>::operator++(int)
     {
-        assert(false);
-        return *this;
+	_Self tmp(*this);
+	++(*d);
+        return tmp;
     }
 
-    template <typename E, typename S>
-    _Self& _SeqScriptIterator<E,S>::operator+=(difference_type n)
+    template <typename E>
+    bool _SeqScriptIterator<E>::operator!=(const _Self& o) const
     {
-        assert(false);
-        return *this;
+	return ((*d) != (*o.d));
     }
 
-    template <typename E, typename S>
-    _Self _SeqScriptIterator<E,S>::operator+(difference_type n) const
+    template <typename E>
+    bool _SeqScriptIterator<E>::operator==(const _Self& o) const
     {
-        assert(false);
-        return *this;
+	return ((*d) == (*o.d));
     }
 
-    template <typename E, typename S>
-    _Self& _SeqScriptIterator<E,S>::operator-=(difference_type n)
+    template <typename E>
+    _Self& _SeqScriptIterator<E>::operator=(const _SeqScriptIterator<E>& o)
     {
-        assert(false);
-        return *this;
+	(*d) = (*o.d);
     }
 
-    template <typename E, typename S>
-    _Self _SeqScriptIterator<E,S>::operator-(difference_type n) const
-    {
-        assert(false);
-        return *this;
-    }
-
-    template <typename E, typename S>
-    typename _Self::reference _SeqScriptIterator<E,S>::operator[](difference_type n) const
-    {
-        assert(false);
-        return q->at(0);
-    }
-
-    template <typename E, typename S>
-    bool _SeqScriptIterator<E,S>::operator!=(const _Self& o) const
-    {
-        assert(false);
-        return true;
-    }
-
-    template <typename E, typename S>
-    bool _SeqScriptIterator<E,S>::operator==(const _Self& o) const
-    {
-        assert(false);
-        return true;
-    }
-
-    template class _SeqScriptIterator<SeqEvent, SeqScript>;
-    template class _SeqScriptIterator<const SeqEvent, const SeqScript>;
-
+    template class _SeqScriptIterator<SeqEvent>;
+    template class _SeqScriptIterator<const SeqEvent>;
 
 } // namespace H2Core

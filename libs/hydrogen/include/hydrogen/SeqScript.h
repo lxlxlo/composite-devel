@@ -149,12 +149,6 @@ namespace H2Core
         SeqScriptConstIterator end_const() const;
         SeqScriptConstIterator end_const(frame_type nframes) const;
 
-        #warning "Temporary method SeqScript::at()"
-        // This is a temporary method so things will compile...
-        // should last until things get fully defined.
-        value_type& at(frame_type frame);
-        const value_type& at(frame_type frame) const;
-
     private:
         SeqScriptPrivate* d;
     };

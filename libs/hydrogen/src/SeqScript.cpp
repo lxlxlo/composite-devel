@@ -32,10 +32,12 @@ using namespace H2Core;
 
 SeqScript::SeqScript()
 {
+    d = new SeqScriptPrivate();
 }
 
 SeqScript::~SeqScript()
 {
+    delete d;
 }
 
 /**
@@ -44,29 +46,30 @@ SeqScript::~SeqScript()
 /// True if there are no events.  False otherwise.
 bool SeqScript::empty() const
 {
-    assert(false);
-    return true;
+    return d->empty();
 }
 
 /// Returns the number of events stored.
 SeqScript::size_type SeqScript::size() const
 {
-    assert(false);
-    return 0;
+    return d->size();
 }
 
 /// Returns the number of events before frame 'before_frame'
 SeqScript::size_type SeqScript::size(SeqScript::frame_type before_frame) const
 {
-    assert(false);
-    return 0;
+    SeqScript::size_type cnt = 0;
+    SeqScriptPrivate::iterator cur;
+    for( cur = d->begin() ; (cur != d->end()) && (cur->ev.frame < before_frame) ; ++cur ) {
+	++cnt;
+    }
+    return cnt;
 }
 
 /// Returns the number of SeqEvents reserved in a buffer.
 SeqScript::size_type SeqScript::max_size() const
 {
-    assert(false);
-    return 0;
+    return d->max_size();
 }
 
 /**
@@ -81,20 +84,20 @@ SeqScript::size_type SeqScript::max_size() const
 /// called from any realtime events.
 void SeqScript::reserve(SeqScript::size_type events)
 {
-    assert(false);
+    d->reserve(events);
 }
 
 /// Insert an event (SeqScript handles sorting)
 void SeqScript::insert(const SeqScript::value_type& event)
 {
-    assert(false);
+    d->insert(event);
 }
 
 /// Remove an event.  It remains to be seen if this invalidates
 /// any iterators.
 void SeqScript::remove(const SeqScript::value_type& event)
 {
-    assert(false);
+    d->remove(event);
 }
 
 void SeqScript::remove(SeqScript::value_type* event)
@@ -106,13 +109,13 @@ void SeqScript::remove(SeqScript::value_type* event)
 /// they have been processed.
 void SeqScript::consumed(SeqScript::frame_type before_frame)
 {
-    assert(false);
+    d->consumed(before_frame);
 }
 
 /// Clears out all queued events.
 void SeqScript::clear()
 {
-    assert(false);
+    d->clear();
 }
 
 /// Schedules the note on/off pair, and cancel any note-off events
@@ -120,43 +123,27 @@ void SeqScript::clear()
 /// be interrupted by another note-on event).
 void SeqScript::insert_note(const SeqScript::value_type& event, SeqScript::frame_type length)
 {
-    assert(false);
+    SeqScript::value_type off = event;
+    off.frame += length;
+    off.type = SeqEvent::NOTE_OFF;
+    off.note.set_velocity(0.0);
 }
 
 /// Provides a read-only view of this sequence script from frames 0 to
 /// nframes.
 SeqScriptConstIterator SeqScript::begin_const() const
 {
-    static SeqScriptConstIterator foo(this);
-    assert(false);
-    return foo;
+    return SeqScriptConstIterator(d->begin());
 }
 
 SeqScriptConstIterator SeqScript::end_const() const
 {
-    static SeqScriptConstIterator foo(this);
-    assert(false);
-    return foo;
+    return SeqScriptConstIterator(d->end());
 }
 
 SeqScriptConstIterator SeqScript::end_const(SeqScript::frame_type nframes) const
 {
-    static SeqScriptConstIterator foo(this);
-    assert(false);
-    return foo;
-}
-
-#warning "Temporary method SeqScript::at()"
-// This is a temporary method so things will compile...
-// should last until things get fully defined.
-SeqScript::value_type& SeqScript::at(SeqScript::frame_type frame)
-{
-    static SeqEvent foo;
-    return foo;
-}
-
-const SeqScript::value_type& SeqScript::at(SeqScript::frame_type frame) const
-{
-    static SeqEvent foo;
-    return foo;
+    SeqScriptPrivate::iterator cur;
+    for( cur = d->begin() ; (cur != d->end()) && (cur->ev.frame < nframes) ; ++cur );
+    return SeqScriptConstIterator(cur);
 }
