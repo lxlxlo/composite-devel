@@ -164,8 +164,9 @@ void SimpleTransportMaster::processed_frames(uint32_t nFrames)
     d->pos.normalize(target);
 
     if( old_bar != d->pos.bar ) {
-	if( d->pos.bar > song_bar_count(d->song) ) {
-	    d->pos.bar %= song_bar_count(d->song);
+	uint32_t song_bars = song_bar_count(d->song);
+	if( d->pos.bar > song_bars ) {
+	    d->pos.bar = 1 + ((d->pos.bar - 1) % song_bars);
 	    d->pos.bar_start_tick = bar_start_tick(d->song, d->pos.bar); 
 	}
         d->pos.beats_per_bar = ticks_in_bar(d->song, d->pos.bar)
