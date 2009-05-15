@@ -290,7 +290,7 @@ TEST_CASE( 040_normalize )
     a = p;
     frame = a.frame;
     a.bbt_offset = 6 * 192 * 125 + 50;
-    frame += a.bbt_offset - 50;
+    //frame += a.bbt_offset - 50;
     a.normalize();
     CK( 2 == a.bar );
     CK( 3 == a.beat );
@@ -338,7 +338,7 @@ TEST_CASE( 040_normalize )
     a.beat -= 29;         // 348:4.18.115 (67228)  348.45530382216856
     a.tick += 999;        // 349:7.27.115 (67921)  349.89686226372697
     a.bbt_offset += 3114; // 349:7.41.165 (67921)  349.91739754005869
-    frame += 3114.0 - 165.0 + 115.0;
+    // frame += 3114.0 - 165.0 + 115.0;
     a.normalize();
     CK( 349 == a.bar );
     CK( 7 == a.beat );
@@ -522,7 +522,7 @@ TEST_CASE( 070_floor )
     CK( 1 == p.bar );
     CK( 1 == p.beat );
     CK( 8 == p.tick );
-    CK( DRIFT(954.0, p.frame, 1) );
+    CK( DRIFT(79.0, p.frame, 1) );
     CK( 0 == p.bbt_offset );
     p.tick = 1;
     p.bbt_offset = 921;
@@ -645,7 +645,9 @@ TEST_CASE( 080_ceil )
     CK( 1 == p.bar );
     CK( 2 == p.beat );
     CK( 0 == p.tick );
-    CK( DRIFT(23953.0, p.frame, 2) ); // 2 internal ops.
+    // frame = [1:1.8.0] + fpt * (192-8)
+    //       = 79 + 125.0 * 184 = 23079
+    CK( DRIFT(23079.0, p.frame, 2) ); // 2 internal ops.
     CK( 0 == p.bbt_offset );
     p.tick = 1;
     p.bbt_offset = 921;
@@ -654,7 +656,12 @@ TEST_CASE( 080_ceil )
     CK( 2 == p.bar );
     CK( 1 == p.beat );
     CK( 0 == p.tick );
-    CK( DRIFT(71955.0, p.frame, 2) ); // 2 internal ops
+    // frame = 125 + [2:1.0.0] - [1:2.1.921]
+    //       = 125 + [2:1.0.0] - [1:2.8.46]
+    //       = 125 + [1:5.0.0] - [1:2.8.46]
+    //       = 125 + fpt* ((2 * 192) + (192-9)) + (125-46)
+    //       = 71079.0
+    CK( DRIFT(71079.0, p.frame, 2) ); // 2 internal ops
     CK( 0 == p.bbt_offset );
     CK( 192 * 4 == p.bar_start_tick );
 
@@ -665,7 +672,12 @@ TEST_CASE( 080_ceil )
     CK( 3 == p.bar );
     CK( 1 == p.beat );
     CK( 0 == p.tick );
-    CK( DRIFT(95891.0, p.frame, 2) );
+    // frame = 63 + [3:1.0.0] - [2:1.1.921]
+    //       = 63 + [3:1.0.0] - [2:1.8.46]
+    //       = 63 + [2:5.0.0] - [2:1.8.46]
+    //       = 63 + fpt* ((3 * 192) + (192-9)) + (125-46)
+    //       = 95017
+    CK( DRIFT(95017.0, p.frame, 2) );
     CK( 0 == p.bbt_offset );
     CK( 192 * 4 * 2 == p.bar_start_tick );
 

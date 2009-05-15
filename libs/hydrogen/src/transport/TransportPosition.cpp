@@ -22,6 +22,7 @@
 
 #include <hydrogen/TransportPosition.h>
 #include <cstdlib> // rand()
+#include <cassert>
 #include <cmath>
 
 using namespace H2Core;
@@ -56,7 +57,7 @@ void TransportPosition::normalize()
 	f = fpt * modf(double(bbt_offset)/fpt, &n);
 	f += dither();
 	tick += int(n);
-	frame += bbt_offset - f;	
+	//frame += bbt_offset - f;	
 	bbt_offset = f;
     }
     while(tick < 0) {
@@ -91,6 +92,28 @@ void TransportPosition::normalize()
 	bar_start_tick = 0;
 	frame = 0;
     }    
+}
+
+void TransportPosition::normalize(uint32_t snap_to_frame)
+{
+    normalize();
+    if( (snap_to_frame < frame) && ((frame - snap_to_frame) > bbt_offset) ) {
+	--(*this);
+    }
+    if( snap_to_frame == frame ) return;
+
+    if( snap_to_frame > frame ) {
+	bbt_offset += snap_to_frame - frame;
+	frame = snap_to_frame;
+    } else {
+	uint32_t diff;
+	diff = frame - snap_to_frame;
+	assert( diff <= bbt_offset );
+	bbt_offset -= diff;
+	frame = snap_to_frame;
+    }
+
+    assert( bbt_offset < (frames_per_tick() + .5) );
 }
 
 TransportPosition::TransportPosition() :

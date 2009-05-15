@@ -156,35 +156,20 @@ void SimpleTransportMaster::processed_frames(uint32_t nFrames)
 	return;
     }
 
-    double frames_per_tick =
-        d->pos.frame_rate
-        * 60.0
-        / d->pos.beats_per_minute
-        / d->pos.ticks_per_beat;
-
+    uint32_t target = d->pos.frame + nFrames;
+    uint32_t old_bar = d->pos.bar;
     d->pos.frame += nFrames;
-    d->pos.new_position = false;
-
     d->pos.bbt_offset += nFrames;
-    if( double(d->pos.bbt_offset) < frames_per_tick ) return;
+    d->pos.new_position = false;
+    d->pos.normalize(target);
 
-    d->pos.tick += (double)d->pos.bbt_offset / frames_per_tick;
-    d->pos.bbt_offset = round(fmod( double(d->pos.bbt_offset), frames_per_tick ));
-    assert( d->pos.tick >= 0 );
-    if( unsigned(d->pos.tick) < d->pos.ticks_per_beat ) return;
-
-    d->pos.beat += d->pos.tick / d->pos.ticks_per_beat;
-    d->pos.tick -= d->pos.tick % d->pos.ticks_per_beat;
-    if( d->pos.beat <= d->pos.beats_per_bar ) return;
-
-    // We're now into a new bar and must make sure we handle it right.
-    while( d->pos.beat > d->pos.beats_per_bar ) {
-        ++(d->pos.bar);
-        d->pos.beat -= d->pos.beats_per_bar;
+    if( old_bar != d->pos.bar ) {
+	if( d->pos.bar > song_bar_count(d->song) ) {
+	    d->pos.bar %= song_bar_count(d->song);
+	    d->pos.bar_start_tick = bar_start_tick(d->song, d->pos.bar); 
+	}
         d->pos.beats_per_bar = ticks_in_bar(d->song, d->pos.bar)
             / d->pos.ticks_per_beat;
-        d->pos.bar_start_tick += ticks_in_bar(d->song, d->pos.bar);
-        assert(d->pos.bar_start_tick == bar_start_tick(d->song, d->pos.bar));        
     }
 }
 

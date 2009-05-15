@@ -106,6 +106,13 @@ namespace H2Core
 	 */
 	void normalize();
 
+	/**
+	 * same as normalize(), but when done the 'frame' member will
+	 * match the 'snap_to_frame' argument.  Useful for transport
+	 * masters that need the frame to be something specific.
+	 */
+	void normalize(uint32_t snap_to_frame);
+
         /**
          * Convenience calculations
          */
