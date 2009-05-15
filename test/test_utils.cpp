@@ -21,7 +21,12 @@
  */
 
 #include "test_utils.h"
+#include <hydrogen/TransportPosition.h>
+#include <hydrogen/Song.h>
+#include <transport/songhelpers.h>
 #include <cmath>
+
+using namespace H2Core;
 
 namespace H2Test
 {
@@ -120,5 +125,24 @@ namespace H2Test
 	return rv;
     }
 
+    #define XCK(expr) { BOOST_CHECK( expr ); rv = rv && (expr); }
+
+    bool valid_position(TransportPosition& p, Song* s)
+    {
+	bool rv = true;
+	XCK( p.bar > 0 );
+	XCK( p.bar <= song_bar_count(s) );
+	XCK( p.ticks_per_beat == 48 );
+	XCK( p.beats_per_bar == (ticks_in_bar(s,p.bar)/48) );
+	XCK( p.beat_type == 4 );
+	XCK( p.beat > 0 );
+	XCK( p.beat <= p.beats_per_bar );
+	XCK( p.tick < ticks_in_bar(s, p.bar) );
+	XCK( p.bbt_offset < p.frames_per_tick() );
+	XCK( p.bar_start_tick < song_tick_count(s) );
+	XCK( p.bar_start_tick == bar_start_tick(s, p.bar) );
+	XCK( (p.bar_start_tick + p.tick) < song_tick_count(s) );
+	return rv;
+    }
 
 } // namespace H2Test

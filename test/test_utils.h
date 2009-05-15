@@ -35,9 +35,13 @@
  * be reused and updated uniformly.
  */
 
+namespace H2Core {
+    struct TransportPosition;
+    class Song;
+}
+
 namespace H2Test
 {
-
     /*
      * check_frame_drift()
      *
@@ -66,26 +70,38 @@ namespace H2Test
 			   const char* File,
 			   int Line);
 
+    /*
+     * valid_position()
+     *
+     * Tests that the B:b.t info in the struct 'p' describes some
+     * point within the song 's'.  E.g. if the song is only 8 bars
+     * long, but p->bar is 12... then p is not within the song and
+     * this function will return false.  However, if p->bar were 7,
+     * it would be OK.
+     *
+     * Another example, if bar 5 of the song has only 2 beats, but
+     * p->bar == 5 and p->beat == 3, then this function will return
+     * false.
+     *
+     * Parameters: p - A TransportPosition struct (e.g. one filled out
+     *                 by Transport::get_position();
+     *             s - A Song object.
+     *
+     * Returns:  true if p is within the bounds of s.  false if the
+     *           position p is outside the song.
+     */
+    bool valid_position(H2Core::TransportPosition& p, H2Core::Song* s);
+
 } // namespace H2Test
 
+// Convenience macro for check_frame_drift()
 #define H2TEST_DRIFT(t, f, n) H2Test::check_frame_drift(t, f, n, __FILE__, __LINE__)
 
-#define H2TEST_VALID_POS(p, s) {					\
-    BOOST_REQUIRE( typeid(p) == typeid(H2Core::TransportPosition) );	\
-    BOOST_REQUIRE( typeid(s) == typeid(H2Core::Song*) );		\
-    CK( (p).bar > 0 );							\
-    CK( (p).bar <= H2Core::song_bar_count(s) );				\
-    CK( (p).ticks_per_beat == 48 );					\
-    CK( (p).beats_per_bar == (H2Core::ticks_in_bar((s),(p).bar)/48) );	\
-    CK( (p).beat_type == 4 );						\
-    CK( (p).beat > 0 );							\
-    CK( (p).beat <= (p).beats_per_bar );				\
-    CK( (p).tick < ticks_in_bar((s), (p).bar) );			\
-    CK( (p).bbt_offset < (p).frames_per_tick() );			\
-    CK( (p).bar_start_tick < H2Core::song_tick_count(s) );		\
-    CK( (p).bar_start_tick == H2Core::bar_start_tick((s), (p).bar) );	\
-    CK( ((p).bar_start_tick + (p).tick) < H2Core::song_tick_count(s) );	\
-}
-
+// This tests that the positions is valid for the given song.
+// Transports should always give a BBT within the current song.
+//
+// This is wrapped inside a BOOST_CHECK so that the user gets
+// feedback on the line number where it happened.
+#define H2TEST_VALID_POS(p, s) BOOST_CHECK(H2Test::valid_position(p, s))
 
 #endif // __HYDROGEN_TEST_UTILS__
