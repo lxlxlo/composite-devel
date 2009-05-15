@@ -30,6 +30,7 @@
 // CHANGE THIS TO MATCH YOUR FILE:
 #define THIS_NAMESPACE t_SimpleTransportMaster
 #include "test_macros.h"
+#include "test_utils.h"
 
 using namespace H2Core;
 
@@ -51,22 +52,6 @@ namespace THIS_NAMESPACE
 	}
     };
 
-#define VALID_POS(p, s) {							\
-    BOOST_REQUIRE( typeid(p) == typeid(H2Core::TransportPosition) );	\
-    BOOST_REQUIRE( typeid(s) == typeid(H2Core::Song*) );		\
-    CK( (p).bar > 0 );							\
-    CK( (p).bar <= song_bar_count(s) );					\
-    CK( (p).ticks_per_beat == 48 );					\
-    CK( (p).beats_per_bar == (ticks_in_bar((s),(p).bar)/48) );		\
-    CK( (p).beat_type == 4 );						\
-    CK( (p).beat > 0 );							\
-    CK( (p).beat <= (p).beats_per_bar );				\
-    CK( (p).tick < ticks_in_bar((s), (p).bar) );			\
-    CK( (p).bbt_offset < (p).frames_per_tick() );			\
-    CK( (p).bar_start_tick < song_tick_count(s) );			\
-    CK( (p).bar_start_tick == bar_start_tick((s), (p).bar) );		\
-    CK( ((p).bar_start_tick + (p).tick) < song_tick_count(s) );		\
-}
 
 
 } // namespace THIS_NAMESPACE
@@ -80,7 +65,7 @@ TEST_CASE( 010_defaults )
     CK( x.get_state() == TransportPosition::STOPPED );
     CK( 0 == x.get_current_frame() );
     x.get_position(&pos);
-    VALID_POS(pos, s);
+    H2TEST_VALID_POS(pos, s);
     CK( pos.bar == 1 );
     CK( pos.beat == 1 );
     CK( pos.tick == 0 );
@@ -106,10 +91,10 @@ TEST_CASE( 020_start_stop )
 {
     TransportPosition pos, posb;
     x.get_position(&pos);
-    VALID_POS(pos, s);
+    H2TEST_VALID_POS(pos, s);
     x.processed_frames(1024);
     x.get_position(&posb);
-    VALID_POS(posb, s);
+    H2TEST_VALID_POS(posb, s);
     CK( pos.frame == 0 );
     CK( pos.bbt_offset == 0 );
     CK( pos.frame == posb.frame );
@@ -129,7 +114,7 @@ TEST_CASE( 020_start_stop )
     x.start();
     for( frame = 0 ; frame <= tot_frames ; frame += delta ) {
 	x.get_position(&pos);
-	VALID_POS(pos, s);
+	H2TEST_VALID_POS(pos, s);
 
 	CK( pos.beats_per_minute == 100.0 );
 	map_frame_to_bbt(frame, bar, beat, tick, bbt_offset, __bar_start_tick, pos.frames_per_tick());
