@@ -1697,7 +1697,7 @@ unsigned long Hydrogen::getTickPosition()
 {
 	TransportPosition pos;
 	m_pTransport->get_position(&pos);
-	return pos.tick + pos.beat * pos.ticks_per_beat;
+	return pos.tick + (pos.beat-1) * pos.ticks_per_beat;
 }
 
 PatternList* Hydrogen::getCurrentPatternList()
@@ -1726,7 +1726,7 @@ int Hydrogen::getPatternPos()
 {
 	TransportPosition pos;
 	m_pTransport->get_position(&pos);
-	return pos.bar;
+	return pos.bar-1;
 }
 
 
@@ -2080,7 +2080,7 @@ long Hydrogen::getTickForPosition( int pos )
 /// Set the position in the song
 void Hydrogen::setPatternPos( int pos )
 {
-	m_pTransport->locate(pos+1, 0, 0);
+	m_pTransport->locate(pos+1, 1, 0);
 }
 
 void Hydrogen::getLadspaFXPeak( int nFX, float *fL, float *fR )
