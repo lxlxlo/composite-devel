@@ -99,7 +99,7 @@ int SongSequencer::process(SeqScript& seq, const TransportPosition& pos, uint32_
 			     ++n ) {
 				if( n->first != this_tick ) continue;
 				pNote = n->second;
-				ev.frame = cur.frame;
+				ev.frame = cur.frame - pos.frame;
 				ev.type = SeqEvent::NOTE_ON;
 				ev.note = *pNote;
 				ev.instrument_index =

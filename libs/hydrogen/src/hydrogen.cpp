@@ -756,8 +756,9 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 		m_sendPatternChange = false;
  	}
 
-        // Increment the transport
+        // Increment the transport and clear out the processed sequencer notes.
         xport->processed_frames(nframes);
+	m_queue.consumed(nframes);
 
 	return 0;
 }

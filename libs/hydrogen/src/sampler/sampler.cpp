@@ -146,6 +146,7 @@ void SamplerPrivate::handle_note_on(const SeqEvent& ev)
 	current_notes.push_back( ev.note );
 	current_notes.back().m_nSilenceOffset = ev.frame;
 	current_notes.back().m_uInstrumentIndex = ev.instrument_index;
+	current_notes.back().m_nReleaseOffset = (uint32_t)-1;
 	assert(ev.instrument_index >= 0);
 	assert(ev.instrument_index < MAX_INSTRUMENTS);
 }

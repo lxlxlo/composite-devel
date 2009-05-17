@@ -124,9 +124,13 @@ void SeqScript::clear()
 void SeqScript::insert_note(const SeqScript::value_type& event, SeqScript::frame_type length)
 {
     SeqScript::value_type off = event;
-    off.frame += length;
-    off.type = SeqEvent::NOTE_OFF;
-    off.note.set_velocity(0.0);
+    d->insert(event);
+    if( length != unsigned(-1) ) {
+	off.frame += length;
+	off.type = SeqEvent::NOTE_OFF;
+	off.note.set_velocity(0.0);
+	d->insert(off);
+    }
 }
 
 /// Provides a read-only view of this sequence script from frames 0 to
