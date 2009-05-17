@@ -1704,14 +1704,28 @@ PatternList* Hydrogen::getCurrentPatternList()
 {
 	TransportPosition pos;
 	m_pTransport->get_position(&pos);
-	return m_pSong->get_pattern_group_vector()->at(pos.bar);
+	if( pos.bar <= m_pSong->get_pattern_group_vector()->size() ) {
+		return m_pSong->get_pattern_group_vector()->at(pos.bar-1);
+	} else {
+		return 0;
+	}
 }
 
 PatternList * Hydrogen::getNextPatterns()
 {
+	static PatternList the_nothing;
 	TransportPosition pos;
 	m_pTransport->get_position(&pos);
-	return m_pSong->get_pattern_group_vector()->at(pos.bar + 1);
+	size_t p_sz = m_pSong->get_pattern_group_vector()->size();
+	if( pos.bar < p_sz ) {
+		return m_pSong->get_pattern_group_vector()->at(pos.bar);
+	} else {
+		if( m_pSong->is_loop_enabled() && p_sz ) {
+			return m_pSong->get_pattern_group_vector()->at(0);
+		} else  {
+			return &the_nothing;
+		}
+	}
 }
 
 /// Set the next pattern (Pattern mode only)
