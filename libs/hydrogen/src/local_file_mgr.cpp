@@ -201,7 +201,7 @@ Pattern* LocalFileMng::loadPattern( const QString& directory )
 		{
 			Note* pNote = NULL;
 			unsigned nPosition = LocalFileMng::readXmlInt( noteNode, "position", 0 );
-			float fLeadLag = LocalFileMng::readXmlFloat( noteNode, "leadlag", 0.0 );
+			float fLeadLag = LocalFileMng::readXmlFloat( noteNode, "leadlag", 0.0 , false , false);
 			float fVelocity = LocalFileMng::readXmlFloat( noteNode, "velocity", 0.8f );
 			float fPan_L = LocalFileMng::readXmlFloat( noteNode, "pan_L", 0.5 );
 			float fPan_R = LocalFileMng::readXmlFloat( noteNode, "pan_R", 0.5 );
@@ -751,6 +751,7 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 
 			QString id = readXmlString( instrumentNode, "id", "" );
 			QString name = readXmlString( instrumentNode, "name", "" );
+
 			float volume = readXmlFloat( instrumentNode, "volume", 1.0f );
 			bool isMuted = readXmlBool( instrumentNode, "isMuted", false );
 			float pan_L = readXmlFloat( instrumentNode, "pan_L", 1.0f );
@@ -780,6 +781,7 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 
 			// back compatibility code
 			QDomNode filenameNode = instrumentNode.firstChildElement( "filename" );
+			
 			if ( ! filenameNode.isNull() ) {
 				//warningLog( "Using back compatibility code. filename node found" );
 				QString sFilename = LocalFileMng::readXmlString( instrumentNode, "filename", "" );
@@ -811,9 +813,9 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 					pLayer->set_pitch( fPitch );
 					pInstrument->set_layer( pLayer, nLayer );
 					
-					layerNode = layerNode.nextSiblingElement( "layer" );
-		
 					nLayer++;
+
+					layerNode = layerNode.nextSiblingElement( "layer" );
 				}
 			}
 
