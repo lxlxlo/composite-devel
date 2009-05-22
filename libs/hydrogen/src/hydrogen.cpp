@@ -170,6 +170,7 @@ public:
 		ev.instrument_index =
 			Hydrogen::get_instance()->getSong()
 			->get_instrument_list()->get_pos( pNote->get_instrument() );
+		__events.push_back(ev);
 	}
 
 	void note_off( const Note* pNote, bool quantize = false ) {
@@ -182,6 +183,7 @@ public:
 		ev.instrument_index =
 			Hydrogen::get_instance()->getSong()
 			->get_instrument_list()->get_pos( pNote->get_instrument() );
+		__events.push_back(ev);
 	}
 
 	void panic() {
