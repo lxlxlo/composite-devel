@@ -582,7 +582,8 @@ int SamplerPrivate::render_note_resample(
 
 	//_INFOLOG( "pitch: " + to_string( fNotePitch ) );
 
-	float fStep = pow( 1.0594630943593, ( double )fNotePitch );
+	// 2^(1/12) is a musical half-step in pitch.  If A=440, A#=440 * 2^1/12
+	float fStep = pow( 1.0594630943593, ( double )fNotePitch );  // i.e. pow( 2, fNotePitch/12.0 )
 	fStep *= ( float )pSample->get_sample_rate() / frame_rate; // Adjust for audio driver sample rate
 
 	int nAvail_bytes = ( int )( ( float )( pSample->get_n_frames() - note.m_fSamplePosition ) / fStep );	// verifico il numero di frame disponibili ancora da eseguire
@@ -692,6 +693,7 @@ int SamplerPrivate::render_note_resample(
 		fSamplePos += fStep;
 	}
 	note.m_fSamplePosition += nAvail_bytes * fStep;
+	note.m_nSilenceOffset = 0;
 	note.get_instrument()->set_peak_l( fInstrPeak_L );
 	note.get_instrument()->set_peak_r( fInstrPeak_R );
 
