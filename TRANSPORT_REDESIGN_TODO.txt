@@ -29,22 +29,14 @@ SPECIFIC TASKS
     what hydrogen.cpp lacks to compile.  (Update 2009-04-28:
     pattern mode added, but realized late that I also need
     a "stacked" pattern mode... which still needs to be
-    implemented.)
+    implemented.)  (Update 2009-04-29:  The stuff was
+    implemented, but not tested as of yet.)
 
-(.) After Hydrogen compiles, start creating unit tests to
-    audit the behavior of all the classes (especially the
-    new ones).  Do this before even writing SeqScript.
-    ("Write your tests first.")
-
-(.) Implement SeqScript and SeqScriptIterator
+(.) Create unit tests for as many classes as possible.
 
 (.) Re-implement randomization logic (do this in
     hydrogen.cpp:audioEngine_song_sequence_process())
     This includes humanization, random pitch, lead/lag, etc.
-
-(.) audioEngine_song_sequence_process() needs its own class,
-    this will expecially be evident when it starts having
-    subroutines, cursors, state variables, etc.
 
 (.) Implement a loop counter in TransportPosition.  The running
     clock in the UI will probably want this.
