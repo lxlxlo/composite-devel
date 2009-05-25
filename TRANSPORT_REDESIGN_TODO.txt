@@ -16,14 +16,24 @@ While coding, these are the markers used for "FIX ME LATER":
     /* TODO: some message
      */
 
-As of this writing (2009-04-27), the status is:
+As of this writing (2009-05-25), the status is:
 
-    #warning:       18 locations
-    assert(false):  31 locations
-    TODO comment:   10 locations
+    #warning:       13 locations
+    assert(false):   6 locations
+    TODO comment:   19 locations
 
 SPECIFIC TASKS
 --------------
+
+(.) Implement support for audio sample rate (currently
+    hard-coded to 48000 Hz).
+
+(.) Get pattern mode and the "loop" setting working.
+    Currently, things are hard-coded to loop a song.
+
+(.) At beginning of a song, the "Rewind" button causes
+    a crash.  At the end of a song, "Fast-Forward"
+    causes a crash.
 
 (.) Re-implement Pattern mode with new transport.  This is
     what hydrogen.cpp lacks to compile.  (Update 2009-04-28:
