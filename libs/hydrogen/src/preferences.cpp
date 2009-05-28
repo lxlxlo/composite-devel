@@ -253,12 +253,13 @@ void Preferences::loadPreferences( bool bGlobal )
 
 			QDomNode pRecentUsedSongsNode = rootNode.firstChildElement( "recentUsedSongs" );
 			if ( !pRecentUsedSongsNode.isNull() ) {
-				QDomNode pSongNode = pRecentUsedSongsNode.firstChildElement( "song" );
-				while ( !pSongNode.isNull() ) {
-					QString sFilename = pSongNode.firstChildElement().nodeValue();
-					m_recentFiles.push_back( sFilename );
-					pSongNode = pSongNode.nextSiblingElement( "song" );
+				QDomElement pSongElement = pRecentUsedSongsNode.firstChildElement( "song" );
+				if( !pSongElement.isNull() && !pSongElement.text().isEmpty() ){
+					m_recentFiles.push_back( pSongElement.text() );
 				}
+				pSongElement = pRecentUsedSongsNode.nextSiblingElement( "song" );
+
+				
 			} else {
 				WARNINGLOG( "recentUsedSongs node not found" );
 			}
