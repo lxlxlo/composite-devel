@@ -393,11 +393,11 @@ Song* SongReader::readSong( const QString& filename )
 				drumkitPath = localFileMng.getDrumkitDirectory( sDrumkit ) + sDrumkit;
 			}
 			
-			instrumentNode; instrumentNode = (QDomNode) instrumentNode.nextSiblingElement( "instrument" );
-	
+			
+			QDomNode filenameNode = instrumentNode.firstChildElement( "filename" );
+			
 			
 			// back compatibility code ( song version <= 0.9.0 )
-			QDomNode filenameNode = instrumentNode.firstChildElement( "filename" );
 			if ( ! filenameNode.isNull() ) {
 				WARNINGLOG( "Using back compatibility code. filename node found" );
 				QString sFilename = LocalFileMng::readXmlString( instrumentNode, "filename", "" );
@@ -457,6 +457,7 @@ Song* SongReader::readSong( const QString& filename )
 			}
 
 			instrumentList->add( pInstrument );
+			instrumentNode = (QDomNode) instrumentNode.nextSiblingElement( "instrument" );
 		}
 		if ( instrumentList_count == 0 ) {
 			WARNINGLOG( "0 instruments?" );
