@@ -280,6 +280,8 @@ int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString&
 		return 1;
 
 	QDomDocument doc;
+	QDomProcessingInstruction header = doc.createProcessingInstruction( "xml", "version=\"1.0\" encoding=\"UTF-8\"");
+	doc.appendChild( header );
 
 	QDomNode rootNode = doc.createElement( "drumkit_pattern" );
 	//LIB_ID just in work to get better usability
@@ -871,6 +873,8 @@ int LocalFileMng::saveDrumkit( Drumkit *info )
 	QString sDrumkitXmlFilename = sDrumkitDir + QString( "/drumkit.xml" );
 
 	QDomDocument doc;
+	QDomProcessingInstruction header = doc.createProcessingInstruction( "xml", "version=\"1.0\" encoding=\"UTF-8\"");
+	doc.appendChild( header );
 
 	QDomElement rootNode = doc.createElement( "drumkit_info" );
 
@@ -980,6 +984,9 @@ int LocalFileMng::savePlayList( const std::string& patternname)
 	std::string realname = name.substr(name.rfind("/")+1);
 
 	QDomDocument doc;
+	QDomProcessingInstruction header = doc.createProcessingInstruction( "xml", "version=\"1.0\" encoding=\"UTF-8\"");
+	doc.appendChild( header );
+
 	QDomNode rootNode = doc.createElement( "playlist" ); 
 
 	//LIB_ID just in work to get better usability
@@ -1227,6 +1234,9 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 
 
 	QDomDocument doc;
+	QDomProcessingInstruction header = doc.createProcessingInstruction( "xml", "version=\"1.0\" encoding=\"UTF-8\"");
+	doc.appendChild( header );
+
 	QDomNode songNode = doc.createElement( "song" );
 
 	LocalFileMng::writeXmlString( songNode, "version", QString( get_version().c_str() ) );

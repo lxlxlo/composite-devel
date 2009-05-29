@@ -568,6 +568,8 @@ void Preferences::savePreferences()
 	INFOLOG( "Saving preferences file: " + filename );
 
 	QDomDocument doc;
+	QDomProcessingInstruction header = doc.createProcessingInstruction( "xml", "version=\"1.0\" encoding=\"UTF-8\"");
+	doc.appendChild( header );
 
 	QDomNode rootNode = doc.createElement( "hydrogen_preferences" );
 
