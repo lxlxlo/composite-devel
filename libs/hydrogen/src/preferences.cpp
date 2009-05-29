@@ -258,7 +258,6 @@ void Preferences::loadPreferences( bool bGlobal )
 					m_recentFiles.push_back( pSongElement.text() );
 				}
 				pSongElement = pRecentUsedSongsNode.nextSiblingElement( "song" );
-
 				
 			} else {
 				WARNINGLOG( "recentUsedSongs node not found" );
@@ -266,12 +265,11 @@ void Preferences::loadPreferences( bool bGlobal )
 
 			QDomNode pRecentFXNode = rootNode.firstChildElement( "recentlyUsedEffects" );
 			if ( ! pRecentFXNode.isNull() ) {
-				QDomNode pFXNode = pRecentFXNode.firstChildElement( "FX" );
-				while ( !pFXNode.isNull()  ) {
-					QString sFXName = pFXNode.firstChildElement().nodeValue();
-					m_recentFX.push_back( sFXName );
-					pFXNode = pFXNode.nextSiblingElement( "FX" );
+				QDomElement pFXElement = pRecentFXNode.firstChildElement( "FX" );
+				if ( !pFXElement.isNull()  && ! pFXElement.text().isEmpty()) {
+					m_recentFX.push_back( pFXElement.text() );
 				}
+				pFXElement = pRecentFXNode.nextSiblingElement( "FX" );
 			} else {
 				WARNINGLOG( "recentlyUsedEffects node not found" );
 			}
@@ -279,12 +277,11 @@ void Preferences::loadPreferences( bool bGlobal )
 			sServerList.clear();
 			QDomNode pServerListNode = rootNode.firstChildElement( "serverList" );
 			if ( !pServerListNode.isNull() ) {
-				QDomNode pServerNode = pServerListNode.firstChildElement( "server" );
-				while ( !pServerNode.isNull()  ) {
-					QString sFilename = pServerNode.firstChildElement().nodeValue();
-					sServerList.push_back( sFilename );
-					pServerNode = pServerNode.nextSiblingElement( "server" );
+				QDomElement pServerElement = pServerListNode.firstChildElement( "server" );
+				if ( !pServerElement.isNull() && !pServerElement.text().isEmpty() ) {
+					sServerList.push_back( pServerElement.text() );
 				}
+				pServerElement = pServerListNode.nextSiblingElement( "server" );
 			} else {
 				WARNINGLOG( "serverList node not found" );
 			}
@@ -292,12 +289,11 @@ void Preferences::loadPreferences( bool bGlobal )
 			m_patternCategories.clear();
 			QDomNode pPatternCategoriesNode = rootNode.firstChildElement( "patternCategories" );
 			if ( !pPatternCategoriesNode.isNull() ) {
-				QDomNode pCategoriesNode = pPatternCategoriesNode.firstChildElement( "categories" );
-				while ( !pCategoriesNode.isNull() ) {
-					QString sFilename = pCategoriesNode.firstChildElement().nodeValue();
-					m_patternCategories.push_back( sFilename );
-					pCategoriesNode = pCategoriesNode.nextSiblingElement( "categories" );
+				QDomElement pPatternCategoriesElement = pPatternCategoriesNode.firstChildElement( "categories" );
+				if ( !pPatternCategoriesElement.isNull() && !pPatternCategoriesElement.text().isEmpty() ) {
+					m_patternCategories.push_back( pPatternCategoriesElement.text() );
 				}
+				pPatternCategoriesElement = pPatternCategoriesNode.nextSiblingElement( "categories" );
 			} else {
 				WARNINGLOG( "patternCategories node not found" );
 			}
