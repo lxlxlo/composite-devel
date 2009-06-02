@@ -1194,7 +1194,29 @@ void LocalFileMng::writeXmlBool( QDomNode parent, const QString& name, bool valu
 	}
 }
 
+bool LocalFileMng::checkTinyXMLCompatMode( const QString& filename )
+{
+	/*
+		Check if filename was created with TinyXml or QtXml
+		TinyXML: return true
+		QtXml: return false
+	*/
 
+	QFile file( filename );
+
+	if ( !file.open(QIODevice::ReadOnly) )
+		return false;
+
+	QString line = file.readLine();
+	if ( ! line.startsWith( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" )){
+		return true;
+	} else  {
+		return false;
+	}
+
+
+
+}
 
 
 

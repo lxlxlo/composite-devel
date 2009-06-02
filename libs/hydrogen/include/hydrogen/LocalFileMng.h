@@ -90,6 +90,7 @@ public:
 	static float readXmlFloat( QDomNode , const QString& nodeName, float defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true );
 	static int readXmlInt( QDomNode , const QString& nodeName, int defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true );
 	static bool readXmlBool( QDomNode , const QString& nodeName, bool defaultValue, bool bShouldExists = true );
+	static bool checkTinyXMLCompatMode( const QString& filename );
 
 private:
 	void fileCopy( const QString& sOrigFilename, const QString& sDestFilename );

@@ -259,6 +259,9 @@ Song* SongReader::readSong( const QString& filename )
 	}
 	file.close();
 
+	if (LocalFileMng::checkTinyXMLCompatMode( filename )){
+		ERRORLOG( "old xml file!!!!" );
+	}
 
 	QDomNodeList nodeList = doc.elementsByTagName( "song" );
 	
