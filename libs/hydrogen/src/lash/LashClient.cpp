@@ -41,7 +41,7 @@ LashClient* LashClient::instance = NULL; /// static reference of LashClient clas
 
 LashClient::LashClient(const char* lashClass, const char* viewName, int* argc, char*** argv)
 {
-	if ( H2Core::Preferences::getInstance()->useLash() ){
+	if ( H2Core::Preferences::get_instance()->useLash() ){
 		newProject = true;
 		lash_args_t *lash_args = lash_extract_args(argc, argv);
 		lashClient = lash_init(lash_args, lashClass, LASH_Config_File, LASH_PROTOCOL(2, 0));
@@ -124,7 +124,7 @@ void LashClient::sendAlsaClientId()
 
 
 /// Return the LashClient instance
-LashClient* LashClient::getInstance() {
+LashClient* LashClient::get_instance() {
 	return instance;
 }
 

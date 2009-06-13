@@ -266,7 +266,7 @@ InstrumentEditor::InstrumentEditor( QWidget* pParent )
 
 	selectLayer( m_nSelectedLayer );
 
-	HydrogenApp::getInstance()->addEventListener(this);
+	HydrogenApp::get_instance()->addEventListener(this);
 
 	selectedInstrumentChangedEvent(); 	// force an update
 }

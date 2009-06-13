@@ -686,7 +686,7 @@ inline void audioEngine_process_clearAudioBuffers( uint32_t nFrames )
 	if ( ( m_audioEngineState == STATE_READY )
 	     || ( m_audioEngineState == STATE_PLAYING ) ) {
 #ifdef LADSPA_SUPPORT
-		Effects* pEffects = Effects::getInstance();
+		Effects* pEffects = Effects::get_instance();
 		for ( unsigned i = 0; i < MAX_FX; ++i ) {	// clear FX buffers
 			LadspaFX* pFX = pEffects->getLadspaFX( i );
 			if ( pFX ) {
@@ -784,7 +784,7 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 	if ( ( m_audioEngineState == STATE_READY )
 	     || ( m_audioEngineState == STATE_PLAYING ) ) {
 		for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
-			LadspaFX *pFX = Effects::getInstance()->getLadspaFX( nFX );
+			LadspaFX *pFX = Effects::get_instance()->getLadspaFX( nFX );
 			if ( ( pFX ) && ( pFX->isEnabled() ) ) {
 				pFX->processFX( nframes );
 				float *buf_L = NULL;
@@ -888,7 +888,7 @@ void audioEngine_setupLadspaFX( unsigned nBufferSize )
 
 #ifdef LADSPA_SUPPORT
 	for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
-		LadspaFX *pFX = Effects::getInstance()->getLadspaFX( nFX );
+		LadspaFX *pFX = Effects::get_instance()->getLadspaFX( nFX );
 		if ( pFX == NULL ) {
 			return;
 		}
@@ -905,7 +905,7 @@ void audioEngine_setupLadspaFX( unsigned nBufferSize )
 		//pFX->m_pBuffer_R = new float[ nBufferSize ];
 //		}
 
-		Effects::getInstance()->getLadspaFX( nFX )->connectAudioPorts(
+		Effects::get_instance()->getLadspaFX( nFX )->connectAudioPorts(
 		    pFX->m_pBuffer_L,
 		    pFX->m_pBuffer_R,
 		    pFX->m_pBuffer_L,
@@ -1165,7 +1165,7 @@ inline int audioEngine_updateNoteQueue( unsigned nFrames )
 			int nPatternSize = MAX_NOTES;
 
 			
-			if ( Preferences::getInstance()->patternModePlaysSelected() )
+			if ( Preferences::get_instance()->patternModePlaysSelected() )
 			{
 				m_pPlayingPatterns->clear();
 				Pattern * pSelectedPattern =
@@ -1234,9 +1234,9 @@ inline int audioEngine_updateNoteQueue( unsigned nFrames )
 				fVelocity = 0.8;
 				EventQueue::get_instance()->push_event( EVENT_METRONOME, 0 );
 			}
-			if ( Preferences::getInstance()->m_bUseMetronome ) {
+			if ( Preferences::get_instance()->m_bUseMetronome ) {
 				m_pMetronomeInstrument->set_volume(
-					Preferences::getInstance()->m_fMetronomeVolume
+					Preferences::get_instance()->m_fMetronomeVolume
 					);
 				Note *pMetronomeNote = new Note( m_pMetronomeInstrument,
 								 tick,
@@ -1435,7 +1435,7 @@ void audioEngine_noteOff( Note *note )
 AudioOutput* createDriver( const QString& sDriver )
 {
 	_INFOLOG( QString( "Driver: '%1'" ).arg( sDriver ) );
-	Preferences *pPref = Preferences::getInstance();
+	Preferences *pPref = Preferences::get_instance();
 	AudioOutput *pDriver = NULL;
 
 	if ( sDriver == "Oss" ) {
@@ -1452,7 +1452,7 @@ AudioOutput* createDriver( const QString& sDriver )
 		} else {
 #ifdef JACK_SUPPORT
 			static_cast<JackOutput*>(pDriver)->setConnectDefaults(
-				Preferences::getInstance()->m_bJackConnectDefaults
+				Preferences::get_instance()->m_bJackConnectDefaults
 				);
 #endif
 		}
@@ -1504,7 +1504,7 @@ AudioOutput* createDriver( const QString& sDriver )
 /// Start all audio drivers
 void audioEngine_startAudioDrivers()
 {
-	Preferences *preferencesMng = Preferences::getInstance();
+	Preferences *preferencesMng = Preferences::get_instance();
 
 	AudioEngine::get_instance()->lock( "audioEngine_startAudioDrivers" );
 
@@ -1811,7 +1811,7 @@ void Hydrogen::addRealtimeNote( int instrument,
 {
 	UNUSED( pitch );
 
-	Preferences *pref = Preferences::getInstance();
+	Preferences *pref = Preferences::get_instance();
 	unsigned int realcolumn = 0;
 	unsigned res = pref->getPatternEditorGridResolution();
 	int nBase = pref->isPatternEditorUsingTriplets() ? 3 : 4;
@@ -2059,7 +2059,7 @@ void Hydrogen::startExportSong( const QString& filename )
 	if ( getState() == STATE_PLAYING ) {
 		sequencer_stop();
 	}
-	Preferences *pPref = Preferences::getInstance();
+	Preferences *pPref = Preferences::get_instance();
 
 	m_oldEngineMode = m_pSong->get_mode();
 	m_bOldLoopEnabled = m_pSong->is_loop_enabled();
@@ -2597,7 +2597,7 @@ void Hydrogen::setSelectedPatternNumber( int nPat )
 	if ( nPat == m_nSelectedPatternNumber )	return;
 	
 	
-	if ( Preferences::getInstance()->patternModePlaysSelected() ) {
+	if ( Preferences::get_instance()->patternModePlaysSelected() ) {
 		AudioEngine::get_instance()
 			->lock( "Hydrogen::setSelectedPatternNumber" );
 	
@@ -2631,7 +2631,7 @@ void Hydrogen::setSelectedInstrumentNumber( int nInstrument )
 #ifdef JACK_SUPPORT
 void Hydrogen::renameJackPorts()
 {
-	if( Preferences::getInstance()->m_bJackTrackOuts == true ){
+	if( Preferences::get_instance()->m_bJackTrackOuts == true ){
 		audioEngine_renameJackPorts();
 	}
 }
@@ -2676,7 +2676,7 @@ void Hydrogen::setBcOffsetAdjust()
 {
 	//individual fine tuning for the beatcounter
 	//to adjust  ms_offset from different people and controller
-	Preferences *pref = Preferences::getInstance();
+	Preferences *pref = Preferences::get_instance();
 
 	m_nCoutOffset = pref->m_countOffset;
 	m_nStartOffset = pref->m_startOffset;
@@ -2739,7 +2739,7 @@ void Hydrogen::handleBeatCounter()
 						beatCountBpm = 500; 
 				setBPM( beatCountBpm );
 				AudioEngine::get_instance()->unlock();
-				if (Preferences::getInstance()->m_mmcsetplay
+				if (Preferences::get_instance()->m_mmcsetplay
 				    == Preferences::SET_PLAY_OFF) {
 					beatCount = 1; 
 					eventCount = 1;
@@ -2920,7 +2920,7 @@ void Hydrogen::togglePlaysSelected()
 {
 	if ( getSong()->get_mode() != Song::PATTERN_MODE )
 		return;
-	Preferences * P = Preferences::getInstance();
+	Preferences * P = Preferences::get_instance();
 	
 	AudioEngine::get_instance()->lock( "Live mode" );
 	

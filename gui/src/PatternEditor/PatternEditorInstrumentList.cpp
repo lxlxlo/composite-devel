@@ -51,7 +51,7 @@ InstrumentLine::InstrumentLine(QWidget* pParent)
   : PixmapWidget(pParent, "InstrumentLine")
   , m_bIsSelected(false)
 {
-	int h = Preferences::getInstance()->getPatternEditorGridHeight();
+	int h = Preferences::get_instance()->getPatternEditorGridHeight();
 	setFixedSize(181, h);
 
 	m_pNameLbl = new QLabel(this);
@@ -159,7 +159,7 @@ void InstrumentLine::muteClicked()
 
 void InstrumentLine::soloClicked()
 {
-	HydrogenApp::getInstance()->getMixer()->soloClicked( m_nInstrumentNumber );
+	HydrogenApp::get_instance()->getMixer()->soloClicked( m_nInstrumentNumber );
 }
 
 
@@ -249,7 +249,7 @@ void InstrumentLine::functionFillNotes()
 	const float fPitch = 0.0f;
 	const int nLength = -1;
 
-	PatternEditorPanel *pPatternEditorPanel = HydrogenApp::getInstance()->getPatternEditorPanel();
+	PatternEditorPanel *pPatternEditorPanel = HydrogenApp::get_instance()->getPatternEditorPanel();
 	DrumPatternEditor *pPatternEditor = pPatternEditorPanel->getDrumPatternEditor();
 	int nBase;
 	if ( pPatternEditor->isUsingTriplets() ) {
@@ -310,7 +310,7 @@ void InstrumentLine::functionRandomizeVelocity()
 {
 	Hydrogen *pEngine = Hydrogen::get_instance();
 
-	PatternEditorPanel *pPatternEditorPanel = HydrogenApp::getInstance()->getPatternEditorPanel();
+	PatternEditorPanel *pPatternEditorPanel = HydrogenApp::get_instance()->getPatternEditorPanel();
 	DrumPatternEditor *pPatternEditor = pPatternEditorPanel->getDrumPatternEditor();
 
 	AudioEngine::get_instance()->lock("PatternEditorInstrumentList::functionRandomizeVelocity");	// lock the audio engine
@@ -392,7 +392,7 @@ PatternEditorInstrumentList::PatternEditorInstrumentList( QWidget *parent, Patte
 	m_pPattern = NULL;
  	m_pPatternEditorPanel = pPatternEditorPanel;
 
-	m_nGridHeight = Preferences::getInstance()->getPatternEditorGridHeight();
+	m_nGridHeight = Preferences::get_instance()->getPatternEditorGridHeight();
 
 	m_nEditorWidth = 181;
 	m_nEditorHeight = m_nGridHeight * MAX_INSTRUMENTS;
@@ -488,7 +488,7 @@ void PatternEditorInstrumentList::updateInstrumentLines()
 	Hydrogen *pEngine = Hydrogen::get_instance();
 	Song *pSong = pEngine->getSong();
 	InstrumentList *pInstrList = pSong->get_instrument_list();
-	Mixer * mixer = HydrogenApp::getInstance()->getMixer();
+	Mixer * mixer = HydrogenApp::get_instance()->getMixer();
 
 	unsigned nSelectedInstr = pEngine->getSelectedInstrumentNumber();
 

@@ -53,7 +53,7 @@ Preferences* Preferences::instance = NULL;
 
 
 /// Return an instance of Preferences
-Preferences* Preferences::getInstance()
+Preferences* Preferences::get_instance()
 {
 	if ( instance == NULL ) {
 		instance = new Preferences();
@@ -474,7 +474,7 @@ void Preferences::loadPreferences( bool bGlobal )
 			if ( MidiMap::__instance != NULL) {
 				delete MidiMap::__instance;
 			}
-			MidiMap* mM = MidiMap::getInstance();
+			MidiMap* mM = MidiMap::get_instance();
 			
 			
 			TiXmlNode* pMidiEventMapNode = rootNode->FirstChild( "midiEventMap" );
@@ -799,7 +799,7 @@ void Preferences::savePreferences()
 	}
 	rootNode.InsertEndChild( filesNode );
 
-	MidiMap * mM = MidiMap::getInstance();
+	MidiMap * mM = MidiMap::get_instance();
 	std::map< QString, Action* > mmcMap = mM->getMMCMap();
 
 	//---- MidiMap ----

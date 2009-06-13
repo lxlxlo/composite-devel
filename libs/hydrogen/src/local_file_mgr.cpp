@@ -217,7 +217,7 @@ int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString&
 
 	Pattern *pat = song->get_pattern_list()->get( selectedpattern );
 
-	QString sPatternDir = Preferences::getInstance()->getDataDirectory() + "patterns/" +  instr->get_drumkit_name();
+	QString sPatternDir = Preferences::get_instance()->getDataDirectory() + "patterns/" +  instr->get_drumkit_name();
 
 	INFOLOG( "[savePattern]" + sPatternDir );
 
@@ -337,7 +337,7 @@ void LocalFileMng::fileCopy( const QString& sOrigFilename, const QString& sDestF
 std::vector<QString> LocalFileMng::getSongList()
 {
 	std::vector<QString> list;
-	QString sDirectory = Preferences::getInstance()->getDataDirectory();
+	QString sDirectory = Preferences::get_instance()->getDataDirectory();
 
 	if( ! sDirectory.endsWith("/") ) { 
 		sDirectory += "/songs/";
@@ -420,7 +420,7 @@ std::vector<QString> LocalFileMng::getAllPatternName()
 
 std::vector<QString> LocalFileMng::getAllCategoriesFromPattern()
 {
-	Preferences *pPref = H2Core::Preferences::getInstance();
+	Preferences *pPref = H2Core::Preferences::get_instance();
 	std::list<QString>::const_iterator cur_testpatternCategories;
 
 	std::vector<QString> categorylist;
@@ -474,7 +474,7 @@ std::vector<QString> LocalFileMng::getPatternsForDrumkit( const QString& sDrumki
 {
 	std::vector<QString> list;
 
-	QDir dir( Preferences::getInstance()->getDataDirectory() + "/patterns/" + sDrumkit );
+	QDir dir( Preferences::get_instance()->getDataDirectory() + "/patterns/" + sDrumkit );
 
 	if ( !dir.exists() ) {
 		INFOLOG( QString( "No patterns for drumkit '%1'." ).arg( sDrumkit ) );
@@ -565,7 +565,7 @@ std::vector<QString> mergeQStringVectors( std::vector<QString> firstVector , std
 
 std::vector<QString> LocalFileMng::getPatternDirList()
 {
-	return getDrumkitsFromDirectory( Preferences::getInstance()->getDataDirectory() + "patterns" );
+	return getDrumkitsFromDirectory( Preferences::get_instance()->getDataDirectory() + "patterns" );
 }
 
 
@@ -579,8 +579,8 @@ int  LocalFileMng::mergeAllPatternList( std::vector<QString> current )
 
 std::vector<QString> LocalFileMng::getUserDrumkitList()
 {
-	std::vector<QString> oldLocation = getDrumkitsFromDirectory( Preferences::getInstance()->getDataDirectory() );
-	std::vector<QString> newLocation = getDrumkitsFromDirectory( Preferences::getInstance()->getDataDirectory() + "drumkits" );
+	std::vector<QString> oldLocation = getDrumkitsFromDirectory( Preferences::get_instance()->getDataDirectory() );
+	std::vector<QString> newLocation = getDrumkitsFromDirectory( Preferences::get_instance()->getDataDirectory() + "drumkits" );
 	return mergeQStringVectors( newLocation ,  oldLocation );
 }
 
@@ -605,7 +605,7 @@ QString LocalFileMng::getDrumkitDirectory( const QString& drumkitName )
 	std::vector<QString> userDrumkits = Drumkit::getUserDrumkitList();
 	for ( unsigned i = 0; i < userDrumkits.size(); i++ ) {
 		if ( userDrumkits[ i ].endsWith(drumkitName) ) {
-			QString path = Preferences::getInstance()->getDataDirectory();
+			QString path = Preferences::get_instance()->getDataDirectory();
 			return userDrumkits[ i ].remove(userDrumkits[ i ].length() - drumkitName.length(),drumkitName.length());
 		}
 	}
@@ -771,7 +771,7 @@ int LocalFileMng::saveDrumkit( Drumkit *info )
 
 	QVector<QString> tempVector(16);
 
-	QString sDrumkitDir = Preferences::getInstance()->getDataDirectory() + "drumkits/" + info->getName();
+	QString sDrumkitDir = Preferences::get_instance()->getDataDirectory() + "drumkits/" + info->getName();
 
 	// check if the directory exists
 	QDir dir( sDrumkitDir );
@@ -1274,7 +1274,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 		TiXmlElement fxNode( "fx" );
 
 #ifdef LADSPA_SUPPORT
-		LadspaFX *pFX = Effects::getInstance()->getLadspaFX( nFX );
+		LadspaFX *pFX = Effects::get_instance()->getLadspaFX( nFX );
 		if ( pFX ) {
 			LocalFileMng::writeXmlString( &fxNode, "name", pFX->getPluginLabel() );
 			LocalFileMng::writeXmlString( &fxNode, "filename", pFX->getLibraryPath() );

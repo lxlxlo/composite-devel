@@ -101,7 +101,7 @@ ActionManager::~ActionManager(){
 	instance = NULL;
 }
 
-ActionManager* ActionManager::getInstance()
+ActionManager* ActionManager::get_instance()
 {
 	if ( instance == NULL ) {
 		instance = new ActionManager();

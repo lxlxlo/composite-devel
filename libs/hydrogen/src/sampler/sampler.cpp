@@ -114,7 +114,7 @@ void Sampler::process( uint32_t nFrames, Song* pSong )
 #endif // JACK_SUPPORT
 
 	// Max notes limit
-	int m_nMaxNotes = Preferences::getInstance()->m_nMaxNotes;
+	int m_nMaxNotes = Preferences::get_instance()->m_nMaxNotes;
 	while ( ( int )__playing_notes_queue.size() > m_nMaxNotes ) {
 		Note *oldNote = __playing_notes_queue[ 0 ];
 		__playing_notes_queue.erase( __playing_notes_queue.begin() );
@@ -263,7 +263,7 @@ unsigned Sampler::__render_note( Note* pNote, unsigned nBufferSize, Song* pSong 
 	if ( pInstr->is_muted() || pSong->__is_muted ) {	// is instrument muted?
 		cost_L = 0.0;
 		cost_R = 0.0;
-                if ( Preferences::getInstance()->m_nJackTrackOutputMode == 0 ) {
+                if ( Preferences::get_instance()->m_nJackTrackOutputMode == 0 ) {
 		// Post-Fader
 			cost_track_L = 0.0;
 			cost_track_R = 0.0;
@@ -280,7 +280,7 @@ unsigned Sampler::__render_note( Note* pNote, unsigned nBufferSize, Song* pSong 
 		fSendFXLevel_L = cost_L;
 
 		cost_L = cost_L * pInstr->get_volume();		// instrument volume
-                if ( Preferences::getInstance()->m_nJackTrackOutputMode == 0 ) {
+                if ( Preferences::get_instance()->m_nJackTrackOutputMode == 0 ) {
 		// Post-Fader
 			cost_track_L = cost_L * 2;
 		}
@@ -296,7 +296,7 @@ unsigned Sampler::__render_note( Note* pNote, unsigned nBufferSize, Song* pSong 
 		fSendFXLevel_R = cost_R;
 
 		cost_R = cost_R * pInstr->get_volume();		// instrument volume
-                if ( Preferences::getInstance()->m_nJackTrackOutputMode == 0 ) {
+                if ( Preferences::get_instance()->m_nJackTrackOutputMode == 0 ) {
 		// Post-Fader
 			cost_track_R = cost_R * 2;
 		}
@@ -305,7 +305,7 @@ unsigned Sampler::__render_note( Note* pNote, unsigned nBufferSize, Song* pSong 
 	}
 
 	// direct track outputs only use velocity
-	if ( Preferences::getInstance()->m_nJackTrackOutputMode == 1 ) {
+	if ( Preferences::get_instance()->m_nJackTrackOutputMode == 1 ) {
 		cost_track_L = cost_track_L * pNote->get_velocity();
 		cost_track_L = cost_track_L * fLayerGain;
 		cost_track_R = cost_track_L;
@@ -451,7 +451,7 @@ int Sampler::__render_note_no_resample(
 #ifdef LADSPA_SUPPORT
 	// LADSPA
 	for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
-		LadspaFX *pFX = Effects::getInstance()->getLadspaFX( nFX );
+		LadspaFX *pFX = Effects::get_instance()->getLadspaFX( nFX );
 
 		float fLevel = pNote->get_instrument()->get_fx_level( nFX );
 
@@ -623,7 +623,7 @@ int Sampler::__render_note_resample(
 #ifdef LADSPA_SUPPORT
 	// LADSPA
 	for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
-		LadspaFX *pFX = Effects::getInstance()->getLadspaFX( nFX );
+		LadspaFX *pFX = Effects::get_instance()->getLadspaFX( nFX );
 		float fLevel = pNote->get_instrument()->get_fx_level( nFX );
 		if ( ( pFX ) && ( fLevel != 0.0 ) ) {
 			fLevel = fLevel * pFX->getVolume();

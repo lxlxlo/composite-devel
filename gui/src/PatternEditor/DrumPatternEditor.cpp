@@ -59,15 +59,15 @@ DrumPatternEditor::DrumPatternEditor(QWidget* parent, PatternEditorPanel *panel)
 	//setAttribute(Qt::WA_NoBackground);
 	setFocusPolicy(Qt::ClickFocus);
 
-	m_nGridWidth = Preferences::getInstance()->getPatternEditorGridWidth();
-	m_nGridHeight = Preferences::getInstance()->getPatternEditorGridHeight();
+	m_nGridWidth = Preferences::get_instance()->getPatternEditorGridWidth();
+	m_nGridHeight = Preferences::get_instance()->getPatternEditorGridHeight();
 
 	unsigned nEditorWidth = 20 + m_nGridWidth * ( MAX_NOTES * 4 );
 	m_nEditorHeight = m_nGridHeight * MAX_INSTRUMENTS;
 
 	resize( nEditorWidth, m_nEditorHeight );
 
-	HydrogenApp::getInstance()->addEventListener( this );
+	HydrogenApp::get_instance()->addEventListener( this );
 	
 }
 
@@ -188,7 +188,7 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 			m_pPattern->note_map.insert( std::make_pair( nPosition, pNote ) );
 
 			// hear note
-			Preferences *pref = Preferences::getInstance();
+			Preferences *pref = Preferences::get_instance();
 			if ( pref->getHearNewNotes() ) {
 				Note *pNote2 = new Note( pSelectedInstrument, 0, fVelocity, fPan_L, fPan_R, nLength, fPitch);
 				AudioEngine::get_instance()->get_sampler()->note_on(pNote2);
@@ -322,7 +322,7 @@ void DrumPatternEditor::keyPressEvent (QKeyEvent *ev)
 ///
 void DrumPatternEditor::__draw_pattern(QPainter& painter)
 {
-	const UIStyle *pStyle = Preferences::getInstance()->getDefaultUIStyle();
+	const UIStyle *pStyle = Preferences::get_instance()->getDefaultUIStyle();
 	const QColor selectedRowColor( pStyle->m_patternEditor_selectedRowColor.getRed(), pStyle->m_patternEditor_selectedRowColor.getGreen(), pStyle->m_patternEditor_selectedRowColor.getBlue() );
 
 	__create_background( painter );
@@ -393,7 +393,7 @@ void DrumPatternEditor::__draw_pattern(QPainter& painter)
 ///
 void DrumPatternEditor::__draw_note( Note *note, QPainter& p )
 {
-	static const UIStyle *pStyle = Preferences::getInstance()->getDefaultUIStyle();
+	static const UIStyle *pStyle = Preferences::get_instance()->getDefaultUIStyle();
 	static const QColor noteColor( pStyle->m_patternEditor_noteColor.getRed(), pStyle->m_patternEditor_noteColor.getGreen(), pStyle->m_patternEditor_noteColor.getBlue() );
 
 	p.setRenderHint( QPainter::Antialiasing );
@@ -455,7 +455,7 @@ void DrumPatternEditor::__draw_note( Note *note, QPainter& p )
 
 void DrumPatternEditor::__draw_grid( QPainter& p )
 {
-	static const UIStyle *pStyle = Preferences::getInstance()->getDefaultUIStyle();
+	static const UIStyle *pStyle = Preferences::get_instance()->getDefaultUIStyle();
 	static const QColor res_1( pStyle->m_patternEditor_line1Color.getRed(), pStyle->m_patternEditor_line1Color.getGreen(), pStyle->m_patternEditor_line1Color.getBlue() );
 	static const QColor res_2( pStyle->m_patternEditor_line2Color.getRed(), pStyle->m_patternEditor_line2Color.getGreen(), pStyle->m_patternEditor_line2Color.getBlue() );
 	static const QColor res_3( pStyle->m_patternEditor_line3Color.getRed(), pStyle->m_patternEditor_line3Color.getGreen(), pStyle->m_patternEditor_line3Color.getBlue() );
@@ -561,7 +561,7 @@ void DrumPatternEditor::__draw_grid( QPainter& p )
 
 void DrumPatternEditor::__create_background( QPainter& p)
 {
-	static const UIStyle *pStyle = Preferences::getInstance()->getDefaultUIStyle();
+	static const UIStyle *pStyle = Preferences::get_instance()->getDefaultUIStyle();
 	static const QColor backgroundColor( pStyle->m_patternEditor_backgroundColor.getRed(), pStyle->m_patternEditor_backgroundColor.getGreen(), pStyle->m_patternEditor_backgroundColor.getBlue() );
 	static const QColor alternateRowColor( pStyle->m_patternEditor_alternateRowColor.getRed(), pStyle->m_patternEditor_alternateRowColor.getGreen(), pStyle->m_patternEditor_alternateRowColor.getBlue() );
 	static const QColor lineColor( pStyle->m_patternEditor_lineColor.getRed(), pStyle->m_patternEditor_lineColor.getGreen(), pStyle->m_patternEditor_lineColor.getBlue() );

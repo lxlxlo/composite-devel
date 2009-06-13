@@ -94,7 +94,7 @@ void Playlist::setNextSongByNumber(int SongNumber)
 	loadSong( selected );
 	execScript( realNumber );
 
-	HydrogenApp::getInstance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
+	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
 }
 
 
@@ -125,7 +125,7 @@ void Playlist::setNextSongPlaylist()
 	loadSong( selected );
 	execScript( index );
 
-	HydrogenApp::getInstance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
+	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
 }
 
 
@@ -157,7 +157,7 @@ void Playlist::setPrevSongPlaylist()
 	loadSong( selected );
 	execScript( index );
 
-	HydrogenApp::getInstance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
+	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
 }
 
 
@@ -193,7 +193,7 @@ int Playlist::getActiveSongNumber()
 void Playlist::loadSong( QString songName )
 {
 
-	HydrogenApp *pH2App = HydrogenApp::getInstance();
+	HydrogenApp *pH2App = HydrogenApp::get_instance();
 	Hydrogen *engine = Hydrogen::get_instance();
 	
 

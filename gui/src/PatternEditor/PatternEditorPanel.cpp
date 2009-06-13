@@ -69,7 +69,7 @@ PatternEditorPanel::PatternEditorPanel( QWidget *pParent )
 {
 	setAcceptDrops(true);
 
-	Preferences *pPref = Preferences::getInstance();
+	Preferences *pPref = Preferences::get_instance();
 	
 
 // Editor TOP
@@ -508,7 +508,7 @@ PatternEditorPanel::PatternEditorPanel( QWidget *pParent )
 
 	pVBox->addWidget( pMainPanel );
 
-	HydrogenApp::getInstance()->addEventListener( this );
+	HydrogenApp::get_instance()->addEventListener( this );
 
 	selectedPatternChangedEvent(); // force an update
 
@@ -585,8 +585,8 @@ void PatternEditorPanel::gridResolutionChanged( QString str )
 	//INFOLOG( to_string( nResolution ) );
 	m_pDrumPatternEditor->setResolution( nResolution, bUseTriplets );
 
-	Preferences::getInstance()->setPatternEditorGridResolution( nResolution );
-	Preferences::getInstance()->setPatternEditorUsingTriplets( bUseTriplets );
+	Preferences::get_instance()->setPatternEditorGridResolution( nResolution );
+	Preferences::get_instance()->setPatternEditorUsingTriplets( bUseTriplets );
 }
 
 
@@ -629,14 +629,14 @@ void PatternEditorPanel::selectedPatternChangedEvent()
 
 void PatternEditorPanel::hearNotesBtnClick(Button *ref)
 {
-	Preferences *pref = ( Preferences::getInstance() );
+	Preferences *pref = ( Preferences::get_instance() );
 	pref->setHearNewNotes( ref->isPressed() );
 
 	if (ref->isPressed() ) {
-		( HydrogenApp::getInstance() )->setStatusBarMessage( trUtf8( "Hear new notes = On" ), 2000 );
+		( HydrogenApp::get_instance() )->setStatusBarMessage( trUtf8( "Hear new notes = On" ), 2000 );
 	}
 	else {
-		( HydrogenApp::getInstance() )->setStatusBarMessage( trUtf8( "Hear new notes = Off" ), 2000 );
+		( HydrogenApp::get_instance() )->setStatusBarMessage( trUtf8( "Hear new notes = Off" ), 2000 );
 	}
 
 }
@@ -645,14 +645,14 @@ void PatternEditorPanel::hearNotesBtnClick(Button *ref)
 
 void PatternEditorPanel::recordEventsBtnClick(Button *ref)
 {
-	Preferences *pref = ( Preferences::getInstance() );
+	Preferences *pref = ( Preferences::get_instance() );
 	pref->setRecordEvents( ref->isPressed() );
 
 	if (ref->isPressed() ) {
-		( HydrogenApp::getInstance() )->setStatusBarMessage( trUtf8( "Record keyboard/midi events = On" ), 2000 );
+		( HydrogenApp::get_instance() )->setStatusBarMessage( trUtf8( "Record keyboard/midi events = On" ), 2000 );
 	}
 	else {
-		( HydrogenApp::getInstance() )->setStatusBarMessage( trUtf8( "Record keyboard/midi events = Off" ), 2000 );
+		( HydrogenApp::get_instance() )->setStatusBarMessage( trUtf8( "Record keyboard/midi events = Off" ), 2000 );
 	}
 
 
@@ -661,14 +661,14 @@ void PatternEditorPanel::recordEventsBtnClick(Button *ref)
 
 void PatternEditorPanel::quantizeEventsBtnClick(Button *ref)
 {
-	Preferences *pref = ( Preferences::getInstance() );
+	Preferences *pref = ( Preferences::get_instance() );
 	pref->setQuantizeEvents( ref->isPressed() );
 
 	if (ref->isPressed() ) {
-		( HydrogenApp::getInstance() )->setStatusBarMessage( trUtf8( "Quantize incoming keyboard/midi events = On" ), 2000 );
+		( HydrogenApp::get_instance() )->setStatusBarMessage( trUtf8( "Quantize incoming keyboard/midi events = On" ), 2000 );
 	}
 	else {
-		( HydrogenApp::getInstance() )->setStatusBarMessage( trUtf8( "Quantize incoming keyboard/midi events = Off" ), 2000 );
+		( HydrogenApp::get_instance() )->setStatusBarMessage( trUtf8( "Quantize incoming keyboard/midi events = Off" ), 2000 );
 	}
 }
 

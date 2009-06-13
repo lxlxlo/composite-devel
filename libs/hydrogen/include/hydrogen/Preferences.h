@@ -206,7 +206,7 @@ public:
 	QString m_sDefaultEditor;
 
 	/// Returns an instance of PreferencesMng class
-	static Preferences* getInstance();
+	static Preferences* get_instance();
 
 	~Preferences();
 

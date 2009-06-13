@@ -194,7 +194,7 @@ int main(int argc, char *argv[])
 		_INFOLOG( QString("Using QT version ") + QString( qVersion() ) );
 		_INFOLOG( "Using data path: " + H2Core::DataPath::get_data_path() );
 
-		H2Core::Preferences *pPref = H2Core::Preferences::getInstance();
+		H2Core::Preferences *pPref = H2Core::Preferences::get_instance();
 
 #ifdef LASH_SUPPORT
 
@@ -270,7 +270,7 @@ int main(int argc, char *argv[])
 		}
 
 #ifdef LASH_SUPPORT
-	if ( H2Core::Preferences::getInstance()->useLash() ){	
+	if ( H2Core::Preferences::get_instance()->useLash() ){	
 		if (lashClient->isConnected())
 		{
 			lash_event_t* lash_event = lashClient->getNextEvent();
@@ -283,13 +283,13 @@ int main(int argc, char *argv[])
 				songFilename.append(lash_event_get_string(lash_event));
 				songFilename.append("/hydrogen.h2song"); 
 				
-//				Logger::getInstance()->log("[LASH] Restore file: " + songFilename);
+//				Logger::get_instance()->log("[LASH] Restore file: " + songFilename);
 	
 				lash_event_destroy(lash_event);
 			}
 			else if (lash_event)
 			{
-//				Logger::getInstance()->log("[LASH] ERROR: Instead of restore file got event: " + lash_event_get_type(lash_event));
+//				Logger::get_instance()->log("[LASH] ERROR: Instead of restore file got event: " + lash_event_get_type(lash_event));
 				lash_event_destroy(lash_event);
 			}
 		}
@@ -310,8 +310,8 @@ int main(int argc, char *argv[])
 		delete H2Core::EventQueue::get_instance();
 		delete H2Core::AudioEngine::get_instance();
 
-		delete MidiMap::getInstance();
-		delete ActionManager::getInstance();
+		delete MidiMap::get_instance();
+		delete ActionManager::get_instance();
 
 		_INFOLOG( "Quitting..." );
 		cout << "\nBye..." << endl;

@@ -134,7 +134,7 @@ SongEditorPanel::SongEditorPanel(QWidget *pParent)
 	);
 	m_pModeActionBtn->move( 170, 5 );
 	m_pModeActionBtn->setToolTip( trUtf8( "stacked mode") );
-	m_pModeActionBtn->setPressed(  Preferences::getInstance()->patternModePlaysSelected() );
+	m_pModeActionBtn->setPressed(  Preferences::get_instance()->patternModePlaysSelected() );
 	connect( m_pModeActionBtn, SIGNAL( clicked( Button* ) ), this, SLOT( modeActionBtnPressed() ) );
 
 // ZOOM
@@ -238,7 +238,7 @@ SongEditorPanel::SongEditorPanel(QWidget *pParent)
 
 	updateAll();
 
-	HydrogenApp::getInstance()->addEventListener( this );
+	HydrogenApp::get_instance()->addEventListener( this );
 
 	m_pTimer = new QTimer(this);
 	connect(m_pTimer, SIGNAL(timeout()), this, SLOT( updatePlayHeadPosition() ) );
@@ -258,7 +258,7 @@ void SongEditorPanel::updatePlayHeadPosition()
 {
 	Song *pSong = Hydrogen::get_instance()->getSong();
 
-	if ( Preferences::getInstance()->m_bFollowPlayhead && pSong->get_mode() == Song::SONG_MODE) {
+	if ( Preferences::get_instance()->m_bFollowPlayhead && pSong->get_mode() == Song::SONG_MODE) {
 		if ( Hydrogen::get_instance()->getState() != STATE_PLAYING ) {
 			return;
 		}

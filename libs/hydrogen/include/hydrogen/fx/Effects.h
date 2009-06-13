@@ -40,7 +40,7 @@ namespace H2Core
 class Effects : public Object
 {
 public:
-	static Effects* getInstance();
+	static Effects* get_instance();
 	~Effects();
 
 	LadspaFX* getLadspaFX( int nFX );

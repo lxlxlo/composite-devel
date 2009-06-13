@@ -40,7 +40,7 @@ enum SequencerMode {
 class Sequencer : public Object
 {
 public:
-	static Sequencer* getInstance();
+	static Sequencer* get_instance();
 	~Sequencer();
 
 	/// Start the sequencer.

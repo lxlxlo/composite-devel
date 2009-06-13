@@ -30,7 +30,7 @@ Sequencer* Sequencer::m_pInstance = NULL;
 
 
 
-Sequencer* Sequencer::getInstance()
+Sequencer* Sequencer::get_instance()
 {
 	if ( !m_pInstance ) {
 		m_pInstance = new Sequencer();

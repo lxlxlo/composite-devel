@@ -52,7 +52,7 @@ MidiMap::~MidiMap()
 	__instance = NULL;
 }
 
-MidiMap* MidiMap::getInstance()
+MidiMap* MidiMap::get_instance()
 {
 	if( __instance == NULL ) {
 		__instance = new MidiMap();

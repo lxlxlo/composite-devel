@@ -33,7 +33,7 @@ class MidiMap : public Object
 		static MidiMap* __instance;
 		~MidiMap();
 
-		static MidiMap* getInstance();
+		static MidiMap* get_instance();
 
 		void registerMMCEvent( QString, Action* );
 		void registerNoteEvent( int , Action* );

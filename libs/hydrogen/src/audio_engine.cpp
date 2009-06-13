@@ -57,10 +57,10 @@ AudioEngine::AudioEngine()
 	pthread_mutex_init( &__engine_mutex, NULL );
 
 #ifdef LADSPA_SUPPORT
-	Effects::getInstance();
+	Effects::get_instance();
 #endif
 
-//	Sequencer::getInstance();
+//	Sequencer::get_instance();
 }
 
 
@@ -69,10 +69,10 @@ AudioEngine::~AudioEngine()
 {
 	INFOLOG( "DESTROY" );
 #ifdef LADSPA_SUPPORT
-	delete Effects::getInstance();
+	delete Effects::get_instance();
 #endif
 
-//	delete Sequencer::getInstance();
+//	delete Sequencer::get_instance();
 	delete __sampler;
 	delete __synth;
 }

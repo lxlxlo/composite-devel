@@ -35,7 +35,7 @@ class LashClient
 {
 public:
 	/// Return the LashClient instance
-	static LashClient* getInstance();
+	static LashClient* get_instance();
 	
 	LashClient(const char* lashClass, const char* viewName, int* argc, char ***argv);
 	~LashClient();

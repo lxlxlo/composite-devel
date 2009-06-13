@@ -74,7 +74,7 @@ class ActionManager : public Object
 	public:
 		bool handleAction( Action * );
 		
-		static ActionManager* getInstance();
+		static ActionManager* get_instance();
 		
 		QStringList getActionList(){
 			return actionList;
