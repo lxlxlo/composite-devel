@@ -49,17 +49,13 @@
 namespace H2Core
 {
 
-Preferences* Preferences::instance = NULL;
+Preferences* Preferences::__instance = NULL;
 
-
-/// Return an instance of Preferences
-Preferences* Preferences::get_instance()
+void Preferences::create_instance()
 {
-	if ( instance == NULL ) {
-		instance = new Preferences();
+	if ( __instance == 0 ) {
+		__instance = new Preferences;
 	}
-
-	return instance;
 }
 
 
@@ -139,7 +135,7 @@ Preferences::~Preferences()
 	savePreferences();
 
 	INFOLOG( "DESTROY" );
-	instance = NULL;
+	__instance = NULL;
 	delete m_pDefaultUIStyle;
 }
 
@@ -470,10 +466,7 @@ void Preferences::loadPreferences( bool bGlobal )
 				m_sDefaultEditor = LocalFileMng::readXmlString( filesNode, "defaulteditor", m_sDefaultEditor, true );
 			}
 
-			// FIXME: hack hack hack! Isn't better to create a "release" method in MidiMap class instead of destroying a singleton?
-			if ( MidiMap::__instance != NULL) {
-				delete MidiMap::__instance;
-			}
+			MidiMap::reset_instance();
 			MidiMap* mM = MidiMap::get_instance();
 			
 			

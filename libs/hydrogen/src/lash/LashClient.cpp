@@ -122,11 +122,5 @@ void LashClient::sendAlsaClientId()
 	lash_alsa_client_id(lashClient, alsaClientId);
 }
 
-
-/// Return the LashClient instance
-LashClient* LashClient::get_instance() {
-	return instance;
-}
-
 #endif
 

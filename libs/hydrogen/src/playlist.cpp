@@ -41,19 +41,19 @@ using namespace H2Core;
 int selectedSongNumber = -1;
 int activeSongNumber = -1;
 
-Playlist* Playlist::instance = NULL;	
+Playlist* Playlist::__instance = NULL;	
 
 
 Playlist::Playlist()
 		: Object( "Playlist" )
 {
-	if ( instance ) {class HydrogenApp;
+	if ( __instance ) {class HydrogenApp;
 
 		_ERRORLOG( "Playlist in use" );
 	}class HydrogenApp;
 
 	//_INFOLOG( "[Playlist]" );
-	instance = this;
+	__instance = this;
 
 }
 
@@ -62,17 +62,16 @@ Playlist::Playlist()
 Playlist::~Playlist()
 {
 	//_INFOLOG( "[~Playlist]" );
-	instance = NULL;
+	__instance = NULL;
 }
 
 
 
-Playlist* Playlist::get_instance()
+void Playlist::create_instance()
 {
-	if ( instance == NULL ) {
-		instance = new Playlist();
+	if ( __instance == 0 ) {
+		__instance = new Playlist;
 	}
-	return instance;
 }
 
 

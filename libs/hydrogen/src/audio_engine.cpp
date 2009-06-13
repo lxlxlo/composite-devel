@@ -23,7 +23,6 @@
 #include <hydrogen/audio_engine.h>
 
 #include <hydrogen/fx/Effects.h>
-#include <hydrogen/sequencer/Sequencer.h>
 #include <hydrogen/sampler/Sampler.h>
 
 #include <hydrogen/hydrogen.h>	// TODO: remove this line as soon as possible
@@ -35,16 +34,12 @@ namespace H2Core
 AudioEngine* AudioEngine::__instance = NULL;
 
 
-
-AudioEngine* AudioEngine::get_instance()
+void AudioEngine::create_instance()
 {
-	if ( __instance == NULL ) {
-		__instance = new AudioEngine();
+	if( __instance == 0 ) {
+		__instance = new AudioEngine;
 	}
-	return __instance;
 }
-
-
 
 AudioEngine::AudioEngine()
 		: Object( "AudioEngine" )

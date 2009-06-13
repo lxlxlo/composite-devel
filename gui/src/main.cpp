@@ -131,8 +131,6 @@ int main(int argc, char *argv[])
 		bool bNoSplash = false;
 		QString sSelectedDriver = "";
 
-		Object::set_logging_level( "Error" );
-
 		// Options...
 		char *cp;
 		struct option *op;
@@ -147,6 +145,12 @@ int main(int argc, char *argv[])
 		}
 
 		QApplication* pQApp = new QApplication(argc, argv);
+
+		Logger::create_instance();
+		MidiMap::create_instance();
+		H2Core::Preferences::create_instance();
+		Object::set_logging_level( "Error" );
+		H2Core::Hydrogen::create_instance();
 
 		// Deal with the options
 		int c;

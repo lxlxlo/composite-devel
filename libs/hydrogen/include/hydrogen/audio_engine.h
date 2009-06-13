@@ -29,7 +29,7 @@
 
 #include <pthread.h>
 #include <string>
-
+#include <cassert>
 
 namespace H2Core
 {
@@ -40,7 +40,8 @@ namespace H2Core
 class AudioEngine : public Object
 {
 public:
-	static AudioEngine* get_instance();
+	static void create_instance();
+	static AudioEngine* get_instance() { assert(__instance); return __instance; }
 	~AudioEngine();
 
 	void lock( const QString& locker );

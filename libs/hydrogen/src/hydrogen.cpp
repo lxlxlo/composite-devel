@@ -60,6 +60,8 @@
 #include <hydrogen/Preferences.h>
 #include <hydrogen/data_path.h>
 #include <hydrogen/sampler/Sampler.h>
+#include <hydrogen/midiMap.h>
+#include <hydrogen/playlist.h>
 
 #include "IO/OssDriver.h"
 #include "IO/FakeDriver.h"
@@ -286,7 +288,14 @@ void audioEngine_init()
 	// Change the current audio engine state
 	m_audioEngineState = STATE_INITIALIZED;
 
+#ifdef LADSPA_SUPPORT
+	Effects::create_instance();
+#endif
+	AudioEngine::create_instance();
+	Playlist::create_instance();
+
 	EventQueue::get_instance()->push_event( EVENT_STATE, STATE_INITIALIZED );
+
 }
 
 
@@ -1740,16 +1749,25 @@ Hydrogen::~Hydrogen()
 
 
 
-/// Return the Hydrogen instance
-Hydrogen* Hydrogen::get_instance()
+void Hydrogen::create_instance()
 {
-	if ( __instance == NULL ) {
-		__instance = new Hydrogen();
+	// Create all the other instances that we need
+	// ....and in the right order
+	Logger::create_instance();
+	MidiMap::create_instance();
+	Preferences::create_instance();
+	EventQueue::create_instance();
+	ActionManager::create_instance();
+
+	if( __instance == 0 ) {
+		__instance = new Hydrogen;
 	}
-	return __instance;
+
+	// See audioEngine_init() for:
+	// AudioEngine::create_instance();
+	// Effects::create_instance();
+	// Playlist::create_instance();
 }
-
-
 
 /// Start the internal sequencer
 void Hydrogen::sequencer_play()

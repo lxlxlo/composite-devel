@@ -76,7 +76,6 @@ public:
 
 private:
 	std::vector<Note*> __playing_notes_queue;
-	static Sampler* __instance;
 	AudioOutput* __audio_output;
 
 	/// Instrument used for the preview feature.

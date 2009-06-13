@@ -212,7 +212,6 @@ void MidiTable::setupMidiTable()
 
 void MidiTable::saveMidiTable()
 {
-	delete MidiMap::get_instance();
 	MidiMap *mM = MidiMap::get_instance();
 	
 	for ( int row = 0; row < __row_count; row++ ) {

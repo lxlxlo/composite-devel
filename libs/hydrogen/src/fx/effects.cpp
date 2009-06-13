@@ -62,12 +62,11 @@ Effects::Effects()
 
 
 
-Effects* Effects::get_instance()
+void Effects::create_instance()
 {
-	if ( m_pInstance == NULL ) {
-		m_pInstance = new Effects();
+	if ( m_pInstance == 0 ) {
+		m_pInstance = new Effects;
 	}
-	return m_pInstance;
 }
 
 

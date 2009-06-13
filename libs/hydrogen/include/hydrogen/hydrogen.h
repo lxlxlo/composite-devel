@@ -29,7 +29,7 @@
 #include <hydrogen/IO/AudioOutput.h>
 #include <hydrogen/IO/MidiInput.h>
 #include <hydrogen/SoundLibrary.h>
-
+#include <cassert>
 
 // Engine state
 #define STATE_UNINITIALIZED	1
@@ -50,7 +50,8 @@ class Hydrogen : public Object
 {
 public:
 	/// Return the Hydrogen instance
-	static Hydrogen* get_instance();
+	static void create_instance();  // Also creates other instances, like AudioEngine
+	static Hydrogen* get_instance() { assert(__instance); return __instance; };
 
 	~Hydrogen();
 

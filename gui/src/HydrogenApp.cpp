@@ -75,7 +75,7 @@ HydrogenApp::HydrogenApp( MainForm *pMainForm, Song *pFirstSong )
 
 
 	// Create the audio engine :)
-	Hydrogen::get_instance();
+	Hydrogen::create_instance();
 	Hydrogen::get_instance()->setSong( pFirstSong );
 	Preferences::get_instance()->setLastSongFilename( pFirstSong->get_filename() );
 

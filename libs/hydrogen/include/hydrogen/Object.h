@@ -33,6 +33,7 @@
 #include <vector>
 #include <sstream>
 #include <pthread.h>
+#include <cassert>
 
 class Object;
 
@@ -54,7 +55,8 @@ public:
 	bool __use_file;
 	bool __running;
 
-	static Logger* get_instance();
+	static void create_instance();
+	static Logger* get_instance() { assert(__instance); return __instance; }
 
 	/** Destructor */
 	~Logger();

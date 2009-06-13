@@ -261,12 +261,11 @@ void* loggerThread_func( void* param )
 	return NULL;
 }
 
-Logger* Logger::get_instance()
+void Logger::create_instance()
 {
-	if ( !__instance ) {
-		__instance = new Logger();
+	if ( __instance == 0 ) {
+		__instance = new Logger;
 	}
-	return __instance;
 }
 
 /**
