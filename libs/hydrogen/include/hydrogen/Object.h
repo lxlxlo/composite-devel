@@ -34,19 +34,6 @@
 #include <sstream>
 #include <pthread.h>
 
-
-// LOG MACROS
-
-#define _INFOLOG(x) Logger::get_instance()->info_log( __PRETTY_FUNCTION__, "", x );
-#define _WARNINGLOG(x) Logger::get_instance()->warning_log( __PRETTY_FUNCTION__, "", x );
-#define _ERRORLOG(x) Logger::get_instance()->error_log( __PRETTY_FUNCTION__, "", x );
-
-#define INFOLOG(x) Logger::get_instance()->info_log( __FUNCTION__, get_class_name(), x );
-#define WARNINGLOG(x) Logger::get_instance()->warning_log( __FUNCTION__, get_class_name(), x );
-#define ERRORLOG(x) Logger::get_instance()->error_log( __FUNCTION__, get_class_name(), x );
-
-
-
 class Object;
 
 /**
@@ -55,26 +42,34 @@ class Object;
 class Logger
 {
 public:
+	typedef enum _log_level {
+		None = 0,
+		Error = 1,
+		Warning = 2,
+		Info = 4,
+		Debug = 8
+	} log_level_t;
+	typedef std::list<QString> queue_t;
+
 	bool __use_file;
 	bool __running;
-	std::vector<QString> __msg_queue;
-	pthread_mutex_t __logger_mutex;
 
 	static Logger* get_instance();
 
 	/** Destructor */
 	~Logger();
 
-	void info_log( const char* funcname, const QString& class_name, const QString& msg );
-	void warning_log( const char* funcname, const QString& class_name, const QString& msg );
-	void error_log( const char* funcname, const QString& class_name, const QString& msg );
+	void log( log_level_t lev, const char* funcname, const QString& class_name, const QString& msg );
+
+	friend void* loggerThread_func(void* param);  // object.cpp
 
 private:
 	static Logger *__instance;
+	pthread_mutex_t __mutex;  // Lock for adding or removing elements only
+	queue_t __msg_queue;
 
 	/** Constructor */
 	Logger();
-
 
 };
 
@@ -137,4 +132,36 @@ inline float string_to_float( const QString& str )
 	return t;
 }
 
-#endif
+// LOG MACROS
+
+namespace H2Core {
+    extern unsigned logLevel; // see object.cpp for instance
+}
+
+/* __LOG_WRAPPER enables us to filter out log messages _BEFORE_ the
+ * function call.  This is good, because it avoids QString
+ * constructors for temporaries.
+ */
+#define __LOG_WRAPPER(lev, funct, class_n, msg) {			\
+		if( H2Core::logLevel & (lev) ){				\
+			Logger::get_instance()->log(			\
+				(lev),					\
+				(funct),				\
+				(class_n),				\
+				(msg)					\
+				);					\
+		}							\
+	}
+
+#define _INFOLOG(x) __LOG_WRAPPER( Logger::Info, __PRETTY_FUNCTION__, "", (x) );
+#define _WARNINGLOG(x) __LOG_WRAPPER( Logger::Warning, __PRETTY_FUNCTION__, "", (x) );
+#define _ERRORLOG(x) __LOG_WRAPPER( Logger::Error, __PRETTY_FUNCTION__, "", (x) );
+
+#define INFOLOG(x) __LOG_WRAPPER( Logger::Info, __FUNCTION__, get_class_name(), (x) );
+#define WARNINGLOG(x) __LOG_WRAPPER( Logger::Warning, __FUNCTION__, get_class_name(), (x) );
+#define ERRORLOG(x) __LOG_WRAPPER( Logger::Error, __FUNCTION__, get_class_name(), (x) );
+
+
+
+
+#endif // H2_OBJECT_H

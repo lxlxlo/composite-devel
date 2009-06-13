@@ -25,6 +25,7 @@
 #include <QDir>
 #include <iostream>
 #include <pthread.h>
+#include <cassert>
 
 #ifdef WIN32
 #include <windows.h>
@@ -38,8 +39,9 @@ unsigned int Object::__objects = 0;
 bool Object::__use_log = false;
 std::map<QString, int> Object::__object_map;
 
-
-
+namespace H2Core {
+    unsigned logLevel = ~0;  // Turn on all logging.
+}
 
 /**
  * Constructor
@@ -196,24 +198,24 @@ void* loggerThread_func( void* param )
 #ifdef WIN32
 		Sleep( 1000 );
 #else
-		usleep( 1000000 );
+		usleep( 999999 );
 #endif
-		pthread_mutex_lock( &pLogger->__logger_mutex );
 
-
-		vector<QString>::iterator it;
+		Logger::queue_t& queue = pLogger->__msg_queue;
+		Logger::queue_t::iterator it, last;
 		QString tmpString;
-		while ( ( it  = pLogger->__msg_queue.begin() ) != pLogger->__msg_queue.end() ) {
-			tmpString = *it;
-			pLogger->__msg_queue.erase( it );
-			printf( tmpString.toAscii() );
-
-			if ( pLogFile ) {
-				fprintf( pLogFile, tmpString.toAscii() );
+		for( it = last = queue.begin() ; it != queue.end() ; ++it ) {
+			last = it;
+			printf( it->toLocal8Bit() );
+			if( pLogFile ) {
+				fprintf( pLogFile, it->toLocal8Bit() );
 				fflush( pLogFile );
 			}
 		}
-		pthread_mutex_unlock( &pLogger->__logger_mutex );
+		pthread_mutex_lock( &pLogger->__mutex );
+		queue.erase( queue.begin(), last );
+		if( ! queue.empty() ) queue.pop_front();
+		pthread_mutex_unlock( &pLogger->__mutex );
 	}
 
 	if ( pLogFile ) {
@@ -235,7 +237,6 @@ void* loggerThread_func( void* param )
 	return NULL;
 }
 
-
 Logger* Logger::get_instance()
 {
 	if ( !__instance ) {
@@ -243,7 +244,6 @@ Logger* Logger::get_instance()
 	}
 	return __instance;
 }
-
 
 /**
  * Constructor
@@ -254,15 +254,9 @@ Logger::Logger()
 {
 	pthread_attr_t attr;
 	pthread_attr_init( &attr );
-
-	pthread_mutex_init( &__logger_mutex, NULL );
-
-
+	pthread_mutex_init( &__mutex, NULL );
 	pthread_create( &loggerThread, &attr, loggerThread_func, this );
 }
-
-
-
 
 /**
  * Destructor
@@ -274,94 +268,51 @@ Logger::~Logger()
 
 }
 
-
-
-
-
-void Logger::info_log( const char* funcname, const QString& class_name, const QString& logMsg )
+void Logger::log( Logger::log_level_t level,
+		  const char* funcname,
+		  const QString& class_name,
+		  const QString& msg )
 {
-	if ( !Object::is_using_verbose_log() ) return;
+	if( level == None ) return;
 
-	pthread_mutex_lock( &__logger_mutex );
-
-	QString prefix = "(I) " + class_name + "\t" + funcname;
-
+	const char* prefix[] = { "(E)", "(W)", "(I)", "(D)" };
 #ifdef WIN32
-	__msg_queue.push_back( QString( "%1 %2\n" ).arg(prefix).arg(logMsg).toUtf8() );
+	const char* color[] = { "", "", "", "" };
 #else
-	__msg_queue.push_back( QString( "\033[32m%1 %2 \033[0m\n" ).arg(prefix).arg(logMsg) );
-#endif
+	const char* color[] = { "\033[31m", "\033[36m", "\033[32m", "" };
+#endif // WIN32
 
-	pthread_mutex_unlock( &__logger_mutex );
+	int i;
+	switch(level) {
+	case None:
+		assert(false);
+		i = 0;
+		break;
+	case Error:
+		i = 0;
+		break;
+	case Warning:
+		i = 1;
+		break;
+	case Info:
+		i = 2;
+		break;
+	case Debug:
+		i = 3;
+		break;
+	default:
+		i = 0;
+		break;
+	}
 
+	QString tmp = QString("%1%2 %3\t%4 %5 \033[0m\n")
+		.arg(color[i])
+		.arg(prefix[i])
+		.arg(class_name)
+		.arg(funcname)
+		.arg(msg);
+
+	pthread_mutex_lock( &__mutex);
+	__msg_queue.push_back( tmp );
+	pthread_mutex_unlock( &__mutex );
 }
-
-
-
-
-void Logger::warning_log( const char* funcname, const QString& class_name, const QString& logMsg )
-{
-	pthread_mutex_lock( &__logger_mutex );
-	QString prefix = "(W) " + class_name + "\t" + funcname;
-
-#ifdef WIN32
-	__msg_queue.push_back( prefix + logMsg + "\n" );
-#else
-	__msg_queue.push_back( QString( "\033[36m%1 %2\033[0m\n" ).arg( prefix ).arg( logMsg ) );
-#endif
-
-	pthread_mutex_unlock( &__logger_mutex );
-}
-
-
-
-void Logger::error_log( const char* funcname, const QString& class_name, const QString& logMsg )
-{
-	pthread_mutex_lock( &__logger_mutex );
-
-	QString prefix = QString( "(E) %1\t%2" ).arg( class_name ).arg( funcname );
-
-#ifdef WIN32
-	__msg_queue.push_back( prefix + logMsg + "\n" );
-#else
-	__msg_queue.push_back( QString( "\033[31m%1 %2\033[0m\n" ).arg( prefix ).arg( logMsg ) );
-#endif
-
-	pthread_mutex_unlock( &__logger_mutex );
-}
-
-
-
-
-/*
-#ifndef WIN32
-
-
-static const WORD bgMask( BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED | BACKGROUND_INTENSITY );
-
-
-void Logger__setREDColor()
-{
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	HANDLE hCon = GetStdHandle( STD_OUTPUT_HANDLE );
-	GetConsoleScreenBufferInfo(hCon, &csbi);
-
-//	WORD wRGBI = GetRGBI(fgColor, FOREGROUND_INTENSITY, FOREGROUND_RED, FOREGROUND_GREEN, FOREGROUND_BLUE);
-	WORD color = 10	| 255;
-	csbi.wAttributes &= bgMask;
-	csbi.wAttributes |= color;
-
-	SetConsoleTextAttribute( hCon, csbi.wAttributes );
-
-//	wRGBI = GetRGBI(bgColor, BACKGROUND_INTENSITY, BACKGROUND_RED, BACKGROUND_GREEN, BACKGROUND_BLUE);
-
-//	csbi.wAttributes &= fgMask;
-//	csbi.wAttributes |= wRGBI;
-
-	SetConsoleTextAttribute( hCon, csbi.wAttributes );
-}
-
-
-#endif
-*/
-
