@@ -53,13 +53,13 @@ void showUsage();
 
 #define HAS_ARG 1
 static struct option long_opts[] = {
-        {"driver", HAS_ARG, NULL, 'd'},
-        {"song", HAS_ARG, NULL, 's'},
-        {"version", 0, NULL, 'v'},
-        {"nosplash", 0, NULL, 'n'},
-	{"verbose", 0, NULL, 'V'},
+	{"driver", required_argument, NULL, 'd'},
+	{"song", required_argument, NULL, 's'},
+	{"version", 0, NULL, 'v'},
+	{"nosplash", 0, NULL, 'n'},
+	{"verbose", optional_argument, NULL, 'V'},
 	{"help", 0, NULL, 'h'},
-        {0, 0, 0, 0},
+	{0, 0, 0, 0},
 };
 
 #define NELEM(a) ( sizeof(a)/sizeof((a)[0]) )
@@ -131,11 +131,7 @@ int main(int argc, char *argv[])
 		bool bNoSplash = false;
 		QString sSelectedDriver = "";
 
-#ifdef CONFIG_DEBUG
-		Object::use_verbose_log( true );
-#endif
-
-
+		Object::set_logging_level( "Error" );
 
 		// Options...
 		char *cp;
@@ -174,9 +170,12 @@ int main(int argc, char *argv[])
 					break;
 
 				case 'V':
-					Object::use_verbose_log( true );
+					if( optarg ) {
+						Object::set_logging_level(optarg);
+					} else {
+						Object::set_logging_level("Warning");
+					}
 					break;
-
 				case 'n':
 					bNoSplash = true;
 					break;
@@ -374,7 +373,8 @@ void showUsage()
 		  << "                          from a crash." << std::endl;
 #endif
 	std::cout << "   -n, --nosplash - Hide splash screen" << std::endl;
-	std::cout << "   -V, --verbose - Print a lot of debugging info" << std::endl;
+	std::cout << "   -V [Level], --verbose [Level] - Print a lot of debugging info" << std::endl;
+	std::cout << "                 Level, if present, may be None, Error, Warning, Info, or Debug " << std::endl;
 	std::cout << "   -v, --version - Show version info" << std::endl;
 	std::cout << "   -h, --help - Show this help message" << std::endl;
 }

@@ -95,7 +95,7 @@ public:
 
 	static int get_objects_number();
 	static void print_object_map();
-	static void use_verbose_log( bool verbose );
+	static void set_logging_level( const char* level ); // May be None, Error, Warning, Info, or Debug
 	static bool is_using_verbose_log();
 
 private:

@@ -26,6 +26,7 @@
 #include <iostream>
 #include <pthread.h>
 #include <cassert>
+#include <strings.h>
 
 #ifdef WIN32
 #include <windows.h>
@@ -40,7 +41,7 @@ bool Object::__use_log = false;
 std::map<QString, int> Object::__object_map;
 
 namespace H2Core {
-    unsigned logLevel = ~0;  // Turn on all logging.
+    unsigned logLevel = 0;  // No logging  see Logger::Error, Logger::Warning, et al
 }
 
 /**
@@ -51,10 +52,6 @@ Object::Object( const QString& class_name )
 {
 	++__objects;
 	__logger = Logger::get_instance();
-
-#ifdef CONFIG_DEBUG
-	Object::use_verbose_log( true );
-#endif
 
 	if ( __use_log ) {
 		int nInstances = __object_map[ __class_name ];
@@ -70,9 +67,6 @@ Object::Object( const QString& class_name )
 Object::Object( const Object& obj )
 {
 
-#ifdef CONFIG_DEBUG
-	use_verbose_log( true );
-#endif
 	__class_name = obj.get_class_name();
 
 	++__objects;
@@ -114,10 +108,40 @@ int Object::get_objects_number()
 }
 
 
-void Object::use_verbose_log( bool bUse )
+void Object::set_logging_level(const char* level)
 {
-	__use_log = bUse;
-	Logger::get_instance()->__use_file = bUse;
+	const char none[] = "None";
+	const char error[] = "Error";
+	const char warning[] = "Warning";
+	const char info[] = "Info";
+	const char debug[] = "Debug";
+	bool use;
+	unsigned log_level;
+
+	if( 0 == strncasecmp( level, none, sizeof(none) ) ) {
+		log_level = 0;
+		use = false;
+	} else if ( 0 == strncasecmp( level, error, sizeof(error) ) ) {
+		log_level = Logger::Error;
+		use = true;
+	} else if ( 0 == strncasecmp( level, warning, sizeof(warning) ) ) {
+		log_level = Logger::Error | Logger::Warning;
+		use = true;
+	} else if ( 0 == strncasecmp( level, info, sizeof(info) ) ) {
+		log_level = Logger::Error | Logger::Warning | Logger::Info;
+		use = true;
+	} else if ( 0 == strncasecmp( level, debug, sizeof(debug) ) ) {
+		log_level = Logger::Error | Logger::Warning | Logger::Info | Logger::Debug;
+		use = true;
+	} else {
+		log_level = 0;
+		log_level = ~log_level;
+		use = true;
+	}
+
+	H2Core::logLevel = log_level;
+	__use_log = use;
+	Logger::get_instance()->__use_file = use;
 }
 
 
