@@ -212,8 +212,8 @@ void* loggerThread_func( void* param )
 				fflush( pLogFile );
 			}
 		}
-		pthread_mutex_lock( &pLogger->__mutex );
 		queue.erase( queue.begin(), last );
+		pthread_mutex_lock( &pLogger->__mutex );
 		if( ! queue.empty() ) queue.pop_front();
 		pthread_mutex_unlock( &pLogger->__mutex );
 	}
