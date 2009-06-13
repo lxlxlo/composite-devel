@@ -446,7 +446,7 @@ void Preferences::loadPreferences( bool bGlobal )
 				__expandPatternItem = LocalFileMng::readXmlBool( guiNode, "expandPatternItem", __expandPatternItem ); 
 
 				for ( unsigned nFX = 0; nFX < MAX_FX; nFX++ ) {
-					QString sNodeName = QString("ladspaFX_properties").arg( nFX );
+					QString sNodeName = QString("ladspaFX_properties%1").arg( nFX );
 					setLadspaProperties( nFX, readWindowProperties( guiNode, sNodeName, m_ladspaProperties[nFX] ) );
 				}
 
