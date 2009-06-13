@@ -567,7 +567,7 @@ void SongEditor::drawSequence()
 				}
 			}
 			if (position == -1) {
-				WARNINGLOG( "[drawSequence] position == -1, group = " + to_string( i ) );
+				WARNINGLOG( QString("[drawSequence] position == -1, group = %1").arg( i ) );
 			}
 			drawPattern( i, position );
 		}
@@ -1072,7 +1072,7 @@ void SongEditorPatternList::patternPopup_delete()
 	PatternList *pSongPatternList = song->get_pattern_list();
 
 	H2Core::Pattern *pattern = pSongPatternList->get( pEngine->getSelectedPatternNumber() );
-	INFOLOG( "[patternPopup_delete] Delete pattern: " + pattern->get_name() + " @" + to_string( (long)pattern ) );
+	INFOLOG( QString("[patternPopup_delete] Delete pattern: %1 @%2").arg(pattern->get_name()).arg( (long)pattern ) );
 	pSongPatternList->del(pattern);
 
 	vector<PatternList*> *patternGroupVect = song->get_pattern_group_vector();

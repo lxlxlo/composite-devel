@@ -593,7 +593,7 @@ void PatternEditorInstrumentList::dropEvent(QDropEvent *event)
 		}
 		++nID;
 
-		pNewInstrument->set_id( to_string( nID ) );
+		pNewInstrument->set_id( QString( nID ) );
 
 		AudioEngine::get_instance()->lock( "PatternEditorInstrumentList::dropEvent" );
 		pEngine->getSong()->get_instrument_list()->add( pNewInstrument );

@@ -336,7 +336,7 @@ void InstrumentEditor::selectedInstrumentChangedEvent()
 		m_pInstrumentGain->setValue( m_pInstrument->get_gain()/ 5.0 );
 
 		// instr mute group
-		QString sMuteGroup = to_string( m_pInstrument->get_mute_group());
+		QString sMuteGroup = QString("%1").arg( m_pInstrument->get_mute_group() );
 		if (m_pInstrument->get_mute_group() == -1 ) {
 			sMuteGroup = "Off";
 		}
@@ -411,7 +411,7 @@ void InstrumentEditor::rotaryChanged(Rotary *ref)
 				int nCoarse = (int)m_pLayerPitchCoarseRotary->getValue();
 				float fFine = m_pLayerPitchFineRotary->getValue() / 100.0;
 				pLayer->set_pitch( nCoarse + fFine );
-				INFOLOG( "pitch: " + to_string( pLayer->get_pitch() ) );
+				INFOLOG( QString("pitch: %1").arg( pLayer->get_pitch() ) );
 			}
 		}
 		else if ( ref == m_pLayerPitchFineRotary ) {
@@ -421,7 +421,7 @@ void InstrumentEditor::rotaryChanged(Rotary *ref)
 				int nCoarse = (int)m_pLayerPitchCoarseRotary->getValue();
 				float fFine = m_pLayerPitchFineRotary->getValue() / 100.0;
 				pLayer->set_pitch( nCoarse + fFine );
-				INFOLOG( "pitch: " + to_string( pLayer->get_pitch()) );
+				INFOLOG( QString("pitch: %1").arg( pLayer->get_pitch()) );
 			}
 
 		}

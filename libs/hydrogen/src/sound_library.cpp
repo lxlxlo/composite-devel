@@ -118,7 +118,11 @@ void Drumkit::dump()
 	INFOLOG( "\t|- Instrument list" );
 	for ( unsigned nInstrument = 0; nInstrument < m_pInstrumentList->get_size(); ++nInstrument ) {
 		Instrument *pInstr = m_pInstrumentList->get( nInstrument );
-		INFOLOG( "\t\t|- (" + to_string( nInstrument ) + " of " + to_string( m_pInstrumentList->get_size() ) + ") Name = " + pInstr->get_name() );
+		INFOLOG( QString("\t\t|- (%1 of %2) Name = %3")
+			 .arg( nInstrument )
+			 .arg( m_pInstrumentList->get_size() )
+			 .arg( pInstr->get_name() )
+			);
 		for ( unsigned nLayer = 0; nLayer < MAX_LAYERS; ++nLayer ) {
 			InstrumentLayer *pLayer = pInstr->get_layer( nLayer );
 			if ( pLayer ) {

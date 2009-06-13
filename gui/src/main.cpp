@@ -320,7 +320,7 @@ int main(int argc, char *argv[])
 
 		int nObj = Object::get_objects_number();
 		if (nObj != 0) {
-			std::cerr << "\n\n\n " << to_string( nObj ).toStdString() << " alive objects\n\n" << std::endl << std::endl;
+			std::cerr << "\n\n\n " << nObj << " alive objects\n\n" << std::endl << std::endl;
 			Object::print_object_map();
 		}
 

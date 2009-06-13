@@ -446,7 +446,7 @@ void Preferences::loadPreferences( bool bGlobal )
 				__expandPatternItem = LocalFileMng::readXmlBool( guiNode, "expandPatternItem", __expandPatternItem ); 
 
 				for ( unsigned nFX = 0; nFX < MAX_FX; nFX++ ) {
-					QString sNodeName = "ladspaFX_properties" + to_string( nFX );
+					QString sNodeName = QString("ladspaFX_properties").arg( nFX );
 					setLadspaProperties( nFX, readWindowProperties( guiNode, sNodeName, m_ladspaProperties[nFX] ) );
 				}
 
@@ -634,10 +634,10 @@ void Preferences::savePreferences()
 
 		// use metronome
 		LocalFileMng::writeXmlString( &audioEngineNode, "use_metronome", m_bUseMetronome ? "true": "false" );
-		LocalFileMng::writeXmlString( &audioEngineNode, "metronome_volume", to_string( m_fMetronomeVolume ) );
-		LocalFileMng::writeXmlString( &audioEngineNode, "maxNotes", to_string( m_nMaxNotes ) );
-		LocalFileMng::writeXmlString( &audioEngineNode, "buffer_size", to_string( m_nBufferSize ) );
-		LocalFileMng::writeXmlString( &audioEngineNode, "samplerate", to_string( m_nSampleRate ) );
+		LocalFileMng::writeXmlString( &audioEngineNode, "metronome_volume", QString("%1").arg( m_fMetronomeVolume ) );
+		LocalFileMng::writeXmlString( &audioEngineNode, "maxNotes", QString( m_nMaxNotes ) );
+		LocalFileMng::writeXmlString( &audioEngineNode, "buffer_size", QString( m_nBufferSize ) );
+		LocalFileMng::writeXmlString( &audioEngineNode, "samplerate", QString( m_nSampleRate ) );
 
 		//// OSS DRIVER ////
 		TiXmlElement ossDriverNode( "oss_driver" );
@@ -679,7 +679,7 @@ void Preferences::savePreferences()
 			LocalFileMng::writeXmlString( &jackDriverNode, "jack_connect_defaults", jackConnectDefaultsString );
 
 			//pre-fader or post-fader track outputs ?
-			LocalFileMng::writeXmlString( &jackDriverNode, "jack_track_output_mode", to_string ( m_nJackTrackOutputMode ));
+			LocalFileMng::writeXmlString( &jackDriverNode, "jack_track_output_mode", QString( m_nJackTrackOutputMode ));
 
 			// jack track outs
 			QString jackTrackOutsString = "false";
@@ -705,7 +705,7 @@ void Preferences::savePreferences()
 		{
 			LocalFileMng::writeXmlString( &midiDriverNode, "driverName", m_sMidiDriver );
 			LocalFileMng::writeXmlString( &midiDriverNode, "port_name", m_sMidiPortName );
-			LocalFileMng::writeXmlString( &midiDriverNode, "channel_filter", to_string( m_nMidiChannelFilter ) );
+			LocalFileMng::writeXmlString( &midiDriverNode, "channel_filter", QString( m_nMidiChannelFilter ) );
 
 			if ( m_bMidiNoteOffIgnore ) {
 				LocalFileMng::writeXmlString( &midiDriverNode, "ignore_note_off", "true" );
@@ -731,13 +731,13 @@ void Preferences::savePreferences()
 	{
 		LocalFileMng::writeXmlString( &guiNode, "QTStyle", m_sQTStyle );
 		LocalFileMng::writeXmlString( &guiNode, "application_font_family", applicationFontFamily );
-		LocalFileMng::writeXmlString( &guiNode, "application_font_pointsize", to_string( applicationFontPointSize ) );
+		LocalFileMng::writeXmlString( &guiNode, "application_font_pointsize", QString( applicationFontPointSize ) );
 		LocalFileMng::writeXmlString( &guiNode, "mixer_font_family", mixerFontFamily );
-		LocalFileMng::writeXmlString( &guiNode, "mixer_font_pointsize", to_string( mixerFontPointSize ) );
-		LocalFileMng::writeXmlString( &guiNode, "mixer_falloff_speed", to_string( mixerFalloffSpeed ) );
-		LocalFileMng::writeXmlString( &guiNode, "patternEditorGridResolution", to_string( m_nPatternEditorGridResolution ) );
-		LocalFileMng::writeXmlString( &guiNode, "patternEditorGridHeight", to_string( m_nPatternEditorGridHeight ) );
-		LocalFileMng::writeXmlString( &guiNode, "patternEditorGridWidth", to_string( m_nPatternEditorGridWidth ) );
+		LocalFileMng::writeXmlString( &guiNode, "mixer_font_pointsize", QString( mixerFontPointSize ) );
+		LocalFileMng::writeXmlString( &guiNode, "mixer_falloff_speed", QString("%1").arg( mixerFalloffSpeed ) );
+		LocalFileMng::writeXmlString( &guiNode, "patternEditorGridResolution", QString( m_nPatternEditorGridResolution ) );
+		LocalFileMng::writeXmlString( &guiNode, "patternEditorGridHeight", QString( m_nPatternEditorGridHeight ) );
+		LocalFileMng::writeXmlString( &guiNode, "patternEditorGridWidth", QString( m_nPatternEditorGridWidth ) );
 		LocalFileMng::writeXmlBool( &guiNode, "patternEditorUsingTriplets", m_bPatternEditorUsingTriplets );
 		LocalFileMng::writeXmlBool( &guiNode, "showInstrumentPeaks", m_bShowInstrumentPeaks );
 		LocalFileMng::writeXmlBool( &guiNode, "isFXTabVisible", m_bIsFXTabVisible );
@@ -751,7 +751,7 @@ void Preferences::savePreferences()
 		writeWindowProperties( guiNode, "drumkitManager_properties", drumkitManagerProperties );
 		writeWindowProperties( guiNode, "audioEngineInfo_properties", audioEngineInfoProperties );
 		for ( unsigned nFX = 0; nFX < MAX_FX; nFX++ ) {
-			QString sNode = "ladspaFX_properties" + to_string( nFX );
+			QString sNode = QString("ladspaFX_properties%1").arg( nFX );
 			writeWindowProperties( guiNode, sNode, m_ladspaProperties[nFX] );
 		}
 
@@ -777,8 +777,8 @@ void Preferences::savePreferences()
 			}
 			LocalFileMng::writeXmlString( &guiNode, "setplay", setPlay );
 
-		LocalFileMng::writeXmlString( &guiNode, "countoffset", to_string(m_countOffset) );
-		LocalFileMng::writeXmlString( &guiNode, "playoffset", to_string(m_startOffset) );
+		LocalFileMng::writeXmlString( &guiNode, "countoffset", QString(m_countOffset) );
+		LocalFileMng::writeXmlString( &guiNode, "playoffset", QString(m_startOffset) );
 		//~ beatcounter
 
 		//SoundLibraryPanel expand items
@@ -979,10 +979,10 @@ void Preferences::writeWindowProperties( TiXmlNode& parent, const QString& windo
 		LocalFileMng::writeXmlString( &windowPropNode, "visible", "false" );
 	}
 
-	LocalFileMng::writeXmlString( &windowPropNode, "x", to_string( prop.x ) );
-	LocalFileMng::writeXmlString( &windowPropNode, "y", to_string( prop.y ) );
-	LocalFileMng::writeXmlString( &windowPropNode, "width", to_string( prop.width ) );
-	LocalFileMng::writeXmlString( &windowPropNode, "height", to_string( prop.height ) );
+	LocalFileMng::writeXmlString( &windowPropNode, "x", QString( prop.x ) );
+	LocalFileMng::writeXmlString( &windowPropNode, "y", QString( prop.y ) );
+	LocalFileMng::writeXmlString( &windowPropNode, "width", QString( prop.width ) );
+	LocalFileMng::writeXmlString( &windowPropNode, "height", QString( prop.height ) );
 	parent.InsertEndChild( windowPropNode );
 }
 

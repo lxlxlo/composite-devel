@@ -460,7 +460,7 @@ PatternEditorPanel::PatternEditorPanel( QWidget *pParent )
 				break;
 
 			default:
-				ERRORLOG( "Wrong grid resolution: " + to_string( pPref->getPatternEditorGridResolution() ) );
+			    ERRORLOG( QString("Wrong grid resolution: %1").arg( pPref->getPatternEditorGridResolution() ) );
 				__resolution_combo->set_text( "4" );
 				nIndex = 0;
 		}
@@ -488,7 +488,7 @@ PatternEditorPanel::PatternEditorPanel( QWidget *pParent )
 				break;
 
 			default:
-				ERRORLOG( "Wrong grid resolution: " + to_string( pPref->getPatternEditorGridResolution() ) );
+				ERRORLOG( QString("Wrong grid resolution: %1").arg( pPref->getPatternEditorGridResolution() ) );
 				__resolution_combo->set_text( "4T" );
 				nIndex = 5;
 		}
@@ -842,7 +842,7 @@ void PatternEditorPanel::patternSizeChanged( QString str )
 		//m_pPatternSizeLCD->setText( QString( "%1" ).arg( nSelected ) );
 	}
 	else {
-		ERRORLOG( "[patternSizeChanged] Unhandled case " + to_string( nSelected ) );
+		ERRORLOG( QString("[patternSizeChanged] Unhandled case %1").arg( nSelected ) );
 	}
 
 	m_pPatternEditorRuler->updateEditor( true );	// redraw all

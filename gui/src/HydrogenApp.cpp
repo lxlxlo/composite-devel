@@ -424,7 +424,7 @@ void HydrogenApp::onEventQueueTimer()
 					break;
 
 				default:
-					ERRORLOG( "[onEventQueueTimer] Unhandled event: " + to_string( event.type ) );
+					ERRORLOG( QString("[onEventQueueTimer] Unhandled event: %1").arg( event.type ) );
 			}
 
 		}

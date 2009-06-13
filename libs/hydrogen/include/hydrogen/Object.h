@@ -105,33 +105,6 @@ private:
 	QString __class_name;
 };
 
-
-// some useful functions..
-
-template <class T>
-inline QString to_string( const T& t )
-{
-	std::ostringstream osstream;
-	osstream << t;
-
-	return QString( osstream.str().c_str() );
-}
-
-inline int string_to_int( const QString& str )
-{
-	std::istringstream isstream( str.toStdString() );
-	int t;
-	isstream >> t;
-	return t;
-}
-inline float string_to_float( const QString& str )
-{
-	std::istringstream isstream( str.toStdString() );
-	float t;
-	isstream >> t;
-	return t;
-}
-
 // LOG MACROS
 
 namespace H2Core {
