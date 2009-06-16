@@ -126,15 +126,10 @@ void setPalette( QApplication *pQApp )
 int main(int argc, char *argv[])
 {
 	try {
-
-		QString songFilename = "";
-		bool bNoSplash = false;
-		QString sSelectedDriver = "";
-
 		// Options...
 		char *cp;
 		struct option *op;
-		char opts[NELEM(long_opts) * 2 + 1];
+		char opts[NELEM(long_opts) * 3 + 1];
 
 		// Build up the short option QString
 		cp = opts;
@@ -142,17 +137,20 @@ int main(int argc, char *argv[])
 			*cp++ = op->val;
 			if (op->has_arg)
 				*cp++ = ':';
+			if (op->has_arg == optional_argument )
+				*cp++ = ':';  // gets another one
 		}
 
 		QApplication* pQApp = new QApplication(argc, argv);
 
-		Logger::create_instance();
-		MidiMap::create_instance();
-		H2Core::Preferences::create_instance();
-		Object::set_logging_level( "Error" );
-		H2Core::Hydrogen::create_instance();
-
 		// Deal with the options
+		QString songFilename;
+		bool bNoSplash = false;
+		QString sSelectedDriver;
+		bool showVersionOpt = false;
+		const char* logLevelOpt = "Error";
+		bool showHelpOpt = false;
+
 		int c;
 		for (;;) {
 			c = getopt_long(argc, argv, opts, long_opts, NULL);
@@ -169,15 +167,14 @@ int main(int argc, char *argv[])
 					break;
 
 				case 'v':
-					std::cout << get_version() << std::endl;
-					exit(0);
+					showVersionOpt = true;
 					break;
 
 				case 'V':
 					if( optarg ) {
-						Object::set_logging_level(optarg);
+						logLevelOpt = optarg;
 					} else {
-						Object::set_logging_level("Warning");
+						logLevelOpt = "Warning";
 					}
 					break;
 				case 'n':
@@ -186,14 +183,27 @@ int main(int argc, char *argv[])
 
 				case 'h':
 				case '?':
-					showInfo();
-					showUsage();
-					exit(0);
+					showHelpOpt = true;
 					break;
 			}
 		}
 
+		if( showVersionOpt ) {
+			std::cout << get_version() << std::endl;
+			exit(0);
+		}
 		showInfo();
+		if( showHelpOpt ) {
+			showUsage();
+			exit(0);
+		}
+
+		// Man your battle stations... this is not a drill.
+		Logger::create_instance();
+		MidiMap::create_instance();
+		H2Core::Preferences::create_instance();
+		Object::set_logging_level( logLevelOpt );
+		H2Core::Hydrogen::create_instance();
 
 		_INFOLOG( QString("Using QT version ") + QString( qVersion() ) );
 		_INFOLOG( "Using data path: " + H2Core::DataPath::get_data_path() );
@@ -377,7 +387,7 @@ void showUsage()
 		  << "                          from a crash." << std::endl;
 #endif
 	std::cout << "   -n, --nosplash - Hide splash screen" << std::endl;
-	std::cout << "   -V [Level], --verbose [Level] - Print a lot of debugging info" << std::endl;
+	std::cout << "   -V[Level], --verbose[=Level] - Print a lot of debugging info" << std::endl;
 	std::cout << "                 Level, if present, may be None, Error, Warning, Info, or Debug " << std::endl;
 	std::cout << "   -v, --version - Show version info" << std::endl;
 	std::cout << "   -h, --help - Show this help message" << std::endl;

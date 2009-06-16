@@ -32,7 +32,7 @@ TODO LIST
     cycle.  This can't be allowed -- but in practice does not seem to
     happen.
 
-( ) 'hydrogen --help' should _not_ create an instance of everything.
+(X) 'hydrogen --help' should _not_ create an instance of everything.
     Anything, really.
 
 ( ) Should H2Core::logLevel be a member of class Logger?
