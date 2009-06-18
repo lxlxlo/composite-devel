@@ -31,12 +31,12 @@
 #include <hydrogen/SoundLibrary.h>
 #include <cassert>
 
-// Engine state
-#define STATE_UNINITIALIZED	1
-#define STATE_INITIALIZED	2
-#define STATE_PREPARED		3
-#define STATE_READY		4
-#define STATE_PLAYING		5
+// Engine states  (It's ok to use ==, <, and > when testing)
+#define STATE_UNINITIALIZED	1     // Not even the constructors have been called.
+#define STATE_INITIALIZED	2     // Not ready, but most pointers are now valid or NULL
+#define STATE_PREPARED		3     // Drivers are set up, but not ready to process audio.
+#define STATE_READY		4     // Ready to process audio
+#define STATE_PLAYING		5     // Currently playing a sequence.
 
 inline int randomValue( int max );
 
