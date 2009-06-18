@@ -26,6 +26,7 @@
 #include <hydrogen/sampler/Sampler.h>
 
 #include <hydrogen/hydrogen.h>	// TODO: remove this line as soon as possible
+#include <cassert>
 
 namespace H2Core
 {
@@ -50,6 +51,9 @@ AudioEngine::AudioEngine()
 	INFOLOG( "INIT" );
 
 	pthread_mutex_init( &__engine_mutex, NULL );
+
+	__sampler = new Sampler;
+	__synth = new Synth;
 
 #ifdef LADSPA_SUPPORT
 	Effects::get_instance();
@@ -76,10 +80,7 @@ AudioEngine::~AudioEngine()
 
 Sampler* AudioEngine::get_sampler()
 {
-	if ( !__sampler ) {
-		__sampler = new Sampler();
-	}
-
+	assert(__sampler);
 	return __sampler;
 }
 
@@ -88,10 +89,7 @@ Sampler* AudioEngine::get_sampler()
 
 Synth* AudioEngine::get_synth()
 {
-	if ( !__synth ) {
-		__synth = new Synth();
-	}
-
+	assert(__synth);
 	return __synth;
 }
 
@@ -106,7 +104,7 @@ void AudioEngine::lock( const QString& locker )
 		pthread_mutex_lock( &__engine_mutex );
 	}
 
-	__locker = locker;
+	//__locker = locker;
 }
 
 
@@ -118,7 +116,7 @@ bool AudioEngine::try_lock( const QString& locker )
 		WARNINGLOG( "trylock != 0. Lock in " + __locker );
 		return false;
 	}
-	__locker = locker;
+	//__locker = locker;
 
 	return true;
 }
