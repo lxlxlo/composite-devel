@@ -39,10 +39,7 @@ using namespace std;
 unsigned int Object::__objects = 0;
 bool Object::__use_log = false;
 std::map<QString, int> Object::__object_map;
-
-namespace H2Core {
-    unsigned logLevel = 0;  // No logging  see Logger::Error, Logger::Warning, et al
-}
+unsigned Logger::__log_level = 0;
 
 /**
  * Constructor
@@ -139,7 +136,7 @@ void Object::set_logging_level(const char* level)
 		use = true;
 	}
 
-	H2Core::logLevel = log_level;
+	Logger::set_log_level( log_level );
 	__use_log = use;
 	Logger::get_instance()->__use_file = use;
 }
@@ -236,6 +233,8 @@ void* loggerThread_func( void* param )
 				fflush( pLogFile );
 			}
 		}
+		// See Object.h for documentation on __mutex and when
+		// it should be locked.
 		queue.erase( queue.begin(), last );
 		pthread_mutex_lock( &pLogger->__mutex );
 		if( ! queue.empty() ) queue.pop_front();
@@ -291,7 +290,7 @@ Logger::~Logger()
 
 }
 
-void Logger::log( Logger::log_level_t level,
+void Logger::log( unsigned level,
 		  const char* funcname,
 		  const QString& class_name,
 		  const QString& msg )
