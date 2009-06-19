@@ -37,13 +37,14 @@ TODO LIST
 
 (X) Should H2Core::logLevel be a member of class Logger?
 
-( ) hydrogen.cpp reports an unused parameter because I moved a section
+(X) hydrogen.cpp reports an unused parameter because I moved a section
     of code around.  The result is that the error code is not being
     check like it probably should be.  Need to fix that part.
 
-( ) I switched to the Alsa driver... which didn't work because JACK
+(X) I switched to the Alsa driver... which didn't work because JACK
     was running.  When I switched back to the JACK driver, it crashed
-    with a segfault.
+    with a segfault.  (Turns out, this was caused by that unused
+    parameter.)
 
 ( ) A few parts of the program are using std::vector for queues, which
     is not appropriate because std::vector::push_back() could require
@@ -59,6 +60,9 @@ TODO LIST
 ( ) Perform a static code analysis on everything called by
     audioEngine_process()... looking for real-time programming
     violations.  Take corrective measures.
+
+( ) Not a "zombies" issue... but when I start H2 with the
+    `--driver=foo' or `--driver foo' parameter, it gets ignored.
 
 FOOTNOTES
 ---------

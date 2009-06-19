@@ -1633,16 +1633,40 @@ void audioEngine_startAudioDrivers()
 	// update the audiodriver reference in the sampler
 	AudioEngine::get_instance()->get_sampler()->set_audio_output( m_pAudioDriver );
 
+	// change the current audio engine state
+	if ( m_pSong == NULL ) {
+		m_audioEngineState = STATE_PREPARED;
+	} else {
+		m_audioEngineState = STATE_READY;
+	}
+
+
+	if ( m_pSong ) {
+		m_pAudioDriver->setBpm( m_pSong->__bpm );
+	}
+
+	if ( m_audioEngineState == STATE_PREPARED ) {
+		EventQueue::get_instance()->push_event( EVENT_STATE, STATE_PREPARED );
+	} else if ( m_audioEngineState == STATE_READY ) {
+		EventQueue::get_instance()->push_event( EVENT_STATE, STATE_READY );
+	}
+
+	// Unlocking earlier might execute the jack process() callback before we
+	// are fully initialized.
+	mx.unlock();
+	AudioEngine::get_instance()->unlock();
+
 	if ( m_pAudioDriver ) {
-		// int res = m_pAudioDriver->connect();
-		int res = 0;
+		int res = m_pAudioDriver->connect();
 		if ( res != 0 ) {
 			audioEngine_raiseError( Hydrogen::ERROR_STARTING_DRIVER );
 			_ERRORLOG( "Error starting audio driver [audioDriver::connect()]" );
 			_ERRORLOG( "Using the NULL output audio driver" );
 
+			mx.relock();
 			delete m_pAudioDriver;
 			m_pAudioDriver = new NullDriver( audioEngine_process );
+			mx.unlock();
 			m_pAudioDriver->init( 0 );
 			m_pAudioDriver->connect();
 		}
@@ -1661,31 +1685,6 @@ void audioEngine_startAudioDrivers()
 		audioEngine_setupLadspaFX( m_pAudioDriver->getBufferSize() );
 	}
 
-
-
-	// change the current audio engine state
-	if ( m_pSong == NULL ) {
-		m_audioEngineState = STATE_PREPARED;
-	} else {
-		m_audioEngineState = STATE_READY;
-	}
-
-
-	if ( m_pSong ) {
-		m_pAudioDriver->setBpm( m_pSong->__bpm );
-	}
-
-	if ( m_audioEngineState == STATE_PREPARED ) {
-		EventQueue::get_instance()->push_event( EVENT_STATE, STATE_PREPARED );
-	} else if ( m_audioEngineState == STATE_READY ) {
-		EventQueue::get_instance()->push_event( EVENT_STATE, STATE_READY );
-	}
-	// Unlocking earlier might execute the jack process() callback before we
-	// are fully initialized.
-	mx.unlock();
-	AudioEngine::get_instance()->unlock();
-
-	int res = m_pAudioDriver->connect();
 
 }
 
