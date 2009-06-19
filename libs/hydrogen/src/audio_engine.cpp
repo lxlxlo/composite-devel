@@ -46,7 +46,6 @@ AudioEngine::AudioEngine()
 		: Object( "AudioEngine" )
 		, __sampler( NULL )
 		, __synth( NULL )
-		, __locker( "" )
 {
 	INFOLOG( "INIT" );
 
@@ -96,27 +95,22 @@ Synth* AudioEngine::get_synth()
 
 
 
-void AudioEngine::lock( const QString& locker )
+void AudioEngine::lock( const QString& /*locker*/ )
 {
-	int res = pthread_mutex_trylock( &__engine_mutex );
-	if ( res != 0 ) {
-		WARNINGLOG( QString( "trylock != 0. Lock in %1. I'll wait for the mutex." ).arg( __locker ) );
-		pthread_mutex_lock( &__engine_mutex );
-	}
-
-	//__locker = locker;
+	pthread_mutex_lock( &__engine_mutex );
 }
 
 
 
-bool AudioEngine::try_lock( const QString& locker )
+bool AudioEngine::try_lock( const QString& /*locker*/ )
 {
+	static QString err_msg("Unable to lock (trylock != 0)");
+
 	int res = pthread_mutex_trylock( &__engine_mutex );
 	if ( res != 0 ) {
-		WARNINGLOG( "trylock != 0. Lock in " + __locker );
+		INFOLOG( err_msg );
 		return false;
 	}
-	//__locker = locker;
 
 	return true;
 }

@@ -61,7 +61,6 @@ private:
 
 	/// Mutex for syncronized access to the Song object and the AudioEngine.
 	pthread_mutex_t __engine_mutex;
-	QString __locker;
 
 	AudioEngine();
 };
