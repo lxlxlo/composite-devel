@@ -84,6 +84,12 @@ private:
 	/// Mutex for syncronized access to the Song object and the AudioEngine.
 	pthread_mutex_t __engine_mutex;
 
+	struct _locker_struct {
+		const char* file;
+		unsigned int line;
+		const char* function;
+	} __locker;
+			
 	AudioEngine();
 };
 
