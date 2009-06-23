@@ -61,7 +61,7 @@ TODO LIST
     audioEngine_process()... looking for real-time programming
     violations.  Take corrective measures.
 
-( ) Not a "zombies" issue... but when I start H2 with the
+(X) Not a "zombies" issue... but when I start H2 with the
     `--driver=foo' or `--driver foo' parameter, it gets ignored.
 
 FOOTNOTES

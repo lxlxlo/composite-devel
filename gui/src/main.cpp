@@ -202,7 +202,8 @@ int main(int argc, char *argv[])
 		MidiMap::create_instance();
 		H2Core::Preferences::create_instance();
 		Object::set_logging_level( logLevelOpt );
-		H2Core::Hydrogen::create_instance();
+		// See below for H2Core::Hydrogen.
+
 
 		_INFOLOG( QString("Using QT version ") + QString( qVersion() ) );
 		_INFOLOG( "Using data path: " + H2Core::DataPath::get_data_path() );
@@ -309,7 +310,8 @@ int main(int argc, char *argv[])
 	}	
 #endif
 
-		
+		// Hydrogen here to honor all preferences.
+		H2Core::Hydrogen::create_instance();
 		MainForm *pMainForm = new MainForm( pQApp, songFilename );
 		pMainForm->show();
 		pSplash->finish( pMainForm );
