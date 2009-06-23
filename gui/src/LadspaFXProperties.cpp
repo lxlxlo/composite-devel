@@ -356,7 +356,7 @@ void LadspaFXProperties::selectFXBtnClicked()
 					break;
 				}
 			}
-			//AudioEngine::get_instance()->lock("LadspaFXProperties::selectFXBtnClicked");
+			//AudioEngine::get_instance()->lock( RIGHT_HERE );
 			Song *pSong = (Hydrogen::get_instance() )->getSong();
 			pSong->__is_modified = true;
 
@@ -429,7 +429,7 @@ void LadspaFXProperties::activateBtnClicked()
 //	Song *pSong = (Hydrogen::get_instance() )->getSong();
 	LadspaFX *pFX = Effects::get_instance()->getLadspaFX(m_nLadspaFX);
 	if (pFX) {
-		AudioEngine::get_instance()->lock("LadspaFXProperties::activateBtnClicked");
+		AudioEngine::get_instance()->lock( RIGHT_HERE );
 		pFX->setEnabled( !pFX->isEnabled() );
 		AudioEngine::get_instance()->unlock();
 	}

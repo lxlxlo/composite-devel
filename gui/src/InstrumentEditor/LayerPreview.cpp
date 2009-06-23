@@ -141,7 +141,7 @@ void LayerPreview::paintEvent(QPaintEvent *ev)
 
 void LayerPreview::selectedInstrumentChangedEvent()
 {
-	AudioEngine::get_instance()->lock( "LayerPreview::selectedInstrumentChangedEvent" );
+	AudioEngine::get_instance()->lock( RIGHT_HERE );
 	Song *pSong = Hydrogen::get_instance()->getSong();
 	if (pSong != NULL) {
 		InstrumentList *pInstrList = pSong->get_instrument_list();

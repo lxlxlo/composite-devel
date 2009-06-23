@@ -66,7 +66,7 @@ void Pattern::purge_instrument( Instrument * I )
 		
 		if ( pNote->get_instrument() == I ) {
 			if ( !locked ) {
-				H2Core::AudioEngine::get_instance()->lock("Pattern::purge_instrument");
+				H2Core::AudioEngine::get_instance()->lock( RIGHT_HERE );
 				locked = true;
 			}
 			slate.push_back( pNote );

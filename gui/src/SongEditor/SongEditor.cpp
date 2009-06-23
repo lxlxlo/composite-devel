@@ -106,7 +106,7 @@ void SongEditor::keyPressEvent ( QKeyEvent * ev )
 
 	if ( ev->key() == Qt::Key_Delete ) {
 		if ( m_selectedCells.size() != 0 ) {
-			AudioEngine::get_instance()->lock( "SongEditor::keyPressEvent" );
+			AudioEngine::get_instance()->lock( RIGHT_HERE );
 			// delete all selected cells
 			for ( uint i = 0; i < m_selectedCells.size(); i++ ) {
 				QPoint cell = m_selectedCells[ i ];
@@ -151,7 +151,7 @@ void SongEditor::mousePressEvent( QMouseEvent *ev )
 
 	// don't lock the audio driver before checking that...
 	if ( nRow >= (int)pPatternList->get_size() || nRow < 0 || nColumn < 0 ) { return; }
-	AudioEngine::get_instance()->lock( "SongEditor::mousePressEvent" );
+	AudioEngine::get_instance()->lock( RIGHT_HERE );
 
 
 	SongEditorActionMode actionMode = HydrogenApp::get_instance()->getSongEditorPanel()->getActionMode();
@@ -351,7 +351,7 @@ void SongEditor::mouseReleaseEvent( QMouseEvent *ev )
 	vector<PatternList*>* pColumns = pEngine->getSong()->get_pattern_group_vector();
 
 	if ( m_bIsMoving ) {	// fine dello spostamento dei pattern
-		AudioEngine::get_instance()->lock( "SongEditor::mouseReleaseEvent" );
+		AudioEngine::get_instance()->lock( RIGHT_HERE );
 		// create the new patterns
 		for ( uint i = 0; i < m_movingCells.size(); i++ ) {
 			QPoint cell = m_movingCells[ i ];
@@ -1066,7 +1066,7 @@ void SongEditorPatternList::patternPopup_delete()
 //	pEngine->sequencer_stop();
 
 // "lock engine" I am not sure, but think this is unnecessarily. -wolke-
-//	AudioEngine::get_instance()->lock( "SongEditorPatternList::patternPopup_delete" );
+//	AudioEngine::get_instance()->lock( RIGHT_HERE );
 
 	Song *song = pEngine->getSong();
 	PatternList *pSongPatternList = song->get_pattern_list();
@@ -1192,7 +1192,7 @@ void SongEditorPatternList::patternPopup_fill()
 void SongEditorPatternList::fillRangeWithPattern(FillRange* pRange, int nPattern)
 {
 	Hydrogen *pEngine = Hydrogen::get_instance();
-	AudioEngine::get_instance()->lock( "SongEditorPatternList::fillRangeWithPattern" );
+	AudioEngine::get_instance()->lock( RIGHT_HERE );
 
 
 	Song *pSong = pEngine->getSong();

@@ -492,7 +492,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		 * this is useful if the bpm is set by a rotary control knob
 		*/
 
-		AudioEngine::get_instance()->lock( "Action::BPM_CC_RELATIVE" );
+		AudioEngine::get_instance()->lock( RIGHT_HERE );
 
 		int mult = 1;	
 
@@ -529,7 +529,7 @@ bool ActionManager::handleAction( Action * pAction ){
 
 
 	if( sActionString == "BPM_INCR" ){
-		AudioEngine::get_instance()->lock( "Action::BPM_INCR" );
+		AudioEngine::get_instance()->lock( RIGHT_HERE );
 
 		int mult = 1;	
 
@@ -549,7 +549,7 @@ bool ActionManager::handleAction( Action * pAction ){
 
 
 	if( sActionString == "BPM_DECR" ){
-		AudioEngine::get_instance()->lock( "Action::BPM_DECR" );
+		AudioEngine::get_instance()->lock( RIGHT_HERE );
 
 		int mult = 1;	
 

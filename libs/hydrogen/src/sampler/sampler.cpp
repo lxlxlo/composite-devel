@@ -700,7 +700,7 @@ void Sampler::stop_playing_notes( Instrument* instrument )
 /// Preview, uses only the first layer
 void Sampler::preview_sample( Sample* sample, int length )
 {
-	AudioEngine::get_instance()->lock( "Sampler::previewSample" );
+	AudioEngine::get_instance()->lock( RIGHT_HERE );
 
 	InstrumentLayer *pLayer = __preview_instrument->get_layer( 0 );
 
@@ -721,7 +721,7 @@ void Sampler::preview_sample( Sample* sample, int length )
 void Sampler::preview_instrument( Instrument* instr )
 {
 	Instrument * old_preview;
-	AudioEngine::get_instance()->lock( "Sampler::previewInstrument" );
+	AudioEngine::get_instance()->lock( RIGHT_HERE );
 
 	stop_playing_notes( __preview_instrument );
 

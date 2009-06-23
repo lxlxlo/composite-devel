@@ -60,7 +60,8 @@ public:
 		Error = 1,
 		Warning = 2,
 		Info = 4,
-		Debug = 8
+		Debug = 8,
+                AELockTracing = 0x10
 	} log_level_t;
 	typedef std::list<QString> queue_t;
 

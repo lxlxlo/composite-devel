@@ -862,7 +862,7 @@ void PatternEditorPanel::moveUpBtnClicked(Button *)
 	Hydrogen *engine = Hydrogen::get_instance();
 	int nSelectedInstrument = engine->getSelectedInstrumentNumber();
 
-	AudioEngine::get_instance()->lock( "PatternEditorPanel::moveUpBtnClicked" );
+	AudioEngine::get_instance()->lock( RIGHT_HERE );
 
 	Song *pSong = engine->getSong();
 	InstrumentList *pInstrumentList = pSong->get_instrument_list();
@@ -903,7 +903,7 @@ void PatternEditorPanel::moveDownBtnClicked(Button *)
 	Hydrogen *engine = Hydrogen::get_instance();
 	int nSelectedInstrument = engine->getSelectedInstrumentNumber();
 
-	AudioEngine::get_instance()->lock( "PatternEditorPanel::moveDownBtnClicked" );
+	AudioEngine::get_instance()->lock( RIGHT_HERE );
 
 	Song *pSong = engine->getSong();
 	InstrumentList *pInstrumentList = pSong->get_instrument_list();

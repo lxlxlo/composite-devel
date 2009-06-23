@@ -767,7 +767,7 @@ void MainForm::action_window_showSongEditor()
 
 void MainForm::action_instruments_addInstrument()
 {
-	AudioEngine::get_instance()->lock("MainForm::action_instruments_addInstrument");
+	AudioEngine::get_instance()->lock( RIGHT_HERE );
 	InstrumentList* pList = Hydrogen::get_instance()->getSong()->get_instrument_list();
 
 	// create a new valid ID for this instrument
@@ -816,7 +816,7 @@ void MainForm::action_instruments_clearAll()
 	}
 
 	// Remove all layers
-	AudioEngine::get_instance()->lock("MainForm::action_instruments_clearAll");
+	AudioEngine::get_instance()->lock( RIGHT_HERE );
 	Song *pSong = Hydrogen::get_instance()->getSong();
 	InstrumentList* pList = pSong->get_instrument_list();
 	for (uint i = 0; i < pList->get_size(); i++) {
@@ -1001,7 +1001,7 @@ void MainForm::onRestartAccelEvent()
 void MainForm::onBPMPlusAccelEvent()
 {
 	Hydrogen* pEngine = Hydrogen::get_instance();
-	AudioEngine::get_instance()->lock( "MainForm::onBPMPlusAccelEvent" );
+	AudioEngine::get_instance()->lock( RIGHT_HERE );
 
 	Song* pSong = pEngine->getSong();
 	if (pSong->__bpm  < 300) {
@@ -1015,7 +1015,7 @@ void MainForm::onBPMPlusAccelEvent()
 void MainForm::onBPMMinusAccelEvent()
 {
 	Hydrogen* pEngine = Hydrogen::get_instance();
-	AudioEngine::get_instance()->lock( "MainForm::onBPMMinusAccelEvent" );
+	AudioEngine::get_instance()->lock( RIGHT_HERE );
 
 	Song* pSong = pEngine->getSong();
 	if (pSong->__bpm > 40 ) {

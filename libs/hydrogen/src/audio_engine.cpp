@@ -92,25 +92,35 @@ Synth* AudioEngine::get_synth()
 	return __synth;
 }
 
-
-
-
-void AudioEngine::lock( const QString& /*locker*/ )
+void AudioEngine::lock( const char* file, unsigned int line, const char* function )
 {
 	pthread_mutex_lock( &__engine_mutex );
+	__LOG_WRAPPER( Logger::AELockTracing,
+		       __PRETTY_FUNCTION__,
+		       get_class_name(),
+		       QString( "locked at %1 (%2:%3)" ).arg(function).arg(file).arg(line)
+		);  // Lock obtained.
 }
 
 
 
-bool AudioEngine::try_lock( const QString& /*locker*/ )
+bool AudioEngine::try_lock( const char* file, unsigned int line, const char* function )
 {
-	static QString err_msg("Unable to lock (trylock != 0)");
-
 	int res = pthread_mutex_trylock( &__engine_mutex );
 	if ( res != 0 ) {
-		INFOLOG( err_msg );
+		__LOG_WRAPPER( Logger::AELockTracing,
+			       __PRETTY_FUNCTION__,
+			       get_class_name(),
+			       QString( "trylock failed for %1 (%2:%3)" ).arg(function).arg(file).arg(line)
+			);  // Lock not obtained.
 		return false;
 	}
+
+	__LOG_WRAPPER( Logger::AELockTracing,
+		       __PRETTY_FUNCTION__,
+		       get_class_name(),
+		       QString( "locked at %1 (%2:%3)" ).arg(function).arg(file).arg(line)
+		);  // Lock obtained.
 
 	return true;
 }
@@ -119,6 +129,13 @@ bool AudioEngine::try_lock( const QString& /*locker*/ )
 
 void AudioEngine::unlock()
 {
+	const QString msg("Unlocked");
+
+	__LOG_WRAPPER( Logger::AELockTracing,
+		       __PRETTY_FUNCTION__,
+		       get_class_name(),
+		       msg
+		);  // Lock released
 	pthread_mutex_unlock( &__engine_mutex );
 }
 

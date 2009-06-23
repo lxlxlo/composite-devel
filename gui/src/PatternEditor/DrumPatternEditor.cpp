@@ -160,7 +160,7 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 
 	if (ev->button() == Qt::LeftButton ) {
 		m_bRightBtnPressed = false;
-		AudioEngine::get_instance()->lock( "DrumPatternEditor::mousePressEvent" );	// lock the audio engine
+		AudioEngine::get_instance()->lock( RIGHT_HERE );	// lock the audio engine
 
 		bool bNoteAlreadyExist = false;
 		std::multimap <int, Note*>::iterator pos;
@@ -206,7 +206,7 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 			nRealColumn = (ev->x() - 20) / static_cast<float>(m_nGridWidth);
 		}
 
-		AudioEngine::get_instance()->lock( "DrumPatternEditor::mousePressEvent" );
+		AudioEngine::get_instance()->lock( RIGHT_HERE );
 
 		std::multimap <int, Note*>::iterator pos;
 		for ( pos = m_pPattern->note_map.lower_bound( nColumn ); pos != m_pPattern->note_map.upper_bound( nColumn ); ++pos ) {
@@ -288,7 +288,7 @@ void DrumPatternEditor::mouseMoveEvent(QMouseEvent *ev)
 	if (m_bRightBtnPressed && m_pDraggedNote ) {
 		int nTickColumn = getColumn( ev );
 
-		AudioEngine::get_instance()->lock("DrumPatternEditor::mouseMoveEvent");	// lock the audio engine
+		AudioEngine::get_instance()->lock( RIGHT_HERE );	// lock the audio engine
 		int nLen = nTickColumn - (int)m_pDraggedNote->get_position();
 
 		if (nLen <= 0) {

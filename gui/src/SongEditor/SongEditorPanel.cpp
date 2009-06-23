@@ -370,7 +370,7 @@ void SongEditorPanel::upBtnClicked( Button* btn )
 	Hydrogen *pEngine = Hydrogen::get_instance();
 	int nSelectedPatternPos = pEngine->getSelectedPatternNumber();
 
-	AudioEngine::get_instance()->lock( "SongEditorPanel::m_pUpBtnClicked" );
+	AudioEngine::get_instance()->lock( RIGHT_HERE );
 	Song *pSong = pEngine->getSong();
 	PatternList *pList = pSong->get_pattern_list();
 
@@ -400,7 +400,7 @@ void SongEditorPanel::downBtnClicked( Button* btn )
 	Hydrogen *pEngine = Hydrogen::get_instance();
 	int nSelectedPatternPos = pEngine->getSelectedPatternNumber();
 
-	AudioEngine::get_instance()->lock( "SongEditorPanel::m_pDownBtnClicked" );
+	AudioEngine::get_instance()->lock( RIGHT_HERE );
 	Song *pSong = pEngine->getSong();
 	PatternList *pList = pSong->get_pattern_list();
 
@@ -434,7 +434,7 @@ void SongEditorPanel::clearSequence( Button* btn)
 
 	Hydrogen *engine = Hydrogen::get_instance();
 
-	AudioEngine::get_instance()->lock( "SongEditorPanel::clearSequence" );
+	AudioEngine::get_instance()->lock( RIGHT_HERE );
 
 	Song *song = engine->getSong();
 	vector<PatternList*> *pPatternGroupsVect = song->get_pattern_group_vector();

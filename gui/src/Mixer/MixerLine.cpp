@@ -688,7 +688,7 @@ void MasterMixerLine::rotaryChanged( Rotary *pRef )
 	sprintf( sVal, "%#.2f", fVal);
 
 	Hydrogen *pEngine = Hydrogen::get_instance();
-	AudioEngine::get_instance()->lock("MasterMixerLine::knobChanged");
+	AudioEngine::get_instance()->lock( RIGHT_HERE );
 
 	if ( pRef == m_pHumanizeTimeRotary ) {
 		pEngine->getSong()->set_humanize_time_value( fVal );
