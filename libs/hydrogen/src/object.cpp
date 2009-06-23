@@ -21,6 +21,7 @@
  */
 
 #include <hydrogen/Object.h>
+#include <hydrogen/util.h>
 
 #include <QDir>
 #include <iostream>
@@ -115,6 +116,8 @@ void Object::set_logging_level(const char* level)
 	bool use;
 	unsigned log_level;
 
+	// insert hex-detecting code here.  :-)
+
 	if( 0 == strncasecmp( level, none, sizeof(none) ) ) {
 		log_level = 0;
 		use = false;
@@ -131,9 +134,18 @@ void Object::set_logging_level(const char* level)
 		log_level = Logger::Error | Logger::Warning | Logger::Info | Logger::Debug;
 		use = true;
 	} else {
-		log_level = 0;
-		log_level = ~log_level;
-		use = true;
+		int val = H2Core::hextoi(level, -1);
+		if( val == 0 ) {
+			// Probably means hex was invalid.  Use -VNone instead.
+			log_level = Logger::Error;
+		} else {
+			log_level = val;
+			if( log_level & ~0x1 ) {
+				use = true;
+			} else {
+				use = false;
+			}
+		}
 	}
 
 	Logger::set_log_level( log_level );

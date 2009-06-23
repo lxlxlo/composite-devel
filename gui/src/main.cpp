@@ -43,7 +43,6 @@
 #include <hydrogen/data_path.h>
 #include <hydrogen/h2_exception.h>
 
-
 #include <iostream>
 using namespace std;
 
@@ -388,7 +387,7 @@ void showUsage()
 #endif
 	std::cout << "   -n, --nosplash - Hide splash screen" << std::endl;
 	std::cout << "   -V[Level], --verbose[=Level] - Print a lot of debugging info" << std::endl;
-	std::cout << "                 Level, if present, may be None, Error, Warning, Info, or Debug " << std::endl;
+	std::cout << "                 Level, if present, may be None, Error, Warning, Info, or 0xHHHH" << std::endl;
 	std::cout << "   -v, --version - Show version info" << std::endl;
 	std::cout << "   -h, --help - Show this help message" << std::endl;
 }
