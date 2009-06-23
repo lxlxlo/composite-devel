@@ -309,11 +309,11 @@ void Logger::log( unsigned level,
 {
 	if( level == None ) return;
 
-	const char* prefix[] = { "(E)", "(W)", "(I)", "(D)" };
+	const char* prefix[] = { "", "(E) ", "(W) ", "(I) ", "(D) " };
 #ifdef WIN32
-	const char* color[] = { "", "", "", "" };
+	const char* color[] = { "", "", "", "", "" };
 #else
-	const char* color[] = { "\033[31m", "\033[36m", "\033[32m", "" };
+	const char* color[] = { "", "\033[31m", "\033[36m", "\033[32m", "" };
 #endif // WIN32
 
 	int i;
@@ -323,23 +323,23 @@ void Logger::log( unsigned level,
 		i = 0;
 		break;
 	case Error:
-		i = 0;
-		break;
-	case Warning:
 		i = 1;
 		break;
-	case Info:
+	case Warning:
 		i = 2;
 		break;
-	case Debug:
+	case Info:
 		i = 3;
+		break;
+	case Debug:
+		i = 4;
 		break;
 	default:
 		i = 0;
 		break;
 	}
 
-	QString tmp = QString("%1%2 %3\t%4 %5 \033[0m\n")
+	QString tmp = QString("%1%2%3\t%4 %5 \033[0m\n")
 		.arg(color[i])
 		.arg(prefix[i])
 		.arg(class_name)
