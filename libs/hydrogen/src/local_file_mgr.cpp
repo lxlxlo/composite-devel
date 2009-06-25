@@ -1080,7 +1080,7 @@ int LocalFileMng::loadPlayList( const std::string& patternname)
 
 /* New QtXml based methods */
 
-QString LocalFileMng::readXmlString( QDomNode node , const QString& nodeName, const QString& defaultValue, bool bCanBeEmpty, bool bShouldExists)
+QString LocalFileMng::readXmlString( QDomNode node , const QString& nodeName, const QString& defaultValue, bool bCanBeEmpty, bool bShouldExists, bool tinyXmlCompatMode)
 {
  	QDomElement element = node.firstChildElement( nodeName );
 	
@@ -1102,7 +1102,7 @@ QString LocalFileMng::readXmlString( QDomNode node , const QString& nodeName, co
 	}
 }
 
-float LocalFileMng::readXmlFloat( QDomNode node , const QString& nodeName, float defaultValue, bool bCanBeEmpty, bool bShouldExists)
+float LocalFileMng::readXmlFloat( QDomNode node , const QString& nodeName, float defaultValue, bool bCanBeEmpty, bool bShouldExists, bool tinyXmlCompatMode)
 {
  	QDomElement element = node.firstChildElement( nodeName );
 	
@@ -1123,7 +1123,7 @@ float LocalFileMng::readXmlFloat( QDomNode node , const QString& nodeName, float
 	}
 }
 
-int LocalFileMng::readXmlInt( QDomNode node , const QString& nodeName, int defaultValue, bool bCanBeEmpty, bool bShouldExists)
+int LocalFileMng::readXmlInt( QDomNode node , const QString& nodeName, int defaultValue, bool bCanBeEmpty, bool bShouldExists, bool tinyXmlCompatMode)
 {
  	QDomElement element = node.firstChildElement( nodeName );
 	
@@ -1144,7 +1144,7 @@ int LocalFileMng::readXmlInt( QDomNode node , const QString& nodeName, int defau
 	}
 }
 
-bool LocalFileMng::readXmlBool( QDomNode node , const QString& nodeName, bool defaultValue, bool bShouldExists)
+bool LocalFileMng::readXmlBool( QDomNode node , const QString& nodeName, bool defaultValue, bool bShouldExists, bool tinyXmlCompatMode)
 {
  	QDomElement element = node.firstChildElement( nodeName );
 	
