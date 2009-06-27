@@ -260,7 +260,7 @@ int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString&
 	TiXmlElement patternNode( "pattern" );
 	LocalFileMng::writeXmlString( &patternNode, "pattern_name", realpatternname );
 	LocalFileMng::writeXmlString( &patternNode, "category", pat->get_category() );
-	writeXmlString( &patternNode, "size", QString( pat->get_length() ) );
+	writeXmlString( &patternNode, "size", QString("%1").arg( pat->get_length() ) );
 
 		TiXmlElement noteListNode( "noteList" );
 		std::multimap <int, Note*>::iterator pos;
@@ -269,7 +269,7 @@ int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString&
 			assert( pNote );
 
 			TiXmlElement noteNode( "note" );
-			writeXmlString( &noteNode, "position", QString( pNote->get_position() ) );
+			writeXmlString( &noteNode, "position", QString("%1").arg( pNote->get_position() ) );
 			writeXmlString( &noteNode, "leadlag", QString("%1").arg( pNote->get_leadlag() ) );
 			writeXmlString( &noteNode, "velocity", QString("%1").arg( pNote->get_velocity() ) );
 			writeXmlString( &noteNode, "pan_L", QString("%1").arg( pNote->get_pan_l() ) );
@@ -278,7 +278,7 @@ int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString&
 
 			writeXmlString( &noteNode, "key", Note::keyToString( pNote->m_noteKey ) );
 
-			writeXmlString( &noteNode, "length", QString( pNote->get_length() ) );
+			writeXmlString( &noteNode, "length", QString("%1").arg( pNote->get_length() ) );
 			writeXmlString( &noteNode, "instrument", pNote->get_instrument()->get_id() );
 			noteListNode.InsertEndChild( noteNode );
 		}
@@ -855,7 +855,7 @@ int LocalFileMng::saveDrumkit( Drumkit *info )
 		LocalFileMng::writeXmlString( &instrumentNode, "Sustain", QString("%1").arg( instr->get_adsr()->__sustain ) );
 		LocalFileMng::writeXmlString( &instrumentNode, "Release", QString("%1").arg( instr->get_adsr()->__release ) );
 
-		LocalFileMng::writeXmlString( &instrumentNode, "muteGroup", QString( instr->get_mute_group() ) );
+		LocalFileMng::writeXmlString( &instrumentNode, "muteGroup", QString("%1").arg( instr->get_mute_group() ) );
 
 		for ( unsigned nLayer = 0; nLayer < MAX_LAYERS; nLayer++ ) {
 			InstrumentLayer *pLayer = instr->get_layer( nLayer );
@@ -1136,9 +1136,9 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 	LocalFileMng::writeXmlString( &songNode, "swing_factor", QString("%1").arg( song->get_swing_factor() ) );
 
 	/*	LocalFileMng::writeXmlBool( &songNode, "delayFXEnabled", song->m_bDelayFXEnabled );
-		LocalFileMng::writeXmlString( &songNode, "delayFXWetLevel", QString( song->m_fDelayFXWetLevel ) );
-		LocalFileMng::writeXmlString( &songNode, "delayFXFeedback", QString( song->m_fDelayFXFeedback ) );
-		LocalFileMng::writeXmlString( &songNode, "delayFXTime", QString( song->m_nDelayFXTime ) );
+		LocalFileMng::writeXmlString( &songNode, "delayFXWetLevel", QString("%1").arg( song->m_fDelayFXWetLevel ) );
+		LocalFileMng::writeXmlString( &songNode, "delayFXFeedback", QString("%1").arg( song->m_fDelayFXFeedback ) );
+		LocalFileMng::writeXmlString( &songNode, "delayFXTime", QString("%1").arg( song->m_nDelayFXTime ) );
 	*/
 
 	// instrument list
@@ -1178,7 +1178,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 
 		LocalFileMng::writeXmlString( &instrumentNode, "randomPitchFactor", QString("%1").arg( instr->get_random_pitch_factor() ) );
 
-		LocalFileMng::writeXmlString( &instrumentNode, "muteGroup", QString( instr->get_mute_group() ) );
+		LocalFileMng::writeXmlString( &instrumentNode, "muteGroup", QString("%1").arg( instr->get_mute_group() ) );
 
 		for ( unsigned nLayer = 0; nLayer < MAX_LAYERS; nLayer++ ) {
 			InstrumentLayer *pLayer = instr->get_layer( nLayer );
@@ -1220,7 +1220,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 		TiXmlElement patternNode( "pattern" );
 		LocalFileMng::writeXmlString( &patternNode, "name", pat->get_name() );
 		LocalFileMng::writeXmlString( &patternNode, "category", pat->get_category() );
-		LocalFileMng::writeXmlString( &patternNode, "size", QString( pat->get_length() ) );
+		LocalFileMng::writeXmlString( &patternNode, "size", QString("%1").arg( pat->get_length() ) );
 
 		TiXmlElement noteListNode( "noteList" );
 		std::multimap <int, Note*>::iterator pos;
@@ -1229,7 +1229,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 			assert( pNote );
 
 			TiXmlElement noteNode( "note" );
-			LocalFileMng::writeXmlString( &noteNode, "position", QString( pNote->get_position() ) );
+			LocalFileMng::writeXmlString( &noteNode, "position", QString("%1").arg( pNote->get_position() ) );
 			LocalFileMng::writeXmlString( &noteNode, "leadlag", QString("%1").arg( pNote->get_leadlag() ) );
 			LocalFileMng::writeXmlString( &noteNode, "velocity", QString("%1").arg( pNote->get_velocity() ) );
 			LocalFileMng::writeXmlString( &noteNode, "pan_L", QString("%1").arg( pNote->get_pan_l() ) );
@@ -1238,7 +1238,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 
 			LocalFileMng::writeXmlString( &noteNode, "key", Note::keyToString( pNote->m_noteKey ) );
 
-			LocalFileMng::writeXmlString( &noteNode, "length", QString( pNote->get_length() ) );
+			LocalFileMng::writeXmlString( &noteNode, "length", QString("%1").arg( pNote->get_length() ) );
 			LocalFileMng::writeXmlString( &noteNode, "instrument", pNote->get_instrument()->get_id() );
 			noteListNode.InsertEndChild( noteNode );
 		}

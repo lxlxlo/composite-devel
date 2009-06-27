@@ -191,7 +191,7 @@ void PatternEditorRuler::paintEvent( QPaintEvent *ev)
 		int nText_x = 20 + nQuarter / 4 * i * m_nGridWidth;
 		if ( ( i % 4 ) == 0 ) {
 			painter.setPen( textColor );
-			painter.drawText( nText_x - 30, 0, 60, m_nRulerHeight, Qt::AlignCenter, QString( i / 4 + 1 ) );
+			painter.drawText( nText_x - 30, 0, 60, m_nRulerHeight, Qt::AlignCenter, QString("%1").arg(i / 4 + 1) );
 //			ERRORLOG(QString("nText_x: %1, true, value: %2").arg(nText_x).arg(i / 4 + 1));
 		}
 		else {

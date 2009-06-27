@@ -770,8 +770,8 @@ void Preferences::savePreferences()
 			}
 			LocalFileMng::writeXmlString( &guiNode, "setplay", setPlay );
 
-		LocalFileMng::writeXmlString( &guiNode, "countoffset", QString(m_countOffset) );
-		LocalFileMng::writeXmlString( &guiNode, "playoffset", QString(m_startOffset) );
+			LocalFileMng::writeXmlString( &guiNode, "countoffset", QString("%1").arg(m_countOffset) );
+			LocalFileMng::writeXmlString( &guiNode, "playoffset", QString("%1").arg(m_startOffset) );
 		//~ beatcounter
 
 		//SoundLibraryPanel expand items
