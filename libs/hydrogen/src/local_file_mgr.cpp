@@ -42,6 +42,7 @@
 #include <cstdlib>
 #include <cassert>
 #include <sys/stat.h>
+#include <ctype.h>
 
 #include <QDir>
 #include <QApplication>
@@ -1194,6 +1195,59 @@ void LocalFileMng::writeXmlBool( QDomNode parent, const QString& name, bool valu
 	}
 }
 
+/* Convert (in-place) an XML escape sequence into a literal byte,
+ * rather than the character it actually refers to.
+ */
+void LocalFileMng::convertFromTinyXMLString( QByteArray* str )
+{
+	/* When TinyXML encountered a non-ASCII character, it would
+	 * simply write the character as "&#xx;" -- where "xx" is
+	 * the hex character code.  However, this doesn't respect
+	 * any encodings (e.g. UTF-8, UTF-16).  In XML, &#xx; literally
+	 * means "the Unicode character # xx."  However, in a UTF-8
+	 * sequence, this could be an escape character that tells
+	 * whether we have a 2, 3, or 4-byte UTF-8 sequence.
+	 *
+	 * For example, the UTF-8 sequence 0xD184 was being written
+	 * by TinyXML as "&#xD1;&#x84;".  However, this is the UTF-8
+	 * sequence for the cyrillic small letter EF (which looks
+	 * kind of like a thorn or a greek phi).  This letter, in
+	 * XML, should be saved as &#x00000444;, or even literally
+	 * (no escaping).  As a consequence, when &#xD1; is read
+	 * by an XML parser, it will be interpreted as capital N
+	 * with a tilde (~).  Then &#x84; will be interpreted as
+	 * an unknown or control character.
+	 *
+	 * So, when we know that TinyXML wrote the file, we can
+	 * simply exchange these hex sequences to literal bytes.
+	 */
+	int pos = 0;
+
+	pos = str->indexOf("&#x");
+	while( pos != -1 ) {
+		if( isxdigit(str->at(pos+3))
+		    && isxdigit(str->at(pos+4))
+		    && (str->at(pos+5) == ';') ) {
+			char w1 = str->at(pos+3);
+			char w2 = str->at(pos+4);
+
+			w1 = tolower(w1) - 0x30;  // '0' = 0x30
+			if( w1 > 9 ) w1 -= 0x27;  // '9' = 0x39, 'a' = 0x61
+			w1 = (w1 & 0xF);
+
+			w2 = tolower(w2) - 0x30;  // '0' = 0x30
+			if( w2 > 9 ) w2 -= 0x27;  // '9' = 0x39, 'a' = 0x61
+			w2 = (w2 & 0xF);
+
+			char ch = (w1 << 4) | w2;
+			(*str)[pos] = ch;
+			++pos;
+			str->remove(pos, 5);
+		}
+		pos = str->indexOf("&#x");
+	}
+}
+
 bool LocalFileMng::checkTinyXMLCompatMode( const QString& filename )
 {
 	/*
@@ -1208,10 +1262,14 @@ bool LocalFileMng::checkTinyXMLCompatMode( const QString& filename )
 		return false;
 
 	QString line = file.readLine();
-	if ( ! line.startsWith( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" )){
-		return true;
-	} else  {
+	file.close();
+	if ( line.startsWith( "<?xml" )){
 		return false;
+	} else  {
+		_WARNINGLOG( QString("File '%1' is being read in "
+				    "TinyXML compatability mode")
+			    .arg(filename) );
+		return true;
 	}
 
 
