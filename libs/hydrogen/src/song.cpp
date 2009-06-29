@@ -246,46 +246,7 @@ Song* SongReader::readSong( const QString& filename )
 		return NULL;
 	}
 
-
-	bool TinyXMLCompat = LocalFileMng::checkTinyXMLCompatMode( filename );
-
-	QDomDocument doc( "song" );
-	QFile file( filename );
-
-	if ( !file.open(QIODevice::ReadOnly) )
-		return NULL;
-
-	if( TinyXMLCompat ) {
-	    QString enc = QTextCodec::codecForLocale()->name();
-	    if( enc == QString("System") ) {
-		    enc = "UTF-8";
-	    }
-	    QByteArray line;
-	    QByteArray buf = QString("<?xml version='1.0' encoding='%1' ?>\n")
-		.arg( enc )
-		.toLocal8Bit();
-
-	    INFOLOG( QString("Using '%1' encoding for TinyXML file").arg(enc) );
-
-	    while( !file.atEnd() ) {
-		line = file.readLine();
-		LocalFileMng::convertFromTinyXMLString( &line );
-		buf += line;
-	    }
-
-	    if( ! doc.setContent( buf ) ) {
-		file.close();
-		return NULL;
-	    }
-
-	} else {
-	    if( ! doc.setContent( &file ) ) {
-		file.close();
-		return NULL;
-	    }
-	}
-	file.close();
-
+	QDomDocument doc = LocalFileMng::openXmlDocument( filename );
 	QDomNodeList nodeList = doc.elementsByTagName( "song" );
 	
 

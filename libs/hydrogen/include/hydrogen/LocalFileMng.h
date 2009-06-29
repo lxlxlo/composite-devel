@@ -92,6 +92,7 @@ public:
 	static bool readXmlBool( QDomNode , const QString& nodeName, bool defaultValue, bool bShouldExists = true , bool tinyXmlCompatMode = false );
 	static void convertFromTinyXMLString( QByteArray* str );
 	static bool checkTinyXMLCompatMode( const QString& filename );
+	static QDomDocument openXmlDocument( const QString& filename );
 
 private:
 	void fileCopy( const QString& sOrigFilename, const QString& sDestFilename );

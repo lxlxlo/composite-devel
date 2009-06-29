@@ -1276,9 +1276,49 @@ bool LocalFileMng::checkTinyXMLCompatMode( const QString& filename )
 
 }
 
+QDomDocument LocalFileMng::openXmlDocument( const QString& filename )
+{
+	bool TinyXMLCompat = LocalFileMng::checkTinyXMLCompatMode( filename );
 
+	QDomDocument doc;
+	QFile file( filename );
 
+	if ( !file.open(QIODevice::ReadOnly) )
+		return QDomDocument();
 
+	if( TinyXMLCompat ) {
+	    QString enc = QTextCodec::codecForLocale()->name();
+	    if( enc == QString("System") ) {
+		    enc = "UTF-8";
+	    }
+	    QByteArray line;
+	    QByteArray buf = QString("<?xml version='1.0' encoding='%1' ?>\n")
+		.arg( enc )
+		.toLocal8Bit();
+
+	    //_INFOLOG( QString("Using '%1' encoding for TinyXML file").arg(enc) );
+
+	    while( !file.atEnd() ) {
+			line = file.readLine();
+			LocalFileMng::convertFromTinyXMLString( &line );
+			buf += line;
+	    }
+
+	    if( ! doc.setContent( buf ) ) {
+			file.close();
+			return QDomDocument();
+	    }
+
+	} else {
+	    if( ! doc.setContent( &file ) ) {
+			file.close();
+			return QDomDocument();
+	    }
+	}
+	file.close();
+	
+	return doc;
+}
 
 
 
