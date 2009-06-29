@@ -74,17 +74,7 @@ LocalFileMng::~LocalFileMng()
 
 QString LocalFileMng::getDrumkitNameForPattern( const QString& patternDir )
 {
-	QDomDocument doc;
-	QFile file( patternDir );
-
-	if ( !file.open(QIODevice::ReadOnly) )
-		return NULL;
-
-	if ( !doc.setContent( &file ) ) {
-		file.close();
-		return NULL;
-	}
-	file.close();
+	QDomDocument doc = LocalFileMng::openXmlDocument( patternDir );
 
 	QDomNode rootNode = doc.firstChildElement( "drumkit_pattern" );	// root element
 	if (  rootNode.isNull() ) {
@@ -98,17 +88,7 @@ QString LocalFileMng::getDrumkitNameForPattern( const QString& patternDir )
 
 QString LocalFileMng::getCategoryFromPatternName( const QString& patternPathName )
 {
-	QDomDocument doc;
-	QFile file( patternPathName );
-
-	if ( !file.open(QIODevice::ReadOnly) )
-		return NULL;
-
-	if ( !doc.setContent( &file ) ) {
-		file.close();
-		return NULL;
-	}
-	file.close();
+	QDomDocument doc = LocalFileMng::openXmlDocument( patternPathName ); 
 
 
 	QDomNode rootNode = doc.firstChildElement( "drumkit_pattern" );	// root element
@@ -125,17 +105,8 @@ QString LocalFileMng::getCategoryFromPatternName( const QString& patternPathName
 
 QString LocalFileMng::getPatternNameFromPatternDir( const QString& patternDirName)
 {
-	QDomDocument doc;
-	QFile file( patternDirName );
+	QDomDocument doc = LocalFileMng::openXmlDocument( patternDirName );
 
-	if ( !file.open(QIODevice::ReadOnly) )
-		return NULL;
-
-	if ( !doc.setContent( &file ) ) {
-		file.close();
-		return NULL;
-	}
-	file.close();
 
 	QDomNode rootNode =doc.firstChildElement( "drumkit_pattern" );	// root element
 	if ( rootNode.isNull() ) {
@@ -164,22 +135,14 @@ Pattern* LocalFileMng::loadPattern( const QString& directory )
 	}
 
 
-	QDomDocument doc;
+	QDomDocument doc  = LocalFileMng::openXmlDocument( patternInfoFile );
 	QFile file( patternInfoFile );
-
-	if ( !file.open(QIODevice::ReadOnly) )
-		return NULL;
-
-	if ( !doc.setContent( &file ) ) {
-		file.close();
-		return NULL;
-	}
-	file.close();
 
 	// root element
 	QDomNode rootNode = doc.firstChildElement( "drumkit_pattern" );	// root element
 	if (  rootNode.isNull() ) {
-		ERRORLOG( "Error reading Pattern: Pattern_drumkit_infonode not found" ); return NULL;
+		ERRORLOG( "Error reading Pattern: Pattern_drumkit_infonode not found" ); 
+		return NULL;
 	}
 
 	QDomNode patternNode = rootNode.firstChildElement( "pattern" );
@@ -444,17 +407,7 @@ std::vector<QString> LocalFileMng::getAllPatternName()
 	for (uint i = 0; i < m_allPatternList.size(); ++i) {
 		QString patternInfoFile =  m_allPatternList[i];
 
-		QDomDocument doc;
-		QFile file( patternInfoFile );
-
-		if ( !file.open(QIODevice::ReadOnly) )
-			return alllist;
-
-		if ( !doc.setContent( &file ) ) {
-			file.close();
-			return alllist;
-		}
-		file.close();
+		QDomDocument doc  = LocalFileMng::openXmlDocument( patternInfoFile );
 
 		QDomNode rootNode =  doc.firstChildElement( "drumkit_pattern" );	// root element
 		if ( rootNode.isNull() ) {
@@ -481,17 +434,7 @@ std::vector<QString> LocalFileMng::getAllCategoriesFromPattern()
 	for (uint i = 0; i < m_allPatternList.size(); ++i) {
 		QString patternInfoFile =  m_allPatternList[i];
 		
-		QDomDocument doc;
-		QFile file( patternInfoFile );
-
-		if ( !file.open(QIODevice::ReadOnly) )
-			return categorylist;
-
-		if ( !doc.setContent( &file ) ) {
-			file.close();
-			return categorylist;
-		}
-		file.close();
+		QDomDocument doc  = LocalFileMng::openXmlDocument( patternInfoFile );
 
 
 		QDomNode rootNode = doc.firstChildElement( "drumkit_pattern" );	// root element
@@ -700,19 +643,7 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 		return NULL;
 	}
 
-	
-	QDomDocument doc;
-	QFile file( drumkitInfoFile  );
-
-	if ( !file.open(QIODevice::ReadOnly) )
-		return NULL;
-
-	if ( !doc.setContent( &file ) ) {
-		file.close();
-		return NULL;
-	}
-	file.close();
-
+	QDomDocument doc  = LocalFileMng::openXmlDocument( drumkitInfoFile );
 
 	// root element
 	QDomNode drumkitNode = doc.firstChildElement( "drumkit_info" );	// root element
@@ -1035,18 +966,8 @@ int LocalFileMng::loadPlayList( const std::string& patternname)
 		return NULL;
 	}
 
-	QDomDocument doc;
-	QFile file( QString( patternname.c_str() ) );
-
-	if ( !file.open(QIODevice::ReadOnly) )
-		return NULL;
-
-	if ( !doc.setContent( &file ) ) {
-		file.close();
-		return NULL;
-	}
-	file.close();
-
+	QDomDocument doc = LocalFileMng::openXmlDocument( QString( patternname.c_str() ) );
+	
 	Hydrogen::get_instance()->m_PlayList.clear();
 
 	QDomNode rootNode = doc.firstChildElement( "playlist" );	// root element
@@ -1054,7 +975,6 @@ int LocalFileMng::loadPlayList( const std::string& patternname)
 		ERRORLOG( "Error reading playlist: playlist node not found" );
 		return NULL;
 	}
-	
 	QDomNode playlistNode = rootNode.firstChildElement( "Songs" );
 
 	if ( ! playlistNode.isNull() ) {
