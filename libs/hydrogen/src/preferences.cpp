@@ -216,19 +216,9 @@ void Preferences::loadPreferences( bool bGlobal )
 		
 
 		// read preferences file
-		QDomDocument doc;
-		QFile file( sPreferencesFilename );
-	
-		if ( !file.open(QIODevice::ReadOnly) )
-			return;
-	
-		if ( !doc.setContent( &file ) ) {
-			file.close();
-			return;
-		}
-		file.close();
-
+		QDomDocument doc = LocalFileMng::openXmlDocument( sPreferencesFilename );
 		QDomNode rootNode = doc.firstChildElement( "hydrogen_preferences" );
+		
 		if ( !rootNode.isNull() ) {
 
 			// version
