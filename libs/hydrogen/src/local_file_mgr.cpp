@@ -46,6 +46,7 @@
 #include <QDir>
 #include <QApplication>
 #include <QVector>
+#include <QLocale>
 
 #include "xml/tinyxml.h"
 
@@ -981,9 +982,11 @@ QString LocalFileMng::readXmlString( TiXmlNode* parent, const QString& nodeName,
 float LocalFileMng::readXmlFloat( TiXmlNode* parent, const QString& nodeName, float defaultValue, bool bCanBeEmpty, bool bShouldExists )
 {
 	TiXmlNode* node;
+	QLocale c_locale = QLocale::c();
 	if ( parent && ( node = parent->FirstChild( nodeName.toAscii() ) ) ) {
 		if ( node->FirstChild() ) {
-			float res = atof(node->FirstChild()->Value());
+			QString val( node->FirstChild()->Value() );
+			float res = c_locale.toFloat(val);
 			return res;
 		} else {
 			if ( !bCanBeEmpty ) {
@@ -1004,8 +1007,11 @@ float LocalFileMng::readXmlFloat( TiXmlNode* parent, const QString& nodeName, fl
 int LocalFileMng::readXmlInt( TiXmlNode* parent, const QString& nodeName, int defaultValue, bool bCanBeEmpty, bool bShouldExists )
 {
 	TiXmlNode* node;
+	QLocale c_locale = QLocale::c();
 	if ( parent && ( node = parent->FirstChild( nodeName.toAscii() ) ) ) {
 		if ( node->FirstChild() ) {
+			QString val( node->FirstChild()->Value() );
+			return c_locale.toInt( val );
 			return atoi( node->FirstChild()->Value() );
 		} else {
 			if ( !bCanBeEmpty ) {
