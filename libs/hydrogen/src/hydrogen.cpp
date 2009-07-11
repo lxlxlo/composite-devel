@@ -1629,9 +1629,6 @@ void audioEngine_startAudioDrivers()
 #endif
 	}
 
-	// update the audiodriver reference in the sampler
-	AudioEngine::get_instance()->get_sampler()->set_audio_output( m_pAudioDriver );
-
 	// change the current audio engine state
 	if ( m_pSong == NULL ) {
 		m_audioEngineState = STATE_PREPARED;
@@ -1666,7 +1663,6 @@ void audioEngine_startAudioDrivers()
 			delete m_pAudioDriver;
 			m_pAudioDriver = new NullDriver( audioEngine_process );
 			mx.unlock();
-			AudioEngine::get_instance()->get_sampler()->set_audio_output( m_pAudioDriver );
 			m_pAudioDriver->init( 0 );
 			m_pAudioDriver->connect();
 		}
@@ -1720,8 +1716,6 @@ void audioEngine_stopAudioDrivers()
 		delete m_pMidiDriver;
 		m_pMidiDriver = NULL;
 	}
-
-	AudioEngine::get_instance()->get_sampler()->set_audio_output( NULL );
 
 	// delete audio driver
 	if ( m_pAudioDriver ) {
@@ -2144,7 +2138,6 @@ void Hydrogen::startExportSong( const QString& filename )
 	m_pAudioDriver = new DiskWriterDriver( audioEngine_process, nSamplerate, filename );
 
 	AudioEngine::get_instance()->get_sampler()->stop_playing_notes();
-	AudioEngine::get_instance()->get_sampler()->set_audio_output( m_pAudioDriver );
 
 	// reset
 	m_pAudioDriver->m_transport.m_nFrames = 0;	// reset total frames

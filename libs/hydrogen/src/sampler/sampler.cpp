@@ -56,7 +56,6 @@ Sampler::Sampler()
 		: Object( "Sampler" )
 		, __main_out_L( NULL )
 		, __main_out_R( NULL )
-		, __audio_output( NULL )
 		, __preview_instrument( NULL )
 {
 	INFOLOG( "INIT" );
@@ -88,7 +87,8 @@ Sampler::~Sampler()
 void Sampler::process( uint32_t nFrames, Song* pSong )
 {
 	//infoLog( "[process]" );
-	assert( __audio_output );
+	AudioOutput* audio_output = Hydrogen::get_instance()->getAudioOutput();
+	assert( audio_output );
 
 	memset( __main_out_L, 0, nFrames * sizeof( float ) );
 	memset( __main_out_R, 0, nFrames * sizeof( float ) );
@@ -96,7 +96,7 @@ void Sampler::process( uint32_t nFrames, Song* pSong )
 
 #ifdef JACK_SUPPORT
 	JackOutput* jao;
-	jao = dynamic_cast<JackOutput*>(__audio_output);
+	jao = dynamic_cast<JackOutput*>(audio_output);
 	if (jao) {
 		int numtracks = jao->getNumTracks();
 
@@ -192,8 +192,9 @@ unsigned Sampler::__render_note( Note* pNote, unsigned nBufferSize, Song* pSong 
 
 	unsigned int nFramepos;
 	Hydrogen* pEngine = Hydrogen::get_instance();
+	AudioOutput* audio_output = pEngine->getAudioOutput();
 	if (  pEngine->getState() == STATE_PLAYING ) {
-		nFramepos = __audio_output->m_transport.m_nFrames;
+		nFramepos = audio_output->m_transport.m_nFrames;
 	} else {
 		// use this to support realtime events when not playing
 		nFramepos = pEngine->getRealtimeFrames();
@@ -233,14 +234,14 @@ unsigned Sampler::__render_note( Note* pNote, unsigned nBufferSize, Song* pSong 
 		return 1;
 	}
 
-	int noteStartInFrames = ( int ) ( pNote->get_position() * __audio_output->m_transport.m_nTickSize ) + pNote->m_nHumanizeDelay;
+	int noteStartInFrames = ( int ) ( pNote->get_position() * audio_output->m_transport.m_nTickSize ) + pNote->m_nHumanizeDelay;
 
 	int nInitialSilence = 0;
 	if ( noteStartInFrames > ( int ) nFramepos ) {	// scrivo silenzio prima dell'inizio della nota
 		nInitialSilence = noteStartInFrames - nFramepos;
 		int nFrames = nBufferSize - nInitialSilence;
 		if ( nFrames < 0 ) {
-			int noteStartInFramesNoHumanize = ( int )pNote->get_position() * __audio_output->m_transport.m_nTickSize;
+			int noteStartInFramesNoHumanize = ( int )pNote->get_position() * audio_output->m_transport.m_nTickSize;
 			if ( noteStartInFramesNoHumanize > ( int )( nFramepos + nBufferSize ) ) {
 				// this note is not valid. it's in the future...let's skip it....
 				ERRORLOG( QString( "Note pos in the future?? Current frames: %1, note frame pos: %2" ).arg( nFramepos ).arg(noteStartInFramesNoHumanize ) );
@@ -322,7 +323,7 @@ unsigned Sampler::__render_note( Note* pNote, unsigned nBufferSize, Song* pSong 
 
 	//_INFOLOG( "total pitch: " + to_string( fTotalPitch ) );
 
-	if ( fTotalPitch == 0.0 && pSample->get_sample_rate() == __audio_output->getSampleRate() ) {	// NO RESAMPLE
+	if ( fTotalPitch == 0.0 && pSample->get_sample_rate() == audio_output->getSampleRate() ) {	// NO RESAMPLE
 		return __render_note_no_resample( pSample, pNote, nBufferSize, nInitialSilence, cost_L, cost_R, cost_track_L, cost_track_R, fSendFXLevel_L, fSendFXLevel_R, pSong );
 	} else {	// RESAMPLE
 		return __render_note_resample( pSample, pNote, nBufferSize, nInitialSilence, cost_L, cost_R, cost_track_L, cost_track_R, fLayerPitch, fSendFXLevel_L, fSendFXLevel_R, pSong );
@@ -346,11 +347,12 @@ int Sampler::__render_note_no_resample(
     Song* pSong
 )
 {
+	AudioOutput* audio_output = Hydrogen::get_instance()->getAudioOutput();
 	int retValue = 1; // the note is ended
 
 	int nNoteLength = -1;
 	if ( pNote->get_length() != -1 ) {
-		nNoteLength = ( int )( pNote->get_length() * __audio_output->m_transport.m_nTickSize );
+		nNoteLength = ( int )( pNote->get_length() * audio_output->m_transport.m_nTickSize );
 	}
 
 	int nAvail_bytes = pSample->get_n_frames() - ( int )pNote->m_fSamplePosition;	// verifico il numero di frame disponibili ancora da eseguire
@@ -417,8 +419,8 @@ int Sampler::__render_note_no_resample(
 		}
 
 #ifdef JACK_SUPPORT
-		if ( __audio_output->has_track_outs()
-		     && dynamic_cast<JackOutput*>(__audio_output) ) {
+		if ( audio_output->has_track_outs()
+		     && dynamic_cast<JackOutput*>(audio_output) ) {
                         assert( __track_out_L[ nInstrument ] );
                         assert( __track_out_R[ nInstrument ] );
 			__track_out_L[ nInstrument ][nBufferPos] += fVal_L * cost_track_L;
@@ -498,9 +500,10 @@ int Sampler::__render_note_resample(
     Song* pSong
 )
 {
+	AudioOutput* audio_output = Hydrogen::get_instance()->getAudioOutput();
 	int nNoteLength = -1;
 	if ( pNote->get_length() != -1 ) {
-		nNoteLength = ( int )( pNote->get_length() * __audio_output->m_transport.m_nTickSize );
+		nNoteLength = ( int )( pNote->get_length() * audio_output->m_transport.m_nTickSize );
 	}
 	float fNotePitch = pNote->get_pitch() + fLayerPitch;
 	fNotePitch += pNote->m_noteKey.m_nOctave * 12 + pNote->m_noteKey.m_key;
@@ -508,7 +511,7 @@ int Sampler::__render_note_resample(
 	//_INFOLOG( "pitch: " + to_string( fNotePitch ) );
 
 	float fStep = pow( 1.0594630943593, ( double )fNotePitch );
-	fStep *= ( float )pSample->get_sample_rate() / __audio_output->getSampleRate(); // Adjust for audio driver sample rate
+	fStep *= ( float )pSample->get_sample_rate() / audio_output->getSampleRate(); // Adjust for audio driver sample rate
 
 	int nAvail_bytes = ( int )( ( float )( pSample->get_n_frames() - pNote->m_fSamplePosition ) / fStep );	// verifico il numero di frame disponibili ancora da eseguire
 
@@ -588,8 +591,8 @@ int Sampler::__render_note_resample(
 
 
 #ifdef JACK_SUPPORT
-		if ( __audio_output->has_track_outs()
-			&& dynamic_cast<JackOutput*>(__audio_output) ) {
+		if ( audio_output->has_track_outs()
+			&& dynamic_cast<JackOutput*>(audio_output) ) {
 			assert( __track_out_L[ nInstrument ] );
                         assert( __track_out_R[ nInstrument ] );
 			__track_out_L[ nInstrument ][nBufferPos] += (fVal_L * cost_track_L);
@@ -736,20 +739,15 @@ void Sampler::preview_instrument( Instrument* instr )
 }
 
 
-
-void Sampler::set_audio_output( AudioOutput* audio_output )
-{
-	__audio_output = audio_output;
-}
-
 void Sampler::makeTrackOutputQueues( )
 {
 	INFOLOG( "Making Output Queues" );
 
 #ifdef JACK_SUPPORT
+	AudioOutput* audio_output = Hydrogen::get_instance()->getAudioOutput();
 	JackOutput* jao = 0;
-	if (__audio_output && __audio_output->has_track_outs() ) {
-		jao = dynamic_cast<JackOutput*>(__audio_output);
+	if (audio_output && audio_output->has_track_outs() ) {
+		jao = dynamic_cast<JackOutput*>(audio_output);
 	}
 	if ( jao ) {
 		for (int nTrack = 0; nTrack < jao->getNumTracks( ); nTrack++) {
