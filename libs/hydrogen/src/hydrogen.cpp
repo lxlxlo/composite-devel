@@ -1666,6 +1666,7 @@ void audioEngine_startAudioDrivers()
 			delete m_pAudioDriver;
 			m_pAudioDriver = new NullDriver( audioEngine_process );
 			mx.unlock();
+			AudioEngine::get_instance()->get_sampler()->set_audio_output( m_pAudioDriver );
 			m_pAudioDriver->init( 0 );
 			m_pAudioDriver->connect();
 		}
