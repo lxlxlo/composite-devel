@@ -117,16 +117,18 @@ QMutex mutex_OutputPointer;     ///< Mutex for audio output pointer, allows mult
 MidiInput *m_pMidiDriver = NULL;	///< MIDI input
 
 // overload the the > operator of Note objects for priority_queue
-bool operator> (const Note& pNote1, const Note &pNote2) {
-	return (pNote1.m_nHumanizeDelay
-		+ pNote1.get_position() * m_pAudioDriver->m_transport.m_nTickSize)
+struct compare_pNotes {
+bool operator() (Note* pNote1, Note* pNote2) {
+	return (pNote1->m_nHumanizeDelay
+		+ pNote1->get_position() * m_pAudioDriver->m_transport.m_nTickSize)
 		>
-		(pNote2.m_nHumanizeDelay
-		 + pNote2.get_position() * m_pAudioDriver->m_transport.m_nTickSize);
+		(pNote2->m_nHumanizeDelay
+		 + pNote2->get_position() * m_pAudioDriver->m_transport.m_nTickSize);
 }
+};
 
                                                                /// Song Note FIFO
-std::priority_queue<Note*, std::deque<Note*>, std::greater<Note> > m_songNoteQueue;
+std::priority_queue<Note*, std::deque<Note*>, compare_pNotes > m_songNoteQueue;
 std::deque<Note*> m_midiNoteQueue;	///< Midi Note FIFO
 
 Song *m_pSong;				///< Current song
@@ -1601,13 +1603,13 @@ void audioEngine_startAudioDrivers()
 			audioEngine_raiseError( Hydrogen::ERROR_STARTING_DRIVER );
 			_ERRORLOG( "Error starting audio driver" );
 			_ERRORLOG( "Using the NULL output audio driver" );
-
+			
 			// use the NULL output driver
 			m_pAudioDriver = new NullDriver( audioEngine_process );
 			m_pAudioDriver->init( 0 );
 		}
 	}
-
+	
 	if ( preferencesMng->m_sMidiDriver == "ALSA" ) {
 #ifdef ALSA_SUPPORT
 		// Create MIDI driver
@@ -1907,9 +1909,14 @@ void Hydrogen::addRealtimeNote( int instrument,
 
 	realcolumn = getRealtimeTickPosition();
 
+	
+
 	// quantize it to scale
-	int qcolumn = ( int )::round( column / ( double )scalar ) * scalar;
-	if ( qcolumn == MAX_NOTES ) qcolumn = 0;
+	unsigned qcolumn = ( unsigned )::round( column / ( double )scalar ) * scalar;
+	
+	//we have to make sure that no beat is added on the last displayed note in a bar
+	//for example: if the pattern has 4 beats, the editor displays 5 beats, so we should avoid adding beats an note 5.
+	if ( qcolumn == currentPattern->get_length() ) qcolumn = 0;
 
 	if ( pref->getQuantizeEvents() ) {
 		column = qcolumn;
