@@ -85,7 +85,7 @@ SoundLibraryImportDialog::~SoundLibraryImportDialog()
 //update combo box
 void SoundLibraryImportDialog::updateRepositoryCombo()
 {
-	H2Core::Preferences* pref = H2Core::Preferences::getInstance();
+	H2Core::Preferences* pref = H2Core::Preferences::get_instance();
 
 	/*
 		Read serverList from config and put servers into the comboBox
@@ -119,6 +119,7 @@ void SoundLibraryImportDialog::on_EditListBtn_clicked()
 ///
 void SoundLibraryImportDialog::on_UpdateListBtn_clicked()
 {
+	QApplication::setOverrideCursor(Qt::WaitCursor);
 	DownloadWidget drumkitList( this, trUtf8( "Updating SoundLibrary list..." ), repositoryCombo->currentText() );
 	drumkitList.exec();
 
@@ -180,6 +181,7 @@ void SoundLibraryImportDialog::on_UpdateListBtn_clicked()
 	}
 
 	updateSoundLibraryList();
+	QApplication::restoreOverrideCursor();
 }
 
 
@@ -329,6 +331,7 @@ void SoundLibraryImportDialog::soundLibraryItemChanged( QTreeWidgetItem* current
 
 void SoundLibraryImportDialog::on_DownloadBtn_clicked()
 {
+	QApplication::setOverrideCursor(Qt::WaitCursor);
 	QString selected = m_pDrumkitTree->currentItem()->text(0);
 
 	for ( uint i = 0; i < m_soundLibraryList.size(); ++i ) {
@@ -338,7 +341,7 @@ void SoundLibraryImportDialog::on_DownloadBtn_clicked()
 			QString sType = m_soundLibraryList[ i ].m_sType;
 			QString sLocalFile;
 
-			QString dataDir = H2Core::Preferences::getInstance()->getDataDirectory();
+			QString dataDir = H2Core::Preferences::get_instance()->getDataDirectory();
 
 			if( sType == "drumkit") {
 				sLocalFile = QDir::tempPath() + "/" + QFileInfo( sURL ).fileName();
@@ -368,24 +371,24 @@ void SoundLibraryImportDialog::on_DownloadBtn_clicked()
 
 
 			// install the new soundlibrary
-			setCursor( QCursor( Qt::WaitCursor ) );
 
 			try {
 				if ( sType == "drumkit" ) {
 					H2Core::Drumkit::install( sLocalFile );
+					QApplication::restoreOverrideCursor();
 					QMessageBox::information( this, "Hydrogen", QString( trUtf8( "SoundLibrary imported in %1" ) ).arg( dataDir ) );
-					setCursor( QCursor( Qt::ArrowCursor ) );
 				}
 
 				if ( sType == "song" || sType == "pattern") {
-					setCursor( QCursor( Qt::ArrowCursor ) );
+					QApplication::restoreOverrideCursor();
 				}
 			}
 			catch( H2Core::H2Exception ex ) {
-				setCursor( QCursor( Qt::ArrowCursor ) );
+				QApplication::restoreOverrideCursor();
 				QMessageBox::warning( this, "Hydrogen", trUtf8( "An error occurred importing the SoundLibrary."  ) );
 			}
 
+			QApplication::setOverrideCursor(Qt::WaitCursor);
 			// remove the downloaded files..
 			if( sType == "drumkit" ) {
 				QDir dir;
@@ -393,9 +396,10 @@ void SoundLibraryImportDialog::on_DownloadBtn_clicked()
 			}
 
 			// update the drumkit list
-			HydrogenApp::getInstance()->getInstrumentRack()->getSoundLibraryPanel()->test_expandedItems();
-			HydrogenApp::getInstance()->getInstrumentRack()->getSoundLibraryPanel()->updateDrumkitList();
+			HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->test_expandedItems();
+			HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->updateDrumkitList();
 			updateSoundLibraryList();
+			QApplication::restoreOverrideCursor();
 			return;
 		}
 	}
@@ -432,19 +436,19 @@ void SoundLibraryImportDialog::on_BrowseBtn_clicked()
 
 void SoundLibraryImportDialog::on_InstallBtn_clicked()
 {
-	setCursor( QCursor( Qt::WaitCursor ) );
+	QApplication::setOverrideCursor(Qt::WaitCursor);
 
-	QString dataDir = H2Core::Preferences::getInstance()->getDataDirectory();
+	QString dataDir = H2Core::Preferences::get_instance()->getDataDirectory();
 	try {
 		H2Core::Drumkit::install( SoundLibraryPathTxt->text() );
 		QMessageBox::information( this, "Hydrogen", QString( trUtf8( "SoundLibrary imported in %1" ).arg( dataDir )  ) );
 		// update the drumkit list
-		HydrogenApp::getInstance()->getInstrumentRack()->getSoundLibraryPanel()->test_expandedItems();
-		HydrogenApp::getInstance()->getInstrumentRack()->getSoundLibraryPanel()->updateDrumkitList();
-		setCursor( QCursor( Qt::ArrowCursor ) );
+		HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->test_expandedItems();
+		HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->updateDrumkitList();
+		QApplication::restoreOverrideCursor();
 	}
 	catch( H2Core::H2Exception ex ) {
-		setCursor( QCursor( Qt::ArrowCursor ) );
+		QApplication::restoreOverrideCursor();
 		QMessageBox::warning( this, "Hydrogen", trUtf8( "An error occurred importing the SoundLibrary."  ) );
 	}
 }

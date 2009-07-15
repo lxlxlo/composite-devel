@@ -72,7 +72,7 @@ JackOutput::JackOutput( JackProcessCallback processCallback )
 		: AudioOutput( "JackOutput" )
 {
 	INFOLOG( "INIT" );
-	__track_out_enabled = Preferences::getInstance()->m_bJackTrackOuts;	// allow per-track output
+	__track_out_enabled = Preferences::get_instance()->m_bJackTrackOuts;	// allow per-track output
 
 	jackDriverInstance = this;
 	this->processCallback = processCallback;
@@ -113,8 +113,8 @@ int JackOutput::connect()
 	bool connect_output_ports = connect_out_flag;
 	
 #ifdef LASH_SUPPORT
-	if ( Preferences::getInstance()->useLash() ){
-		LashClient* lashClient = LashClient::getInstance();
+	if ( Preferences::get_instance()->useLash() ){
+		LashClient* lashClient = LashClient::get_instance();
 		if (lashClient && !lashClient->isNewProject())
 		{
 	//		infoLog("[LASH] Sending Jack client name to LASH server");
@@ -211,7 +211,7 @@ unsigned JackOutput::getBufferSize()
  */
 unsigned JackOutput::getArdourTransportAdjustment()
 {
-	if (Preferences::getInstance()->m_nJackArdourTransportWorkaround)
+	if (Preferences::get_instance()->m_nJackArdourTransportWorkaround)
 		return getBufferSize();
 	return 0;
 }
@@ -239,7 +239,7 @@ void JackOutput::locateInNCycles( unsigned long frame, int cycles_to_wait )
 void JackOutput::relocateBBT()
 {
 	//wolke if hydrogen is jack time master this is not relevant
-	if( Preferences::getInstance()->m_bJackMasterMode == Preferences::USE_JACK_TIME_MASTER &&  m_transport.m_status != TransportInfo::ROLLING) {
+	if( Preferences::get_instance()->m_bJackMasterMode == Preferences::USE_JACK_TIME_MASTER &&  m_transport.m_status != TransportInfo::ROLLING) {
 		m_transport.m_nFrames = Hydrogen::get_instance()->getHumantimeFrames() - getBufferSize(); // have absolut nothing to do with the old ardour transport bug 
 		WARNINGLOG( "Relocate: Call it off" );
 		calculateFrameOffset();
@@ -301,7 +301,7 @@ void JackOutput::updateTransportInfo()
 	if ( locate_countdown > 0 )
 		locate_countdown--;
 
-	if ( Preferences::getInstance()->m_bJackTransportMode ==  Preferences::USE_JACK_TRANSPORT   ) {
+	if ( Preferences::get_instance()->m_bJackTransportMode ==  Preferences::USE_JACK_TRANSPORT   ) {
 		m_JackTransportState = jack_transport_query( JackClient::get_instance()->ref(), &m_JackTransportPos );
 
 
@@ -340,7 +340,7 @@ void JackOutput::updateTransportInfo()
 			if ( m_transport.m_nBPM != bpm ) {
 
 				
-				if ( Preferences::getInstance()->m_bJackMasterMode == Preferences::NO_JACK_TIME_MASTER ){
+				if ( Preferences::get_instance()->m_bJackMasterMode == Preferences::NO_JACK_TIME_MASTER ){
 // 					WARNINGLOG( QString( "Tempo change from jack-transport: %1" ).arg( bpm ) );
 					m_transport.m_nBPM = bpm;
 					must_relocate = 1; // The tempo change has happened somewhere during the previous cycle; relocate right away.
@@ -365,7 +365,7 @@ void JackOutput::updateTransportInfo()
 				WARNINGLOG( "Frame offset mismatch; triggering resync in 2 cycles" );
 				must_relocate = 2;
 			} else {
-				if ( Preferences::getInstance()->m_bJackMasterMode == Preferences::NO_JACK_TIME_MASTER ) {
+				if ( Preferences::get_instance()->m_bJackMasterMode == Preferences::NO_JACK_TIME_MASTER ) {
 					// If There's no timebase_master, and audioEngine_process_checkBPMChanged handled a tempo change during last cycle, the offset doesn't match, but hopefully it was calculated correctly:
 
 					//this perform Jakobs mod in pattern mode, but both m_transport.m_nFrames works with the same result in pattern Mode
@@ -497,7 +497,7 @@ void JackOutput::makeTrackOutputs( Song * song )
 {
 
 	/// Disable Track Outputs
-	if( Preferences::getInstance()->m_bJackTrackOuts == false )
+	if( Preferences::get_instance()->m_bJackTrackOuts == false )
 			return;
 	///
 
@@ -557,7 +557,7 @@ void JackOutput::setTrackOutput( int n, Instrument * instr )
 void JackOutput::play()
 {
 	jack_client_t* client = JackClient::get_instance()->ref();
-	if ( ( Preferences::getInstance() )->m_bJackTransportMode ==  Preferences::USE_JACK_TRANSPORT || Preferences::getInstance()->m_bJackMasterMode == Preferences::USE_JACK_TIME_MASTER ) {
+	if ( ( Preferences::get_instance() )->m_bJackTransportMode ==  Preferences::USE_JACK_TRANSPORT || Preferences::get_instance()->m_bJackMasterMode == Preferences::USE_JACK_TIME_MASTER ) {
 		if ( client ) {
 			INFOLOG( "jack_transport_start()" );
 			jack_transport_start( client );
@@ -572,7 +572,7 @@ void JackOutput::play()
 void JackOutput::stop()
 {
 	jack_client_t* client = JackClient::get_instance()->ref();
-	if ( ( Preferences::getInstance() )->m_bJackTransportMode ==  Preferences::USE_JACK_TRANSPORT || Preferences::getInstance()->m_bJackMasterMode == Preferences::USE_JACK_TIME_MASTER ) {
+	if ( ( Preferences::get_instance() )->m_bJackTransportMode ==  Preferences::USE_JACK_TRANSPORT || Preferences::get_instance()->m_bJackMasterMode == Preferences::USE_JACK_TIME_MASTER ) {
 		if ( client ) {
 			INFOLOG( "jack_transport_stop()" );
 			jack_transport_stop( client );
@@ -587,7 +587,7 @@ void JackOutput::stop()
 void JackOutput::locate( unsigned long nFrame )
 {
 	jack_client_t* client = JackClient::get_instance()->ref();
-	if ( ( Preferences::getInstance() )->m_bJackTransportMode ==  Preferences::USE_JACK_TRANSPORT /*|| Preferences::getInstance()->m_bJackMasterMode == Preferences::USE_JACK_TIME_MASTER*/ ) {
+	if ( ( Preferences::get_instance() )->m_bJackTransportMode ==  Preferences::USE_JACK_TRANSPORT /*|| Preferences::get_instance()->m_bJackMasterMode == Preferences::USE_JACK_TIME_MASTER*/ ) {
 		if ( client ) {
 			WARNINGLOG( QString( "Calling jack_transport_locate(%1)" ).arg( nFrame ) );
 			jack_transport_locate( client, nFrame );
@@ -636,20 +636,20 @@ void JackOutput::initTimeMaster()
 	if ( client == NULL) return;
 
 	bool cond = false;
-	if ( Preferences::getInstance()->m_bJackMasterMode == Preferences::USE_JACK_TIME_MASTER)
+	if ( Preferences::get_instance()->m_bJackMasterMode == Preferences::USE_JACK_TIME_MASTER)
 	{
 		cond = true;
 	}else{
 		jack_release_timebase(client);
 	}
 
-	if ( Preferences::getInstance()->m_bJackMasterMode == Preferences::USE_JACK_TIME_MASTER && 
+	if ( Preferences::get_instance()->m_bJackMasterMode == Preferences::USE_JACK_TIME_MASTER && 
                  jack_set_timebase_callback(client, cond, jack_timebase_callback, this) == 0)
 	{
-		Preferences::getInstance()->m_bJackMasterMode = Preferences::USE_JACK_TIME_MASTER ;
+		Preferences::get_instance()->m_bJackMasterMode = Preferences::USE_JACK_TIME_MASTER ;
 		cond = true;
 	} else {
-		Preferences::getInstance()->m_bJackMasterMode = Preferences::NO_JACK_TIME_MASTER ;
+		Preferences::get_instance()->m_bJackMasterMode = Preferences::NO_JACK_TIME_MASTER ;
 		cond = false;
 	}
 }
