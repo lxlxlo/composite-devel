@@ -53,7 +53,7 @@ Playlist::Playlist()
 		_ERRORLOG( "Playlist in use" );
 	}class HydrogenApp;
 
-	_INFOLOG( "[Playlist]" );
+	//_INFOLOG( "[Playlist]" );
 	instance = this;
 
 }
@@ -62,7 +62,7 @@ Playlist::Playlist()
 
 Playlist::~Playlist()
 {
-	_INFOLOG( "[~Playlist]" );
+	//_INFOLOG( "[~Playlist]" );
 	instance = NULL;
 }
 
@@ -104,7 +104,7 @@ void Playlist::setNextSongPlaylist()
 {
 	
 	int index = getSelectedSongNr();
-_INFOLOG( "index" + to_string( index ) );
+	//_INFOLOG( "index" + to_string( index ) );
 	if (index == -1 ){
 		if ( getActiveSongNumber() != -1){
 			index = getActiveSongNumber();

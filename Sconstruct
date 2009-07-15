@@ -340,6 +340,8 @@ def get_hydrogen_gui( lib_hydrogen , opts ):
 	src.append( lib_hydrogen )
 
 	env.Append( LIBS = ["sndfile"] )
+	if sys.platform == "win32":
+		env.Append( LIBS = [ "pthread" ] )
 	
 	if str(env['lrdf']) == "1": env.Append( LIBS = ["lrdf"] )
 	if str(env['flac']) == "1": env.Append( LIBS = ["FLAC","FLAC++"] )
