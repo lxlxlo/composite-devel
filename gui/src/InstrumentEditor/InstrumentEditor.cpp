@@ -190,9 +190,17 @@ InstrumentEditor::InstrumentEditor( QWidget* pParent )
 
 
 	// Layer preview
-	m_pLayerPreview = new LayerPreview( m_pLayerProp );
-	m_pLayerPreview->move( 6, 4 );
+	m_pLayerPreview = new LayerPreview( NULL );
 
+	m_pLayerScrollArea = new QScrollArea( m_pLayerProp);
+	m_pLayerScrollArea->setFrameShape( QFrame::NoFrame );
+	m_pLayerScrollArea->move( 6, 4 );
+	m_pLayerScrollArea->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff ); 
+	if ( MAX_LAYERS > 16) 
+		m_pLayerScrollArea->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
+	m_pLayerScrollArea->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+	m_pLayerScrollArea->setMaximumHeight( 182 );
+	m_pLayerScrollArea->setWidget( m_pLayerPreview  );
 
 	// Waveform display
 	m_pWaveDisplay = new WaveDisplay( m_pLayerProp );
@@ -305,7 +313,11 @@ void InstrumentEditor::selectedInstrumentChangedEvent()
 		m_pAttackRotary->setValue( sqrtf(m_pInstrument->get_adsr()->__attack / 100000.0) );
 		m_pDecayRotary->setValue( sqrtf(m_pInstrument->get_adsr()->__decay / 100000.0) );
 		m_pSustainRotary->setValue( m_pInstrument->get_adsr()->__sustain );
-		m_pReleaseRotary->setValue( sqrtf(m_pInstrument->get_adsr()->__release / 100000.0) );
+		float fTmp = m_pInstrument->get_adsr()->__release - 256.0;
+		if( fTmp < 0.0 ) {
+			fTmp = 0.0;
+		}
+		m_pReleaseRotary->setValue( sqrtf(fTmp / 100000.0) );
 		//~ ADSR
 
 		// filter
@@ -377,7 +389,7 @@ void InstrumentEditor::rotaryChanged(Rotary *ref)
 			m_pInstrument->get_adsr()->__sustain = fVal;
 		}
 		else if ( ref == m_pReleaseRotary ) {
-			m_pInstrument->get_adsr()->__release = fVal * fVal * 100000;
+			m_pInstrument->get_adsr()->__release = 256.0 + fVal * fVal * 100000;
 		}
 		else if ( ref == m_pLayerGainRotary ) {
 			fVal = fVal * 5.0;
@@ -646,10 +658,10 @@ void InstrumentEditor::selectLayer( int nLayer )
 		float fFinePitch = pLayer->get_pitch() - nCoarsePitch;
 		//INFOLOG( "fine pitch: " + to_string( fFinePitch ) );
 		m_pLayerPitchCoarseRotary->setValue( nCoarsePitch );
-		m_pLayerPitchFineRotary->setValue( fFinePitch );
+		m_pLayerPitchFineRotary->setValue( fFinePitch * 100 );
 
 		m_pLayerPitchCoarseLCD->setText( QString( "%1" ).arg( nCoarsePitch ) );
-		m_pLayerPitchFineLCD->setText( QString( "%1" ).arg( fFinePitch ) );
+		m_pLayerPitchFineLCD->setText( QString( "%1" ).arg( fFinePitch * 100 ) );
 	}
 	else {
 		// Layer GAIN
