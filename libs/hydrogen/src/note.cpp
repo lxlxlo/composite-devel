@@ -38,8 +38,7 @@ Note::Note(
     float fPitch,
     NoteKey key
 )
-		: Object( "Note" )
-		, m_nSilenceOffset( 0 )
+		: m_nSilenceOffset( 0 )
 		, m_nReleaseOffset( 0 )
 		, m_fSamplePosition( 0.0 )
 		, m_uInstrumentIndex( (unsigned)-1 )
@@ -66,7 +65,6 @@ Note::Note(
 
 
 Note::Note( const Note* pNote )
-		: Object( "Note" )
 {
 	m_nSilenceOffset          = pNote->m_nSilenceOffset;
 	m_nReleaseOffset          = pNote->m_nReleaseOffset;
@@ -130,7 +128,12 @@ void Note::set_instrument( Instrument* instrument )
 
 void Note::dumpInfo() const
 {
-	INFOLOG( "humanize offset" + to_string(m_nHumanizeDelay) + "\t instr: " + __instrument->get_name()+ "\t key: " + keyToString( m_noteKey ) + "\t pitch: " + to_string( get_pitch() ) );
+    _INFOLOG( QString("humanize offset%2\t instr: %3\t key: %4\t pitch: %5")
+	      .arg( m_nHumanizeDelay )
+	      .arg( __instrument->get_name() )
+	      .arg( keyToString( m_noteKey ) )
+	      .arg( get_pitch() )
+	);
 }
 
 
@@ -225,7 +228,7 @@ QString Note::keyToString( NoteKey key )
 
 	}
 
-	sKey += to_string( key.m_nOctave );
+	sKey += QString( key.m_nOctave );
 
 	return sKey;
 }

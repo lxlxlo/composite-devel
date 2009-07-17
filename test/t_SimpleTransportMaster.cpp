@@ -43,6 +43,7 @@ namespace THIS_NAMESPACE
 	SimpleTransportMaster x;
 
 	Fixture() {
+	    Logger::create_instance();
 	    s = Song::load( "test/t_SimpleTransportMaster.h2song" );
 	    x.set_current_song(s);
 	}

@@ -71,7 +71,7 @@ JackOutput::JackOutput( JackProcessCallback processCallback )
 		: AudioOutput( "JackOutput" )
 {
 	INFOLOG( "INIT" );
-	__track_out_enabled = Preferences::getInstance()->m_bJackTrackOuts;	// allow per-track output
+	__track_out_enabled = Preferences::get_instance()->m_bJackTrackOuts;	// allow per-track output
 
 	jackDriverInstance = this;
 	this->processCallback = processCallback;
@@ -107,8 +107,8 @@ int JackOutput::connect()
 	bool connect_output_ports = connect_out_flag;
 	
 #ifdef LASH_SUPPORT
-	if ( Preferences::getInstance()->useLash() ){
-		LashClient* lashClient = LashClient::getInstance();
+	if ( Preferences::get_instance()->useLash() ){
+		LashClient* lashClient = LashClient::get_instance();
 		if (lashClient && lashClient->isConnected())
 		{
 	//		infoLog("[LASH] Sending Jack client name to LASH server");
@@ -241,8 +241,8 @@ float* JackOutput::getTrackOut_R( unsigned nTrack )
 int JackOutput::init( unsigned /*nBufferSize*/ )
 {
 
-	output_port_name_1 = Preferences::getInstance()->m_sJackPortName1;
-	output_port_name_2 = Preferences::getInstance()->m_sJackPortName2;
+	output_port_name_1 = Preferences::get_instance()->m_sJackPortName1;
+	output_port_name_2 = Preferences::get_instance()->m_sJackPortName2;
 
 	QString sClientName = "Hydrogen";
 	jack_status_t status;
@@ -350,8 +350,8 @@ int JackOutput::init( unsigned /*nBufferSize*/ )
 //	memset( out_R, 0, nBufferSize * sizeof( float ) );
 
 #ifdef LASH_SUPPORT
-	if ( Preferences::getInstance()->useLash() ){
-		LashClient* lashClient = LashClient::getInstance();
+	if ( Preferences::get_instance()->useLash() ){
+		LashClient* lashClient = LashClient::get_instance();
 		if (lashClient->isConnected())
 		{
 			lashClient->setJackClientName(sClientName.toStdString());
@@ -370,7 +370,7 @@ void JackOutput::makeTrackOutputs( Song * song )
 {
 
 	/// Disable Track Outputs
-	if( Preferences::getInstance()->m_bJackTrackOuts == false )
+	if( Preferences::get_instance()->m_bJackTrackOuts == false )
 			return;
 	///
 

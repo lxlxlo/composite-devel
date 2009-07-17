@@ -31,7 +31,7 @@ namespace H2Core
 ///
 /// ADSR envelope.
 ///
-class ADSR : private Object
+class ADSR
 {
 public:
 	float __attack;		///< Attack time (in samples)

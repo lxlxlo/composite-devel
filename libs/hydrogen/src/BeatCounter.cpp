@@ -67,7 +67,7 @@ void BeatCounter::setOffsetAdjust()
 {
     //individual fine tuning for the beatcounter
     //to adjust  ms_offset from different people and controller
-    Preferences *pref = Preferences::getInstance();
+    Preferences *pref = Preferences::get_instance();
 
     m_nCoutOffset = pref->m_countOffset;
     m_nStartOffset = pref->m_startOffset;
@@ -129,7 +129,7 @@ void BeatCounter::trigger()
 	    if ( beatCountBpm > 500)
 		beatCountBpm = 500; 
 	    H2->setBPM( beatCountBpm );
-	    if (Preferences::getInstance()->m_mmcsetplay
+	    if (Preferences::get_instance()->m_mmcsetplay
 		== Preferences::SET_PLAY_OFF) {
 		beatCount = 1; 
 		eventCount = 1;

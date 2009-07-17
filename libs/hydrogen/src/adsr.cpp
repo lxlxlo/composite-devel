@@ -41,8 +41,7 @@ ADSR::ADSR(
     float sustain,
     float release
 )
-		: Object( "ADSR" )
-		, __attack( attack )
+		: __attack( attack )
 		, __decay( decay )
 		, __sustain( sustain )
 		, __release( release )
@@ -56,8 +55,7 @@ ADSR::ADSR(
 
 
 ADSR::ADSR( const ADSR& orig )
-		: Object( "ADSR" )
-		, __attack( orig.__attack )
+		: __attack( orig.__attack )
 		, __decay( orig.__decay )
 		, __sustain( orig.__sustain )
 		, __release( orig.__release )

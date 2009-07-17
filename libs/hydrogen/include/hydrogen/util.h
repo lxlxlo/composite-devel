@@ -20,30 +20,27 @@
  *
  */
 
-#ifndef INSTRUMENT_EDITOR_PANEL_H
-#define INSTRUMENT_EDITOR_PANEL_H
+#ifndef H2CORE_UTIL_H
+#define H2CORE_UTIL_H
 
-#include <QtGui>
-#include <hydrogen/Object.h>
-#include "InstrumentEditor.h"
-
-///
-/// Container for the Instrument Editor (Singleton).
-///
-class InstrumentEditorPanel : public QWidget, private Object
+namespace H2Core
 {
-	Q_OBJECT
-	public:
-		static InstrumentEditorPanel* get_instance();
-		~InstrumentEditorPanel();
 
-		void selectLayer( int nLayer );
-	private:
-		static InstrumentEditorPanel* m_pInstance;
-		InstrumentEditor* m_pInstrumentEditor;
+    /** Converts a hex string to an integer.
+     *
+     * 'str' may optionally begin with "0x".  If 0x is
+     * given, it must be included in the 'len' parameter.
+     *
+     * If len = -1, then 'str' will be considered null-terminated.
+     *
+     * 'str' may be in upper or lower case.
+     *
+     * If there's an error, empty string, leading space, etc.,
+     * it will return 0.
+     */
+    int hextoi(const char* str, long len);
 
-		InstrumentEditorPanel( QWidget *pParent );
-};
+}; // namepace H2Core
 
-#endif
 
+#endif // H2CORE_UTIL_H

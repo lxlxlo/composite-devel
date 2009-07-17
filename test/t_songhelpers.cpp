@@ -20,6 +20,7 @@
  *
  */
 
+#include <hydrogen/hydrogen.h>
 #include <hydrogen/Song.h>
 #include <transport/songhelpers.h>
 
@@ -36,6 +37,8 @@ namespace THIS_NAMESPACE
 	Song* s;
 
 	Fixture() : s(0) {
+	    Logger::create_instance();
+	    Hydrogen::create_instance();
 	    // Path relative to location of t_Hydrogen executable
 	    s = Song::load("test/t_songhelpers.h2song");
 	    BOOST_REQUIRE( s != 0 );
