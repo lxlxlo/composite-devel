@@ -54,7 +54,7 @@ namespace THIS_NAMESPACE
 	pat_t* x_pat;
 
 	Fixture() : x_pat_size(8) {
-
+	    Logger::create_instance();
 	    /*------------------------------------------
 	     * Initialize dummy instruments
 	     *------------------------------------------

@@ -40,6 +40,7 @@ namespace THIS_NAMESPACE
 	std::auto_ptr<Instrument> instr;  // Note() won't let us set a null instrument
 
 	Fixture() : ev(), xev() {
+	    Logger::create_instance();
 	    instr.reset( Instrument::create_empty() );
 
 	    ev.note.set_instrument( instr.get() );
@@ -51,7 +52,8 @@ namespace THIS_NAMESPACE
 	    xev.note.set_instrument( instr.get() );
 	}
 
-	~Fixture() {}
+	~Fixture() {
+	}
     };
 
 } // namespace THIS_NAMESPACE

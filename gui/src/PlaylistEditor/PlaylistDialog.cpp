@@ -194,7 +194,7 @@ PlaylistDialog::~PlaylistDialog()
 
 void PlaylistDialog::on_addSongBTN_clicked()
 {
-	static QString songDir = Preferences::getInstance()->getDataDirectory()  + "/songs";;
+	static QString songDir = Preferences::get_instance()->getDataDirectory()  + "/songs";;
 
 	std::auto_ptr<QFileDialog> fd( new QFileDialog );
 	fd->setFileMode ( QFileDialog::ExistingFile );
@@ -297,7 +297,7 @@ void PlaylistDialog::updatePlayListNode ( QString file )
 void PlaylistDialog::on_loadListBTN_clicked()
 {
 
-	static QString sDirectory =  Preferences::getInstance()->getDataDirectory()  + "playlists/" ;
+	static QString sDirectory =  Preferences::get_instance()->getDataDirectory()  + "playlists/" ;
 
 	std::auto_ptr<QFileDialog> fd( new QFileDialog );
 	fd->setFileMode ( QFileDialog::ExistingFile );
@@ -353,9 +353,9 @@ void PlaylistDialog::on_loadListBTN_clicked()
 void PlaylistDialog::on_newScriptBTN_clicked()
 {
 
-	Preferences *pPref = Preferences::getInstance();
+	Preferences *pPref = Preferences::get_instance();
 
-	QString sDirectory = ( Preferences::getInstance()->getDataDirectory()  + "scripts/");
+	QString sDirectory = ( Preferences::get_instance()->getDataDirectory()  + "scripts/");
 	std::auto_ptr<QFileDialog> fd( new QFileDialog );
 	fd->setFileMode ( QFileDialog::AnyFile );
 	fd->setFilter ( trUtf8 ( "Hydrogen Scripts (*.sh)" ) );
@@ -427,7 +427,7 @@ void PlaylistDialog::on_newScriptBTN_clicked()
 void PlaylistDialog::on_saveListBTN_clicked()
 {
 
-	QString sDirectory =  Preferences::getInstance()->getDataDirectory()  + "playlists/";
+	QString sDirectory =  Preferences::get_instance()->getDataDirectory()  + "playlists/";
 	std::auto_ptr<QFileDialog> fd( new QFileDialog );
 	fd->setFileMode ( QFileDialog::AnyFile );
 	fd->setFilter ( trUtf8 ( "Hydrogen Playlist (*.h2playlist)" ) );
@@ -466,7 +466,7 @@ void PlaylistDialog::on_loadScriptBTN_clicked()
 		return;
 	}
 
-	static QString lastUsedDir =  Preferences::getInstance()->getDataDirectory()  + "scripts/";
+	static QString lastUsedDir =  Preferences::get_instance()->getDataDirectory()  + "scripts/";
 
 	std::auto_ptr<QFileDialog> fd( new QFileDialog );
 	fd->setFileMode ( QFileDialog::ExistingFile );
@@ -521,7 +521,7 @@ void PlaylistDialog::on_removeScriptBTN_clicked()
 
 void PlaylistDialog::on_editScriptBTN_clicked()
 {
-	Preferences *pPref = Preferences::getInstance();
+	Preferences *pPref = Preferences::get_instance();
 	if( pPref->getDefaultEditor() == ""){
 		QMessageBox::information ( this, "Hydrogen", trUtf8 ( "No Default Editor Set. Please set your Default Editor\nDo not use a console based Editor\nSorry, but this will not work for the moment." ) );
 
@@ -662,7 +662,7 @@ void PlaylistDialog::on_nodePlayBTN_clicked()
 	selected = m_pPlaylistItem->text ( 0 );
 
 	
-	HydrogenApp *pH2App = HydrogenApp::getInstance();
+	HydrogenApp *pH2App = HydrogenApp::get_instance();
 	Hydrogen *engine = Hydrogen::get_instance();
 	
 
@@ -705,7 +705,7 @@ void PlaylistDialog::on_m_pPlaylistTree_itemDoubleClicked ()
 	Playlist::get_instance()->setSelectedSongNr( index );
 	Playlist::get_instance()->setActiveSongNumber( index );
 	
-	HydrogenApp *pH2App = HydrogenApp::getInstance();
+	HydrogenApp *pH2App = HydrogenApp::get_instance();
 	Hydrogen *engine = Hydrogen::get_instance();
 	
 
@@ -724,7 +724,7 @@ void PlaylistDialog::on_m_pPlaylistTree_itemDoubleClicked ()
 
 	pH2App->setStatusBarMessage( trUtf8( "Playlist: Set song No. %1" ).arg( index +1 ), 5000 );
 
-	HydrogenApp::getInstance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
+	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
 
 ///exec script
 ///this is very very simple and only an experiment

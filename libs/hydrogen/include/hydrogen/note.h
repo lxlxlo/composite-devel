@@ -24,7 +24,6 @@
 #define H2_NOTE_H
 
 #include <cassert>
-#include <hydrogen/Object.h>
 #include <hydrogen/adsr.h>
 
 
@@ -74,7 +73,7 @@ public:
 \brief A note...
 
 */
-class Note : public Object
+class Note
 {
 public:
 
@@ -146,7 +145,6 @@ public:
 	}
 	void set_pan_l( float pan ) {
 		if ( pan > 0.5 ) {
-			INFOLOG( "Pan R > 0.5" );
 			pan = 0.5;
 		}
 		__pan_l = pan;
@@ -157,7 +155,6 @@ public:
 	}
 	void set_pan_r( float pan ) {
 		if ( pan > 0.5 ) {
-			INFOLOG( "Pan R > 0.5" );
 			pan = 0.5;
 		}
 		__pan_r = pan;

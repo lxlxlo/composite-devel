@@ -131,8 +131,8 @@ void MidiInput::handleControlChangeMessage( const MidiMessage& msg )
 	//INFOLOG( QString( "[handleMidiMessage] CONTROL_CHANGE Parameter: %1, Value: %2" ).arg( msg.m_nData1 ).arg( msg.m_nData2 ) );
 	
 	Hydrogen *pEngine = Hydrogen::get_instance();
-	ActionManager * aH = ActionManager::getInstance();
-	MidiMap * mM = MidiMap::getInstance();
+	ActionManager * aH = ActionManager::get_instance();
+	MidiMap * mM = MidiMap::get_instance();
 
 	Action * pAction; 
 
@@ -152,7 +152,7 @@ void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
 	INFOLOG( "handleNoteOnMessage" );
 
 
-	int nMidiChannelFilter = Preferences::getInstance()->m_nMidiChannelFilter;
+	int nMidiChannelFilter = Preferences::get_instance()->m_nMidiChannelFilter;
 	int nChannel = msg.m_nChannel;
 	int nNote = msg.m_nData1;
 	float fVelocity = msg.m_nData2 / 127.0;
@@ -168,8 +168,8 @@ void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
 		bIsChannelValid = ( nChannel == nMidiChannelFilter );
 	}
 
-	ActionManager * aH = ActionManager::getInstance();
-	MidiMap * mM = MidiMap::getInstance();
+	ActionManager * aH = ActionManager::get_instance();
+	MidiMap * mM = MidiMap::get_instance();
 	Hydrogen *pEngine = Hydrogen::get_instance();
 
 	pEngine->lastMidiEvent = "NOTE";
@@ -177,7 +177,7 @@ void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
 	
 	bool action = aH->handleAction( mM->getNoteAction( msg.m_nData1 ) );
 	
-	if ( action && Preferences::getInstance()->m_bMidiDiscardNoteAfterAction)
+	if ( action && Preferences::get_instance()->m_bMidiDiscardNoteAfterAction)
 	{
 		return;
 	}
@@ -216,7 +216,7 @@ void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
 void MidiInput::handleNoteOffMessage( const MidiMessage& msg )
 {
 	INFOLOG( "handleNoteOffMessage" );
-	if ( Preferences::getInstance()->m_bMidiNoteOffIgnore ) {
+	if ( Preferences::get_instance()->m_bMidiNoteOffIgnore ) {
 		return;
 	}
 
@@ -269,8 +269,8 @@ void MidiInput::handleSysexMessage( const MidiMessage& msg )
 	*/
 	
 	
-	ActionManager * aH = ActionManager::getInstance();
-	MidiMap * mM = MidiMap::getInstance();
+	ActionManager * aH = ActionManager::get_instance();
+	MidiMap * mM = MidiMap::get_instance();
 	Hydrogen *pEngine = Hydrogen::get_instance();
 
 	pEngine->lastMidiEventParameter = msg.m_nData1;

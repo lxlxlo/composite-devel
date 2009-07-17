@@ -69,7 +69,6 @@ public:
 	void preview_sample( Sample* sample, int length );
 	void preview_instrument( Instrument* instr );
 
-	void set_audio_output( AudioOutput* audio_output );
 	void makeTrackOutputQueues();
 
 private:
