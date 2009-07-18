@@ -48,17 +48,13 @@
 namespace H2Core
 {
 
-Preferences* Preferences::instance = NULL;
+Preferences* Preferences::__instance = NULL;
 
-
-/// Return an instance of Preferences
-Preferences* Preferences::getInstance()
+void Preferences::create_instance()
 {
-	if ( instance == NULL ) {
-		instance = new Preferences();
+	if ( __instance == 0 ) {
+		__instance = new Preferences;
 	}
-
-	return instance;
 }
 
 
@@ -138,7 +134,7 @@ Preferences::~Preferences()
 	savePreferences();
 
 	INFOLOG( "DESTROY" );
-	instance = NULL;
+	__instance = NULL;
 	delete m_pDefaultUIStyle;
 }
 
@@ -447,7 +443,7 @@ void Preferences::loadPreferences( bool bGlobal )
 				__expandPatternItem = LocalFileMng::readXmlBool( guiNode, "expandPatternItem", __expandPatternItem ); 
 
 				for ( unsigned nFX = 0; nFX < MAX_FX; nFX++ ) {
-					QString sNodeName = "ladspaFX_properties" + to_string( nFX );
+					QString sNodeName = QString("ladspaFX_properties%1").arg( nFX );
 					setLadspaProperties( nFX, readWindowProperties( guiNode, sNodeName, m_ladspaProperties[nFX] ) );
 				}
 
@@ -471,11 +467,8 @@ void Preferences::loadPreferences( bool bGlobal )
 				m_sDefaultEditor = LocalFileMng::readXmlString( filesNode, "defaulteditor", m_sDefaultEditor, true );
 			}
 
-			// FIXME: hack hack hack! Isn't better to create a "release" method in MidiMap class instead of destroying a singleton?
-			if ( MidiMap::__instance != NULL) {
-				delete MidiMap::__instance;
-			}
-			MidiMap* mM = MidiMap::getInstance();
+			MidiMap::reset_instance();
+			MidiMap* mM = MidiMap::get_instance();
 			
 			
 			QDomNode pMidiEventMapNode = rootNode.firstChildElement( "midiEventMap" );
@@ -640,10 +633,10 @@ void Preferences::savePreferences()
 
 		// use metronome
 		LocalFileMng::writeXmlString( audioEngineNode, "use_metronome", m_bUseMetronome ? "true": "false" );
-		LocalFileMng::writeXmlString( audioEngineNode, "metronome_volume", to_string( m_fMetronomeVolume ) );
-		LocalFileMng::writeXmlString( audioEngineNode, "maxNotes", to_string( m_nMaxNotes ) );
-		LocalFileMng::writeXmlString( audioEngineNode, "buffer_size", to_string( m_nBufferSize ) );
-		LocalFileMng::writeXmlString( audioEngineNode, "samplerate", to_string( m_nSampleRate ) );
+		LocalFileMng::writeXmlString( audioEngineNode, "metronome_volume", QString("%1").arg( m_fMetronomeVolume ) );
+		LocalFileMng::writeXmlString( audioEngineNode, "maxNotes", QString("%1").arg( m_nMaxNotes ) );
+		LocalFileMng::writeXmlString( audioEngineNode, "buffer_size", QString("%1").arg( m_nBufferSize ) );
+		LocalFileMng::writeXmlString( audioEngineNode, "samplerate", QString("%1").arg( m_nSampleRate ) );
 
 		//// OSS DRIVER ////
 		QDomNode ossDriverNode = doc.createElement( "oss_driver" );
@@ -685,7 +678,7 @@ void Preferences::savePreferences()
 			LocalFileMng::writeXmlString( jackDriverNode, "jack_connect_defaults", jackConnectDefaultsString );
 
 			//pre-fader or post-fader track outputs ?
-			LocalFileMng::writeXmlString( jackDriverNode, "jack_track_output_mode", to_string ( m_nJackTrackOutputMode ));
+			LocalFileMng::writeXmlString( jackDriverNode, "jack_track_output_mode", QString("%1").arg( m_nJackTrackOutputMode ));
 
 			// jack track outs
 			QString jackTrackOutsString = "false";
@@ -711,7 +704,7 @@ void Preferences::savePreferences()
 		{
 			LocalFileMng::writeXmlString( midiDriverNode, "driverName", m_sMidiDriver );
 			LocalFileMng::writeXmlString( midiDriverNode, "port_name", m_sMidiPortName );
-			LocalFileMng::writeXmlString( midiDriverNode, "channel_filter", to_string( m_nMidiChannelFilter ) );
+			LocalFileMng::writeXmlString( midiDriverNode, "channel_filter", QString("%1").arg( m_nMidiChannelFilter ) );
 
 			if ( m_bMidiNoteOffIgnore ) {
 				LocalFileMng::writeXmlString( midiDriverNode, "ignore_note_off", "true" );
@@ -737,13 +730,13 @@ void Preferences::savePreferences()
 	{
 		LocalFileMng::writeXmlString( guiNode, "QTStyle", m_sQTStyle );
 		LocalFileMng::writeXmlString( guiNode, "application_font_family", applicationFontFamily );
-		LocalFileMng::writeXmlString( guiNode, "application_font_pointsize", to_string( applicationFontPointSize ) );
+		LocalFileMng::writeXmlString( guiNode, "application_font_pointsize", QString("%1").arg( applicationFontPointSize ) );
 		LocalFileMng::writeXmlString( guiNode, "mixer_font_family", mixerFontFamily );
-		LocalFileMng::writeXmlString( guiNode, "mixer_font_pointsize", to_string( mixerFontPointSize ) );
-		LocalFileMng::writeXmlString( guiNode, "mixer_falloff_speed", to_string( mixerFalloffSpeed ) );
-		LocalFileMng::writeXmlString( guiNode, "patternEditorGridResolution", to_string( m_nPatternEditorGridResolution ) );
-		LocalFileMng::writeXmlString( guiNode, "patternEditorGridHeight", to_string( m_nPatternEditorGridHeight ) );
-		LocalFileMng::writeXmlString( guiNode, "patternEditorGridWidth", to_string( m_nPatternEditorGridWidth ) );
+		LocalFileMng::writeXmlString( guiNode, "mixer_font_pointsize", QString("%1").arg( mixerFontPointSize ) );
+		LocalFileMng::writeXmlString( guiNode, "mixer_falloff_speed", QString("%1").arg( mixerFalloffSpeed ) );
+		LocalFileMng::writeXmlString( guiNode, "patternEditorGridResolution", QString("%1").arg( m_nPatternEditorGridResolution ) );
+		LocalFileMng::writeXmlString( guiNode, "patternEditorGridHeight", QString("%1").arg( m_nPatternEditorGridHeight ) );
+		LocalFileMng::writeXmlString( guiNode, "patternEditorGridWidth", QString("%1").arg( m_nPatternEditorGridWidth ) );
 		LocalFileMng::writeXmlBool( guiNode, "patternEditorUsingTriplets", m_bPatternEditorUsingTriplets );
 		LocalFileMng::writeXmlBool( guiNode, "showInstrumentPeaks", m_bShowInstrumentPeaks );
 		LocalFileMng::writeXmlBool( guiNode, "isFXTabVisible", m_bIsFXTabVisible );
@@ -757,7 +750,7 @@ void Preferences::savePreferences()
 		writeWindowProperties( guiNode, "drumkitManager_properties", drumkitManagerProperties );
 		writeWindowProperties( guiNode, "audioEngineInfo_properties", audioEngineInfoProperties );
 		for ( unsigned nFX = 0; nFX < MAX_FX; nFX++ ) {
-			QString sNode = "ladspaFX_properties" + to_string( nFX );
+			QString sNode = QString("ladspaFX_properties%1").arg( nFX );
 			writeWindowProperties( guiNode, sNode, m_ladspaProperties[nFX] );
 		}
 
@@ -783,8 +776,8 @@ void Preferences::savePreferences()
 			}
 			LocalFileMng::writeXmlString( guiNode, "setplay", setPlay );
 
-		LocalFileMng::writeXmlString( guiNode, "countoffset", to_string(m_countOffset) );
-		LocalFileMng::writeXmlString( guiNode, "playoffset", to_string(m_startOffset) );
+			LocalFileMng::writeXmlString( guiNode, "countoffset", QString("%1").arg(m_countOffset) );
+			LocalFileMng::writeXmlString( guiNode, "playoffset", QString("%1").arg(m_startOffset) );
 		//~ beatcounter
 
 		//SoundLibraryPanel expand items
@@ -805,7 +798,7 @@ void Preferences::savePreferences()
 	}
 	rootNode.appendChild( filesNode );
 
-	MidiMap * mM = MidiMap::getInstance();
+	MidiMap * mM = MidiMap::get_instance();
 	std::map< QString, Action* > mmcMap = mM->getMMCMap();
 
 	//---- MidiMap ----
@@ -994,10 +987,10 @@ void Preferences::writeWindowProperties( QDomNode parent, const QString& windowN
 		LocalFileMng::writeXmlString( windowPropNode, "visible", "false" );
 	}
 
-	LocalFileMng::writeXmlString( windowPropNode, "x", to_string( prop.x ) );
-	LocalFileMng::writeXmlString( windowPropNode, "y", to_string( prop.y ) );
-	LocalFileMng::writeXmlString( windowPropNode, "width", to_string( prop.width ) );
-	LocalFileMng::writeXmlString( windowPropNode, "height", to_string( prop.height ) );
+	LocalFileMng::writeXmlString( windowPropNode, "x", QString("%1").arg( prop.x ) );
+	LocalFileMng::writeXmlString( windowPropNode, "y", QString("%1").arg( prop.y ) );
+	LocalFileMng::writeXmlString( windowPropNode, "width", QString("%1").arg( prop.width ) );
+	LocalFileMng::writeXmlString( windowPropNode, "height", QString("%1").arg( prop.height ) );
 	parent.appendChild( windowPropNode );
 }
 
