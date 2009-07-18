@@ -141,7 +141,7 @@ Song* Song::get_default_song(){
 		song->set_swing_factor( 0.0 );
 
 		InstrumentList* pList = new InstrumentList();
-		Instrument *pNewInstr = new Instrument(to_string( 0 ), "New instrument", new ADSR());
+		Instrument *pNewInstr = new Instrument(QString( 0 ), "New instrument", new ADSR());
 		pList->add( pNewInstr );
 		song->set_instrument_list( pList );
 		
@@ -556,9 +556,9 @@ Song* SongReader::readSong( const QString& filename )
 #ifdef LADSPA_SUPPORT
 	// reset FX
 	for ( int fx = 0; fx < MAX_FX; ++fx ) {
-		//LadspaFX* pFX = Effects::getInstance()->getLadspaFX( fx );
+		//LadspaFX* pFX = Effects::get_instance()->getLadspaFX( fx );
 		//delete pFX;
-		Effects::getInstance()->setLadspaFX( NULL, fx );
+		Effects::get_instance()->setLadspaFX( NULL, fx );
 	}
 #endif
 	
@@ -577,7 +577,7 @@ Song* SongReader::readSong( const QString& filename )
 				// FIXME: il caricamento va fatto fare all'engine, solo lui sa il samplerate esatto
 #ifdef LADSPA_SUPPORT
 				LadspaFX* pFX = LadspaFX::load( sFilename, sName, 44100 );
-				Effects::getInstance()->setLadspaFX( pFX, nFX );
+				Effects::get_instance()->setLadspaFX( pFX, nFX );
 				if ( pFX ) {
 					pFX->setEnabled( bEnabled );
 					pFX->setVolume( fVolume );
@@ -692,7 +692,7 @@ Pattern* SongReader::getPattern( QDomNode pattern, InstrumentList* instrList )
 				Note* pNote = NULL;
 
 				unsigned nPosition = LocalFileMng::readXmlInt( noteNode, "position", 0 );
-				float fLeadLag = LocalFileMng::readXmlFloat( noteNode, "leadlag", 0.0 , false ,false);
+				float fLeadLag = LocalFileMng::readXmlFloat( noteNode, "leadlag", 0.0 , false , false );
 				float fVelocity = LocalFileMng::readXmlFloat( noteNode, "velocity", 0.8f );
 				float fPan_L = LocalFileMng::readXmlFloat( noteNode, "pan_L", 0.5 );
 				float fPan_R = LocalFileMng::readXmlFloat( noteNode, "pan_R", 0.5 );
