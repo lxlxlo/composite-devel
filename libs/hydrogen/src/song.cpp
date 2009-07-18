@@ -412,12 +412,7 @@ Song* SongReader::readSong( const QString& filename )
 	}
 
 
-	#ifdef WIN32
-  		TiXmlDocument doc( filename.toAscii().constData() );
-	#else
-   		TiXmlDocument doc( filename.toUtf8().constData() );
-	#endif
-
+        TiXmlDocument doc( filename.toLocal8Bit() );
 
 	doc.LoadFile();
 
@@ -511,7 +506,7 @@ Song* SongReader::readSong( const QString& filename )
 			int nMuteGroup = sMuteGroup.toInt();
 
 
-			if ( sId == "" ) {
+			if ( sId.isEmpty() ) {
 				ERRORLOG( "Empty ID for instrument '" + sName + "'. skipping." );
 				continue;
 			}
@@ -535,8 +530,8 @@ Song* SongReader::readSong( const QString& filename )
 			pInstrument->set_gain( fGain );
 			pInstrument->set_mute_group( nMuteGroup );
 
-			QString drumkitPath = "";
-			if ( ( sDrumkit != "" ) && ( sDrumkit != "-" ) ) {
+			QString drumkitPath;
+			if ( ( !sDrumkit.isEmpty() ) && ( sDrumkit != "-" ) ) {
 //				drumkitPath = localFileMng.getDrumkitDirectory( sDrumkit ) + sDrumkit + "/";
 				drumkitPath = localFileMng.getDrumkitDirectory( sDrumkit ) + sDrumkit;
 			}
@@ -547,7 +542,7 @@ Song* SongReader::readSong( const QString& filename )
 				WARNINGLOG( "Using back compatibility code. filename node found" );
 				QString sFilename = LocalFileMng::readXmlString( instrumentNode, "filename", "" );
 
-				if ( drumkitPath != "" ) {
+				if ( !drumkitPath.isEmpty() ) {
 					sFilename = drumkitPath + "/" + sFilename;
 				}
 				Sample *pSample = Sample::load( sFilename );
@@ -580,7 +575,7 @@ Song* SongReader::readSong( const QString& filename )
 					float fGain = LocalFileMng::readXmlFloat( layerNode, "gain", 1.0 );
 					float fPitch = LocalFileMng::readXmlFloat( layerNode, "pitch", 0.0, false, false );
 
-					if ( drumkitPath != "" ) {
+					if ( !drumkitPath.isEmpty() ) {
 						sFilename = drumkitPath + "/" + sFilename;
 					}
 					Sample *pSample = Sample::load( sFilename );
@@ -645,10 +640,11 @@ Song* SongReader::readSong( const QString& filename )
 	std::vector<PatternList*>* pPatternGroupVector = new std::vector<PatternList*>;
 
 	// back-compatibility code..
+	QTextCodec* enc = getCodecForDoc(songNode);
 	for ( TiXmlNode* pPatternIDNode = patternSequenceNode->FirstChild( "patternID" ); pPatternIDNode; pPatternIDNode = pPatternIDNode->NextSibling( "patternID" ) ) {
 		WARNINGLOG( "Using old patternSequence code for back compatibility" );
 		PatternList *patternSequence = new PatternList();
-		QString patId = pPatternIDNode->FirstChild()->Value();
+		QString patId = enc->toUnicode( pPatternIDNode->FirstChild()->Value() );
 
 		Pattern *pat = NULL;
 		for ( unsigned i = 0; i < patternList->get_size(); i++ ) {
@@ -672,7 +668,7 @@ Song* SongReader::readSong( const QString& filename )
 	for ( TiXmlNode* groupNode = patternSequenceNode->FirstChild( "group" ); groupNode; groupNode = groupNode->NextSibling( "group" ) ) {
 		PatternList *patternSequence = new PatternList();
 		for ( TiXmlNode* patternId = groupNode->FirstChild( "patternID" ); patternId; patternId = patternId->NextSibling( "patternID" ) ) {
-			QString patId = patternId->FirstChild()->Value();
+			QString patId = enc->toUnicode( patternId->FirstChild()->Value() );
 
 			Pattern *pat = NULL;
 			for ( unsigned i = 0; i < patternList->get_size(); i++ ) {
@@ -761,7 +757,7 @@ Pattern* SongReader::getPattern( TiXmlNode* pattern, InstrumentList* instrList )
 {
 	Pattern *pPattern = NULL;
 
-	QString sName = "";	// name
+	QString sName;	// name
 	sName = LocalFileMng::readXmlString( pattern, "name", sName );
 
 	QString sCategory = ""; // category

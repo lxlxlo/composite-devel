@@ -40,7 +40,7 @@ void TiXmlBase::PutString( const TIXML_STRING& str, TIXML_STRING* outString )
 
 	while( i<(int)str.length() )
 	{
-		int c = str[i];
+		unsigned c = str[i];
 
 		if (    c == '&' 
 		     && i < ( (int)str.length() - 2 )
@@ -83,19 +83,61 @@ void TiXmlBase::PutString( const TIXML_STRING& str, TIXML_STRING* outString )
 			outString->append( entity[4].str, entity[4].strLength );
 			++i;
 		}
-		else if ( c < 32 || c > 126 )
+		else if ( c == 0x9 || c == 0xA || c == 0xD )
 		{
-			// Easy pass at non-alpha/numeric/symbol
-			// 127 is the delete key. Below 32 is symbolic.
+			// Whitespace
+			char realc = (char) c;
+			outString->append( &realc, 1 );
+			++i;
+		}
+		else if ( c < 0x20 )
+		{
+			// Nonprintables (null, bell, etc.)
 			char buf[ 32 ];
 			sprintf( buf, "&#x%02X;", (unsigned) ( c & 0xff ) );
 			outString->append( buf, strlen( buf ) );
 			++i;
 		}
-		else
+		else if ( c < 0x7F )
 		{
 			char realc = (char) c;
 			outString->append( &realc, 1 );
+			++i;
+		} // We're not in ASCII anymore...  Output UTF-8 chunks (Hydrogen extension)
+		else if ( (c & 0xE0) == 0xC0 ) {
+			// Start of 2-byte sequence
+			assert( unsigned(i+1) < str.length() );
+			assert( (str[i+1] & 0xC0) == 0x80 );
+			outString->append( &str[i], 2 );
+			i += 2;
+		}
+		else if ( (c & 0xF0) == 0xE0 )
+		{
+			// Start of 3-byte sequence
+			assert( unsigned(i+2) < str.length() );
+			assert( (str[i+1] & 0xC0 ) == 0x80 );
+			assert( (str[i+2] & 0xC0 ) == 0x80 );
+			outString->append( &str[i], 3 );
+			i += 3;
+		}
+		else if ( (c & 0xF8) == 0xF0 )
+		{
+			// Start of 4-byte sequence
+			assert( unsigned(i+3) < str.length() );
+			assert( (str[i+1] & 0xC0 ) == 0x80 );
+			assert( (str[i+2] & 0xC0 ) == 0x80 );
+			assert( (str[i+3] & 0xC0 ) == 0x80 );
+			outString->append( &str[i], 4 );
+			i += 4;
+		}
+		else
+		{
+			// Invalid character in UTF-8 encoding.
+			// But TinyXML gives no way to throw an error.
+			// Punt, and use a Character reference.
+			char buf[ 32 ];
+			sprintf( buf, "&#x%02X;", (unsigned) ( c & 0xff ) );
+			outString->append( buf, strlen( buf ) );
 			++i;
 		}
 	}
@@ -169,6 +211,14 @@ TiXmlNode* TiXmlNode::LinkEndChild( TiXmlNode* node )
 
 	node->prev = lastChild;
 	node->next = 0;
+
+	if( node->type == DECLARATION ) {
+		TiXmlDeclaration* decl = dynamic_cast<TiXmlDeclaration*>(node);
+		TiXmlDocument* doc = GetDocument();
+		if( doc && decl ) {
+			doc->SetEncoding( decl->Encoding() );
+		}
+	}
 
 	if ( lastChild )
 		lastChild->next = node;
@@ -627,6 +677,7 @@ TiXmlDocument::TiXmlDocument() : TiXmlNode( TiXmlNode::DOCUMENT )
 {
 	error = false;
 	//	ignoreWhiteSpace = true;
+	encoding = "";
 }
 
 TiXmlDocument::TiXmlDocument( const char * documentName ) : TiXmlNode( TiXmlNode::DOCUMENT )
@@ -634,6 +685,7 @@ TiXmlDocument::TiXmlDocument( const char * documentName ) : TiXmlNode( TiXmlNode
 	//	ignoreWhiteSpace = true;
 	value = documentName;
 	error = false;
+        encoding = "";
 }
 
 bool TiXmlDocument::LoadFile()
@@ -912,6 +964,9 @@ TiXmlDeclaration::TiXmlDeclaration( const char * _version,
 	version = _version;
 	encoding = _encoding;
 	standalone = _standalone;
+	if( this->GetDocument() ) {
+		this->GetDocument()->SetEncoding( encoding );
+	}
 }
 
 

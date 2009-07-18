@@ -203,7 +203,7 @@ void PlaylistDialog::on_addSongBTN_clicked()
 
 	fd->setWindowTitle ( trUtf8 ( "Add Song to PlayList" ) );
 
-	QString filename = "";
+	QString filename;
 	if ( fd->exec() == QDialog::Accepted ){
 		filename = fd->selectedFiles().first();
 		updatePlayListNode ( filename );
@@ -305,12 +305,12 @@ void PlaylistDialog::on_loadListBTN_clicked()
 
 	fd->setWindowTitle ( trUtf8 ( "Load Playlist" ) );
 
-	QString filename = "";
+	QString filename;
 	if ( fd->exec() == QDialog::Accepted ){
 		filename = fd->selectedFiles().first();
 
 		LocalFileMng fileMng;
-		int err = fileMng.loadPlayList( filename.toStdString() );
+		int err = fileMng.loadPlayList( filename.toLocal8Bit().constData() );
 		if ( err != 0 ) {
 			_ERRORLOG( "Error saving the playlist" );
 		}
@@ -370,7 +370,7 @@ void PlaylistDialog::on_newScriptBTN_clicked()
 
 	fd->selectFile ( defaultFilename );
 
-	QString filename = "";
+	QString filename;
 	if ( fd->exec() == QDialog::Accepted )
 	{
 		filename = fd->selectedFiles().first();
@@ -379,7 +379,7 @@ void PlaylistDialog::on_newScriptBTN_clicked()
 		return;
 	}
 	
-	std::string name = filename.toStdString();
+	std::string name = filename.toLocal8Bit().constData();
 
 	char *file;
 	file = new char[name.length() + 1];
@@ -392,7 +392,7 @@ void PlaylistDialog::on_newScriptBTN_clicked()
 	delete [] file;
 
 	
-	if( pPref->getDefaultEditor() == ""){
+	if( pPref->getDefaultEditor().isEmpty() ){
 		QMessageBox::information ( this, "Hydrogen", trUtf8 ( "No Default Editor Set. Please set your Default Editor\nDo not use a console based Editor\nSorry, but this will not work for the moment." ) );
 
 		static QString lastUsedDir = "/usr/bin/";
@@ -403,7 +403,7 @@ void PlaylistDialog::on_newScriptBTN_clicked()
 	
 		fd->setWindowTitle ( trUtf8 ( "Set your Default Editor" ) );
 	
-		QString filename = "";
+		QString filename;
 		if ( fd->exec() == QDialog::Accepted ){
 			filename = fd->selectedFiles().first();
 	
@@ -411,7 +411,7 @@ void PlaylistDialog::on_newScriptBTN_clicked()
 		}		
 	}
 
-	std::string  openfile = pPref->getDefaultEditor().toStdString() + " " + filename.toStdString() + "&";
+	std::string  openfile = QString(pPref->getDefaultEditor() + " " + filename + "&").toLocal8Bit().constData();
 
 	char *ofile;
 	ofile = new char[openfile.length() + 1];
@@ -443,14 +443,14 @@ void PlaylistDialog::on_saveListBTN_clicked()
 
 	fd->selectFile ( defaultFilename );
 
-	QString filename = "";
+	QString filename;
 	if ( fd->exec() == QDialog::Accepted )
 	{
 		filename = fd->selectedFiles().first();
 	}
 
 	LocalFileMng fileMng;
-	int err = fileMng.savePlayList( filename.toStdString() );
+	int err = fileMng.savePlayList( filename.toLocal8Bit().constData() );
 	if ( err != 0 ) {
 		_ERRORLOG( "Error saving the playlist" );
 	}
@@ -474,11 +474,11 @@ void PlaylistDialog::on_loadScriptBTN_clicked()
 	fd->setFilter ( trUtf8 ( "Hydrogen Playlist (*.sh)" ) );
 	fd->setWindowTitle ( trUtf8 ( "Add Script to selected Song" ) );
 
-	QString filename = "";
+	QString filename;
 	if ( fd->exec() == QDialog::Accepted ){
 		filename = fd->selectedFiles().first();
 
-		std::string filetest = filename.toStdString();
+		std::string filetest = filename.toLocal8Bit().constData();
 		int error = filetest.rfind(" ");
 		if(error >= 0){
 			QMessageBox::information ( this, "Hydrogen", trUtf8 ( "Script name or path to the script contains whitespaces.\nIMPORTANT\nThe path to the script and the scriptname must without whitespaces.") );
@@ -503,7 +503,7 @@ void PlaylistDialog::on_removeScriptBTN_clicked()
 		QMessageBox::information ( this, "Hydrogen", trUtf8 ( "No Song selected!" ));
 		return;
 	}else{
-		QString selected = "";
+		QString selected;
 		selected = m_pPlaylistItem->text ( 1 );
 		if( selected == "no Script"){
 			QMessageBox::information ( this, "Hydrogen", trUtf8 ( "No Script in use!" ));
@@ -522,7 +522,7 @@ void PlaylistDialog::on_removeScriptBTN_clicked()
 void PlaylistDialog::on_editScriptBTN_clicked()
 {
 	Preferences *pPref = Preferences::get_instance();
-	if( pPref->getDefaultEditor() == ""){
+	if( pPref->getDefaultEditor().isEmpty() ){
 		QMessageBox::information ( this, "Hydrogen", trUtf8 ( "No Default Editor Set. Please set your Default Editor\nDo not use a console based Editor\nSorry, but this will not work for the moment." ) );
 
 		static QString lastUsedDir = "/usr/bin/";
@@ -533,7 +533,7 @@ void PlaylistDialog::on_editScriptBTN_clicked()
 	
 		fd->setWindowTitle ( trUtf8 ( "Set your Default Editor" ) );
 	
-		QString filename = "";
+		QString filename;
 		if ( fd->exec() == QDialog::Accepted ){
 			filename = fd->selectedFiles().first();
 	
@@ -547,10 +547,10 @@ void PlaylistDialog::on_editScriptBTN_clicked()
 		QMessageBox::information ( this, "Hydrogen", trUtf8 ( "No Song selected!" ) );
 		return;
 	}
-	QString selected = "";
+	QString selected;
 	selected = m_pPlaylistItem->text ( 1 );
 
-	std::string filename = pPref->getDefaultEditor().toStdString() + " " + selected.toStdString() + "&";
+	std::string filename = QString(pPref->getDefaultEditor() + " " + selected + "&").toLocal8Bit().constData();
 
 	if( selected == "no Script"){
 		QMessageBox::information ( this, "Hydrogen", trUtf8 ( "No Script selected!" ));
@@ -637,7 +637,7 @@ void PlaylistDialog::o_downBClicked()
 void PlaylistDialog::on_m_pPlaylistTree_itemClicked ( QTreeWidgetItem * item, int column )
 {
 	if ( column == 2 ){ 
-		QString selected = "";
+		QString selected;
 		selected = item->text ( 1 );
 
 		if( selected == "no Script"){
@@ -658,7 +658,7 @@ void PlaylistDialog::on_nodePlayBTN_clicked()
 		QMessageBox::information ( this, "Hydrogen", trUtf8 ( "No Song selected!" ) );
 		return;
 	}
-	QString selected = "";
+	QString selected;
 	selected = m_pPlaylistItem->text ( 0 );
 
 	
@@ -697,7 +697,7 @@ void PlaylistDialog::on_m_pPlaylistTree_itemDoubleClicked ()
 		QMessageBox::information ( this, "Hydrogen", trUtf8 ( "No Song selected!" ) );
 		return;
 	}
-	QString selected = "";
+	QString selected;
 	selected = m_pPlaylistItem->text ( 0 );
 
 	QTreeWidget* m_pPlaylist = m_pPlaylistTree;
@@ -732,10 +732,10 @@ void PlaylistDialog::on_m_pPlaylistTree_itemDoubleClicked ()
 	//I know nothing about windows scripts -wolke-
 	return;
 #else
-	QString execscript = "";
+	QString execscript;
 	selected = m_pPlaylistItem->text ( 1 );
 	bool execcheckbox = m_pPlaylistItem->checkState ( 2 );
-	std::string filename = selected.toStdString();
+	std::string filename = selected.toLocal8Bit().constData();
 
 	if( execcheckbox == false){
 		//QMessageBox::information ( this, "Hydrogen", trUtf8 ( "No Script selected!" ));
@@ -770,7 +770,7 @@ void PlaylistDialog::updatePlayListVector()
 	for (int i = 0 ;i < length; i++){
 		QTreeWidgetItem * m_pPlaylistItem = m_pPlaylist->topLevelItem ( i );	
 		
-		QString execval = "";
+		QString execval;
 		bool execcheckbox = m_pPlaylistItem->checkState ( 2 );
 		if ( execcheckbox == true ) {
 			execval = "Use Script";

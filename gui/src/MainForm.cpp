@@ -85,7 +85,7 @@ MainForm::MainForm( QApplication *app, const QString& songFilename )
 
 	// Load default song
 	Song *song = NULL;
-	if (songFilename != "") {
+	if ( !songFilename.isEmpty() ) {
 		song = Song::load( songFilename );
 		if (song == NULL) {
 			//QMessageBox::warning( this, "Hydrogen", trUtf8("Error loading song.") );
@@ -97,7 +97,7 @@ MainForm::MainForm( QApplication *app, const QString& songFilename )
 		Preferences *pref = Preferences::get_instance();
 		bool restoreLastSong = pref->isRestoreLastSongEnabled();
 		QString filename = pref->getLastSongFilename();
-		if ( restoreLastSong && (filename != "" )) {
+		if ( restoreLastSong && ( !filename.isEmpty() )) {
 			song = Song::load( filename );
 			if (song == NULL) {
 				//QMessageBox::warning( this, "Hydrogen", trUtf8("Error restoring last song.") );
@@ -310,8 +310,8 @@ if ( Preferences::get_instance()->useLash() ){
 
 	lash_event_t* event;
 
-	string songFilename = "";
-	QString filenameSong = "";
+	string songFilename;
+	QString filenameSong;
 	Song *song = Hydrogen::get_instance()->getSong();
 	// Extra parentheses for -Wparentheses
 	while ( (event = client->getNextEvent()) ) {
@@ -325,7 +325,7 @@ if ( Preferences::get_instance()->useLash() ){
 				songFilename.append(lash_event_get_string(event));
 				songFilename.append("/hydrogen.h2song"); 
 				
-				filenameSong = songFilename.c_str();
+				filenameSong = QString::fromLocal8Bit( songFilename.c_str() );
 				song->set_filename( filenameSong );
 				action_file_save();
 			  
@@ -340,7 +340,7 @@ if ( Preferences::get_instance()->useLash() ){
 				
 				INFOLOG("[LASH] Restore file: " + to_string( songFilename ));
 
-				filenameSong = songFilename.c_str();
+				filenameSong = QString::fromLocal8Bit( songFilename.c_str() );
 							 
 				openSongFile( filenameSong );
 			 
@@ -420,7 +420,7 @@ void MainForm::action_file_save_as()
 	QString defaultFilename;
 	QString lastFilename = song->get_filename();
 
-	if (lastFilename == "") {
+	if ( lastFilename.isEmpty() ) {
 		defaultFilename = Hydrogen::get_instance()->getSong()->__name;
 		defaultFilename += ".h2song";
 	}
@@ -430,12 +430,12 @@ void MainForm::action_file_save_as()
 
 	fd->selectFile( defaultFilename );
 
-	QString filename = "";
+	QString filename;
 	if (fd->exec() == QDialog::Accepted) {
 		filename = fd->selectedFiles().first();
 	}
 
-	if (filename != "") {
+	if ( !filename.isEmpty() ) {
 		QString sNewFilename = filename;
 		if ( sNewFilename.endsWith(".h2song") == false ) {
 			filename += ".h2song";
@@ -461,7 +461,7 @@ void MainForm::action_file_save()
 	Song *song = Hydrogen::get_instance()->getSong();
 	QString filename = song->get_filename();
 
-	if (filename == "") {
+	if ( filename.isEmpty() ) {
 		// just in case!
 		return action_file_save_as();
 	}
@@ -544,7 +544,7 @@ void MainForm::action_file_export_pattern_as()
 	fd->selectFile ( defaultPatternname );
 
 	LocalFileMng fileMng;
-	QString filename = "";
+	QString filename;
 	if ( fd->exec() == QDialog::Accepted )
 	{
 		filename = fd->selectedFiles().first();
@@ -554,7 +554,7 @@ void MainForm::action_file_export_pattern_as()
 		Preferences::get_instance()->__lastspatternDirectory = newdatapath;
 	}
 
-	if ( filename != "" )
+	if ( !filename.isEmpty() )
 	{
 		QString sNewFilename = filename;
 		if(sNewFilename.endsWith( ".h2pattern" ) ){
@@ -611,14 +611,14 @@ void MainForm::action_file_open()
 	fd->setPreviewMode( QFileDialog::Contents );
 	*/
 
-	QString filename = "";
+	QString filename;
 	if (fd->exec() == QDialog::Accepted) {
 		filename = fd->selectedFiles().first();
 		lastUsedDir = fd->directory().absolutePath();
 	}
 
 
-	if (filename != "") {
+	if ( !filename.isEmpty() ) {
 		openSongFile( filename );
 	}
 
@@ -645,7 +645,7 @@ void MainForm::action_file_openPattern()
 	fd->setWindowTitle ( trUtf8 ( "Open Pattern" ) );
 
 
-	QString filename = "";
+	QString filename;
 	if ( fd->exec() == QDialog::Accepted )
 	{
 		filename = fd->selectedFiles().first();
@@ -697,13 +697,13 @@ void MainForm::action_file_openDemo()
 	fd->setDirectory( QString( Preferences::get_instance()->getDemoPath() ) );
 
 
-	QString filename = "";
+	QString filename;
 	if (fd->exec() == QDialog::Accepted) {
 		filename = fd->selectedFiles().first();
 	}
 
 
-	if (filename != "") {
+	if ( !filename.isEmpty() ) {
 		openSongFile( filename );
 		Hydrogen::get_instance()->getSong()->set_filename( "" );
 	}
@@ -1041,12 +1041,12 @@ void MainForm::updateRecentUsedSongList()
 	Preferences *pPref = Preferences::get_instance();
 	vector<QString> recentUsedSongs = pPref->getRecentFiles();
 
-	QString sFilename = "";
+	QString sFilename;
 
 	for ( uint i = 0; i < recentUsedSongs.size(); ++i ) {
 		sFilename = recentUsedSongs[ i ];
 
-		if ( sFilename != "" ) {
+		if ( !sFilename.isEmpty() ) {
 			QAction *pAction = new QAction( this  );
 			pAction->setText( sFilename );
 			m_pRecentFilesMenu->addAction( pAction );
@@ -1378,12 +1378,12 @@ void MainForm::action_file_export_midi()
 	fd->setAcceptMode( QFileDialog::AcceptSave );
 //	fd->setIcon( QPixmap( Skin::getImagePath() + "/icon16.png" ) );
 
-	QString sFilename = "";
+	QString sFilename;
 	if ( fd->exec() == QDialog::Accepted ) {
 		sFilename = fd->selectedFiles().first();
 	}
 
-	if ( sFilename != "" ) {
+	if ( !sFilename.isEmpty() ) {
 		if ( sFilename.endsWith(".mid") == false ) {
 			sFilename += ".mid";
 		}
@@ -1575,7 +1575,7 @@ QString MainForm::getAutoSaveFilename()
 	QString sOldFilename = pSong->get_filename();
 	QString newName = "autosave.h2song";
 
-	if ( sOldFilename != "" ) {
+	if ( !sOldFilename.isEmpty() ) {
 		newName = sOldFilename.left( sOldFilename.length() - 7 ) + ".autosave.h2song";
 	}
 
@@ -1612,7 +1612,7 @@ void MainForm::onPlaylistDisplayTimer()
 	if( Hydrogen::get_instance()->m_PlayList.size() == 0)
 		return;
 	int songnumber = Playlist::get_instance()->getActiveSongNumber();
-	QString songname = "";
+	QString songname;
 	if ( songnumber == -1 )
 			return;
 
@@ -1642,7 +1642,7 @@ bool MainForm::handleUnsavedChanges()
 						2 ) ) { // Escape == button 2
 			case 0: // Save clicked or Alt+S pressed or Enter pressed.
 				// If the save fails, the __is_modified flag will still be true
-				if ( Hydrogen::get_instance()->getSong()->get_filename() != "") {
+			    if ( ! Hydrogen::get_instance()->getSong()->get_filename().isEmpty() ) {
 					action_file_save();
 				} else {
 					// never been saved

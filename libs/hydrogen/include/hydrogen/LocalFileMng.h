@@ -75,7 +75,7 @@ public:
 	Drumkit* loadDrumkit( const QString& directory );
 	int saveDrumkit( Drumkit *pDrumkit );
 
-	static void writeXmlString( ::TiXmlNode *parent, const QString& name, const QString& text );
+	static void writeXmlString( ::TiXmlNode *parent, const QString& name, const QString& text, const QString encoding = "UTF-8" );
 	static void writeXmlBool( ::TiXmlNode *parent, const QString& name, bool value );
 
 	Pattern* loadPattern( const QString& directory );
@@ -109,6 +109,10 @@ public:
 	// Returns 0 on success.
 	int writeSong( Song *song, const QString& filename );
 };
+
+/// Utility for getting encodings.
+/// *Will* return a valid pointer and never a NULL one.
+QTextCodec* getCodecForDoc(TiXmlNode* node);
 
 };
 

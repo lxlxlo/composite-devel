@@ -234,7 +234,7 @@ unsigned long m_nRealtimeFrames = 0;
 unsigned m_nBufferSize = 0;
 
                                                                /// Song Note FIFO
-std::priority_queue<Note*, std::deque<Note*>, std::greater<Note> > m_songNoteQueue;
+std::priority_queue<Note*, std::deque<Note*>, compare_pNotes > m_songNoteQueue;
 std::deque<Note*> m_midiNoteQueue;	///< Midi Note FIFO
 
 PatternList* m_pNextPatterns;		///< Next pattern (used only in Pattern mode)
@@ -1640,7 +1640,9 @@ void Hydrogen::create_instance()
 	EventQueue::create_instance();
 	ActionManager::create_instance();
 
-	__instance = new Hydrogen;
+	if( __instance == 0 ) {
+		__instance = new Hydrogen;
+	}
 
 	// See audioEngine_init() for:
 	// AudioEngine::create_instance();

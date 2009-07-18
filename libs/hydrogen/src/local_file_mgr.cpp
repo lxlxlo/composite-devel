@@ -51,6 +51,7 @@
 #include "xml/tinyxml.h"
 
 #include <algorithm>
+#include <memory>
 //#include <cstdio>
 //#include <vector>
 
@@ -70,12 +71,11 @@ LocalFileMng::~LocalFileMng()
 //	infoLog("DESTROY");
 }
 
-
 QString LocalFileMng::getDrumkitNameForPattern( const QString& patternDir )
 {
 	QString patternInfoFile = patternDir;
 
-	TiXmlDocument doc( patternInfoFile.toAscii() );
+	TiXmlDocument doc( patternInfoFile.toLocal8Bit() );
 	doc.LoadFile();
 
 	TiXmlNode* rootNode;	// root element
@@ -93,7 +93,7 @@ QString LocalFileMng::getDrumkitNameForPattern( const QString& patternDir )
 QString LocalFileMng::getCategoryFromPatternName( const QString& patternPathName )
 {
 	QString sCatrgory = patternPathName;
-	TiXmlDocument doc( sCatrgory.toAscii() );
+	TiXmlDocument doc( sCatrgory.toLocal8Bit() );
 	doc.LoadFile();
 
 
@@ -113,7 +113,7 @@ QString LocalFileMng::getCategoryFromPatternName( const QString& patternPathName
 QString LocalFileMng::getPatternNameFromPatternDir( const QString& patternDirName)
 {
 	QString sDir = patternDirName;
-	TiXmlDocument doc( sDir.toAscii() );
+	TiXmlDocument doc( sDir.toLocal8Bit() );
 	doc.LoadFile();
 
 
@@ -145,7 +145,7 @@ Pattern* LocalFileMng::loadPattern( const QString& directory )
 	}
 
 
-	TiXmlDocument doc( patternInfoFile.toAscii() );
+	TiXmlDocument doc( patternInfoFile.toLocal8Bit() );
 	doc.LoadFile();
 
 	// root element
@@ -229,7 +229,7 @@ int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString&
 		dir.mkdir( sPatternDir );// create the drumkit directory
 	}
 
-	QString sPatternXmlFilename = "";
+	QString sPatternXmlFilename;
 	// create the drumkit.xml file
 	switch ( mode ){
 		case 1: //save
@@ -249,7 +249,7 @@ int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString&
 	if ( testfile.exists() && mode == 1)
 		return 1;
 
-	TiXmlDocument doc( sPatternXmlFilename.toAscii() );
+	TiXmlDocument doc( sPatternXmlFilename.toLocal8Bit() );
 
 	TiXmlElement rootNode( "drumkit_pattern" );
 	//LIB_ID just in work to get better usability
@@ -310,13 +310,13 @@ void LocalFileMng::fileCopy( const QString& sOrigFilename, const QString& sDestF
 		return;
 	}
 
-	FILE *inputFile = fopen( sOrigFilename.toAscii(), "rb" );
+	FILE *inputFile = fopen( sOrigFilename.toLocal8Bit(), "rb" );
 	if ( inputFile == NULL ) {
 		ERRORLOG( "Error opening " + sOrigFilename );
 		return;
 	}
 
-	FILE *outputFile = fopen( sDestFilename.toAscii(), "wb" );
+	FILE *outputFile = fopen( sDestFilename.toLocal8Bit(), "wb" );
 	if ( outputFile == NULL ) {
 		ERRORLOG( "Error opening " + sDestFilename );
 		return;
@@ -400,7 +400,7 @@ std::vector<QString> LocalFileMng::getAllPatternName()
 		QString patternInfoFile =  m_allPatternList[i];
 
 
-		TiXmlDocument doc( patternInfoFile.toAscii() );
+		TiXmlDocument doc( patternInfoFile.toLocal8Bit() );
 		doc.LoadFile();
 
 		TiXmlNode* rootNode;	// root element
@@ -428,7 +428,7 @@ std::vector<QString> LocalFileMng::getAllCategoriesFromPattern()
 	for (uint i = 0; i < m_allPatternList.size(); ++i) {
 		QString patternInfoFile =  m_allPatternList[i];
 		
-		TiXmlDocument doc( patternInfoFile.toAscii() );
+		TiXmlDocument doc( patternInfoFile.toLocal8Bit() );
 		doc.LoadFile();
 
 		TiXmlNode* rootNode;	// root element
@@ -439,7 +439,7 @@ std::vector<QString> LocalFileMng::getAllCategoriesFromPattern()
 			QString sCategoryName( LocalFileMng::readXmlString( patternNode,"category", "" ) );
 
 
-			if ( sCategoryName != "" ){
+			if ( !sCategoryName.isEmpty() ){
 				bool test = true;
 				for (uint i = 0; i < categorylist.size(); ++i){
 					if ( sCategoryName == categorylist[i] ){
@@ -637,7 +637,7 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 		return NULL;
 	}
 
-	TiXmlDocument doc( drumkitInfoFile.toAscii() );
+	TiXmlDocument doc( drumkitInfoFile.toLocal8Bit() );
 	doc.LoadFile();
 
 	// root element
@@ -649,7 +649,7 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 
 	// Name
 	QString sDrumkitName = readXmlString( drumkitNode, "name", "" );
-	if ( sDrumkitName == "" ) {
+	if ( sDrumkitName.isEmpty() ) {
 		ERRORLOG( "Error reading drumkit: name node not found" );
 		return NULL;
 	}
@@ -697,7 +697,7 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 			int nMuteGroup = sMuteGroup.toInt();
 
 			// some sanity checks
-			if ( id == "" ) {
+			if ( id.isEmpty() ) {
 				ERRORLOG( "Empty ID for instrument. The drumkit '" + sDrumkitName + "' is corrupted. Skipping instrument '" + name + "'" );
 				continue;
 			}
@@ -791,7 +791,10 @@ int LocalFileMng::saveDrumkit( Drumkit *info )
 	// create the drumkit.xml file
 	QString sDrumkitXmlFilename = sDrumkitDir + QString( "/drumkit.xml" );
 
-	TiXmlDocument doc( sDrumkitXmlFilename.toAscii() );
+	TiXmlDocument doc( sDrumkitXmlFilename.toLocal8Bit() );
+
+	TiXmlDeclaration decl( "1.0", "UTF-8", "yes" );
+	doc.InsertEndChild(decl);
 
 	TiXmlElement rootNode( "drumkit_info" );
 
@@ -891,7 +894,9 @@ int LocalFileMng::savePlayList( const std::string& patternname)
 
 	std::string realname = name.substr(name.rfind("/")+1);
 
-	
+	TiXmlDeclaration decl( "1.0", "UTF-8", "yes" );
+	doc.InsertEndChild(decl);
+
 	TiXmlElement rootNode( "playlist" );
 	//LIB_ID just in work to get better usability
 	writeXmlString( &rootNode, "Name", QString (realname.c_str()) );
@@ -941,14 +946,15 @@ int LocalFileMng::loadPlayList( const std::string& patternname)
 		// new code :)
 		Hydrogen::get_instance()->m_PlayList.clear();
 		for ( TiXmlNode* nextNode = playlistNode->FirstChild( "next" ); nextNode; nextNode = nextNode->NextSibling( "next" ) ) {
-			std::string song =  LocalFileMng::readXmlString( nextNode, "song", "" ).toStdString();
-			std::string script = LocalFileMng::readXmlString( nextNode, "script", "" ).toStdString();
-			std::string ScriptEnabled = LocalFileMng::readXmlString( nextNode, "enabled", "" ).toStdString();
+			#warning "TODO: Why do we convert QString => std::string => QString here?"
+			std::string song =  LocalFileMng::readXmlString( nextNode, "song", "" ).toLocal8Bit().constData();
+			std::string script = LocalFileMng::readXmlString( nextNode, "script", "" ).toLocal8Bit().constData();
+			std::string ScriptEnabled = LocalFileMng::readXmlString( nextNode, "enabled", "" ).toLocal8Bit().constData();
 
 			Hydrogen::HPlayListNode playListItem;
-			playListItem.m_hFile = song.c_str();
-			playListItem.m_hScript = script.c_str();
-			playListItem.m_hScriptEnabled = ScriptEnabled.c_str();
+			playListItem.m_hFile = QString::fromLocal8Bit(song.c_str());
+			playListItem.m_hScript = QString::fromLocal8Bit(script.c_str());
+			playListItem.m_hScriptEnabled = QString::fromLocal8Bit(ScriptEnabled.c_str());
 			Hydrogen::get_instance()->m_PlayList.push_back( playListItem );	
 		}
 	}
@@ -960,9 +966,11 @@ int LocalFileMng::loadPlayList( const std::string& patternname)
 QString LocalFileMng::readXmlString( TiXmlNode* parent, const QString& nodeName, const QString& defaultValue, bool bCanBeEmpty, bool bShouldExists )
 {
 	TiXmlNode* node;
-	if ( parent && ( node = parent->FirstChild( nodeName.toAscii() ) ) ) {
+	QTextCodec *enc = getCodecForDoc(parent);
+
+	if ( parent && ( node = parent->FirstChild( nodeName.toLocal8Bit() ) ) ) {
 		if ( node->FirstChild() ) {
-			return node->FirstChild()->Value();
+			return enc->toUnicode(node->FirstChild()->Value());
 		} else {
 			if ( !bCanBeEmpty ) {
 				_WARNINGLOG( "Using default value in " + nodeName );
@@ -983,7 +991,7 @@ float LocalFileMng::readXmlFloat( TiXmlNode* parent, const QString& nodeName, fl
 {
 	TiXmlNode* node;
 	QLocale c_locale = QLocale::c();
-	if ( parent && ( node = parent->FirstChild( nodeName.toAscii() ) ) ) {
+	if ( parent && ( node = parent->FirstChild( nodeName.toLocal8Bit() ) ) ) {
 		if ( node->FirstChild() ) {
 			QString val( node->FirstChild()->Value() );
 			float res = c_locale.toFloat(val);
@@ -1008,7 +1016,7 @@ int LocalFileMng::readXmlInt( TiXmlNode* parent, const QString& nodeName, int de
 {
 	TiXmlNode* node;
 	QLocale c_locale = QLocale::c();
-	if ( parent && ( node = parent->FirstChild( nodeName.toAscii() ) ) ) {
+	if ( parent && ( node = parent->FirstChild( nodeName.toLocal8Bit() ) ) ) {
 		if ( node->FirstChild() ) {
 			QString val( node->FirstChild()->Value() );
 			return c_locale.toInt( val );
@@ -1032,7 +1040,7 @@ int LocalFileMng::readXmlInt( TiXmlNode* parent, const QString& nodeName, int de
 bool LocalFileMng::readXmlBool( TiXmlNode* parent, const QString& nodeName, bool defaultValue, bool bShouldExists )
 {
 	TiXmlNode* node;
-	if ( parent && ( node = parent->FirstChild( nodeName.toAscii() ) ) ) {
+	if ( parent && ( node = parent->FirstChild( nodeName.toLocal8Bit() ) ) ) {
 		if ( node->FirstChild() ) {
 			if ( QString( node->FirstChild()->Value() ) == "true" ) {
 				return true;
@@ -1053,10 +1061,15 @@ bool LocalFileMng::readXmlBool( TiXmlNode* parent, const QString& nodeName, bool
 
 
 
-void LocalFileMng::writeXmlString( TiXmlNode *parent, const QString& name, const QString& text )
+void LocalFileMng::writeXmlString( TiXmlNode *parent, const QString& name, const QString& text, const QString encoding)
 {
-	TiXmlElement versionNode( name.toAscii() );
-	TiXmlText versionText( text.toAscii() );
+	#warning "We need to cascade the encoding somehow... in case we move beyond UTF-8.  ...maybe"
+	QTextCodec* enc = QTextCodec::codecForName(encoding.toLocal8Bit());
+	if( !enc ) {
+		enc = QTextCodec::codecForLocale();
+	}
+	TiXmlElement versionNode( enc->fromUnicode(name).constData() );
+	TiXmlText versionText( enc->fromUnicode(text).constData() );
 	versionNode.InsertEndChild( versionText );
 	parent->InsertEndChild( versionNode );
 }
@@ -1113,11 +1126,10 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 	// FIXME: effettuare copia di backup per il file gia' esistente
 
 
-	#ifdef WIN32
-  		TiXmlDocument doc( filename.toAscii().constData() );
-	#else
-   		TiXmlDocument doc( filename.toUtf8().constData() );
-	#endif
+        TiXmlDocument doc( filename.toLocal8Bit().constData() );
+
+	TiXmlDeclaration decl( "1.0", "UTF-8", "yes" );
+	doc.InsertEndChild(decl);
 
 	TiXmlElement songNode( "song" );
 
@@ -1194,7 +1206,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 
 			QString sFilename = pSample->get_filename();
 
-			if ( instr->get_drumkit_name() != "" ) {
+			if ( !instr->get_drumkit_name().isEmpty() ) {
 				// se e' specificato un drumkit, considero solo il nome del file senza il path
 				int nPos = sFilename.lastIndexOf( "/" );
 				sFilename = sFilename.mid( nPos + 1, sFilename.length() );
@@ -1331,6 +1343,20 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 	song->set_filename( filename );
 
 	return rv;
+}
+
+QTextCodec* getCodecForDoc(TiXmlNode* node)
+{
+	QTextCodec* enc = 0;
+	if( node && node->GetDocument() ) {
+		enc = QTextCodec::codecForName( node->GetDocument()->GetEncoding().c_str() );
+	}
+	if( !enc ) {
+		// Assume local 8-bit encoding
+		enc = QTextCodec::codecForLocale();
+	}
+	assert(enc);
+	return enc;
 }
 
 
