@@ -241,10 +241,10 @@ void Preferences::loadPreferences( bool bGlobal )
 			QDomNode pRecentUsedSongsNode = rootNode.firstChildElement( "recentUsedSongs" );
 			if ( !pRecentUsedSongsNode.isNull() ) {
 				QDomElement pSongElement = pRecentUsedSongsNode.firstChildElement( "song" );
-				if( !pSongElement.isNull() && !pSongElement.text().isEmpty() ){
+				while( !pSongElement.isNull() && !pSongElement.text().isEmpty() ){
 					m_recentFiles.push_back( pSongElement.text() );
+					pSongElement = pSongElement.nextSiblingElement( "song" );
 				}
-				pSongElement = pRecentUsedSongsNode.nextSiblingElement( "song" );
 				
 			} else {
 				WARNINGLOG( "recentUsedSongs node not found" );
@@ -253,10 +253,10 @@ void Preferences::loadPreferences( bool bGlobal )
 			QDomNode pRecentFXNode = rootNode.firstChildElement( "recentlyUsedEffects" );
 			if ( ! pRecentFXNode.isNull() ) {
 				QDomElement pFXElement = pRecentFXNode.firstChildElement( "FX" );
-				if ( !pFXElement.isNull()  && ! pFXElement.text().isEmpty()) {
+				while ( !pFXElement.isNull()  && ! pFXElement.text().isEmpty()) {
 					m_recentFX.push_back( pFXElement.text() );
+					pFXElement = pFXElement.nextSiblingElement( "FX" );
 				}
-				pFXElement = pRecentFXNode.nextSiblingElement( "FX" );
 			} else {
 				WARNINGLOG( "recentlyUsedEffects node not found" );
 			}
@@ -265,10 +265,10 @@ void Preferences::loadPreferences( bool bGlobal )
 			QDomNode pServerListNode = rootNode.firstChildElement( "serverList" );
 			if ( !pServerListNode.isNull() ) {
 				QDomElement pServerElement = pServerListNode.firstChildElement( "server" );
-				if ( !pServerElement.isNull() && !pServerElement.text().isEmpty() ) {
+				while ( !pServerElement.isNull() && !pServerElement.text().isEmpty() ) {
 					sServerList.push_back( pServerElement.text() );
+					pServerElement = pServerElement.nextSiblingElement( "server" );
 				}
-				pServerElement = pServerListNode.nextSiblingElement( "server" );
 			} else {
 				WARNINGLOG( "serverList node not found" );
 			}
@@ -277,10 +277,10 @@ void Preferences::loadPreferences( bool bGlobal )
 			QDomNode pPatternCategoriesNode = rootNode.firstChildElement( "patternCategories" );
 			if ( !pPatternCategoriesNode.isNull() ) {
 				QDomElement pPatternCategoriesElement = pPatternCategoriesNode.firstChildElement( "categories" );
-				if ( !pPatternCategoriesElement.isNull() && !pPatternCategoriesElement.text().isEmpty() ) {
+				while ( !pPatternCategoriesElement.isNull() && !pPatternCategoriesElement.text().isEmpty() ) {
 					m_patternCategories.push_back( pPatternCategoriesElement.text() );
+					pPatternCategoriesElement = pPatternCategoriesElement.nextSiblingElement( "categories" );
 				}
-				pPatternCategoriesElement = pPatternCategoriesNode.nextSiblingElement( "categories" );
 			} else {
 				WARNINGLOG( "patternCategories node not found" );
 			}
