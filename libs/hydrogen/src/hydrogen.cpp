@@ -1607,6 +1607,7 @@ Hydrogen::Hydrogen()
 {
 	_INFOLOG( "[Hydrogen]" );
 
+	__instance = this;
 	hydrogenInstance = this;
 	m_pTransport = new H2Transport;
 
