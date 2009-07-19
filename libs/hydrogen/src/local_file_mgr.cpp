@@ -1398,7 +1398,6 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 
 			QDomNode noteNode = doc.createElement( "note" );
 			LocalFileMng::writeXmlString( noteNode, "position", QString("%1").arg( pos->first ) );
-			LocalFileMng::writeXmlString( noteNode, "position", QString("%1").arg( pNote->get_position() ) );
 			LocalFileMng::writeXmlString( noteNode, "leadlag", QString("%1").arg( pNote->get_leadlag() ) );
 			LocalFileMng::writeXmlString( noteNode, "velocity", QString("%1").arg( pNote->get_velocity() ) );
 			LocalFileMng::writeXmlString( noteNode, "pan_L", QString("%1").arg( pNote->get_pan_l() ) );
