@@ -2,6 +2,46 @@ TO-DO LIST FOR TRANSPORT REDESIGN
 =================================
 2009-04-27
 
+REDESIGNING THE REDESIGN
+------------------------
+
+This list is a specific list of things that should be done as a result
+of the mailing list discussion from 24 July 2009 through August 2009.
+
+(.) Time to rename several of the new classes.  SimpleTransportMaster,
+    JackTimeMaster, JackTransportMaster, H2Transport... these names
+    aren't communicating what they're supposed to be communicating.
+
+(.) Most transports are implemented with a d-pointer.  I think this
+    is overkill.
+
+(.) While on the subject, review the use of the d-pointer to see if
+    it's appropriate where it's used.... and if there's anywhere
+    else that we should use it.
+
+(.) Documentation describing role and requirements of a Transport
+    implementation are scattered.  They all need to be collected
+    somewhere conspicuous... like Transport.h.
+
+(.) Change TransportPosition::bbt_offset to a floating-point type.
+    We need something more determinate than dithering.  The dithering
+    is hard for creating reliable tests, too.
+
+(.) Change how notes are scheduled and rendered.  There's still some
+    discussion (or uncertainty) of how flexible (and accurate) we want
+    notes to be scheduled.  Currently, notes are scheduled by frame,
+    which does not render correctly in the event of a tempo change.
+    On top of that, Gabe would like to see the user have the ability
+    to schedule lead/lag by tick or millisecond.  The reason for this
+    is so that Hydrogen will do the Right Thing if the tempo (or even
+    sample rate) changes.  Also, raw inputs (like MIDI) are still
+    frame based.  Why should they be burdened with ticks?  Currently
+    leaning toward scheduling by floating-point tick, only... but also
+    considering some tri-state variable.
+
+(.) I think my diagrams have arrows that are opposite of what you're
+    supposed to do in UML.  Need to change those.
+
 INLINE TODO MARKERS
 -------------------
 
