@@ -172,6 +172,9 @@ void SimpleTransportMaster::processed_frames(uint32_t nFrames)
         d->pos.beats_per_bar = ticks_in_bar(d->song, d->pos.bar)
             / d->pos.ticks_per_beat;
     }
+    // After all the calculations... *now* the new tempo
+    // takes effect (for the next cycle).
+    d->pos.beats_per_minute = d->song->__bpm;
 }
 
 void SimpleTransportMaster::set_current_song(Song* s)
