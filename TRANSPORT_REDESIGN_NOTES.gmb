@@ -1239,3 +1239,1385 @@ C++ ring buffer class.  This was the basis of the JACK ringbuffer
 design (translating the code from C++ to C).  It is GPL v2+, so I'm
 grafting it in to our code.
 
+--------------------------------------------------------------------------------
+From jlund05@imada.sdu.dk Fri Jul 24 15:43:14 2009
+Date: Thu, 23 Jul 2009 13:16:56 +0200
+From: Jakob Lund <jlund05@imada.sdu.dk>
+Reply-To: hydrogen-devel@lists.sourceforge.net
+To: Hydrogen Dev List <hydrogen-devel@lists.sourceforge.net>
+Subject: [Hydrogen-devel] transport design discussion / questions
+
+Hi Gabriel (others may read this too)
+
+I spent a couple of nights skimming through the files in the 
+transport_redesign_2 branch. This is really cool! I like the idea of 
+decoupling transport code from sequencer code, it gets a lot easier that way.
+
+I'm not so sure about the SeqScript idea though, it seems that every note 
+(that has length set) gets two events associated with it instead of one, 
+which could complicate things. Why not just use Note objects as before? the 
+sampler still uses them internally, and in that process, various fields on 
+the Note get manipulated (notably m_fSamplePosition). 
+
+A full implementation of the SongSequencer would also have to keep some copied 
+notes around for lookahead purposes (I imagine setting a floating point tick 
+position on them first [to include humanize etc.], putting them in a priority 
+queue based on that tick position, and then only converting to frame 
+positions for notes that will actually _play_ during the current buffer 
+cycle.) It seems to me as the SeqScript just adds anothe round of copying 
+Note objects (I might very well be wrong here) ?
+
+Another question is the ring buffer in SeqScript -- `ring buffer` implies 
+`first in-first out`, and this becomes a problem as soon as lead/lag, 
+humanize time etc. get implemented. I was imagining something like a free 
+list, making it possible to delete note objects in random order, without 
+using `delete`.
+
+Last question: Why the technique of using another class SomethingPrivate for 
+class Something's private stuff? What is the reason for not just declaring 
+the methods and variables private inside the class itself?
+
+I think you deserve a lot of credit for this, and for the amount of work you 
+put into it.
+
+Cheers
+Jakob.
+
+------------------------------------------------------------------------------
+From gabriel@teuton.org Fri Jul 24 15:43:14 2009
+Date: Thu, 23 Jul 2009 07:47:51 -0500 (CDT)
+From: Gabriel M. Beddingfield <gabriel@teuton.org>
+Reply-To: hydrogen-devel@lists.sourceforge.net
+To: Hydrogen Dev List <hydrogen-devel@lists.sourceforge.net>
+Subject: Re: [Hydrogen-devel] transport design discussion / questions
+
+
+Hi Jakob,
+
+On Thu, 23 Jul 2009, Jakob Lund wrote:
+
+> transport_redesign_2 branch. This is really cool! I like the idea of
+
+Thanks!
+
+> I'm not so sure about the SeqScript idea though, it seems that every note
+> (that has length set) gets two events associated with it instead of one,
+> which could complicate things. Why not just use Note objects as before? the
+> sampler still uses them internally, and in that process, various fields on
+> the Note get manipulated (notably m_fSamplePosition).
+
+Good point.  That's something I'm not terribly happy about with SeqScript. 
+The way that Note gets wrapped inside of SeqEvent is a little clunky.
+
+Here's the ideas that went in to what we have today (...for right or 
+wrong...):
+
+   + Make Note very lightweight.  Currently Note carries
+     a QString (inherited from Object), all the ADSR
+     state parameters (which should be handled by the
+     voice making the noise), some filter paramters,
+     etc., etc.  Make it something easy and fast
+     to copy.
+
+   + Remove the notion of position from the Note
+     itself.  Conceptually, a note is a pitch
+     (instrument), length, velocity, etc.  The position
+     of the note in the song is information _about_
+     the note, but is not part of the note itself.
+
+   + Things like m_fSamplePosition shouldn't be in
+     Note (conceptually).  It is a book-keeping,
+     implementation detail of the instrument.  (Info.
+     _about_ the note... i.e. how long we've been
+     playing this here note.)
+
+   + Create an intermediate language to communicate
+     Note events.  (In retrospect, this is similar
+     to MIDI.)  This de-couples inputs and outputs.
+     The scripting language (thus "SeqScript") would
+     be something like this:
+
+          time=0 Note On, Inst #3, Vel=90
+          time=0 Note On, Inst #2, Vel=20
+          time=24 Note Off, Inst #3, Vel=x
+          time=36 Note On, Inst #1, Vel=119
+          ...
+
+     The times are relative to the frame in the
+     current process cycle.  Now the Sampler doesn't
+     care about note position or ticks or anything.
+     It just plays Note at frame Z.
+
+   + The container that holds all the events in
+     SeqScript should be a pre-allocated, fixed
+     block of memory.
+
+FWIW, The now-abandoned 'transport_redesign' was closer to these goals... 
+but further from release.  :-)
+
+
+> A full implementation of the SongSequencer would also have to keep some 
+> copied notes around for lookahead purposes (I imagine setting a floating 
+> point tick position on them first [to include humanize etc.], putting 
+> them in a priority queue based on that tick position, and then only 
+> converting to frame positions for notes that will actually _play_ during 
+> the current buffer cycle.) It seems to me as the SeqScript just adds 
+> anothe round of copying Note objects (I might very well be wrong here) ?
+
+Short version:  SongSequencer would go ahead and schedule the notes in 
+SeqScript, even though they are beyond the current process() cycle. 
+SeqScript keeps those notes, but when sending to Outputs... only feeds the 
+stuff for the current cycle.  (See SeqScript::consumed(), 
+and SeqScript::end_const(frame_type)).
+
+When scheduling notes, SongSequencer has to look ahead an appropriate 
+amount and schedule all those events (rendering any randomization values 
+now).  So, there will probably be a cursor where SongSequencer says to 
+itself, "I've already scheduled up to.... here."
+
+SongSequencer then schedules all the notes in its look-ahead time-frame. 
+It schedules _all_ the notes, scheduling by their offset from the current 
+process() cycle.  It schedules them even if they are for the _next_ 
+process() cycle (frame > nframes).
+
+SeqScript handles all the notes that SongSequencer gives it.  Keeping 
+track of the frame number.
+
+When the Sampler interfaces with SeqScript, it will _only_ see the events 
+for the current process() cycle.  (From SeqScript::begin_const() to 
+SeqScript::end_const(nFrames).)
+
+At the end of the process() cycle, SeqScript::consumed(nFrames) is called. 
+This signals SeqScript to "forget" all the notes from 0 up to nFrames, and 
+adjust the frame offset values for all notes currently scheduled.
+
+> Another question is the ring buffer in SeqScript -- `ring buffer` implies
+> `first in-first out`, and this becomes a problem as soon as lead/lag,
+> humanize time etc. get implemented. I was imagining something like a free
+> list, making it possible to delete note objects in random order, without
+> using `delete`.
+
+I think I originally intended to use a ring buffer, but what I really 
+wanted was just a pre-allocated, reusable, block of memory.  So, I'm not 
+using a ring buffer.
+
+SeqScriptPrivate (the implementation of SeqScript) has two linked 
+lists, where all the objects are actually in a vector.  Here's the 
+relationship:
+
+    internal_sequence_type:  pre-allocated block of memory (vector)
+    internal_iterator:       linked list of free memory
+    iterator:                linked list of note events.
+
+Notes are inserted and stored in the linked-list in frame-order (so it is 
+a sorted list).  FWIW, which is the note list and which is the free-memory
+list, and which iterators go to the vector or the lists... it's confusing 
+and hard to follow.  However, ATM it works.
+
+> Last question: Why the technique of using another class SomethingPrivate 
+> for class Something's private stuff? What is the reason for not just 
+> declaring the methods and variables private inside the class itself?
+
+Several reasons...
+
+   + There is a desire to spin off libhydrogen to make, for
+     instance, DSSI plugins, a command-line hydrogen, etc.
+
+   + Hydrogen takes forever to compile.  audio_engine.h includes
+     EVERYTHING, and is included in EVERY GUI file.
+
+   + There's not good separation of parts between different
+     parts of Hydrogen.  The objects in libhydrogen are a
+     tangled web of wierd dependencies.  When merging jack_zombies,
+     I found that Song depends on Hydrogen being instanced (??),
+     that class Hydrogen instances Playlist when initializing.
+     Playlist depends on HydrogenApp.  So, the audio classes
+     now depend on the GUI classes.  I find stuff like this
+     all the time.
+
+   + Suppose the GUI thread wants to use the Transport.  Meanwhile,
+     Hydrogen's internal transport needs some private function foo()
+     that allows it to do some internal thing.  Now, all the GUI
+     code has to recompile because you changed the header.
+
+So, I'm trying to make judicious use of the d-pointer method 
+(used extensively in Qt).
+
+For example, the GUI code needs to be able to add notes to SeqScript 
+because we can have note events that come from the GUI, right? 
+Meanwhile, SeqScriptPrivate needs work.  Maybe even a total redesign.  You 
+can totally rewrite SeqScriptPrivate, and in the end you will only have to 
+recompile SeqScriptPrivate.cpp and SeqScript.cpp.  If we had done it all 
+in SeqScript, we would start a full recompile of hydrogen and go get some 
+more coffee.
+
+Take this a step further... suppose we spin off libhydrogen.  Someone came 
+up with some plugin or application that allows Hydrogen to play notes from 
+incoming OSC events.  He also needs to manipulate SeqScript.  Since we did 
+the d-pointer, he doesn't even need to recompile his plugin.  Just update 
+the library, and it works.
+
+So, I'm trying to totally separate the GUI code from the audio 
+implementation.  To do this I'm creating interfaces and using d-pointers. 
+I'm trying to only use it where it makes sense.  (E.g. using a d-pointer 
+for Note would be overkill.)
+
+Thanks,
+Gabriel
+
+
+------------------------------------------------------------------------------
+From jlund05@imada.sdu.dk Fri Jul 24 15:43:17 2009
+Date: Fri, 24 Jul 2009 00:06:00 +0200
+From: Jakob Lund <jlund05@imada.sdu.dk>
+Reply-To: hydrogen-devel@lists.sourceforge.net
+To: hydrogen-devel@lists.sourceforge.net
+Subject: Re: [Hydrogen-devel] transport design discussion / questions
+
+:-)
+
+On Thursday 23 July 2009, Gabriel M. Beddingfield wrote:
+> Hi Jakob,
+>
+> On Thu, 23 Jul 2009, Jakob Lund wrote:
+> > transport_redesign_2 branch. This is really cool! I like the idea of
+>
+> Thanks!
+>
+> > I'm not so sure about the SeqScript idea though, it seems that every note
+> > (that has length set) gets two events associated with it instead of one,
+> > which could complicate things. Why not just use Note objects as before?
+> > the sampler still uses them internally, and in that process, various
+> > fields on the Note get manipulated (notably m_fSamplePosition).
+>
+> Good point.  That's something I'm not terribly happy about with SeqScript.
+> The way that Note gets wrapped inside of SeqEvent is a little clunky.
+>
+> Here's the ideas that went in to what we have today (...for right or
+> wrong...):
+>
+>    + Make Note very lightweight.  Currently Note carries
+>      a QString (inherited from Object), all the ADSR
+>      state parameters (which should be handled by the
+>      voice making the noise), some filter paramters,
+>      etc., etc.  Make it something easy and fast
+>      to copy.
+>
+>    + Remove the notion of position from the Note
+>      itself.  Conceptually, a note is a pitch
+>      (instrument), length, velocity, etc.  The position
+>      of the note in the song is information _about_
+>      the note, but is not part of the note itself.
+>
+>    + Things like m_fSamplePosition shouldn't be in
+>      Note (conceptually).  It is a book-keeping,
+>      implementation detail of the instrument.  (Info.
+>      _about_ the note... i.e. how long we've been
+>      playing this here note.)
+
+Yes.. So the idea is that eventually we wouldn't need copies of the notes at 
+all? I guess that could be nice. But what if a note was deleted (from the 
+GUI) while the song is playing (eg. if that note had already been scheduled 
+bt the lookahead)? this could easily happen, so we'd have to be very 
+carefull. What I'm saying is, once the note has been scheduled, we can't rely 
+on it being present in the Song (Pattern) anymore, so we'd have to copy every 
+piece of information from it anyway.
+
+>
+>    + Create an intermediate language to communicate
+>      Note events.  (In retrospect, this is similar
+>      to MIDI.)  This de-couples inputs and outputs.
+>      The scripting language (thus "SeqScript") would
+>      be something like this:
+>
+>           time=0 Note On, Inst #3, Vel=90
+>           time=0 Note On, Inst #2, Vel=20
+>           time=24 Note Off, Inst #3, Vel=x
+>           time=36 Note On, Inst #1, Vel=119
+>           ...
+>
+>      The times are relative to the frame in the
+>      current process cycle.  Now the Sampler doesn't
+>      care about note position or ticks or anything.
+>      It just plays Note at frame Z.
+
+But still, all those note off events bother me - when scheduling a note, old 
+note-off's lying between the new note-on and the new note-off would have to 
+be deleted. Going through the script (ie. linked-list) again and again to do 
+this could be overly expensive, don't you think?
+
+>
+>    + The container that holds all the events in
+>      SeqScript should be a pre-allocated, fixed
+>      block of memory.
+>
+> FWIW, The now-abandoned 'transport_redesign' was closer to these goals...
+> but further from release.  :-)
+>
+> > A full implementation of the SongSequencer would also have to keep some
+> > copied notes around for lookahead purposes (I imagine setting a floating
+> > point tick position on them first [to include humanize etc.], putting
+> > them in a priority queue based on that tick position, and then only
+> > converting to frame positions for notes that will actually _play_ during
+> > the current buffer cycle.) It seems to me as the SeqScript just adds
+> > anothe round of copying Note objects (I might very well be wrong here) ?
+>
+> Short version:  SongSequencer would go ahead and schedule the notes in
+> SeqScript, even though they are beyond the current process() cycle.
+> SeqScript keeps those notes, but when sending to Outputs... only feeds the
+> stuff for the current cycle.  (See SeqScript::consumed(),
+> and SeqScript::end_const(frame_type)).
+>
+> When scheduling notes, SongSequencer has to look ahead an appropriate
+> amount and schedule all those events (rendering any randomization values
+> now).  So, there will probably be a cursor where SongSequencer says to
+> itself, "I've already scheduled up to.... here."
+
+IMO, scheduling notes to frames during lookahead is _not_ what we want! Tempo 
+changes happen, and if they come from the GUI or from JACK, there's no way 
+that the sequencer can now about it in advance (!), so all the positions of 
+notes scheduled ahead will be wrong! We still need the intermediate priority 
+queue (proposedly it be based on ticks, not ticks + frames as in that 
+dodgy "functor" patch I was sending you last week :-) )
+
+...
+
+> So, I'm trying to totally separate the GUI code from the audio
+> implementation.  To do this I'm creating interfaces and using d-pointers.
+> I'm trying to only use it where it makes sense.  (E.g. using a d-pointer
+> for Note would be overkill.)
+
+I appreciate that intention. Using this technique comes at a price of harder 
+code to read through. But if it serves a purpose (reading here 
+http://en.wikipedia.org/wiki/Opaque_pointer#C.2B.2B clarified this for me a 
+bit) I guess it's justified :-)
+
+Cheers
+ -- Jakob
+
+------------------------------------------------------------------------------
+From gabriel@teuton.org Fri Jul 24 15:43:17 2009
+Date: Thu, 23 Jul 2009 21:15:35 -0500 (CDT)
+From: Gabriel M. Beddingfield <gabriel@teuton.org>
+Reply-To: hydrogen-devel@lists.sourceforge.net
+To: hydrogen-devel@lists.sourceforge.net
+Subject: Re: [Hydrogen-devel] transport design discussion / questions
+
+
+Hi Jakob,
+
+On Fri, 24 Jul 2009, Jakob Lund wrote:
+
+> Yes.. So the idea is that eventually we wouldn't need copies of the notes at
+> all? I guess that could be nice. But what if a note was deleted (from the
+> GUI) while the song is playing (eg. if that note had already been scheduled
+[snip]
+
+No, I think the idea was to trim down Note so that it's lightweight and 
+easy to copy around (rather than passing around a Note*).  So, for 
+instance, when the Note gets scheduled... the data is copied to the 
+SeqScript (not the pointer to Note*).  SeqScriptPrivate is a container for 
+SeqEvent, which has a Note as a member (not a Note*).
+
+The idea is:  once the note is copied to SeqScript from an input, the 
+outputs would just refer to that one and there would not be any need to 
+copy it again.  (However, the Sampler isn't quite there yet...)
+
+> But still, all those note off events bother me - when scheduling a note, 
+> old note-off's lying between the new note-on and the new note-off would 
+> have to be deleted. Going through the script (ie. linked-list) again and 
+> again to do this could be overly expensive, don't you think?
+
+By design, SeqScript is supposed to handle this case.  If a note-on/off 
+pair has been scheduled, and a new note-on comes in between, it is 
+supposed to delete the note-off for you.
+
+I haven't studied the speed of doing this, but off the cuff it would 
+happen in linear time, O(N).  Further, I expect that the number of 
+events (N) in SeqScript will typically be 128 or less.[1]  The operation 
+would be to iterate through and (probably) compare an integer or two.
+
+So, no, it doesn't sound overly expensive.  But, I can see where there's a 
+possibility that I could be wrong about this.
+
+>> When scheduling notes, SongSequencer has to look ahead an appropriate
+>> amount and schedule all those events (rendering any randomization values
+>> now).  So, there will probably be a cursor where SongSequencer says to
+>> itself, "I've already scheduled up to.... here."
+>
+> IMO, scheduling notes to frames during lookahead is _not_ what we want! Tempo
+> changes happen, and if they come from the GUI or from JACK, there's no way
+> that the sequencer can now about it in advance (!), so all the positions of
+> notes scheduled ahead will be wrong! We still need the intermediate priority
+> queue (proposedly it be based on ticks, not ticks + frames as in that
+> dodgy "functor" patch I was sending you last week :-) )
+
+This is a very valid point.  Up to now I've been ignoring this issue 
+because it's the same behavior as H2 currently does.  It would be nice to 
+improve that behavior, though.
+
+However, I don't like the idea of two queues.  What if, instead, SeqScript 
+offered two "views" of the same thing.  Like this....
+
+Inputs:  Notes/events are scheduled by tick + milliseconds (float) by the 
+inputs (like a Song or MIDI input).  The tick can either be a BBT-like 
+thing... or perhaps something like "tick offset to in the current process 
+cycle."
+
+Outputs:  SeqScript (not the outputs) translates these to frame offsets 
+when fed to the outputs.
+
+Thus, SeqScript (instead of SongSequencer) is responsible to map ticks to 
+frames.  This allows it to respond to tempo change events.
+
+The nice thing about this way is that it frees the Inputs from having to 
+even think about frames.  It does it all in ticks and milliseconds (as it 
+should be).  This helps, too, with MIDI snap-to operations (which were 
+more difficult when MIDI Inputs were sequenced by frame).  It also allows 
+us to respond to tempo changes.
+
+Hmmm.... I dunno.  What do you think?
+
+> bit) I guess it's justified :-)
+
+Thanks!  :-)
+
+Peace,
+Gabriel
+
+[1] Suppose 4 instruments have a 32nd note run while going 180 bpm.
+
+     32 notes/beat x 4 inst x 2 on/off pairs x 180 bpm / (60 sec/min)
+        = 768 event pairs per second
+
+     Suppose 48000 Hz, buffer size 1024, and lookahead 100 ms.
+     SeqScript will need to have schedule window that is:
+
+     (1024 / 48000) sec + .100 sec = .0213 sec + .100 sec
+                                   = .1213 sec
+
+     So, SeqScript would need to hold about:
+
+     768 ev/sec x .1213 sec = 93.2 events.
+
+------------------------------------------------------------------------------
+From jlund05@imada.sdu.dk Fri Jul 24 15:43:17 2009
+Date: Fri, 24 Jul 2009 10:29:05 +0200
+From: Jakob Lund <jlund05@imada.sdu.dk>
+Reply-To: hydrogen-devel@lists.sourceforge.net
+To: hydrogen-devel@lists.sourceforge.net
+Subject: Re: [Hydrogen-devel] transport design discussion / questions
+
+On Friday 24 July 2009, Gabriel M. Beddingfield wrote:
+> Hi Jakob,
+>
+> On Fri, 24 Jul 2009, Jakob Lund wrote:
+> > Yes.. So the idea is that eventually we wouldn't need copies of the notes
+> > at all? I guess that could be nice. But what if a note was deleted (from
+> > the GUI) while the song is playing (eg. if that note had already been
+> > scheduled
+>
+> [snip]
+>
+> No, I think the idea was to trim down Note so that it's lightweight and
+> easy to copy around (rather than passing around a Note*).  So, for
+> instance, when the Note gets scheduled... the data is copied to the
+> SeqScript (not the pointer to Note*).  SeqScriptPrivate is a container for
+> SeqEvent, which has a Note as a member (not a Note*).
+>
+> The idea is:  once the note is copied to SeqScript from an input, the
+> outputs would just refer to that one and there would not be any need to
+> copy it again.  (However, the Sampler isn't quite there yet...)
+
+Oh, now I'm getting it... I was still thinking about the sampler referring to 
+th Note*s, but now I realize that it now has a list<Note> to keep the 
+information. That could work!
+
+>
+> > But still, all those note off events bother me - when scheduling a note,
+> > old note-off's lying between the new note-on and the new note-off would
+> > have to be deleted. Going through the script (ie. linked-list) again and
+> > again to do this could be overly expensive, don't you think?
+>
+> By design, SeqScript is supposed to handle this case.  If a note-on/off
+> pair has been scheduled, and a new note-on comes in between, it is
+> supposed to delete the note-off for you.
+>
+> I haven't studied the speed of doing this, but off the cuff it would
+> happen in linear time, O(N).  Further, I expect that the number of
+> events (N) in SeqScript will typically be 128 or less.[1]  The operation
+> would be to iterate through and (probably) compare an integer or two.
+>
+> So, no, it doesn't sound overly expensive.  But, I can see where there's a
+> possibility that I could be wrong about this.
+
+If every insertion is O(N), N insertions would be O(N^2), right? I realize 
+this may or may not be a problem, but It doesn't feel right, even for (a 
+pathological) worst case, in a real time context... We ought to have note 
+insertion in O(1) (or actually O(lgN) because they get sorted) ?! :-)
+
+An alternative to the note-off events could be to keep the note length with 
+the notes themselves, converting them to frame values if necessary on output 
+from seqScript. The quirk here (which I _think_ is how hydrogen currently 
+behaves) is that if a note plays on some instrument before a previous note on 
+that instrument has rung out, two copies of the sample will play, possibly 
+causing weird phaser effects..
+
+>
+> >> When scheduling notes, SongSequencer has to look ahead an appropriate
+> >> amount and schedule all those events (rendering any randomization values
+> >> now).  So, there will probably be a cursor where SongSequencer says to
+> >> itself, "I've already scheduled up to.... here."
+> >
+> > IMO, scheduling notes to frames during lookahead is _not_ what we want!
+> > Tempo changes happen, and if they come from the GUI or from JACK, there's
+> > no way that the sequencer can now about it in advance (!), so all the
+> > positions of notes scheduled ahead will be wrong! We still need the
+> > intermediate priority queue (proposedly it be based on ticks, not ticks +
+> > frames as in that dodgy "functor" patch I was sending you last week :-) )
+>
+> This is a very valid point.  Up to now I've been ignoring this issue
+> because it's the same behavior as H2 currently does.  It would be nice to
+> improve that behavior, though.
+>
+> However, I don't like the idea of two queues.  What if, instead, SeqScript
+> offered two "views" of the same thing.  Like this....
+>
+> Inputs:  Notes/events are scheduled by tick + milliseconds (float) by the
+> inputs (like a Song or MIDI input).  The tick can either be a BBT-like
+> thing... or perhaps something like "tick offset to in the current process
+> cycle."
+
+Very good idea! Inputs hould have to use _either_ ticks or ms/frames, though, 
+because given both, the seqScript wouldn't know how to sort properly. Also, 
+it (the seqScript) would have to keep two sorted lists (because the 
+relationship between the two might shift at any time), one by ticks and one 
+by ms/frame values. At output, the tick-based list would get serialized to 
+frames (up to nframes) and then merged into the other one.
+
+Internally, the seqScript could map from B:b:t, that the song sequencer gives, 
+to a "running tick number" that could be used for sorting the list, and that 
+is easily translated into frame number, once the BPM is known.
+
+>
+> Outputs:  SeqScript (not the outputs) translates these to frame offsets
+> when fed to the outputs.
+>
+> Thus, SeqScript (instead of SongSequencer) is responsible to map ticks to
+> frames.  This allows it to respond to tempo change events.
+>
+> The nice thing about this way is that it frees the Inputs from having to
+> even think about frames.  It does it all in ticks and milliseconds (as it
+> should be).  This helps, too, with MIDI snap-to operations (which were
+> more difficult when MIDI Inputs were sequenced by frame).  It also allows
+> us to respond to tempo changes.
+>
+> Hmmm.... I dunno.  What do you think?
+>
+> > bit) I guess it's justified :-)
+>
+> Thanks!  :-)
+>
+> Peace,
+> Gabriel
+>
+> [1] Suppose 4 instruments have a 32nd note run while going 180 bpm.
+>
+>      32 notes/beat x 4 inst x 2 on/off pairs x 180 bpm / (60 sec/min)
+>         = 768 event pairs per second
+>
+>      Suppose 48000 Hz, buffer size 1024, and lookahead 100 ms.
+>      SeqScript will need to have schedule window that is:
+>
+>      (1024 / 48000) sec + .100 sec = .0213 sec + .100 sec
+>                                    = .1213 sec
+>
+>      So, SeqScript would need to hold about:
+>
+>      768 ev/sec x .1213 sec = 93.2 events.
+>
+
+This is going to be great :)
+
+Yeehaw!
+ -- Jakob
+
+
+------------------------------------------------------------------------------
+From gabriel@teuton.org Fri Jul 24 15:43:17 2009
+Date: Fri, 24 Jul 2009 07:34:20 -0500 (CDT)
+From: Gabriel M. Beddingfield <gabriel@teuton.org>
+Reply-To: hydrogen-devel@lists.sourceforge.net
+To: hydrogen-devel@lists.sourceforge.net
+Subject: Re: [Hydrogen-devel] transport design discussion / questions
+
+
+Hi,
+
+On Fri, 24 Jul 2009, Jakob Lund wrote:
+>> I haven't studied the speed of doing this, but off the cuff it would
+>> happen in linear time, O(N).  Further, I expect that the number of
+>> events (N) in SeqScript will typically be 128 or less.[1]  The operation
+>> would be to iterate through and (probably) compare an integer or two.
+>>
+>> So, no, it doesn't sound overly expensive.  But, I can see where there's a
+>> possibility that I could be wrong about this.
+>
+> If every insertion is O(N), N insertions would be O(N^2), right? I realize
+
+And N^2 insertions is O(N^4)??  :-P
+
+No.  N insertions into a blank list would be less than N^2... somthing 
+like N log N or something...
+
+> this may or may not be a problem, but It doesn't feel right, even for (a
+> pathological) worst case, in a real time context... We ought to have note
+> insertion in O(1) (or actually O(lgN) because they get sorted) ?! :-)
+
+We can add a bisection algorithm, which is considerably faster on a sorted 
+list.
+
+> behaves) is that if a note plays on some instrument before a previous note on
+> that instrument has rung out, two copies of the sample will play, possibly
+> causing weird phaser effects..
+
+IIRC, samples do not overlap... possibly causing weird clipping effects. 
+:-)
+
+> Very good idea! Inputs hould have to use _either_ ticks or ms/frames, though,
+
+I was thinking ticks + ms for Inputs.
+
+> because given both, the seqScript wouldn't know how to sort properly. Also,
+> it (the seqScript) would have to keep two sorted lists (because the
+> relationship between the two might shift at any time), one by ticks and one
+> by ms/frame values. At output, the tick-based list would get serialized to
+> frames (up to nframes) and then merged into the other one.
+
+Nah, I think we could come up with a way to sort by tick + ms.  If one of 
+the critical factors (sample rate, tempo) changes, a resort might be 
+necessary, though.
+
+Rather than resort... a "lookahead" algo. in the SeqScript might be necc.
+
+> Internally, the seqScript could map from B:b:t, that the song sequencer gives,
+> to a "running tick number" that could be used for sorting the list, and that
+> is easily translated into frame number, once the BPM is known.
+
+If SeqScript is doing B:b:t... why have a SongSequencer?  Also, why should 
+a raw MIDI Input be burdened with B:b:t?
+
+I'd like to keep SeqScript on simple terms... like just plain ticks (no 
+bars or beats).
+
+Peace,
+Gabriel
+
+
+------------------------------------------------------------------------------
+From gabriel@teuton.org Fri Jul 24 15:43:17 2009
+Date: Fri, 24 Jul 2009 08:37:31 -0500 (CDT)
+From: Gabriel M. Beddingfield <gabriel@teuton.org>
+Reply-To: hydrogen-devel@lists.sourceforge.net
+To: hydrogen-devel@lists.sourceforge.net
+Subject: Re: [Hydrogen-devel] transport design discussion / questions
+
+
+On Fri, 24 Jul 2009, Gabriel M. Beddingfield wrote:
+>> this may or may not be a problem, but It doesn't feel right, even for (a
+>> pathological) worst case, in a real time context... We ought to have note
+>> insertion in O(1) (or actually O(lgN) because they get sorted) ?! :-)
+>
+> We can add a bisection algorithm, which is considerably faster on a sorted
+> list.
+
+D'OH!!  No we can't.  It's a linked list.
+
+This is why SeqScript uses the d-pointer.  We get get something that 
+_works_ for now (the O(N) implementation).  Later, after we get everything 
+else working, we can totally rewrite SeqScriptPrivate -- and nothing else 
+will be affected.  (Axiom:  "Get it _working_, fast.  Then, get it working 
+_fast_.")
+
+We can also (later) write isolated tests to see how well it performs.  We 
+can also write A/B tests to compare different implementations.
+
+For now, I think the priority is to get the interface right.  (Schedule by 
+ticks, ticks + ms, ticks + frames, frames, etc.)  We won't be able to 
+change those decisions as easily.
+
+Peace,
+Gabriel
+
+
+
+------------------------------------------------------------------------------
+From gabriel@teuton.org Fri Jul 24 15:43:17 2009
+Date: Fri, 24 Jul 2009 12:36:23 -0500 (CDT)
+From: Gabriel M. Beddingfield <gabriel@teuton.org>
+Reply-To: hydrogen-devel@lists.sourceforge.net
+To: Hydrogen Dev List <hydrogen-devel@lists.sourceforge.net>
+Subject: Re: [Hydrogen-devel] transport design discussion / questions
+
+
+Hi,
+
+Since I'll be away for a couple days, I'm gonna go ahead and reply to this 
+one instead of waiting for Jakob to reply with, "What?? Are you crazy??" 
+:-)
+
+On Fri, 24 Jul 2009, Gabriel M. Beddingfield wrote:
+>
+>> Very good idea! Inputs hould have to use _either_ ticks or ms/frames, though,
+>
+> I was thinking ticks + ms for Inputs.
+>
+
+Let me explain this one a little more, since I'm not dead set on ticks + 
+ms... and I think I've changed my mind.  Also, I need to hunt down the guy 
+who did lead/lag and give him a hug or something.  Lead/lag is the coolest 
+thing in H2.[1]
+
+Currently, H2 sequences schedule things like lead/lag and "humanize" based 
+on audio frames and ticks (I don't remember which does what).  Further, 
+the user edits lead/lag by setting it to "a little before" or "a lot 
+behind."  IIRC, the behavior of these things change when the sample rate 
+or even the tick size changes.[2]
+
+However, when I'm editing a sequence, I want better control over these. 
+On the whole, I think I would prefer if I was editing lead/lag in 
+milliseconds OR ticks.
+
+Reason for milliseconds:  If I have a sample of a snare drum 'ghost' or 
+'dittle' hit, want the hit to lead or lag the beat by a specific time.  If 
+the tempo changes... this type of thing won't scale with the tempo.
+
+Reason for ticks:  If I'm doing a hard rock mash... I want the high-hat to 
+lead the beat a little bit.  I *think* I want it to scale with the tempo 
+(but I'm not sure).  In that case, I'd want the lead/lag to be edited in 
+ticks.
+
+So... what I *really* want is for .h2song to store <leadlag 
+units='ms'>65.3</leadlag> and/or <leadlag units='ticks'>2.1</leadlag> 
+(user gets the option).
+
+Looking at SeqScript, when adding notes, SongSequencer can translate the 
+millisecond lead/lags to the current tick size.  If a tempo change happens 
+after the note is scheduled... then they won't *quite* happen at the right 
+time... but I think it will be close enough.[3]
+
+If we do ticks + ms... then we can keep it accurate even during a tempo 
+change... but at the cost of more complexity.
+
+So, I'm now in favor of floating-point ticks... not ticks + ms.... but I'm 
+still mulling it over.  What are your thoughts?
+
+Peace,
+Gabriel
+
+[1] I was working on a funk groove, and I needed a
+     hard rock mash.  Kick on 1 & 3, snare on 1 & 4,
+     half-open high-hat 8ths.  Without lead/lag, it
+     sounds like... well... MIDI.  :-)  WITH lead/lag,
+     it sounds freaking awesome.
+
+[2] Tick size doesn't currently change in H2, but it
+     might in the future.
+
+[3] Suppose tempo is 80 bpm with 48 ticks/beat.  I
+     want a 100 ms lead... which translates to 6.4
+     ticks.  After being scheduled, the tempo changes
+     to 180 bpm.  6.4 ticks is now 44 ms (for an
+     error of 66 ms).  "They say" that 20 ms is the
+     minimum delay that a human can perceive.
+
+------------------------------------------------------------------------------
+From jlund05@imada.sdu.dk Mon Aug  3 06:43:21 2009
+Date: Thu, 30 Jul 2009 14:12:20 +0200
+From: Jakob Lund <jlund05@imada.sdu.dk>
+Reply-To: hydrogen-devel@lists.sourceforge.net
+To: hydrogen-devel@lists.sourceforge.net
+Subject: Re: [Hydrogen-devel] transport design discussion / questions
+
+
+Hello
+
+On Friday 24 July 2009 19:36:23 Gabriel M. Beddingfield wrote:
+
+> Hi,
+>
+> Since I'll be away for a couple days, I'm gonna go ahead and reply
+> to this one instead of waiting for Jakob to reply with, "What?? Are
+> you crazy??"
+>
+> :-)
+>
+> On Fri, 24 Jul 2009, Gabriel M. Beddingfield wrote:
+> >> Very good idea! Inputs hould have to use _either_ ticks or
+> >> ms/frames, though,
+> >
+> > I was thinking ticks + ms for Inputs.
+>
+> Let me explain this one a little more, since I'm not dead set on
+> ticks + ms... and I think I've changed my mind. Also, I need to hunt
+> down the guy who did lead/lag and give him a hug or
+> something. Lead/lag is the coolest thing in H2.[1]
+>
+> Currently, H2 sequences schedule things like lead/lag and "humanize"
+> based on audio frames and ticks (I don't remember which does
+> what). Further, the user edits lead/lag by setting it to "a little
+> before" or "a lot behind." IIRC, the behavior of these things change
+> when the sample rate or even the tick size changes.[2]
+>
+> However, when I'm editing a sequence, I want better control over
+> these.  On the whole, I think I would prefer if I was editing
+> lead/lag in milliseconds OR ticks.
+>
+> Reason for milliseconds: If I have a sample of a snare drum 'ghost'
+> or 'dittle' hit, want the hit to lead or lag the beat by a specific
+> time.  If the tempo changes... this type of thing won't scale with
+> the tempo.
+>
+> Reason for ticks: If I'm doing a hard rock mash... I want the
+> high-hat to lead the beat a little bit. I *think* I want it to scale
+> with the tempo (but I'm not sure). In that case, I'd want the
+> lead/lag to be edited in ticks.
+>
+> So... what I *really* want is for .h2song to store <leadlag
+> units='ms'>65.3</leadlag> and/or <leadlag
+> units='ticks'>2.1</leadlag> (user gets the option).
+>
+> Looking at SeqScript, when adding notes, SongSequencer can translate
+> the millisecond lead/lags to the current tick size. If a tempo
+> change happens after the note is scheduled... then they won't
+> *quite* happen at the right time... but I think it will be close
+> enough.[3]
+>
+> If we do ticks + ms... then we can keep it accurate even during a
+> tempo change... but at the cost of more complexity.
+>
+> So, I'm now in favor of floating-point ticks... not ticks +
+> ms.... but I'm still mulling it over. What are your thoughts?
+
+I say use ticks (floating point). If you _really_ want to have the option
+of selecting setting a 'lead' value in ms, the results ought to be
+correct -- but I feel this is too complicated, both with respect to the
+UI (imagine having to select 'ms lead' for some notes and 'tick lead' for
+others), and the implementation (resorting the internal seqScript list).
+
+But what about MIDI? If a MIDI input needs to schedule "x ms into the
+current buffer cycle", and we then convert the ms to ticks (for sorting),
+and then to frames (for the seqScript output)? It seems easier to convert
+from ms to frames directly, because a change in tempo (seems) more likely
+than a change in sample rate.
+
+For now, we could allow both ticks and ms offsets, and then decide later
+what happens if they're both present.
+
+Another thing to be considered is the status of the internal timer of
+hydrogen. Your design is based on the sequencer always running as slave,
+and the internal and external (e.g. Jack) timer being interchangeable. I
+feel that the internal timer should have special status though -- one
+good reason for this is that any other application, acting as jack time
+master, might at any time give up that responsibility, and hydrogen would
+receive jack__bbt_valid == false or what ever it's called -- and the
+internal timer should be ready to take over. In that situation, the jack
+transport (i.e. play, stop, rewind etc) would still be used, but with our
+own timer
+
+There's also a possible relationship between the song and the internal
+timer. I foresee that in the future (in fact in wolke's branch the future
+happens already :-) ) we'll have tempo change information in the Song,
+that the internal timer will have to respond to as it goes.
+
+All in all I think the Internal timer should always be there, allowing
+itself to be remote controlled by external timers if necessary (Jack or
+MIDI timecode or whatever comes along) - and ready to feed timing
+information to the sequencer, and to other receptors (Jack or MIDI time
+code outputs)
+
+Lastly.. what about renaming JackTransportMaster to JackTimer, and
+SimpleTransportMaster to SimpleTimer (and eventually InternalTimer)...
+The JackTransportMaster and JackTimeMaster names confuse me sooo.. (I've
+been using the word 'timer', but there might be a better word)
+
+I hope I'm making the least bit of sense here :-)
+
+Regards
+
+-- Jakob
+
+------------------------------------------------------------------------------
+From gabriel@teuton.org Mon Aug  3 06:43:21 2009
+Date: Thu, 30 Jul 2009 09:33:13 -0500 (CDT)
+From: Gabriel M. Beddingfield <gabriel@teuton.org>
+Reply-To: hydrogen-devel@lists.sourceforge.net
+To: hydrogen-devel@lists.sourceforge.net
+Subject: Re: [Hydrogen-devel] transport design discussion / questions
+
+
+
+On Thu, 30 Jul 2009, Jakob Lund wrote:
+> 
+> I say use ticks (floating point). If you _really_ want to have the 
+> option of selecting setting a 'lead' value in ms, the results ought to
+
+Thanks!
+
+> But what about MIDI? If a MIDI input needs to schedule "x ms into the 
+> current buffer cycle", and we then convert the ms to ticks (for
+
+Hmmm... MIDI data would be sort of frame-based.  Hmmm... this makes me 
+want to go back to frames (instead of ticks).  :-/
+
+> For now, we could allow both ticks and ms offsets, and then decide later 
+> what happens if they're both present.
+
+I wonder if maybe a union (frames OR ticks OR ms OR ticks+ms) might be 
+more appropriate.  Giving the inputs a choice of how it's scheduled.  I've 
+omitted the idea up to now because it sounds complicated.
+
+But maybe not.  The data would be stored as the "real" data.  If a change 
+event happens, then SeqScript would re-convert the data as is appropriate.
+
+> Another thing to be considered is the status of the internal timer of 
+> hydrogen. Your design is based on the sequencer always running as slave, 
+> and the internal and external (e.g. Jack) timer being interchangeable. I 
+> feel that the internal timer should have special status though -- one 
+> good reason for this is that any other application, acting as jack time 
+> master, might at any time give up that responsibility, and hydrogen 
+> would receive jack__bbt_valid == false or what ever it's called -- and 
+> the internal timer should be ready to take over. In that situation, the 
+> jack transport (i.e. play, stop, rewind etc) would still be used, but 
+> with our own timer
+
+This is *sort of* the idea.  Note that JackTransportMaster (JACK transport 
+slave) is not complete... and that's why it doesn't handle the case where 
+there is no B:b.t info.
+
+But, JackTransportMaster is *the* internal timer for Hydrogen.  There is 
+no other.  If the jack server doesn't provide B:b.t (or provides _invalid_ 
+B:b.t), that class is responsible to provide a good fallback.
+
+The rule is:  Hydrogen transports (that is, internal) must always provide 
+a valid B:b.t position that is within the current song.  How this is done 
+is up to each implementation.  However, a Transport object is *the* timer 
+for Hydrogen... and must be that dependable.
+
+How we implement this remains to be seen... but from what I recall, the 
+calculations are simple enough that I think we can avoid a 3-way transport 
+mediation.  :-)
+
+Enter the case where we want Jack to slave to Hydrogen. 
+JackTransportMaster (internal) is now *the* timer for both Hydrogen and 
+JACK.  The purpose of JackTimeMaster (external) is to translate/adapt our 
+internal transport to the JACK server.[1]
+
+> Lastly.. what about renaming JackTransportMaster to JackTimer, and
+> SimpleTransportMaster to SimpleTimer (and eventually InternalTimer)...
+> The JackTransportMaster and JackTimeMaster names confuse me sooo.. (I've
+> been using the word 'timer', but there might be a better word)
+
+Yeah, I think some renaming is in order.  :-)
+
+> I hope I'm making the least bit of sense here :-)
+
+Yes!  Thanks for the help, too.
+
+-Gabriel
+
+[1] Actually, this makes it possible to be the JACK Transport Master...
+     but not be a JACK Transport Slave.  Not sure if anyone wanted
+     that...
+
+------------------------------------------------------------------------------
+From jlund05@imada.sdu.dk Mon Aug  3 06:43:21 2009
+Date: Sat, 1 Aug 2009 00:04:57 +0200 (CEST)
+From: jlund05@imada.sdu.dk
+Reply-To: hydrogen-devel@lists.sourceforge.net
+To: hydrogen-devel@lists.sourceforge.net
+Subject: Re: [Hydrogen-devel] transport design discussion / questions
+
+The debate goes on...
+
+>
+...
+>> For now, we could allow both ticks and ms offsets, and then decide later
+>> what happens if they're both present.
+>
+> I wonder if maybe a union (frames OR ticks OR ms OR ticks+ms) might be
+> more appropriate.  Giving the inputs a choice of how it's scheduled.  I've
+> omitted the idea up to now because it sounds complicated.
+
+Yes it does, but if that's what we want in the API, let's do that. The
+implementation can be optimized later if all goes well.. Personally I find
+unions (as in C) a bit ugly, perhaps we do it with overloaded functions,
+or just different function names? (ie. scheduleByTicks, scheduleByMs..)
+
+...
+
+>> Another thing to be considered is the status of the internal timer of
+>> hydrogen. Your design is based on the sequencer always running as slave,
+>> and the internal and external (e.g. Jack) timer being interchangeable. I
+>> feel that the internal timer should have special status though -- one
+>> good reason for this is that any other application, acting as jack time
+>> master, might at any time give up that responsibility, and hydrogen
+>> would receive jack__bbt_valid == false or what ever it's called -- and
+>> the internal timer should be ready to take over. In that situation, the
+>> jack transport (i.e. play, stop, rewind etc) would still be used, but
+>> with our own timer
+>
+> This is *sort of* the idea.  Note that JackTransportMaster (JACK transport
+> slave) is not complete... and that's why it doesn't handle the case where
+> there is no B:b.t info.
+>
+> But, JackTransportMaster is *the* internal timer for Hydrogen.  There is
+> no other.  If the jack server doesn't provide B:b.t (or provides _invalid_
+> B:b.t), that class is responsible to provide a good fallback.
+
+Yes, and that will be something like "OK, where were we... Let's keep
+going from there, whith the present tempo, possibly taking info from the
+song and the playback state (looping, pattern or song) of Hydrogen into
+account". And that exact same thing happens whether we have
+JackTransportMaster, XXTransportMaster, or InternalMaster (or whatever
+it'll be called when there's no external sync source). So it wouldn't
+really make sense to have that functionality in all the -Master classes?
+
+I guess my suggestion here is to have that code in either Transport (what
+is currently an abstract base class) or in H2Transport (which I think of
+as some sort of proxy between the sequencer and the various transport
+classes), if that makes any sense.
+
+...
+
+> How we implement this remains to be seen... but from what I recall, the
+> calculations are simple enough that I think we can avoid a 3-way transport
+> mediation.  :-)
+
+Naah, come on, we should have three-way meditation, that would be dead
+cool :-D
+
+> [1] Actually, this makes it possible to be the JACK Transport Master...
+>      but not be a JACK Transport Slave.  Not sure if anyone wanted
+>      that...
+
+We could be slave to MIDI timecode, and master to other JACK apps :-)
+
+See you
+ -- Jakob
+
+Aah, one more thing, about note off messages... Currently in Hydrogen
+(trunk that is), if there's no note off, a sample WILL play 'over its
+tail' in the sense that two or more instances of the sample can be playing
+simultaneously... You can hear this if you select eg. a long ride, fill
+8th notes, and adjust the 'humanize time' button (it will create some sort
+of random comb filter effect). Also, if you adjust the note lengths so
+that the notes don't overlap, it will again sound differently.
+
+
+
+------------------------------------------------------------------------------
+From gabriel@teuton.org Wed Aug  5 07:06:42 2009
+Date: Wed, 05 Aug 2009 07:05:45 -0500
+From: Gabriel M. Beddingfield <gabriel@teuton.org>
+Reply-To: hydrogen-devel@lists.sourceforge.net
+To: hydrogen-devel@lists.sourceforge.net
+Subject: Re: [Hydrogen-devel] transport design discussion / questions
+
+Hi Jakob,
+
+jlund05@imada.sdu.dk wrote:
+> The debate goes on...
+
+:-)
+
+>>> For now, we could allow both ticks and ms offsets, and then decide later
+>>> what happens if they're both present.
+>> I wonder if maybe a union (frames OR ticks OR ms OR ticks+ms) might be
+>> more appropriate.  Giving the inputs a choice of how it's scheduled.  I've
+>> omitted the idea up to now because it sounds complicated.
+> 
+> Yes it does, but if that's what we want in the API, let's do that. The
+
+I dunno... I was hoping more people would chime in on the subject.
+
+> implementation can be optimized later if all goes well.. Personally I find
+> unions (as in C) a bit ugly, perhaps we do it with overloaded functions,
+> or just different function names? (ie. scheduleByTicks, scheduleByMs..)
+
+Yes.  I meant 'union' in more of a conceptual way.
+
+>> But, JackTransportMaster is *the* internal timer for Hydrogen.  There is
+>> no other.  If the jack server doesn't provide B:b.t (or provides _invalid_
+>> B:b.t), that class is responsible to provide a good fallback.
+> 
+> Yes, and that will be something like "OK, where were we... Let's keep
+> going from there, whith the present tempo, possibly taking info from the
+> song and the playback state (looping, pattern or song) of Hydrogen into
+> account". And that exact same thing happens whether we have
+> JackTransportMaster, XXTransportMaster, or InternalMaster (or whatever
+> it'll be called when there's no external sync source). So it wouldn't
+> really make sense to have that functionality in all the -Master classes?
+> 
+> I guess my suggestion here is to have that code in either Transport (what
+> is currently an abstract base class) or in H2Transport (which I think of
+> as some sort of proxy between the sequencer and the various transport
+> classes), if that makes any sense.
+
+Well, when I look at the code (so far) there's not that much to it.  90% of the 
+real heavy lifting is being done by TransportPosition and the functions in 
+song_helpers.cpp.  If things start to get too much more involved... I would 
+rather share code through class inheritance or aggregation rather than mediation 
+between classes.
+
+And what you propose in that last paragraph there *is* a 3-way mediation.  What 
+we have currently in Hydrogen is also a 3-way mediation.  "This is the 
+transport... but we need this *other* transport to think he's the transport... 
+and in *this* situation we add this band-aid between them to keep everyone happy..."
+
+> Aah, one more thing, about note off messages... Currently in Hydrogen
+> (trunk that is), if there's no note off, a sample WILL play 'over its
+> tail' in the sense that two or more instances of the sample can be playing
+[snip]
+
+OK.  Thanks for clearing that up.
+
+Peace,
+Gabriel
+
+------------------------------------------------------------------------------
+From jlund05@imada.sdu.dk Wed Aug  5 15:12:48 2009
+Date: Wed, 5 Aug 2009 22:10:42 +0200
+From: Jakob Lund <jlund05@imada.sdu.dk>
+Reply-To: hydrogen-devel@lists.sourceforge.net
+To: hydrogen-devel@lists.sourceforge.net
+Subject: Re: [Hydrogen-devel] transport design discussion / questions
+
+On Wednesday 05 August 2009 14:05:45 Gabriel M. Beddingfield wrote:
+>
+> >> But, JackTransportMaster is *the* internal timer for Hydrogen.  There is
+> >> no other.  If the jack server doesn't provide B:b.t (or provides
+> >> _invalid_ B:b.t), that class is responsible to provide a good fallback.
+> >
+> > Yes, and that will be something like "OK, where were we... Let's keep
+> > going from there, whith the present tempo, possibly taking info from the
+> > song and the playback state (looping, pattern or song) of Hydrogen into
+> > account". And that exact same thing happens whether we have
+> > JackTransportMaster, XXTransportMaster, or InternalMaster (or whatever
+> > it'll be called when there's no external sync source). So it wouldn't
+> > really make sense to have that functionality in all the -Master classes?
+> >
+> > I guess my suggestion here is to have that code in either Transport (what
+> > is currently an abstract base class) or in H2Transport (which I think of
+> > as some sort of proxy between the sequencer and the various transport
+> > classes), if that makes any sense.
+>
+> Well, when I look at the code (so far) there's not that much to it.  90% of
+> the real heavy lifting is being done by TransportPosition and the functions
+> in song_helpers.cpp.  If things start to get too much more involved... I
+> would rather share code through class inheritance or aggregation rather
+> than mediation between classes.
+>
+> And what you propose in that last paragraph there *is* a 3-way mediation. 
+> What we have currently in Hydrogen is also a 3-way mediation.  "This is the
+> transport... but we need this *other* transport to think he's the
+> transport... and in *this* situation we add this band-aid between them to
+> keep everyone happy..."
+>
+
+Can you please explain that a little more?
+
+If I understand correctly, the term 'aggregation' describes the technique used 
+within H2Transport, which is treated (in sequencer code) as the actual 
+transport, but really delegates the work to other transport objects.
+
+I don't know what is meant by  3-way mediation (which is why I made that lame 
+joke before) - and why does what I suggest imply... that?
+
+IMO the current h2 is broken because the original design was too simple, and 
+was repaired upon for too long using 'band-aid' style hacks. The new design 
+should repair that, but without getting unnecessarily complicated.
+
+What I was trying to do was to make tempo changes during playback (through the 
+UI) possible, but I couldn't figure out where to put the code that looks into 
+the Song to check its tempo... Transport being driven by SimpleTransport 
+class, that was my first choice but that didn't seem to make sense, for the 
+reasons I've tried to explain.
+
+Cheerios
+ -- Jakob
+
+------------------------------------------------------------------------------
+From gabriel@teuton.org Wed Aug  5 16:09:49 2009
+Date: Wed, 5 Aug 2009 16:08:47 -0500 (CDT)
+From: Gabriel M. Beddingfield <gabriel@teuton.org>
+Reply-To: hydrogen-devel@lists.sourceforge.net
+To: hydrogen-devel@lists.sourceforge.net
+Subject: Re: [Hydrogen-devel] transport design discussion / questions
+
+
+
+On Wed, 5 Aug 2009, Jakob Lund wrote:
+>>
+>> Well, when I look at the code (so far) there's not that much to it.  90% of
+>> the real heavy lifting is being done by TransportPosition and the functions
+>> in song_helpers.cpp.  If things start to get too much more involved... I
+>> would rather share code through class inheritance or aggregation rather
+>> than mediation between classes.
+>>
+>> And what you propose in that last paragraph there *is* a 3-way mediation.
+>> What we have currently in Hydrogen is also a 3-way mediation.  "This is the
+>> transport... but we need this *other* transport to think he's the
+>> transport... and in *this* situation we add this band-aid between them to
+>> keep everyone happy..."
+>>
+>
+> Can you please explain that a little more?
+>
+> If I understand correctly, the term 'aggregation' describes the 
+> technique used within H2Transport, which is treated (in sequencer code) 
+> as the actual transport, but really delegates the work to other 
+> transport objects.
+
+If a transport class is doing something complex (like following JACK, MTC, 
+MIDI Clock, etc.), it needs a fallback if the transport source fails or 
+gives invalid data.  Right?  One way it could be implemented is:
+
+     class MidiClockTransport {
+         SimpleTransportMaster m_fallback;
+     };
+
+This aggregates the other implementation into this implementation.
+
+By inheritance (you didn't ask... but I'm explaining just in case), the 
+fallback could be provided (somehow) like this:
+
+     class MidiClockTransport : public SimpleTransportMaster {
+         //...
+     };
+
+Or, more realistically:
+
+     class MidiClockTransport : public DefaultTransportImplementation {
+         //...
+     };
+
+     class SimpleTransportMaster : public DefaultTransportImplementation {
+         //...
+     };
+
+The difference between this and what you have suggested is this:  I'm not 
+_requiring_ an instance of a specific class or specific code or anything. 
+I'm requiring that the Transport implementations be reliable.  If they 
+make themselves reliable by having a private copy of a different 
+implementation, or by inheriting from a different implementation... it's 
+up to *that* implementation.
+
+Why would this be important?  I think that this makes it simpler for 
+everyone.  No transport has to negotiate with any other transport. 
+H2Transport's sole purpose it to manage transport implementations for 
+class Hydrogen, and everyone else just cares that they're getting 
+*Transport.  If I go to write a transport that nobody ever conceived of... 
+I don't have to find some way to fit that idea into a 3-transport 
+mediation scheme.  There's one boss.  One authority.  And he better be 
+right.  :-)
+
+> I don't know what is meant by 3-way mediation (which is why I made that 
+> lame joke before) - and why does what I suggest imply... that?
+
+Currently, when JACK is the master, it looks like this:
+
+   Application <--> Transport <--> Jack Transport Interface
+
+(I'm going by memory... so don't grill me on details) -- Both the 
+application and the Jack Transport Interface are making behind-the-scenes 
+adjustments to the transport.  IIRC, even places in the GUI and 
+hydrogen.cpp are adjusting the tick.  Then there's "realtime ticks" and 
+"current ticks" and all that stuff.  And we have something like 
+"tick_offset" that is maintained and manipulated.  That is, "Jack says 
+we're on tick 5... so that means we're on 5 + tick_offset = 65."  (Maybe 
+it's frame offset... I don't recall.)  Things are even more fragile when 
+we export this info to be the jack time master.  (And this is even broken 
+because we don't handle the case where someone *else* has taken over as 
+time master... so we keep marching to our own drum.)
+
+Then, you've been suggesting:
+
+    Application --+-- TheRealTransport
+                  |
+                  +-- TheOtherRealTransport
+
+Which seems similar... even if you do it like this:
+
+    Application --- H2Transport --+-- TheRealTransport
+                                  |
+                                  +-- TheOtherRealTransport
+
+If we require this set up... I'm pretty sure that these two transports are 
+going to have a hard time communicating with each other effectively.
+
+So, that's why I think there should be ONE transport (at a time)... even 
+if it means copying code among implementations (which I don't think is 
+necessary).
+
+> IMO the current h2 is broken because the original design was too simple, 
+> and was repaired upon for too long using 'band-aid' style hacks. The new 
+> design should repair that, but without getting unnecessarily 
+> complicated.
+
+This is valid.  It also looks to me like the original concept was an 
+ALSA-based sequencer where everything is happening "now" rather than 
+processing a chunk at a time.  When JACK showed up, it looks like Hydrogen 
+was converted to an interrupt-based approach (using a process() 
+callback)... but tried to maintain the transport of the old stream-based 
+approach.  I think this is why it's broken.
+
+But I don't think what I'm proposing is complicated at all.  It's pretty 
+simple:  One reliable transport.
+
+> What I was trying to do was to make tempo changes during playback 
+> (through the UI) possible, but I couldn't figure out where to put the 
+> code that looks into the Song to check its tempo... Transport being 
+> driven by SimpleTransport class, that was my first choice but that 
+> didn't seem to make sense, for the reasons I've tried to explain.
+
+SimpleTransportMaster gets the current tempo by asking the Song.  So, if 
+you do pSong->setBpm( 120.0 ), it will take effect in the transport on the 
+next cycle.
+
+EXCEPT THAT.... there's a bug where this is not happening.  :-)
+
+There should be a line in processed_frames() where we have:
+
+    d->pos.beats_per_minute = d->song->__bpm;
+
+I'll get that fixed....
+
+Peace,
+Gabriel
+
+
+------------------------------------------------------------------------------
+From gabriel@teuton.org Wed Aug  5 16:15:49 2009
+Date: Wed, 5 Aug 2009 16:15:06 -0500 (CDT)
+From: Gabriel M. Beddingfield <gabriel@teuton.org>
+Reply-To: hydrogen-devel@lists.sourceforge.net
+To: hydrogen-devel@lists.sourceforge.net
+Subject: Re: [Hydrogen-devel] transport design discussion / questions
+
+
+
+On Wed, 5 Aug 2009, Gabriel M. Beddingfield wrote:
+>
+> processing a chunk at a time.  When JACK showed up, it looks like Hydrogen
+> was converted to an interrupt-based approach (using a process()
+
+I forgot to say:  I don't have (easy) access to source code prior to 
+0.9.3... so I don't *know* that this is true.  Looking at the code today, 
+I'm guessing that this is how it got to be how it is.
+
+Peace,
+Gabriel
+
+
+------------------------------------------------------------------------------
