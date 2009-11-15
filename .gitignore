@@ -1,0 +1,24 @@
+## General ignores
+## ---------------
+*.[oa]
+*~
+
+## Build ignore
+## ------------
+hydrogen
+
+## Source ignores
+## --------------
+config.h
+version.cpp
+
+## Scons-related ignores
+## ---------------------
+ui_*.h
+moc_*.cc
+.sconf_temp
+.sconsign.dblite
+config.log
+qt4.pyc
+scache.conf
+scons_cache
