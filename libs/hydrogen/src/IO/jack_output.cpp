@@ -441,8 +441,8 @@ float* JackOutput::getTrackOut_R( unsigned nTrack )
 
 int JackOutput::init( unsigned /*nBufferSize*/ )
 {
-	output_port_name_1 = Preferences::getInstance()->m_sJackPortName1;
-	output_port_name_2 = Preferences::getInstance()->m_sJackPortName2;
+	output_port_name_1 = Preferences::get_instance()->m_sJackPortName1;
+	output_port_name_2 = Preferences::get_instance()->m_sJackPortName2;
 
 	jack_client_t* client = JackClient::get_instance()->ref();
 

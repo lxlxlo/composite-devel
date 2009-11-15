@@ -150,8 +150,8 @@ void JackClient::open(void)
 	// Here, m_client should either be valid, or NULL.	
 
 #ifdef LASH_SUPPORT
-	if ( Preferences::getInstance()->useLash() ) {
-		LashClient* lashClient = LashClient::getInstance();
+	if ( Preferences::get_instance()->useLash() ) {
+		LashClient* lashClient = LashClient::get_instance();
 		if (lashClient && lashClient->isConnected())
 		{
 			lashClient->setJackClientName(sClientName.toStdString());
