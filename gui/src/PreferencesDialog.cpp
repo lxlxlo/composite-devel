@@ -31,6 +31,7 @@
 
 #include <QPixmap>
 #include <QFontDialog>
+#include <QMessageBox>
 
 #include "widgets/midiTable.h"
 
@@ -96,6 +97,7 @@ PreferencesDialog::PreferencesDialog(QWidget* parent)
 	m_pMidiDriverComboBox->addItem( "ALSA" );
 	m_pMidiDriverComboBox->addItem( "PortMidi" );
 	m_pMidiDriverComboBox->addItem( "CoreMidi" );
+	m_pMidiDriverComboBox->addItem( "JackMidi" );
 
 	if ( pPref->m_sMidiDriver == "ALSA" ) {
 		m_pMidiDriverComboBox->setCurrentIndex(0);
@@ -105,6 +107,9 @@ PreferencesDialog::PreferencesDialog(QWidget* parent)
 	}
 	else if ( pPref->m_sMidiDriver == "CoreMidi" ) {
 		m_pMidiDriverComboBox->setCurrentIndex(2);
+	}
+	else if ( pPref->m_sMidiDriver == "JackMidi" ) {
+		m_pMidiDriverComboBox->setCurrentIndex(3);
 	}
 	else {
 		ERRORLOG( "Unknown midi input from preferences [" + pPref->m_sMidiDriver + "]" );
@@ -349,6 +354,9 @@ void PreferencesDialog::on_okBtn_clicked()
 	else if ( m_pMidiDriverComboBox->currentText() == "CoreMidi" ) {
 		pPref->m_sMidiDriver = "CoreMidi";
 	}
+	else if ( m_pMidiDriverComboBox->currentText() == "JackMidi" ) {
+		pPref->m_sMidiDriver = "JackMidi";
+	}
 
 	pPref->m_bMidiNoteOffIgnore = m_pIgnoreNoteOffCheckBox->isChecked();
 
@@ -409,6 +417,29 @@ void PreferencesDialog::on_driverComboBox_activated( int index )
 {
 	UNUSED( index );
 	QString selectedDriver = driverComboBox->currentText();
+#ifdef JACK_MIDI_SUPPORT
+	if (m_pMidiDriverComboBox->currentText() == "JackMidi"
+	    && selectedDriver != "JACK") {
+		QMessageBox::StandardButtons res;
+		res = QMessageBox::question(
+			this,
+			tr("Jack driver mismatch"),
+			tr("The JACK MIDI driver requires the JACK Audio driver."
+			   "  <b>Do you really want to change the audio driver?</b>"
+			   "  If yes, the MIDI driver will be set to Alsa."),
+			QMessageBox::Yes|QMessageBox::No,
+			QMessageBox::Yes);
+		if (res == QMessageBox::Yes) {
+			int index = m_pMidiDriverComboBox->findText("Alsa");
+			if (index < 0) index = 0;
+			m_pMidiDriverComboBox->setCurrentIndex(index);
+		} else {
+			int index = driverComboBox->findText("JACK");
+			if (index < 0) index = 0;
+			driverComboBox->setCurrentIndex(index);
+		}			
+	}
+#endif // JACK_MIDI_SUPPORT
 	updateDriverInfo();
 	m_bNeedDriverRestart = true;
 }
@@ -607,7 +638,34 @@ void PreferencesDialog::on_selectMixerFontBtn_clicked()
 	mixerFontLbl->setText(family + QString("  %1").arg(pointSize));
 }
 
-
+void PreferencesDialog::on_m_pMidiDriverComboBox_currentIndexChanged( const QString& midi_driver )
+{
+#ifdef JACK_MIDI_SUPPORT
+	if (midi_driver == "JackMidi"
+	    && driverComboBox->currentText() != "JACK") {
+		QMessageBox::StandardButtons res;
+		res = QMessageBox::question(
+			this,
+			tr("Jack driver mismatch"),
+			tr("The Jack MIDI driver requires the Jack Audio driver."
+			   "  <b>Do you really want to change the MIDI driver?</b>"
+			   "  If yes, the Audio driver will be set to JACK."
+			   "  If no, the MIDI driver will be set to Alsa."),
+			QMessageBox::Yes|QMessageBox::No,
+			QMessageBox::Yes);
+		if (res == QMessageBox::Yes) {
+			int index = driverComboBox->findText("JACK");
+			if (index < 0) index = 0;
+			driverComboBox->setCurrentIndex(index);
+		} else {
+			int index = m_pMidiDriverComboBox->findText("ALSA");
+			if (index < 0) index = 0;
+			m_pMidiDriverComboBox->setCurrentIndex(index);
+		}			
+	}
+#endif // JACK_MIDI_SUPPORT
+	m_bNeedDriverRestart = true;
+}
 
 void PreferencesDialog::on_midiPortComboBox_activated( int index )
 {

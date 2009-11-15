@@ -110,6 +110,7 @@
 #include "IO/AlsaMidiDriver.h"
 #include "IO/PortMidiDriver.h"
 #include "IO/CoreAudioDriver.h"
+#include "IO/JackMidiDriver.h"
 
 namespace H2Core
 {
@@ -670,6 +671,10 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 {
 	timeval startTimeval = currentTime2();
 	m_nFreeRollingFrameCounter += nframes;
+
+	// Hook for MIDI in-process callbacks.  It calls its own locks
+	// on the audioengine
+	if (m_pMidiDriver) m_pMidiDriver->processAudio(nframes);
 
 	audioEngine_process_clearAudioBuffers( nframes );
 
@@ -1477,6 +1482,12 @@ void audioEngine_startAudioDrivers()
 		m_pMidiDriver->open();
 		m_pMidiDriver->setActive( true );
 #endif
+	} else if ( preferencesMng->m_sMidiDriver == "JackMidi" ) {
+#ifdef JACK_MIDI_SUPPORT
+	    m_pMidiDriver = new JackMidiDriver();
+	    m_pMidiDriver->open();
+	    m_pMidiDriver->setActive( true );
+#endif
 	}
 
 	// change the current audio engine state
@@ -1705,14 +1716,14 @@ void Hydrogen::midi_noteOff( Note *note )
 	audioEngine_noteOff( note );
 }
 
-
-
 void Hydrogen::addRealtimeNote( int instrument,
 				float velocity,
 				float pan_L,
 				float pan_R,
 				float /* pitch */,
-				bool /* forcePlay */)
+				bool /* forcePlay */,
+				bool use_frame,
+				uint32_t frame )
 {
 	Preferences *pref = Preferences::get_instance();
 	Instrument* i = getSong()->get_instrument_list()->get(instrument);
@@ -1723,6 +1734,7 @@ void Hydrogen::addRealtimeNote( int instrument,
 		   -1
 		);
 	m_GuiInput.note_on(&note, pref->getQuantizeEvents());
+	#warning "JACK MIDI note timing is getting lost here"
 }
 
 
@@ -2340,6 +2352,15 @@ void Hydrogen::togglePlaysSelected()
 	P->setPatternModePlaysSelected( !isPlaysSelected );
 	
 }
+
+#ifdef JACK_MIDI_SUPPORT
+int jackMidiFallbackProcess(jack_nframes_t nframes, void* /*arg*/)
+{
+    JackMidiDriver* instance =
+	dynamic_cast<JackMidiDriver*>(m_pMidiDriver);
+    return instance->processNonAudio(nframes);
+}
+#endif
 
 void Hydrogen::__kill_instruments()
 {

@@ -199,6 +199,9 @@ def get_hydrogen_lib( opts ):
 		env.SourceSignatures('MD5')
 
 
+	if str(env['jack']) == "1":
+            env.ParseConfig('pkg-config --modversion jack', get_jack_midi_api_version)    
+
 	src = scanFiles( "libs/hydrogen", ['*.cpp', '*.cc', '*.c' ], [ 'moc_'] )
 	src.append( "version.cpp" )
 
@@ -353,7 +356,9 @@ def get_hydrogen_gui( lib_hydrogen , opts ):
 	
 	if str(env['lrdf']) == "1": env.Append( LIBS = ["lrdf"] )
 	if str(env['flac']) == "1": env.Append( LIBS = ["FLAC","FLAC++"] )
-	if str(env['jack']) == "1": env.Append( LIBS = ["jack"])
+	if str(env['jack']) == "1":
+            env.Append( LIBS = ["jack"])
+            env.ParseConfig('pkg-config --modversion jack', get_jack_midi_api_version)    
 	if str(env['alsa']) == "1": env.Append( LIBS = ["asound"])
 	if str(env['libarchive']) == "1": env.Append( LIBS = ["archive"])
 	else: env.Append( LIBS = ["tar"])
@@ -450,6 +455,8 @@ elif sys.platform != "win32":
 	
 	opts.Add('jack', 'Set to 1 to enable jack',1)	
 	
+	opts.Add('jack_midi', 'Set to 1 to enable jack MIDI',1)	
+	
 	opts.Add('lrdf', 'Set to 1 to enable lrdf',1)
 	
 	opts.Add('flac', 'Set to 1 to enable flac',1)
@@ -467,10 +474,34 @@ else:
 	
 	opts.Add('jack', 'Set to 1 to enable jack',0)
 	
+	opts.Add('jack_midi', 'Set to 1 to enable jack MIDI',0)	
+	
 	opts.Add('lrdf', 'Set to 1 to enable lrdf',0)
 	
 	opts.Add('flac', 'Set to 1 to enable flac',0)
 
+# JACK MIDI version detection.
+def get_jack_midi_api_version(xenv, pkg_ver):
+    rv = ""
+    (major, minor, patch) = pkg_ver.rstrip().split('.')
+    major = int(major)
+    minor = int(minor)
+    patch = int(patch)
+    if (major == 0) and (minor < 102):
+        return rv
+    rv = "-DJACK_MIDI_SUPPORT"
+    xenv['jack_midi'] = 1
+    if major > 0:
+        rv += " -DJACK_MIDI_0_105_0"
+    elif (minor == 102) and (patch <= 26):   ### major == 0 for all below
+        rv += " -DJACK_MIDI_0_102_0"
+    elif (minor < 104):
+        rv += " -DJACK_MIDI_0_102_27"
+    elif (minor == 104) and (patch == 0):
+        rv += " -DJACK_MIDI_0_102_27"
+    elif (minor >= 105):
+        rv += " -DJACK_MIDI_0_105_0"
+    xenv.MergeFlags(rv)
 
 
 #get includes ( important if you compile on non-standard envorionments)
@@ -533,6 +564,13 @@ if str(env['jack']) == "1" and not conf.CheckCHeader('jack/jack.h'):
     print 'jack must be installed!'
     Exit(1)
 
+#jack_midi: (default: enabled if jack is)
+if str(env['jack']) == "1" and conf.CheckCHeader('jack/midiport.h'):
+    env['jack_midi'] = 1
+if str(env['jack_midi']) == "1" and not conf.CheckCHeader('jack/midiport.h'):
+    print 'Your version of JACK does not have MIDI support.'
+    Exit(1)
+
 #lash: (default: disabled)
 if str(env['lash']) == "1" and not conf.CheckPKG('lash-1.0 >= 0.5.0'):
     print 'liblash must be installed!'
@@ -583,11 +621,11 @@ print " Destdir: " + env['DESTDIR']
 print "================================================================="
 print "Feature Overview:\n"
 
-
 print "      lash: " + printStatus( env["lash"] )
 print "      oss: " + printStatus( env["oss"] )
 print "      alsa: " + printStatus( env["alsa"] )
 print "      jack: " + printStatus( env["jack"] )
+print " jack_midi: " + printStatus( env["jack_midi"] )
 print "libarchive: " + printStatus( env["libarchive"] ) 
 print " portaudio: " + printStatus( env["portaudio"] )
 print "  portmidi: " + printStatus( env["portmidi"] ) 
@@ -635,7 +673,6 @@ version.write( "static const std::string VERSION = \"0.9.5-\" + extra_version;\n
 
 version.write( "std::string get_version() { return VERSION;	}\n" )
 version.close()
-
 
 libhyd = get_hydrogen_lib( opts )
 app = get_hydrogen_gui( libhyd , opts )

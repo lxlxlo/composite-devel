@@ -20,6 +20,7 @@
  *
  */
 
+#include "JackClient.h"
 #include <hydrogen/IO/JackOutput.h>
 #ifdef JACK_SUPPORT
 
@@ -66,7 +67,7 @@ void jackDriverShutdown( void *arg )
 {
 	UNUSED( arg );
 //	jackDriverInstance->deactivate();
-	jackDriverInstance->client = NULL;
+	JackClient::get_instance(false)->clearAudioProcessCallback();
 	Hydrogen::get_instance()->raiseError( Hydrogen::JACK_SERVER_SHUTDOWN );
 }
 
@@ -106,8 +107,10 @@ JackOutput::~JackOutput()
 int JackOutput::connect()
 {
 	INFOLOG( "connect" );
+	jack_client_t* client = JackClient::get_instance()->ref();
 
-	if ( jack_activate ( client ) ) {
+	JackClient::get_instance()->subscribe((void*)this);
+	if ( !client ) {
 		Hydrogen::get_instance()->raiseError( Hydrogen::JACK_CANNOT_ACTIVATE_CLIENT );
 		return 1;
 	}
@@ -121,7 +124,7 @@ int JackOutput::connect()
 #ifdef LASH_SUPPORT
 	if ( Preferences::get_instance()->useLash() ){
 		LashClient* lashClient = LashClient::get_instance();
-		if (lashClient && lashClient->isConnected())
+		if (lashClient && !lashClient->isNewProject())
 		{
 	//		infoLog("[LASH] Sending Jack client name to LASH server");
 			lashClient->sendJackClientName();
@@ -133,7 +136,7 @@ int JackOutput::connect()
 		}
 	}
 #endif
-	
+
 	if ( connect_output_ports ) {
 //	if ( connect_out_flag ) {
 		// connect the ports
@@ -167,19 +170,24 @@ int JackOutput::connect()
 void JackOutput::disconnect()
 {
 	INFOLOG( "disconnect" );
+	jack_client_t* client;
+	client = JackClient::get_instance(false)->ref();
 
 	deactivate();
-	jack_client_t *oldClient = client;
-	client = NULL;
-	if ( oldClient ) {
-		INFOLOG( "calling jack_client_close" );
-		int res = jack_client_close( oldClient );
-		if ( res ) {
-			ERRORLOG( "Error in jack_client_close" );
-			// FIXME: raise exception
+
+	if (client) {
+		if (output_port_1)
+			jack_port_unregister(client, output_port_1);
+		if (output_port_2)
+			jack_port_unregister(client, output_port_2);
+		for (int j=0; j<track_port_count; ++j) {
+			if (track_output_ports_L[j])
+				jack_port_unregister(client, track_output_ports_L[j]);
+			if (track_output_ports_R[j])
+				jack_port_unregister(client, track_output_ports_R[j]);
 		}
 	}
-	client = NULL;
+	JackClient::get_instance(false)->unsubscribe((void*)this);
 }
 
 
@@ -188,13 +196,7 @@ void JackOutput::disconnect()
 void JackOutput::deactivate()
 {
 	INFOLOG( "[deactivate]" );
-	if ( client ) {
-		INFOLOG( "calling jack_deactivate" );
-		int res = jack_deactivate( client );
-		if ( res ) {
-			ERRORLOG( "Error in jack_deactivate" );
-		}
-	}
+	JackClient::get_instance(false)->clearAudioProcessCallback();
 	memset( track_output_ports_L, 0, sizeof(track_output_ports_L) );
 	memset( track_output_ports_R, 0, sizeof(track_output_ports_R) );
 }
@@ -246,92 +248,12 @@ float* JackOutput::getTrackOut_R( unsigned nTrack )
 }
 
 
-#define CLIENT_FAILURE(msg) {						\
-		ERRORLOG("Could not connect to JACK server (" msg ")"); \
-		if (client) {						\
-			ERRORLOG("...but JACK returned a non-null pointer?"); \
-			(client) = 0;					\
-		}							\
-		if (tries) ERRORLOG("...trying again.");		\
-	}
-
-
-#define CLIENT_SUCCESS(msg) {				\
-		assert(client);				\
-		INFOLOG(msg);				\
-		tries = 0;				\
-	}
-
 int JackOutput::init( unsigned /*nBufferSize*/ )
 {
-
 	output_port_name_1 = Preferences::get_instance()->m_sJackPortName1;
 	output_port_name_2 = Preferences::get_instance()->m_sJackPortName2;
 
-	QString sClientName = "Hydrogen";
-	jack_status_t status;
-	int tries = 2;  // Sometimes jackd doesn't stop and start fast enough.
-	while ( tries > 0 ) {
-		--tries;
-		client = jack_client_open(
-			sClientName.toLocal8Bit(),
-			JackNullOption,
-			&status);
-		switch(status) {
-		case JackFailure:
-			CLIENT_FAILURE("unknown error");
-			break;
-		case JackInvalidOption:
-			CLIENT_FAILURE("invalid option");
-			break;
-		case JackNameNotUnique:
-			if (client) {
-				sClientName = jack_get_client_name(client);
-				CLIENT_SUCCESS(QString("Jack assigned the client name '%1'")
-					       .arg(sClientName));
-			} else {
-				CLIENT_FAILURE("name not unique");
-			}
-			break;
-		case JackServerStarted:
-			CLIENT_SUCCESS("JACK Server started for Hydrogen.");
-			break;
-		case JackServerFailed:
-			CLIENT_FAILURE("unable to connect");
-			break;
-		case JackServerError:
-			CLIENT_FAILURE("communication error");
-			break;
-		case JackNoSuchClient:
-			CLIENT_FAILURE("unknown client type");
-			break;
-		case JackLoadFailure:
-			CLIENT_FAILURE("can't load internal client");
-			break;
-		case JackInitFailure:
-			CLIENT_FAILURE("can't initialize client");
-			break;
-		case JackShmFailure:
-			CLIENT_FAILURE("unable to access shared memory");
-			break;
-		case JackVersionError:
-			CLIENT_FAILURE("client/server protocol version mismatch");
-		default:
-			if (status) {
-				ERRORLOG("Unknown status with JACK server.");
-				if (client) {
-					CLIENT_SUCCESS("Client pointer is *not* null..."
-						       " assuming we're OK");
-				}
-			} else {
-				CLIENT_SUCCESS("Connected to JACK server");
-			}				
-		}
-	}
-
-	if (client == 0) {
-	    return -1;
-	}
+	jack_client_t* client = JackClient::get_instance()->ref();
 
 	// Here, client should either be valid, or NULL.	
 	jack_server_sampleRate = jack_get_sample_rate ( client );
@@ -341,7 +263,7 @@ int JackOutput::init( unsigned /*nBufferSize*/ )
 	/* tell the JACK server to call `process()' whenever
 	   there is work to be done.
 	*/
-	jack_set_process_callback ( client, this->processCallback, 0 );
+	JackClient::get_instance()->setAudioProcessCallback(this->processCallback);
 
 
 	/* tell the JACK server to call `srate()' whenever
@@ -377,16 +299,6 @@ int JackOutput::init( unsigned /*nBufferSize*/ )
 //	memset( out_L, 0, nBufferSize * sizeof( float ) );
 //	memset( out_R, 0, nBufferSize * sizeof( float ) );
 
-#ifdef LASH_SUPPORT
-	if ( Preferences::get_instance()->useLash() ){
-		LashClient* lashClient = LashClient::get_instance();
-		if (lashClient->isConnected())
-		{
-		    lashClient->setJackClientName(sClientName.toLocal8Bit().constData());
-		}
-	}
-#endif
-
 	return 0;
 }
 
@@ -414,6 +326,7 @@ void JackOutput::makeTrackOutputs( Song * song )
 		setTrackOutput( n, instr );
 	}
 	// clean up unused ports
+	jack_client_t* client = JackClient::get_instance()->ref();
 	jack_port_t *p_L, *p_R;
 	for ( int n = nInstruments; n < track_port_count; n++ ) {
 		p_L = track_output_ports_L[n];
@@ -435,6 +348,7 @@ void JackOutput::setTrackOutput( int n, Instrument * instr )
 {
 
 	QString chName;
+	jack_client_t* client = JackClient::get_instance()->ref();
 
 	if ( track_port_count <= n ) { // need to create more ports
 		for ( int m = track_port_count; m <= n; m++ ) {

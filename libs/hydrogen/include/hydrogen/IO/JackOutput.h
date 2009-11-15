@@ -49,8 +49,6 @@ class Instrument;
 class JackOutput : public AudioOutput
 {
 public:
-	jack_client_t *client;
-
 	JackOutput( JackProcessCallback processCallback );
 	~JackOutput();
 

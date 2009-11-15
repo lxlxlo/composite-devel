@@ -24,7 +24,6 @@
 #define H2_MIDI_INPUT_H
 
 #include <hydrogen/Object.h>
-#include <string>
 #include <vector>
 
 namespace H2Core
@@ -56,12 +55,17 @@ public:
 	int m_nData2;
 	int m_nChannel;
 	std::vector<unsigned char> m_sysexData;
+	bool m_use_frame;
+	uint32_t m_frame;
 
 	MidiMessage()
 			: m_type( UNKNOWN )
 			, m_nData1( -1 )
 			, m_nData2( -1 )
-			, m_nChannel( -1 ) {}
+			, m_nChannel( -1 )
+			, m_use_frame(false)
+			, m_frame(0)
+		{}
 };
 
 
@@ -94,6 +98,12 @@ public:
 	void handleMidiMessage( const MidiMessage& msg );
 	void handleSysexMessage( const MidiMessage& msg );
 	void handleControlChangeMessage( const MidiMessage& msg );
+
+	// Process callback hooks.  Specifically added for JACK MIDI,
+	// but could be used by others.  The default implementation
+	// does nothing.
+	virtual int processAudio(uint32_t nframes);    // Assumes processing in same thread as audio
+	virtual int processNonAudio(uint32_t nframes); // Assumes processing in other thread.
 
 protected:
 	bool m_bActive;

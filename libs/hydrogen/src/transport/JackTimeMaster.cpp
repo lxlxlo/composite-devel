@@ -23,6 +23,7 @@
 #include <QtCore/QMutex>
 #include <QtCore/QMutexLocker>
 #include <hydrogen/IO/JackOutput.h>
+#include "../IO/JackClient.h"
 #include "JackTimeMaster.h"
 
 #include <cassert>
@@ -37,9 +38,10 @@ bool jack_is_up(void)
 {
     bool rv;
     try {
+	#warning "This may not be realtime safe: JackClient::get_instance()."
 	if( jackDriverInstance
 	    && dynamic_cast<JackOutput*>(jackDriverInstance)
-	    && jackDriverInstance->client ) {
+	    && JackClient::get_instance()->ref() /* client pointer */ ) {
 	    rv = true;
 	} else {
 	    rv = false;
@@ -66,7 +68,7 @@ bool JackTimeMaster::setMaster(bool if_none_already)
     QMutexLocker mx(&m_mutex);
     if( ! jack_is_up() ) return false;
 
-    int rv = jack_set_timebase_callback( jackDriverInstance->client,
+    int rv = jack_set_timebase_callback( JackClient::get_instance()->ref(),
 					 (if_none_already) ? 1 : 0,
 					 JackTimeMaster::_callback,
 					 (void*)this );
@@ -77,7 +79,7 @@ void JackTimeMaster::clearMaster(void)
 {
     QMutexLocker mx(&m_mutex);
     if( ! jack_is_up() ) return;
-    jack_release_timebase(jackDriverInstance->client); // ignore return
+    jack_release_timebase(JackClient::get_instance()->ref()); // ignore return
 }
 
 void JackTimeMaster::set_current_song(Song* s)

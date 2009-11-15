@@ -536,7 +536,6 @@ void SoundLibraryPanel::on_drumkitLoadAction()
 }
 
 
-
 void SoundLibraryPanel::update_background_color()
 {
 	restore_background_color();

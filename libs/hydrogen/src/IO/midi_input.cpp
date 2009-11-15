@@ -206,7 +206,7 @@ void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
 				nInstrument = MAX_INSTRUMENTS - 1;
 			}
 
-			pEngine->addRealtimeNote( nInstrument, fVelocity, fPan_L, fPan_R, 0.0, true );
+			pEngine->addRealtimeNote( nInstrument, fVelocity, fPan_L, fPan_R, 0.0, true, msg.m_use_frame, msg.m_frame );
 		}
 	}
 }
@@ -232,11 +232,18 @@ void MidiInput::handleNoteOffMessage( const MidiMessage& msg )
 		nInstrument = MAX_INSTRUMENTS - 1;
 	}
 	Instrument *pInstr = pSong->get_instrument_list()->get( nInstrument );
+	// unsigned nPosition = 0;
 	const float fVelocity = 0.0f;
 	const float fPan_L = 0.5f;
 	const float fPan_R = 0.5f;
 	const int nLength = -1;
 	const float fPitch = 0.0f;
+	// XXX TO-DO: Position is ignored
+	// if (msg.m_use_frame) {
+	//     TransportPosition xpos;
+	//     pEngine->get_transport()->get_position(&xpos);
+	//     nPosition = xpos.tick_in_bar();
+	// }
 	Note *pNewNote = new Note( pInstr, fVelocity, fPan_L, fPan_R, nLength, fPitch );
 
 	pEngine->midi_noteOff( pNewNote );
@@ -364,4 +371,16 @@ if ( msg.m_sysexData.size() == 6 ) {
 	}
 }
 
+int MidiInput::processAudio(uint32_t /*nframes*/)
+{
+    return 0;
+}
+
+int MidiInput::processNonAudio(uint32_t /*nframes*/)
+{
+    return 0;
+}
+
+
 };
+
