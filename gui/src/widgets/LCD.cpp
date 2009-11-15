@@ -161,9 +161,9 @@ void LCDDigit::set( char ch )
 			'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ',
 			'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', ' ',
 			'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', ' ',
-			'-', ':', '/', '\\', ',', ';', '.'
+                        '-', ':', '/', '\\', ',', ';', '.','#'
 	};
-	for ( int n = 0; n < 73; n++ ) {
+        for ( int n = 0; n < 74; n++ ) {
 		if ( keymap[ n ] == ch ) {
 			m_nCol = n % MAXCOL;
 			m_nRow = n / MAXCOL;
@@ -264,7 +264,7 @@ void LCDDisplay::setText( const QString& sMsg )
 	if ( m_bLeftAlign ) {
 		for ( int i = 0; i < (int)m_pDisplay.size(); ++i ) {
 			if ( i < nLen ) {
-				m_pDisplay[ i ]->set( sMsg.at( i ).toAscii() );
+                            m_pDisplay[ i ]->set( sMsg.toLocal8Bit().at(i) );
 			}
 			else {
 				m_pDisplay[ i ]->set( ' ' );
@@ -286,7 +286,7 @@ void LCDDisplay::setText( const QString& sMsg )
 		}
 
 		for ( int i = 0; i < nLen; i++ ) {
-			m_pDisplay[ i + nPadding ]->set( sMsg.at( i ).toAscii() );
+			m_pDisplay[ i + nPadding ]->set( sMsg.toLocal8Bit().at(i) );
 		}
 	}
 }

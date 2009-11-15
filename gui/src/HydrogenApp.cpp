@@ -81,11 +81,12 @@ HydrogenApp::HydrogenApp( MainForm *pMainForm, Song *pFirstSong )
 
 	// set initial title
 	QString qsSongName( pFirstSong->__name );
-	if( qsSongName == "Untitled Song" && pFirstSong->get_filename() != "" ){
+	if( qsSongName == "Untitled Song" && !pFirstSong->get_filename().isEmpty() ){
 		qsSongName = pFirstSong->get_filename();
 		qsSongName = qsSongName.section( '/', -1 );
 	}
-	m_pMainForm->setWindowTitle( ( "Hydrogen " + QString( get_version().c_str()) + QString( " - " ) + qsSongName ) );
+
+        setWindowTitle( qsSongName  );
 
 	Preferences *pPref = Preferences::get_instance();
 
@@ -268,11 +269,11 @@ void HydrogenApp::setSong(Song* song)
 	m_pPatternEditorPanel->updateSLnameLabel();
 
 	QString songName( song->__name );
-	if( songName == "Untitled Song" && song->get_filename() != "" ){
+	if( songName == "Untitled Song" && !song->get_filename().isEmpty() ){
 		songName = song->get_filename();
 		songName = songName.section( '/', -1 );
 	}
-	m_pMainForm->setWindowTitle( ( "Hydrogen " + QString(get_version().c_str()) + QString( " - " ) + songName ) );
+        setWindowTitle( songName  );
 
 	m_pMainForm->updateRecentUsedSongList();
 }
@@ -300,6 +301,9 @@ void HydrogenApp::setStatusBarMessage( const QString& msg, int msec )
 	getPlayerControl()->showMessage( msg, msec );
 }
 
+void HydrogenApp::setWindowTitle( const QString& title){
+    m_pMainForm->setWindowTitle( ( "Hydrogen " + QString( get_version().c_str()) + QString( " - " ) + title ) );
+}
 
 void HydrogenApp::setScrollStatusBarMessage( const QString& msg, int msec, bool test )
 {
@@ -331,7 +335,7 @@ void HydrogenApp::showInfoSplash()
 		return;
 	}
 
-	QString sFilename = "";
+	QString sFilename;
 	int nNewsID = 0;
 	QFileInfoList list = dir.entryInfoList();
 
@@ -353,7 +357,7 @@ void HydrogenApp::showInfoSplash()
 	INFOLOG( "[showInfoSplash] Selected news: " + sFilename );
 
 	QString sLastRead = Preferences::get_instance()->getLastNews();
-	if ( sLastRead != sFilename && sFilename != "" ) {
+	if ( sLastRead != sFilename && !sFilename.isEmpty() ) {
 		QString sDocURI = sDocPath;
 		sDocURI.append( "/" ).append( sFilename );
 		SimpleHTMLBrowser *m_pFirstTimeInfo = new SimpleHTMLBrowser( m_pMainForm, sDocPath, sDocURI, SimpleHTMLBrowser::WELCOME );
