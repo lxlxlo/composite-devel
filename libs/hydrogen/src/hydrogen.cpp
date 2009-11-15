@@ -714,11 +714,13 @@ inline void audioEngine_process_clearAudioBuffers( uint32_t nFrames )
 		int k;
 		for( k=0 ; k<jo->getNumTracks() ; ++k ) {
 			buf = jo->getTrackOut_L(k);
-			assert(buf);
-			memset( buf, 0, nFrames * sizeof( float ) );
+			if( buf ) {
+				memset( buf, 0, nFrames * sizeof( float ) );
+			}
 			buf = jo->getTrackOut_R(k);
-			assert(buf);
-			memset( buf, 0, nFrames * sizeof( float ) );
+			if( buf ) {
+				memset( buf, 0, nFrames * sizeof( float ) );
+			}
 		}
 	}
 #endif
@@ -982,9 +984,6 @@ void audioEngine_renameJackPorts()
 	if ( m_pAudioDriver->get_class_name() == "JackOutput" ) {
 		static_cast< JackOutput* >( m_pAudioDriver )->makeTrackOutputs( m_pSong );
 	}
-
-	AudioEngine::get_instance()->get_sampler()->makeTrackOutputQueues();
-
 #endif
 }
 
@@ -1775,15 +1774,14 @@ Hydrogen::Hydrogen()
 		_ERRORLOG( "Hydrogen audio engine is already running" );
 		throw H2Exception( "Hydrogen audio engine is already running" );
 	}
+	__instance = this;
+	hydrogenInstance = this;
 
 	_INFOLOG( "[Hydrogen]" );
 
-	hydrogenInstance = this;
 	audioEngine_init();
 	// Prevent double creation caused by calls from MIDI thread 
-	__instance = this;
 	audioEngine_startAudioDrivers();
-
 }
 
 
@@ -2282,6 +2280,11 @@ float Hydrogen::getMaxProcessTime()
 
 int Hydrogen::loadDrumkit( Drumkit *drumkitInfo )
 {
+	int old_ae_state = m_audioEngineState;
+	if( m_audioEngineState >= STATE_READY ) {
+		m_audioEngineState = STATE_PREPARED;
+	}
+
 	INFOLOG( drumkitInfo->getName() );
 	m_currentDrumkit = drumkitInfo->getName();
 	LocalFileMng fileMng;
@@ -2362,6 +2365,8 @@ int Hydrogen::loadDrumkit( Drumkit *drumkitInfo )
 		renameJackPorts();
 	AudioEngine::get_instance()->unlock();
 	#endif
+
+	m_audioEngineState = old_ae_state;
 
 	return 0;	//ok
 }

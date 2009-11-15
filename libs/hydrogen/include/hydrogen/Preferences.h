@@ -58,6 +58,13 @@ public:
 
 	WindowProperties();
 	~WindowProperties();
+
+	void set(int _x, int _y, int _width, int _height, bool _visible) {
+		x = _x; y = _y;
+		width = _width; height = _height;
+		visible = _visible;
+	}
+		
 };
 
 
@@ -197,8 +204,6 @@ public:
 	bool m_bJackTransportMode;
 	bool m_bJackConnectDefaults;
 	bool m_bJackTrackOuts;
-	// See JackOutput::getArdourTransportAdjustment() for this:
-	bool m_nJackArdourTransportWorkaround;
 	int m_nJackTrackOutputMode;
 	//jack time master
 	bool m_bJackMasterMode ;
