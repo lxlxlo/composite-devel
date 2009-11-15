@@ -55,6 +55,7 @@ Playlist::Playlist()
 
 	//_INFOLOG( "[Playlist]" );
 	__instance = this;
+	__playlistName = "";
 
 }
 

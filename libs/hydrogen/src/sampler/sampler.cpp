@@ -215,25 +215,8 @@ void Sampler::process( SeqScriptConstIterator beg,
 	memset( __main_out_L, 0, nFrames * sizeof( float ) );
 	memset( __main_out_R, 0, nFrames * sizeof( float ) );
 
-
-#ifdef JACK_SUPPORT
-	JackOutput* jao;
-	jao = dynamic_cast<JackOutput*>(audio_output);
-	if (jao) {
-		int numtracks = jao->getNumTracks();
-
-		if ( jao->has_track_outs() ) {
-			for(int nTrack = 0; nTrack < numtracks; nTrack++) {
-				memset( d->track_out_L[nTrack],
-					0,
-					jao->getBufferSize( ) * sizeof( float ) );
-				memset( d->track_out_R[nTrack],
-					0,
-					jao->getBufferSize( ) * sizeof( float ) );
-			}
-		}
-	}
-#endif // JACK_SUPPORT
+	// Track output queues are zeroed by
+	// audioEngine_process_clearAudioBuffers()
 
 	// Max notes limit
 	int m_nMaxNotes = Preferences::get_instance()->m_nMaxNotes;
@@ -471,7 +454,16 @@ int SamplerPrivate::render_note_no_resample(
 		nInstrument = 0;
 	}
 
-
+#ifdef JACK_SUPPORT
+	JackOutput* jao = 0;
+	float *track_out_L = 0;
+	float *track_out_R = 0;
+	if( audio_output->has_track_outs()
+	    && (jao = dynamic_cast<JackOutput*>(audio_output)) ) {
+		track_out_L = jao->getTrackOut_L( nInstrument );
+		track_out_R = jao->getTrackOut_R( nInstrument );
+	}
+#endif
 	for ( int nBufferPos = nInitialBufferPos; nBufferPos < nTimes; ++nBufferPos ) {
 		if( note.m_nReleaseOffset != (uint32_t)-1
 		    && nBufferPos >= note.m_nReleaseOffset ) {
@@ -496,12 +488,11 @@ int SamplerPrivate::render_note_no_resample(
 		}
 
 #ifdef JACK_SUPPORT
-		if ( audio_output->has_track_outs()
-		     && dynamic_cast<JackOutput*>(audio_output) ) {
-                        assert( track_out_L[ nInstrument ] );
-                        assert( track_out_R[ nInstrument ] );
-			track_out_L[ nInstrument ][nBufferPos] += fVal_L * cost_track_L;
-			track_out_R[ nInstrument ][nBufferPos] += fVal_R * cost_track_R;
+		if( track_out_L ) {
+			track_out_L[nBufferPos] += fVal_L * cost_track_L;
+		}
+		if( track_out_R ) {
+			track_out_R[nBufferPos] += fVal_R * cost_track_R;
 		}
 #endif
 
@@ -577,6 +568,7 @@ int SamplerPrivate::render_note_resample(
     float fSendFXLevel_R
 )
 {
+	AudioOutput* audio_output = Hydrogen::get_instance()->getAudioOutput();
 	float fNotePitch = note.get_pitch() + fLayerPitch;
 	fNotePitch += note.m_noteKey.m_nOctave * 12 + note.m_noteKey.m_key;
 
@@ -629,6 +621,16 @@ int SamplerPrivate::render_note_resample(
 	}
 
 
+#ifdef JACK_SUPPORT
+	JackOutput* jao = 0;
+	float *track_out_L = 0;
+	float *track_out_R = 0;
+	if( audio_output->has_track_outs()
+	    && (jao = dynamic_cast<JackOutput*>(audio_output)) ) {
+		track_out_L = jao->getTrackOut_L( nInstrument );
+		track_out_R = jao->getTrackOut_R( nInstrument );
+	}
+#endif
 	for ( int nBufferPos = nInitialBufferPos; nBufferPos < nTimes; ++nBufferPos ) {
 		if( note.m_nReleaseOffset != (uint32_t)-1
 		    && nBufferPos >= note.m_nReleaseOffset )
@@ -639,7 +641,7 @@ int SamplerPrivate::render_note_resample(
 		}
 
 		int nSamplePos = ( int )fSamplePos;
-		float fDiff = fSamplePos - nSamplePos;
+		double fDiff = fSamplePos - nSamplePos;
 		if ( ( nSamplePos + 1 ) >= nSampleFrames ) {
 			fVal_L = linear_interpolation( pSample_data_L[ nSampleFrames ], 0, fDiff );
 			fVal_R = linear_interpolation( pSample_data_R[ nSampleFrames ], 0, fDiff );
@@ -666,13 +668,11 @@ int SamplerPrivate::render_note_resample(
 
 
 #ifdef JACK_SUPPORT
-		AudioOutput* audio_output = Hydrogen::get_instance()->getAudioOutput();
-		if ( audio_output->has_track_outs()
-			&& dynamic_cast<JackOutput*>(audio_output) ) {
-			assert( track_out_L[ nInstrument ] );
-                        assert( track_out_R[ nInstrument ] );
-			track_out_L[ nInstrument ][nBufferPos] += (fVal_L * cost_track_L);
-			track_out_R[ nInstrument ][nBufferPos] += (fVal_R * cost_track_R);
+		if( track_out_L ) {
+			track_out_L[nBufferPos] += (fVal_L * cost_track_L);
+		}
+		if( track_out_R ) {
+			track_out_R[nBufferPos] += (fVal_R * cost_track_R);
 		}
 #endif
 
@@ -720,7 +720,7 @@ int SamplerPrivate::render_note_resample(
 			float fSamplePos = fInitialSamplePos;
 			for ( int i = 0; i < nAvail_bytes; ++i ) {
 				int nSamplePos = ( int )fSamplePos;
-				float fDiff = fSamplePos - nSamplePos;
+				double fDiff = fSamplePos - nSamplePos;
 
 				if ( ( nSamplePos + 1 ) >= nSampleFrames ) {
 					fVal_L = linear_interpolation( pSample_data_L[nSamplePos], 0, fDiff );
@@ -820,27 +820,4 @@ void Sampler::preview_instrument( Instrument* instr )
 	note_on( previewNote );	// exclusive note
 	AudioEngine::get_instance()->unlock();
 	delete old_preview;
-}
-
-
-void Sampler::makeTrackOutputQueues( )
-{
-	INFOLOG( "Making Output Queues" );
-
-#ifdef JACK_SUPPORT
-	AudioOutput* audio_output = Hydrogen::get_instance()->getAudioOutput();
-	JackOutput* jao = 0;
-	if (audio_output && audio_output->has_track_outs() ) {
-		jao = dynamic_cast<JackOutput*>(audio_output);
-	}
-	if ( jao ) {
-		for (int nTrack = 0; nTrack < jao->getNumTracks( ); nTrack++) {
-			d->track_out_L[nTrack] = jao->getTrackOut_L( nTrack );
-			assert( d->track_out_L[ nTrack ] );
-			d->track_out_R[nTrack] = jao->getTrackOut_R( nTrack );
-			assert( d->track_out_R[ nTrack ] );
-		}
-	}
-#endif // JACK_SUPPORT
-
 }

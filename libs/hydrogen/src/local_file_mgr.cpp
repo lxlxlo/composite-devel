@@ -232,6 +232,9 @@ int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString&
 		case 2: //save as
 			sPatternXmlFilename = patternname;
 			break;
+		case 3: //"save" but overwrite a existing pattern. mode 3 disable the last file exist check
+			sPatternXmlFilename = sPatternDir + "/" + QString( patternname + QString( ".h2pattern" ));
+			break;
 		default:
 			WARNINGLOG( "Pattern Save unknown status");
 			break;
@@ -299,7 +302,7 @@ int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString&
 
 
 	QFile anotherTestfile( sPatternXmlFilename );
-	if ( ! anotherTestfile.exists() )
+	if ( !anotherTestfile.exists() )
 		return 1;
 
 	return 0; // ok

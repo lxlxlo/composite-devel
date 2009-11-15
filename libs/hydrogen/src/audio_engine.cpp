@@ -46,6 +46,7 @@ AudioEngine::AudioEngine()
 		: Object( "AudioEngine" )
 		, __sampler( NULL )
 {
+	__instance = this;
 	INFOLOG( "INIT" );
 
 	pthread_mutex_init( &__engine_mutex, NULL );
@@ -53,7 +54,7 @@ AudioEngine::AudioEngine()
 	__sampler = new Sampler;
 
 #ifdef LADSPA_SUPPORT
-	Effects::get_instance();
+	Effects::create_instance();
 #endif
 
 }

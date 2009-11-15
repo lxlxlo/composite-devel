@@ -54,7 +54,13 @@ int jackDriverSampleRate( jack_nframes_t nframes, void *arg )
 }
 
 
-
+int jackDriverBufferSize( jack_nframes_t nframes, void * /*arg*/ )
+{
+	/* This function does _NOT_ have to be realtime safe.
+	 */
+	jack_server_bufferSize = nframes;
+	return 0;
+}
 
 void jackDriverShutdown( void *arg )
 {
@@ -77,6 +83,9 @@ JackOutput::JackOutput( JackProcessCallback processCallback )
 	this->processCallback = processCallback;
 
 	track_port_count = 0;
+
+	memset( track_output_ports_L, 0, sizeof(track_output_ports_L) );
+	memset( track_output_ports_R, 0, sizeof(track_output_ports_R) );
 }
 
 
@@ -106,6 +115,9 @@ int JackOutput::connect()
 
 	bool connect_output_ports = connect_out_flag;
 	
+	memset( track_output_ports_L, 0, sizeof(track_output_ports_L) );
+	memset( track_output_ports_R, 0, sizeof(track_output_ports_R) );
+
 #ifdef LASH_SUPPORT
 	if ( Preferences::get_instance()->useLash() ){
 		LashClient* lashClient = LashClient::get_instance();
@@ -183,6 +195,8 @@ void JackOutput::deactivate()
 			ERRORLOG( "Error in jack_deactivate" );
 		}
 	}
+	memset( track_output_ports_L, 0, sizeof(track_output_ports_L) );
+	memset( track_output_ports_R, 0, sizeof(track_output_ports_R) );
 }
 
 unsigned JackOutput::getBufferSize()
@@ -211,13 +225,23 @@ float* JackOutput::getOut_R()
 
 float* JackOutput::getTrackOut_L( unsigned nTrack )
 {
-	jack_default_audio_sample_t *out = ( jack_default_audio_sample_t * ) jack_port_get_buffer ( track_output_ports_L[nTrack], jack_server_bufferSize );
+	if(nTrack > (unsigned)track_port_count ) return 0;
+	jack_port_t *p = track_output_ports_L[nTrack];
+	jack_default_audio_sample_t* out = 0;
+	if( p ) {
+		out = (jack_default_audio_sample_t*) jack_port_get_buffer( p, jack_server_bufferSize);
+	}
 	return out;
 }
 
 float* JackOutput::getTrackOut_R( unsigned nTrack )
 {
-	jack_default_audio_sample_t *out = ( jack_default_audio_sample_t * ) jack_port_get_buffer ( track_output_ports_R[nTrack], jack_server_bufferSize );
+	if(nTrack > (unsigned)track_port_count ) return 0;
+	jack_port_t *p = track_output_ports_R[nTrack];
+	jack_default_audio_sample_t* out = 0;
+	if( p ) {
+		out = (jack_default_audio_sample_t*) jack_port_get_buffer( p, jack_server_bufferSize);
+	}
 	return out;
 }
 
@@ -325,6 +349,10 @@ int JackOutput::init( unsigned /*nBufferSize*/ )
 	*/
 	jack_set_sample_rate_callback ( client, jackDriverSampleRate, 0 );
 
+	/* tell JACK server to update us if the buffer size
+	   (frames per process cycle) changes.
+	*/
+	jack_set_buffer_size_callback ( client, jackDriverBufferSize, 0 );
 
 	/* tell the JACK server to call `jack_shutdown()' if
 	   it ever shuts down, either entirely, or if it
@@ -386,11 +414,14 @@ void JackOutput::makeTrackOutputs( Song * song )
 		setTrackOutput( n, instr );
 	}
 	// clean up unused ports
+	jack_port_t *p_L, *p_R;
 	for ( int n = nInstruments; n < track_port_count; n++ ) {
-		jack_port_unregister( client, track_output_ports_L[n] );
-		jack_port_unregister( client, track_output_ports_R[n] );
-		track_output_ports_L[n] = NULL;
-		track_output_ports_R[n] = NULL;
+		p_L = track_output_ports_L[n];
+		p_R = track_output_ports_R[n];
+		track_output_ports_L[n] = 0;
+		jack_port_unregister( client, p_L );
+		track_output_ports_R[n] = 0;
+		jack_port_unregister( client, p_R );
 	}
 
 	track_port_count = nInstruments;

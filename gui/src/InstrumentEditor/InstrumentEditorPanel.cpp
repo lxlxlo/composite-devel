@@ -48,6 +48,7 @@ InstrumentEditorPanel::InstrumentEditorPanel( QWidget *pParent )
 
 	INFOLOG( "INIT" );
 
+	m_pInstance = this;
 	m_pInstrumentEditor = new InstrumentEditor( 0 );
 
 	// LAYOUT
@@ -68,6 +69,10 @@ InstrumentEditorPanel::~InstrumentEditorPanel()
 }
 
 
+void InstrumentEditorPanel::updateInstrumentEditor()
+{
+	m_pInstrumentEditor->selectedInstrumentChangedEvent();
+}
 
 void InstrumentEditorPanel::selectLayer( int nLayer )
 {
