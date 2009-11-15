@@ -178,7 +178,7 @@ MainForm::~MainForm()
 {
 	// remove the autosave file
 	QFile file( getAutoSaveFilename() );
-	file.remove();
+        file.remove();
 
 	Hydrogen::get_instance()->get_transport()->stop();
 
@@ -414,8 +414,8 @@ void MainForm::action_file_save_as()
         std::auto_ptr<QFileDialog> fd( new QFileDialog );
 	fd->setFileMode( QFileDialog::AnyFile );
 	fd->setFilter( trUtf8("Hydrogen Song (*.h2song)") );
-	fd->setAcceptMode( QFileDialog::AcceptSave );
-	fd->setWindowTitle( trUtf8( "Save song" ) );
+        fd->setAcceptMode( QFileDialog::AcceptSave );
+        fd->setWindowTitle( trUtf8( "Save song" ) );
 
 	Song *song = Hydrogen::get_instance()->getSong();
 	QString defaultFilename;
@@ -446,9 +446,7 @@ void MainForm::action_file_save_as()
 		action_file_save();
 	}
 	h2app->setScrollStatusBarMessage( trUtf8("Song saved as.") + QString(" Into: ") + defaultFilename, 2000 );
-	//update SoundlibraryPanel
-	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->test_expandedItems();
-	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->updateDrumkitList();
+        h2app->setWindowTitle( filename );
 }
 
 
@@ -487,9 +485,6 @@ void MainForm::action_file_save()
 
 		h2app->setScrollStatusBarMessage( trUtf8("Song saved.") + QString(" Into: ") + filename, 2000 );
 	}
-	//update SoundlibraryPanel
-	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->test_expandedItems();
-	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->updateDrumkitList();
 }
 
 
@@ -535,7 +530,7 @@ void MainForm::action_file_export_pattern_as()
 	fd->setFileMode ( QFileDialog::AnyFile );
 	fd->setFilter ( trUtf8 ( "Hydrogen Pattern (*.h2pattern)" ) );
 	fd->setAcceptMode ( QFileDialog::AcceptSave );
-	fd->setWindowTitle ( trUtf8 ( "Save Pattern as ..." ) );
+        fd->setWindowTitle ( trUtf8 ( "Save Pattern as ..." ) );
 	fd->setDirectory ( dir );
 
 
@@ -603,7 +598,7 @@ void MainForm::action_file_open()
 	fd->setFilter( trUtf8("Hydrogen Song (*.h2song)") );
 	fd->setDirectory( lastUsedDir );
 
-	fd->setWindowTitle( trUtf8( "Open song" ) );
+        fd->setWindowTitle( trUtf8( "Open song" ) );
 
 	/// \todo impostare il preview
 	/*
@@ -1545,25 +1540,25 @@ void MainForm::latestVersionDone(bool bError)
 		QString sLatest = QString(sLatest_major) + "." +  QString(sLatest_minor) + "." + QString(sLatest_micro);
 		WARNINGLOG( "\n\n*** A newer version (v" + sLatest + ") of Hydrogen is available at http://www.hydrogen-music.org\n" );
 	}
-//	if ( bUsingDevelVersion ) {
-//		Preferences *pref = Preferences::get_instance();
-//		bool isDevelWarningEnabled = pref->getShowDevelWarning();
-//		if(isDevelWarningEnabled) {
-//
-//			QString msg = trUtf8( "You're using a development version of Hydrogen, please help us reporting bugs or suggestions in the hydrogen-devel mailing list.<br><br>Thank you!" );
-//			QMessageBox develMessageBox( this );
-//			develMessageBox.setText( msg );
-//			develMessageBox.addButton( QMessageBox::Ok );
-//			develMessageBox.addButton( trUtf8( "Don't show this message anymore" ) , QMessageBox::AcceptRole );
-//
-//			if( develMessageBox.exec() == 0 ){
-//				//don't show warning again
-//				pref->setShowDevelWarning( false );
-//			}
-//	  }
-//
-//
-//	}
+        if ( bUsingDevelVersion ) {
+                Preferences *pref = Preferences::get_instance();
+                bool isDevelWarningEnabled = pref->getShowDevelWarning();
+                if(isDevelWarningEnabled) {
+
+                        QString msg = trUtf8( "You're using a development version of Hydrogen, please help us reporting bugs or suggestions in the hydrogen-devel mailing list.<br><br>Thank you!" );
+                        QMessageBox develMessageBox( this );
+                        develMessageBox.setText( msg );
+                        develMessageBox.addButton( QMessageBox::Ok );
+                        develMessageBox.addButton( trUtf8( "Don't show this message anymore" ) , QMessageBox::AcceptRole );
+
+                        if( develMessageBox.exec() == 0 ){
+                                //don't show warning again
+                                pref->setShowDevelWarning( false );
+                        }
+          }
+
+
+        }
 }
 
 

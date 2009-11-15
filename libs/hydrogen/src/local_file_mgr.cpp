@@ -986,15 +986,10 @@ int LocalFileMng::loadPlayList( const std::string& patternname)
 		Hydrogen::get_instance()->m_PlayList.clear();
 		QDomNode nextNode = playlistNode.firstChildElement( "next" );
 		while (  ! nextNode.isNull() ) {
-			#warning "TODO: Why do we convert QString => std::string => QString here?"
-			std::string song =  LocalFileMng::readXmlString( nextNode, "song", "" ).toStdString();
-			std::string script = LocalFileMng::readXmlString( nextNode, "script", "" ).toStdString();
-			std::string ScriptEnabled = LocalFileMng::readXmlString( nextNode, "enabled", "" ).toStdString();
-
 			Hydrogen::HPlayListNode playListItem;
-			playListItem.m_hFile = QString::fromLocal8Bit(song.c_str());
-			playListItem.m_hScript = QString::fromLocal8Bit(script.c_str());
-			playListItem.m_hScriptEnabled = QString::fromLocal8Bit(ScriptEnabled.c_str());
+			playListItem.m_hFile = LocalFileMng::readXmlString( nextNode, "song", "" );
+			playListItem.m_hScript = LocalFileMng::readXmlString( nextNode, "script", "" );
+			playListItem.m_hScriptEnabled = LocalFileMng::readXmlString( nextNode, "enabled", "" );
 			Hydrogen::get_instance()->m_PlayList.push_back( playListItem );	
 			nextNode = nextNode.nextSiblingElement( "next" );
 		}
@@ -1358,13 +1353,11 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 			if ( pSample == NULL ) continue;
 
 			QString sFilename = pSample->get_filename();
-
 			if ( !instr->get_drumkit_name().isEmpty() ) {
 				// se e' specificato un drumkit, considero solo il nome del file senza il path
 				int nPos = sFilename.lastIndexOf( "/" );
 				sFilename = sFilename.mid( nPos + 1, sFilename.length() );
 			}
-
 			QDomNode layerNode = doc.createElement( "layer" );
 			LocalFileMng::writeXmlString( layerNode, "filename", sFilename );
 			LocalFileMng::writeXmlString( layerNode, "min", QString("%1").arg( pLayer->get_start_velocity() ) );
