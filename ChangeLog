@@ -1,8 +1,8 @@
 composite (0.000) experimental; urgency=low
 
-	* Merged transport_redesign_2, text_encodings, jackMidi, and
-	  QtXml branches into hydrogen-0.9.4
-	* Compiles, but very unstable.
-	* Identifies itself as "Hydrogen."  This is a baseline release.
+  * Merged transport_redesign_2, text_encodings, jackMidi, and
+    QtXml branches into hydrogen-0.9.4
+  * Compiles, but very unstable.
+  * Identifies itself as "Hydrogen."  This is a baseline release.
 
  -- Gabriel M. Beddingfield <gabriel@teuton.org>  Sun, 15 Nov 2009 12:00:00 +0000

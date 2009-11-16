@@ -32,8 +32,8 @@ build: build-stamp
 build-stamp:
 	dh_testdir
 
-	mkdir -p $(CURDIR)/debian/hydrogen/usr/bin
-	cd ..; scons $(H2_PARALLEL_BUILDS) --no-cache DESTDIR=$(CURDIR)/debian/hydrogen/ prefix=/usr/
+	mkdir -p $(CURDIR)/debian/composite/usr/bin
+	cd ..; scons $(H2_PARALLEL_BUILDS) --no-cache DESTDIR=$(CURDIR)/debian/composite/ prefix=/usr/
 
 	touch $@
 
@@ -52,11 +52,11 @@ install: build
 	dh_clean -k
 	dh_installdirs
 
-	mkdir -p $(CURDIR)/debian/hydrogen/usr/bin
+	mkdir -p $(CURDIR)/debian/composite/usr/bin
 	cd ..; scons install
 #	Clean out subversion's working copy folders (if accidentally copied
 #	into the target).
-	find $(CURDIR)/debian/hydrogen -type d -name '.svn' -print0 | xargs --null rm -rf
+	find $(CURDIR)/debian/composite -type d -name '.svn' -print0 | xargs --null rm -rf
 
 	touch $@
 

@@ -11,9 +11,9 @@ Categories=Application;AudioVideo;Sound;Audio;Qt;
 
 MimeType=text/xml
 
-FilePattern=composite
-Exec=composite %F
-TryExec=composite
+FilePattern=composite-gui
+Exec=composite-gui %F
+TryExec=composite-gui
 Terminal=false
 StartupNotify=true
 
