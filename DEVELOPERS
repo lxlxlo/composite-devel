@@ -17,7 +17,8 @@ order to make a release has several, easy-to-forget steps.  They are:
      c. Update ChangeLog (and linux/debian/changelog if it's not
         symlinked)
 
-     d. composite.desktop has a version in it.
+     d. composite.desktop and linux/composite.desktop has a version
+        in it that should be updated.
 
   2. Remove the 'developer warning': in data/composite.default.conf
      change hydrogen_preferences/showDevelWarning to "false".

@@ -1,0 +1,20 @@
+[Desktop Entry]
+Name=Composite
+
+Comment=Live performance sequencer
+
+Encoding=UTF-8
+Version=0.000
+
+Type=Application
+Categories=Application;AudioVideo;Sound;Audio;Qt;
+
+MimeType=text/xml
+
+FilePattern=composite
+Exec=composite %F
+TryExec=composite
+Terminal=false
+StartupNotify=true
+
+Icon=@ac_prefix@/share/composite/data/img/gray/icon64.png
