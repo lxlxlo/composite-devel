@@ -1,0 +1,19 @@
+[Desktop Entry]
+Name=Composite
+Comment=Live performance sequencer, sampler, looper
+
+GenericName=Sequencer
+
+Version=0.000
+
+Type=Application
+Categories=AudioVideo;X-Sound;Audio;Qt;
+
+MimeType=text/xml;
+
+Exec=composite %F
+TryExec=composite
+Terminal=false
+StartupNotify=true
+
+Icon=composite-icon

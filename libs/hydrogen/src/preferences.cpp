@@ -108,13 +108,13 @@ Preferences::Preferences()
 	m_pDefaultUIStyle = new UIStyle();
 
 #ifdef Q_OS_MACX
-	m_sPreferencesFilename = QDir::homePath().append( "/Library/Application Support/Hydrogen/hydrogen.conf" );
-	m_sPreferencesDirectory = QDir::homePath().append( "/Library/Application Support/Hydrogen/" );
-	m_sDataDirectory = QDir::homePath().append( "/Library/Application Support/Hydrogen/data/" );
+	m_sPreferencesFilename = QDir::homePath().append( "/Library/Application Support/Composite/hydrogen.conf" );
+	m_sPreferencesDirectory = QDir::homePath().append( "/Library/Application Support/Composite/" );
+	m_sDataDirectory = QDir::homePath().append( "/Library/Application Support/Composite/data/" );
 #else
-	m_sPreferencesFilename = QDir::homePath().append( "/.hydrogen/hydrogen.conf" );
-	m_sPreferencesDirectory = QDir::homePath().append( "/.hydrogen/" );
-	m_sDataDirectory = QDir::homePath().append( "/.hydrogen/data/" );
+	m_sPreferencesFilename = QDir::homePath().append( "/.composite/hydrogen.conf" );
+	m_sPreferencesDirectory = QDir::homePath().append( "/.composite/" );
+	m_sDataDirectory = QDir::homePath().append( "/.composite/data/" );
 #endif
 
 	__lastspatternDirectory = QDir::homePath();
@@ -268,12 +268,12 @@ void Preferences::loadPreferences( bool bGlobal )
 	QString sDataDirectory;
 	if ( bGlobal ) {
 		sPreferencesDirectory = DataPath::get_data_path();
-		sPreferencesFilename = sPreferencesDirectory + "/hydrogen.default.conf";
+		sPreferencesFilename = sPreferencesDirectory + "/composite.default.conf";
 		INFOLOG( "Loading preferences file (GLOBAL) [" + sPreferencesFilename + "]" );
 	} else {
 		sPreferencesFilename = m_sPreferencesFilename;
 		sPreferencesDirectory = m_sPreferencesDirectory;
-		sDataDirectory = QDir::homePath().append( "/.hydrogen/data" );
+		sDataDirectory = QDir::homePath().append( "/.composite/data" );
 		INFOLOG( "Loading preferences file (USER) [" + sPreferencesFilename + "]" );
 
 
@@ -657,7 +657,7 @@ void Preferences::loadPreferences( bool bGlobal )
 ///
 void Preferences::savePreferences()
 {
-	//string prefDir = QDir::homePath().append("/.hydrogen").toLocal8Bit().constData();
+	//string prefDir = QDir::homePath().append("/.composite").toLocal8Bit().constData();
 	QString filename = m_sPreferencesFilename;
 
 	INFOLOG( "Saving preferences file: " + filename );

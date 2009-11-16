@@ -1,5 +1,5 @@
 #                                  emacs: -*- python -*-
-# Hydrogen build script
+# Composite build script
 #
 
 # vim: set filetype=python
@@ -168,7 +168,7 @@ def get_svn_revision():
 		return "win32 build"
 
 
-def get_hydrogen_lib( opts ):
+def get_tritium_lib( opts ):
 	includes, cppflags, ldflags = get_platform_flags( opts )
 
 	includes.append( "libs/hydrogen/include" )
@@ -205,7 +205,7 @@ def get_hydrogen_lib( opts ):
 	src = scanFiles( "libs/hydrogen", ['*.cpp', '*.cc', '*.c' ], [ 'moc_'] )
 	src.append( "version.cpp" )
 
-	static_lib = env.StaticLibrary(target = 'hydrogen', source = src )
+	static_lib = env.StaticLibrary(target = 'tritium', source = src )
 	env.Alias("programs", static_lib)
 	env.Alias("libs", static_lib)
 
@@ -225,7 +225,7 @@ def builder_unit_test(target, source, env):
         return 1
 
 
-def get_hydrogen_lib_tests( h2lib, opts ):
+def get_tritium_lib_tests( lib_tritium, opts ):
 	includes, cppflags, ldflags = get_platform_flags( opts )
 
 	includes.append( "libs/hydrogen/include" )
@@ -245,7 +245,7 @@ def get_hydrogen_lib_tests( h2lib, opts ):
 	env.EnableQt4Modules( ['QtCore', 'QtGui'], debug=False)
 	env.CacheDir( "scons_cache" )
 	
-        env.Append( LIBS = "hydrogen" )
+        env.Append( LIBS = "tritium" )
         env.Append( LIBS = "boost_unit_test_framework" )
 
         if str(env['jack']) == "1":
@@ -287,9 +287,9 @@ def get_hydrogen_lib_tests( h2lib, opts ):
         env.Append(BUILDERS = {'Test' :  bld})
 
 	src = scanFiles( "test", ['*.cpp', '*.cc', '*.c' ], [ 'moc_'] )
-	src.append( h2lib )
+	src.append( lib_tritium )
 
-        tests = env.Program(target = 't_Hydrogen', source = src)
+        tests = env.Program(target = 't_Tritium', source = src)
         env.Alias("test", tests)
         env.Test("tests.passed", tests)
         env.Alias("test", "tests.passed")
@@ -307,9 +307,9 @@ def install_images( arg , dir , files):
 			else:
 				dname = dir[1:]  
 
-			env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/hydrogen/' + dname, source= dir + "/" + file))
+			env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/composite/' + dname, source= dir + "/" + file))
 
-def get_hydrogen_gui( lib_hydrogen , opts ):
+def get_composite_gui( lib_tritium , opts ):
 	includes, cppflags, ldflags = get_platform_flags( opts )
 
 	includes.append( "libs/hydrogen/include" )
@@ -344,7 +344,7 @@ def get_hydrogen_gui( lib_hydrogen , opts ):
 
 
 	src = scanFiles( directory, ['*.cpp', '*.cc', '*.c' ], [ 'moc_'] )
-	src.append( lib_hydrogen )
+	src.append( lib_tritium )
 
 	if sys.platform != "win32":
 		env.Append( LIBS = ["sndfile"] )
@@ -381,29 +381,29 @@ def get_hydrogen_gui( lib_hydrogen , opts ):
 		env.Append( LINKFLAGS = ['-framework','CoreMIDI'])
 
 
-	app = env.Program(target = 'hydrogen', source = src )
+	app = env.Program(target = 'composite', source = src )
 
 	env.Alias('programs', app)
 	env.Default('programs')
 
-        for N in glob.glob('./data/i18n/hydrogen.*'):
-            env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/hydrogen/data/i18n', source=N))
-	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/hydrogen/data', source="./data/img"))
+        for N in glob.glob('./data/i18n/composite.*'):
+            env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/composite/data/i18n', source=N))
+	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/composite/data', source="./data/img"))
 
 	#add every img in ./data/img to the install list. 
 	os.path.walk("./data/img/",install_images,env) 
 
 
-	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/hydrogen/data', source="./data/drumkits"))
-	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/hydrogen/data', source="./data/demo_songs"))
-	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/hydrogen/data', source="./data/hydrogen.default.conf"))
-	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/hydrogen/data', source="./data/emptySample.wav"))
-	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/hydrogen/data', source="./data/click.wav"))
-	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/hydrogen/data', source="./data/doc"))
-	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/hydrogen/data', source="./data/DefaultSong.h2song"))
-	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/bin/', source="./hydrogen"))
-	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/applications', source="./hydrogen.desktop"))
-	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/pixmaps', source="./data/img/gray/h2-icon.svg"))
+	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/composite/data', source="./data/drumkits"))
+	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/composite/data', source="./data/demo_songs"))
+	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/composite/data', source="./data/composite.default.conf"))
+	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/composite/data', source="./data/emptySample.wav"))
+	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/composite/data', source="./data/click.wav"))
+	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/composite/data', source="./data/doc"))
+	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/composite/data', source="./data/DefaultSong.h2song"))
+	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/bin/', source="./composite"))
+	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/applications', source="./composite.desktop"))
+	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/pixmaps', source="./data/img/gray/composite-icon.svg"))
 
 
 	return app
@@ -606,7 +606,7 @@ if 'test' in COMMAND_LINE_TARGETS and not conf.CheckCXXHeader("boost/test/unit_t
 
 print ""
 print "================================================================="
-print " Hydrogen build script"
+print " Composite build script"
 print ""
 print " Revision: %s" % get_svn_revision()
 print " Platform: %s" % platform
@@ -655,7 +655,7 @@ conf.write( "#    define QT_END_NAMESPACE\n" )
 conf.write( "#endif\n" )
 
 conf.write( "#define CONFIG_PREFIX \"%s\"\n" % env['prefix'] )
-conf.write( "#define DATA_PATH \"%s/share/hydrogen/data\"\n" % env['prefix'] )
+conf.write( "#define DATA_PATH \"%s/share/composite/data\"\n" % env['prefix'] )
 
 conf.write( "#endif\n" )
 
@@ -674,8 +674,8 @@ version.write( "static const std::string VERSION = \"0.9.5-\" + extra_version;\n
 version.write( "std::string get_version() { return VERSION;	}\n" )
 version.close()
 
-libhyd = get_hydrogen_lib( opts )
-app = get_hydrogen_gui( libhyd , opts )
-tests = get_hydrogen_lib_tests( libhyd, opts )
+libhyd = get_tritium_lib( opts )
+app = get_composite_gui( libhyd , opts )
+tests = get_tritium_lib_tests( libhyd, opts )
 
 opts.Save("scache.conf",env)

@@ -214,9 +214,9 @@ void* loggerThread_func( void* param )
 	FILE *pLogFile = NULL;
 	if ( pLogger->__use_file ) {
 #ifdef Q_OS_MACX
-		QString sLogFilename = QDir::homePath().append( "/Library/Hydrogen/hydrogen.log" );
+		QString sLogFilename = QDir::homePath().append( "/Library/Composite/composite.log" );
 #else
-		QString sLogFilename = QDir::homePath().append( "/.hydrogen/hydrogen.log" );
+		QString sLogFilename = QDir::homePath().append( "/.composite/composite.log" );
 #endif
 
 		pLogFile = fopen( sLogFilename.toLocal8Bit(), "w" );

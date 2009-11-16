@@ -213,7 +213,7 @@ int main(int argc, char *argv[])
 
 #ifdef LASH_SUPPORT
 
-		LashClient::create_instance("hydrogen", "Hydrogen", &argc, &argv);
+		LashClient::create_instance("composite", "Composite", &argc, &argv);
 		LashClient* lashClient = LashClient::get_instance();
 
 #endif
@@ -235,7 +235,7 @@ int main(int argc, char *argv[])
 
 		QTranslator qttor( 0 );
 		QTranslator tor( 0 );
-		QString sTranslationFile = QString("hydrogen.") + QLocale::system().name();
+		QString sTranslationFile = QString("composite.") + QLocale::system().name();
 		QString sLocale = QLocale::system().name();
 		if ( sLocale != "C") {
 			if (qttor.load( QString( "qt_" ) + sLocale,
@@ -297,7 +297,7 @@ int main(int argc, char *argv[])
 				
 				songFilename = "";
 				songFilename.append( QString::fromLocal8Bit(lash_event_get_string(lash_event)) );
-				songFilename.append("/hydrogen.h2song"); 
+				songFilename.append("/composite.h2song"); 
 				
 //				Logger::get_instance()->log("[LASH] Restore file: " + songFilename);
 	
@@ -361,15 +361,16 @@ int main(int argc, char *argv[])
  */
 void showInfo()
 {
-	cout << "\nHydrogen " + get_version() + " [" + __DATE__ + "]  [http://www.hydrogen-music.org]" << endl;
+	cout << "\nComposite " + get_version() + " [" + __DATE__ + "]  [http://gabe.is-a-geek.org/composite/]" << endl;
 	cout << "Copyright 2002-2008 Alessandro Cominu" << endl;
+	cout << "Copyright 2009 Gabriel Beddingfield" << endl;
 //	_INFOLOG( "Compiled modules: " + QString(COMPILED_FEATURES) << endl;
 
 	if ( Object::is_using_verbose_log() ) {
 		cout << "\nVerbose log mode = active" << endl;
 	}
 
-	cout << "\nHydrogen comes with ABSOLUTELY NO WARRANTY" << endl;
+	cout << "\nComposite comes with ABSOLUTELY NO WARRANTY" << endl;
 	cout << "This is free software, and you are welcome to redistribute it" << endl;
 	cout << "under certain conditions. See the file COPYING for details\n" << endl;
 }
@@ -381,7 +382,7 @@ void showInfo()
  */
 void showUsage()
 {
-	std::cout << "Usage: hydrogen [-v] [-h] -s file" << std::endl;
+	std::cout << "Usage: composite [-v] [-h] -s file" << std::endl;
 	std::cout << "   -d, --driver AUDIODRIVER - Use the selected audio driver (jack, alsa, oss)" << std::endl;
 	std::cout << "   -s, --song FILE - Load a song (*.h2song) at startup" << std::endl;
 #ifdef LASH_SUPPORT

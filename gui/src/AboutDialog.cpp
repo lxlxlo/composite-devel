@@ -44,14 +44,9 @@ AboutDialog::AboutDialog(QWidget* parent)
 	move( 240, 100 );
 
 	QString about;
-	about += QString("<center><b>Hydrogen Drum Machine %1 [%2] </b><br>").arg( get_version().c_str() ).arg( __DATE__ );
+	about += QString("<center><b>Composite Performance Sequencer %1 [%2] </b><br>").arg( get_version().c_str() ).arg( __DATE__ );
 	about += tr( "<b>Website</b><br>" );
-	about += "http://www.hydrogen-music.org<br><br>";
-	about += tr( "<b>Project page</b><br>");
-	about += "http://sourceforge.net/projects/hydrogen<br><br>";
-	about += tr( "<b>Mailing lists</b><br>");
-	about += "http://lists.sourceforge.net/lists/listinfo/hydrogen-announce<br>";
-	about += "http://lists.sourceforge.net/lists/listinfo/hydrogen-devel<br>";
+	about += "http://gabe.is-a-geek.org/composite/<br>";
 	aboutTxt->setText( about );
 
 
@@ -60,6 +55,7 @@ AboutDialog::AboutDialog(QWidget* parent)
 	authorList.push_back( Author( "Antonio Piraino", "", "Italian manual" ) );
 	authorList.push_back( Author( "Artemiy Pavlov (aka Artemio)", "www.artemiolabs.com", "Drum kits, demo patterns, web site" ) );
 	authorList.push_back( Author( "Alexandre Prokoudine", "", "Russian translation" ) );
+	authorList.push_back( Author( "Alessandro Cominu (aka Comix)", "", "comix@users.sourceforge.net" ) );
 	authorList.push_back( Author( "Ben Powers", "", "Docs" ) );
 	authorList.push_back( Author( "Benjamin Flaming", "", "Jack patches, bug fix" ) );
 	authorList.push_back( Author( "Carlo Impagliazzo (aka Truijllo)", "", "Testing, ideas.." ) );

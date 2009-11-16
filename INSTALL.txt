@@ -1,8 +1,6 @@
-------------------------------------------------------------------------------
-                       H Y D R O G E N          Drum machine
-------------------------------------------------------------------------------
+Composite - Live performance sequencing, sampling, and looping
 
-BUILDING AND INSTALLING HYDROGEN
+BUILDING AND INSTALLING COMPOSITE
 ================================
 
 Contents:
@@ -17,16 +15,16 @@ Contents:
 1. System Requirements
 ----------------------
 
-Hydrogen is supported on the following operating systems:
+Composite is supported on the following operating systems:
 
   * Linux/Unix/BSD
   * Mac OS X
 
-Hydrogen is *not* supported on Windows because there are currently no
+Composite is *not* supported on Windows because there are currently no
 Windows developers on the project... and so the Windows components
 have fallen into disrepair.
 
-Hydrogen is known to work well on fairly old systems like this (as of
+Composite is known to work well on fairly old systems like this (as of
 2009):
 
   Pentium III 500 MHz
@@ -38,42 +36,30 @@ Hydrogen is known to work well on fairly old systems like this (as of
 2. Download
 -----------
 
-Hydrogen can be downloaded as a binary package, source distribution,
+Composite can be downloaded as a binary package, source distribution,
 or you can check out the current development version with Subversion.
-These can be accessed on the Hydrogen home page:
+These can be accessed on the Composite home page:
 
-	http://www.hydrogen-music.org/
+	http://gabe.is-a-geek.org/composite/
 
 The source code for the current development version can be checked out
-via Subversion:
+via Git:
 
-	$ svn co http://svn.assembla.com/svn/hydrogen/trunk hydrogen
+	$ git clone git://gitorious.org/composite/composite.git
 
 3. Binary Packages
 ------------------
 
-Debian (GNU/Linux) and Ubuntu (GNU/Linux):
-
-	Hydrogen can usually be installed with apt:
-
-	# apt-get install hydrogen
-
-	However, if you wish to have a more current version of
-	Hydrogen, the Hydrogen dev's typically maintain a .deb package
-	for Debian stable, testing, and some Ubuntu distributions.
-	Note that apt takes care of any library dependencies that you
-	have.
-
-Other GNU/Linux:
+GNU/Linux:
 
 	Check your package management system for the package
-	'hydrogen.'
+	'composite.'  At this time there are no known distros
+	that have a package for Composite.
 
 Mac OS X:
 
-	They Hydrogen home page has a binary package available for OS
-	X.  Extract the ZIP archive and it will create a hydrogen.app
-	folder.
+	There are currently no Composite devs on OS X, so
+	neither are there any binary packages.
 
 4. Prerequisites to Build from Source
 -------------------------------------
@@ -106,27 +92,16 @@ installed on your system, and the development header files:
 	* libFLAC for handling FLAC sound files.
 	* liblrdf for LADSPA plugins
 
-On a single, 500MHz processor Hydrogen takes about 1.5 hours to build.
+On a single, 500MHz processor Composite takes about 1.5 hours to build.
 
 5. Build and Install from Source
 --------------------------------
 
-If you wish to build a package for your operating system, skip down to
-the end of this section.
-
-This instructions are thought for building hydrogen on linux.
-We're providing a set of qmake project files for windows and
-mac osx builds. 
-Please read the relevant wiki pages for more informations:
-
-http://trac.assembla.com/hydrogen/wiki/development%3AcompileOSX
-http://trac.assembla.com/hydrogen/wiki/coding%3Apackagingwin
-
 After you have all the prerequisites, building and installing will
 look like this:
 
-	$ tar xjf hydrogen-0.9.4.tar.bz2
-	$ cd hydrogen-0.9.4
+	$ tar xjf composite-0.9.4.tar.bz2
+	$ cd composite-0.9.4
 	$ scons
 	$ sudo scons install
 
@@ -141,16 +116,16 @@ this:
 	$ scons prefix=/path/to/install/dir
 	$ sudo scons install
 
-Uninstalling Hydrogen is done like this:
+Uninstalling Composite is done like this:
 
 	$ sudo scons -c install
 
 Note that scons is a build system and not a package manager.  While we
-make every effort to ensure that Hydrogen uninstalls cleanly, it is
+make every effort to ensure that Composite uninstalls cleanly, it is
 not a guarantee.
 
-Hydrogen uses a scons tool that detects the correct Qt settings, but
-sometimes it needs a little help.  If Hydrogen fails to build
+Composite uses a scons tool that detects the correct Qt settings, but
+sometimes it needs a little help.  If Composite fails to build
 (typically when a .ui file fails), set the Qt 4 install directory like
 this:
 
@@ -162,8 +137,8 @@ versions of moc and uic, and not the Qt 3 versions.
 ___CREATING A BINARY PACKAGE___
 
 If you are a package maintainer and wish for your packaging scripts to
-be included in the Hydrogen source tree, we would be happy to work
-with you.  Please contact the developer mailing list (see the Hydrogen
+be included in the Composite source tree, we would be happy to work
+with you.  Please contact the developer mailing list (see the Composite
 home page).  The instructions below are for the package systems that
 have been contributed so far.
 
@@ -174,10 +149,10 @@ In order to create a .deb package for Debian or Debian-based systems
 
 	# apt-get install debhelper
 
-To build the Hydrogen package:
+To build the Composite package:
 
-	$ tar xjf hydrogen-0.9.4.tar
-	$ cd hydrogen-0.9.4
+	$ tar xjf composite-0.9.4.tar
+	$ cd composite-0.9.4
 	$ cd linux
 	$ fakeroot dpkg-buildpackage
 
@@ -187,6 +162,9 @@ edit linux/debian/changelog to set the version.
 
 6. INSTALL.txt Changelog
 ------------------------
+
+2009-11-15 Gabriel M. Beddingfield <gabriel@teuton.org>
+        * Rebrand from Hydrogen to Composite
 
 2009-04-08 Gabriel M. Beddingfield <gabriel@teuton.org>
 	* Create INSTALL.txt
