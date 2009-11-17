@@ -36,17 +36,17 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1"
-     inkscape:cx="213.95553"
-     inkscape:cy="161.4962"
+     inkscape:zoom="1.5"
+     inkscape:cx="200"
+     inkscape:cy="161"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
-     inkscape:window-width="640"
-     inkscape:window-height="672"
-     inkscape:window-x="257"
-     inkscape:window-y="124" />
+     inkscape:window-width="1055"
+     inkscape:window-height="689"
+     inkscape:window-x="367"
+     inkscape:window-y="122" />
   <metadata
      id="metadata2436">
     <rdf:RDF>
@@ -62,6 +62,14 @@
      id="layer1"
      inkscape:label="Layer 1"
      inkscape:groupmode="layer">
+    <rect
+       style="opacity:1;fill:#d5e5ff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect2391"
+       width="400"
+       height="300"
+       x="0"
+       y="2.0872193e-14"
+       ry="0" />
     <g
        id="g2474"
        transform="matrix(2.1956098,0,0,2.1956098,-69.50225,-1.6845104)">
