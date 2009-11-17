@@ -25,7 +25,7 @@
 
 #include <cassert>
 #include <hydrogen/adsr.h>
-
+#include <stdint.h>
 
 namespace H2Core
 {
