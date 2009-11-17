@@ -22,8 +22,8 @@ etc.).
 This is done to improve communication with people who test the
 development copies of Composite.
 
-MAKING A RELEASE
-----------------
+MAKING A RELEASE AND/OR BUMPING VERSIONS
+----------------------------------------
 
 Transitioning the code to remove some of the development hooks in
 order to make a release has several, easy-to-forget steps.  They are:
@@ -33,7 +33,8 @@ order to make a release has several, easy-to-forget steps.  They are:
      a. Near the end of SConstruct, where it has 'extra_version',
         remove that.
 
-     b. If you are bumping the revision, also do that in SConstruct.
+     b. If you are bumping the revision, also do that in SConstruct,
+        at the beginning where it says "COMPOSITE_VERSION."
 
      c. Update ChangeLog (and linux/debian/changelog if it's not
         symlinked)
@@ -48,7 +49,7 @@ order to make a release has several, easy-to-forget steps.  They are:
      (i.e. regenerate HTML).  Make sure that data/doc/manual.html
      points to any new translations that have been contributed.
 
-  4. Commit your changes to trunk.
+  4. Commit your changes to Git.
 
   5. Make a tarball of the release (gzipped).  Use gzip instead of
      bzip2 for the folks on Windows.  Tarballs should be named:
