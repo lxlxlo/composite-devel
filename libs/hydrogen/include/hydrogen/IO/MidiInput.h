@@ -25,6 +25,7 @@
 
 #include <hydrogen/Object.h>
 #include <vector>
+#include <stdint.h>
 
 namespace H2Core
 {
