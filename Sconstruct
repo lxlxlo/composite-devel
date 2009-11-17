@@ -404,6 +404,7 @@ def get_composite_gui( lib_tritium , opts ):
 	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/bin/', source="./composite-gui"))
 	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/applications', source="./composite.desktop"))
 	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/pixmaps', source="./data/img/gray/composite-icon.svg"))
+	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/pixmaps', source="./data/img/gray/composite-icon.png"))
 
 
 	return app
