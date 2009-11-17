@@ -23,9 +23,13 @@ order to make a release has several, easy-to-forget steps.  They are:
   2. Remove the 'developer warning': in data/composite.default.conf
      change hydrogen_preferences/showDevelWarning to "false".
 
-  3. Commit your changes to trunk.
+  3. Make sure the manuals and translations are up-to-date in data/doc
+     (i.e. regenerate HTML).  Make sure that data/doc/manual.html
+     points to any new translations that have been contributed.
 
-  4. Make a tarball of the release (gzipped).  Use gzip instead of
+  4. Commit your changes to trunk.
+
+  5. Make a tarball of the release (gzipped).  Use gzip instead of
      bzip2 for the folks on Windows.  Tarballs should be named:
                    
                     +--- Relese version
@@ -34,28 +38,28 @@ order to make a release has several, easy-to-forget steps.  They are:
                   __|__ _|_
         composite-0.001-rc2.tar.gz
 
-  5. If this is an RC release, the following steps are optional.
+  6. If this is an RC release, the following steps are optional.
 
-  6. In a clean directory, test build the tarball in as many ways as
+  7. In a clean directory, test build the tarball in as many ways as
      you can.  Call your friends.  Have a party.  Be sure to build
      packages on as many systems as possible.  Be sure to install
      and uninstall them, too.
 
-  7. Go ahead and build binary packages.  Follow the naming convention
+  8. Go ahead and build binary packages.  Follow the naming convention
      for the platform that you're building for.
 
-       Linux:    composite_0.9.4rc2_distro_arch.pkg
+       Linux:    composite_0.000rc2_distro_arch.pkg
                  distro:  the GNU/Linux distro (e.g. 'lenny' for Debian)
                  arch:    the processor it's built for (e.g. i686)
                  pkg:     the package management system (deb, rpm)
-       OS X:     composite_0.9.4rc2_arch.dmg
+       OS X:     composite_0.000rc2_arch.dmg
                  (arch is optional if the binary will work on both.)
-       Windows:  composite_0.9.4rc2.exe
+       Windows:  composite_0.000rc2.exe
 
-  8. At this time, Gabriel Beddingfield is doing all the tagging.
+  9. At this time, Gabriel Beddingfield is doing all the tagging.
      Tags should be cryptographically signed.
 
-  9. Make announcements.
+  10. Make announcements.
 
 CODING CONVENTIONS
 ------------------

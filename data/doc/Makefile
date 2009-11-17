@@ -8,22 +8,15 @@
 ###
 
 MANUAL_MASTER = manual.docbook
-TUTORIAL_MASTER = tutorial.docbook
+TUTORIAL_MASTER = 
 
 ALL_MASTERS = $(MANUAL_MASTER) $(TUTORIAL_MASTER)
 
-ALL_MANUALS = manual_en.html \
-	manual_es.html \
-	manual_fr.html \
-	manual_it.html \
-	manual_ca.html \
-	manual_nl.html
+ALL_MANUALS = manual_en.html
 
-ALL_TUTORIALS = tutorial_en.html \
-	tutorial_fr.html \
-	tutorial_it.html
+ALL_TUTORIALS = 
 
-ALL_POT_FILES = manual_en.pot tutorial_en.pot
+ALL_POT_FILES = manual_en.pot
 
 XMLTO_OPTS = --stringparam section.autolabel=1 \
 	--stringparam toc.max.depth=2 \

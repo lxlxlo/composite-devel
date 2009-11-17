@@ -1,9 +1,7 @@
-------------------------------------------------------------------------------
-                       H Y D R O G E N          Drum machine
-------------------------------------------------------------------------------
+Composite - Live performance sequencing, sampling, and looping
 
-HYDROGEN DOCUMENTATION
-======================
+COMPOSITE DOCUMENTATION
+=======================
 
 Contents:
 
@@ -19,14 +17,14 @@ Contents:
 1. Overview
 -----------
 
-Hydrogen documentation is maintained in DocBook 4.0 (XML) and
+Composite documentation is maintained in DocBook 4.0 (XML) and
 translated to HTML before release.  Different translations are managed
 through GNU gettext PO files.  When the documentation is generated,
 the PO files and the master documentation are merged to create the doc
 for that specific language.
 
 This document is split up into the three types of people who may want
-to contribute to Hydrogen documentation:  Translators, Documentors,
+to contribute to Composite documentation:  Translators, Documentors,
 and Developers.  A section is devoted to each one, individually.
 
 This document assumes that you don't know much, and tries to give you
@@ -57,7 +55,7 @@ With the exception of xml2pot and po2xml, these tools are all very
 easy to install on Linux, being a part of the core toolchains for KDE,
 Gnome, Debian, etc.  However, these tools are not as easy to set up on
 non-Linux platforms.  Furthermore, it is undesireable to add these to
-the list of build dependencies for Hydrogen.
+the list of build dependencies for Composite.
 
 The po2xml and xml2pot tools are part of the 'poxml' package.  This is
 a part of the KDE SDK.  However, the KDE3 version of poxml does not
@@ -66,7 +64,7 @@ of poxml.  The KDE4 version of poxml corrects these issues, and is the
 only version known to work.
 
 Therefore, these files will be processed before making a release of
-Hydrogen, and the generated HTML output will become a part of the
+Composite, and the generated HTML output will become a part of the
 distribution.
 
 [1] xml2po and po2xml are part of poxml, which is in the KDE SDK.
@@ -78,7 +76,7 @@ distribution.
 3. Translators
 --------------
 
-To translate documentation for Hydrogen you will need:
+To translate documentation for Composite you will need:
 
     * To understand XML, and enough DocBook to be dangerous.
 
@@ -88,10 +86,10 @@ To translate documentation for Hydrogen you will need:
     * To be able to read and understand English.
 
 If you don't have all the tools listed in Section 2, that's OK.  Ask
-the Hydrogen Developer list and someone there can process files for
+the Composite Developer list and someone there can process files for
 you.
 
-To make a new translation of the Hydrogen manual or tutorial, simply
+To make a new translation of the Composite manual or tutorial, simply
 copy the template and get started:
 
     $ cp manual.pot manual_ja.po
@@ -141,19 +139,19 @@ RULES AND GUIDELINES FOR TRANSLATING:
     * If your culture doesn't like American-style informal writing,
       please feel free to make a humor-less translation.
 
-    * Submit translations to the Hydrogen Developers list
+    * Submit translations to the Composite Developers list
       (hydrogen-devel@lists.sourceforge.net)
 
 4. Documentors
 --------------
 
-The master Hydrogen Manual and Tutorial are in English.  All new
+The master Composite Manual and Tutorial are in English.  All new
 content and major revisions shall be done there first.  In order to
 work on the documentation, you will need:
 
     * To know and understand XML and DocBook well.
 
-    * To know and understand Hydrogen well enough to *ask*
+    * To know and understand Composite well enough to *ask*
       *questions*.
 
     * An XML editor (note: any text editor will do).
@@ -227,7 +225,7 @@ generated and committed before releasing.  After the release, the
 generated HTML files can (and should) be deleted.  Do not commit the
 generated DocBook documents.
 
-If you are preparing a Hydrogen release, you must have all the tools
+If you are preparing a Composite release, you must have all the tools
 listed above so that you can process the documents.  You may also need
 to understand DocBook enough to help a translator with validation
 issues.  (See Section 6 below.)
