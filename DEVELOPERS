@@ -1,6 +1,27 @@
 DEVELOPER INFO
 ==============
 
+VERSIONS
+--------
+
+For the development of composite, versions shall be like this:
+
+0.000
+_ ___
+|  |
+|  +-- A non-negative integer, 001, 002, 003, etc.
+|
++----- Always zero while in development for 1.0
+
+RELEASES have even numbered versions (0.000, 0.002, 0.004, etc.).  In
+Git, there shall be a very small window where this version is set.
+
+DEVELOPMENT is done under even numbered versions (0.001, 0.003, 0.005,
+etc.).
+
+This is done to improve communication with people who test the
+development copies of Composite.
+
 MAKING A RELEASE
 ----------------
 
