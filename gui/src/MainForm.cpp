@@ -88,7 +88,7 @@ MainForm::MainForm( QApplication *app, const QString& songFilename )
 	if ( !songFilename.isEmpty() ) {
 		song = Song::load( songFilename );
 		if (song == NULL) {
-			//QMessageBox::warning( this, "Hydrogen", trUtf8("Error loading song.") );
+			//QMessageBox::warning( this, "Composite", trUtf8("Error loading song.") );
 			song = Song::get_empty_song();
 			song->set_filename( "" );
 		}
@@ -100,7 +100,7 @@ MainForm::MainForm( QApplication *app, const QString& songFilename )
 		if ( restoreLastSong && ( !filename.isEmpty() )) {
 			song = Song::load( filename );
 			if (song == NULL) {
-				//QMessageBox::warning( this, "Hydrogen", trUtf8("Error restoring last song.") );
+				//QMessageBox::warning( this, "Composite", trUtf8("Error restoring last song.") );
 				song = Song::get_empty_song();
 				song->set_filename( "" );
 			}
@@ -116,7 +116,7 @@ MainForm::MainForm( QApplication *app, const QString& songFilename )
 
 	createMenuBar();
 
-	h2app->setStatusBarMessage( trUtf8("Hydrogen Ready."), 10000 );
+	h2app->setStatusBarMessage( trUtf8("Composite Ready."), 10000 );
 
 	initKeyInstMap();
 
@@ -471,7 +471,7 @@ void MainForm::action_file_save()
 	
 
 	if(! saved) {
-		QMessageBox::warning( this, "Hydrogen", trUtf8("Could not save song.") );
+		QMessageBox::warning( this, "Composite", trUtf8("Could not save song.") );
 	} else {
 		Preferences::get_instance()->setLastSongFilename( song->get_filename() );
 
@@ -569,7 +569,7 @@ void MainForm::action_file_export_pattern_as()
 		int err = fileMng.savePattern ( song , selectedpattern, patternname, realname, 2 );
 		if ( err != 0 )
 		{
-			QMessageBox::warning( this, "Hydrogen", trUtf8("Could not export pattern.") );
+			QMessageBox::warning( this, "Composite", trUtf8("Could not export pattern.") );
 			_ERRORLOG ( "Error saving the pattern" );
 		}
 	}
@@ -784,7 +784,7 @@ void MainForm::action_instruments_clearAll()
 {
 	switch(
 	       QMessageBox::information( this,
-					 "Hydrogen",
+					 "Composite",
 					 trUtf8("Clear all instruments?"),
 					 trUtf8("Ok"),
 					 trUtf8("Cancel"),
@@ -1069,7 +1069,7 @@ void MainForm::openSongFile( const QString& sFilename )
 	LocalFileMng mng;
 	Song *pSong = Song::load( sFilename );
 	if ( pSong == NULL ) {
-		QMessageBox::information( this, "Hydrogen", trUtf8("Error loading song.") );
+		QMessageBox::information( this, "Composite", trUtf8("Error loading song.") );
 		return;
 	}
 
@@ -1429,7 +1429,7 @@ void MainForm::errorEvent( int nErrorCode )
 		default:
 			msg = QString( trUtf8( "Unknown error %1" ) ).arg( nErrorCode );
 	}
-	QMessageBox::information( this, "Hydrogen", msg );
+	QMessageBox::information( this, "Composite", msg );
 }
 
 
@@ -1537,15 +1537,16 @@ void MainForm::latestVersionDone(bool bError)
 	}
 
 	if ( bExistsNewVersion ) {
+		#warning "XXX TO-DO: Newer version check is for Hydrogen"
 		QString sLatest = QString(sLatest_major) + "." +  QString(sLatest_minor) + "." + QString(sLatest_micro);
-		WARNINGLOG( "\n\n*** A newer version (v" + sLatest + ") of Hydrogen is available at http://www.hydrogen-music.org\n" );
+		WARNINGLOG( "\n\n*** A newer version (v" + sLatest + ") of Composite is available at http://www.hydrogen-music.org\n" );
 	}
         if ( bUsingDevelVersion ) {
                 Preferences *pref = Preferences::get_instance();
                 bool isDevelWarningEnabled = pref->getShowDevelWarning();
                 if(isDevelWarningEnabled) {
 
-                        QString msg = trUtf8( "You're using a development version of Hydrogen, please help us reporting bugs or suggestions in the hydrogen-devel mailing list.<br><br>Thank you!" );
+                        QString msg = trUtf8( "You're using a development version of Composite, please help us reporting bugs or suggestions in the hydrogen-devel mailing list.<br><br>Thank you!" );
                         QMessageBox develMessageBox( this );
                         develMessageBox.setText( msg );
                         develMessageBox.addButton( QMessageBox::Ok );
@@ -1629,7 +1630,7 @@ bool MainForm::handleUnsavedChanges()
 	bool rv = true;
 	while ( !done && Hydrogen::get_instance()->getSong()->__is_modified ) {
 		switch(
-				QMessageBox::information( this, "Hydrogen",
+				QMessageBox::information( this, "Composite",
 						trUtf8("\nThe document contains unsaved changes.\n"
 						"Do you want to save the changes?\n"),
 						trUtf8("&Save"), trUtf8("&Discard"), trUtf8("&Cancel"),

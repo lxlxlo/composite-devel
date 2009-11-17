@@ -302,7 +302,7 @@ void HydrogenApp::setStatusBarMessage( const QString& msg, int msec )
 }
 
 void HydrogenApp::setWindowTitle( const QString& title){
-    m_pMainForm->setWindowTitle( ( "Hydrogen " + QString( get_version().c_str()) + QString( " - " ) + title ) );
+    m_pMainForm->setWindowTitle( ( "Composite " + QString( get_version().c_str()) + QString( " - " ) + title ) );
 }
 
 void HydrogenApp::setScrollStatusBarMessage( const QString& msg, int msec, bool test )
