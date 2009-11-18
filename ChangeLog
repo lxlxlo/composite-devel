@@ -1,3 +1,8 @@
+composite (0.003) experimental; urgency=low
+	
+  * Development between 0.002 and 0.004
+
+ -- Gabriel M. Beddingfield <gabriel@teuton.org>  Wed, 18 Nov 2009 12:00:00 +0000
 composite (0.002) experimental; urgency=low
 
   * Replaced 'Hydrogen' with 'Composite' everywhere external.

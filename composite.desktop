@@ -4,7 +4,7 @@ Comment=Live performance sequencer, sampler, looper
 
 GenericName=Sequencer
 
-Version=0.002
+Version=0.003
 
 Type=Application
 Categories=AudioVideo;X-Sound;Audio;Qt;
