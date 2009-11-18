@@ -39,18 +39,16 @@ using namespace std;
 namespace H2Core
 {
 
-JackClient* JackClient::instance = NULL;
+JackClient* JackClient::__instance = NULL;
 
-JackClient* JackClient::get_instance(bool init_jack)
+void JackClient::create_instance(bool init_jack)
 {
-	#warning "XXX TO-DO: This is not realtime safe."
-	if (instance == NULL) {
-		instance = new JackClient;
+	if (__instance == NULL) {
+		__instance = new JackClient;
 	}
-	if (init_jack && (instance->m_client == NULL)) {
-		instance->open();
+	if (init_jack && (__instance->m_client == NULL)) {
+		__instance->open();
 	}
-	return instance;
 }
 
 jack_client_t* JackClient::ref(void)
@@ -86,6 +84,7 @@ JackClient::JackClient()
 
 void JackClient::open(void)
 {
+	if(m_client) return;
 
 	QString sClientName = "Hydrogen";
 	jack_status_t status;
@@ -172,35 +171,50 @@ void JackClient::close(void)
 {
 	int rv;
 	if(m_client) {
-		rv = jack_deactivate(m_client); // return value ignored
-		if (rv) WARNINGLOG("jack_deactive(m_client) reported an error");
+		deactivate();
 		jack_client_close(m_client);  // Ignore return value
 		if (rv) WARNINGLOG("jack_client_close(m_client) reported an error");
 		m_client = 0;
 	}    
 }
 
+void JackClient::activate()
+{
+	if(m_client) {
+		int rv;
+		rv = jack_activate(m_client);
+		if(rv) {
+			ERRORLOG("Could not activate JACK client.");
+		}
+	}
+}
+
+void JackClient::deactivate()
+{
+	if(m_client) {
+		int rv;
+		rv = jack_deactivate(m_client);
+		if(rv) {
+			ERRORLOG("Could not deactivate JACK client.");
+		}
+	}
+}
+		
+
 int JackClient::setAudioProcessCallback(JackProcessCallback process)
 {
-	if (jack_deactivate(m_client)) {
-		ERRORLOG("Could not deactivate JACK client.");
-	}
+	deactivate();
 	int rv = jack_set_process_callback(m_client, process, 0);
 	if (!rv) {
 		INFOLOG("JACK Callback changed.");
 		m_audio_process = process;
-	}
-	if (jack_activate(m_client)) {
-		ERRORLOG("Could not activate JACK client");
 	}
 	return rv;
 }
 
 int JackClient::setNonAudioProcessCallback(JackProcessCallback process)
 {
-	if (jack_deactivate(m_client)) {
-		ERRORLOG("Could not deactivate JACK client.");
-	}
+	deactivate();
 	int rv = 0;
 	if (!m_audio_process) {
 		INFOLOG("No current audio process callback... setting the non-audio one.");
@@ -212,9 +226,6 @@ int JackClient::setNonAudioProcessCallback(JackProcessCallback process)
 	} else {
 		ERRORLOG("Could not set the non-audio process callback.");
 	}
-	if (jack_activate(m_client)) {
-		ERRORLOG("Could not activate JACK client");
-	}
 	return rv;
 }
 
@@ -224,9 +235,7 @@ int JackClient::clearAudioProcessCallback(void)
 	if (!m_audio_process) {
 		return rv;
 	}
-	if (jack_deactivate(m_client)) {
-		ERRORLOG("Could not deactivate JACK client");
-	}
+	deactivate();
 	// make sure the process cycle is over before killing anything
 	if (m_nonaudio_process) {
 		INFOLOG("Switching to non-audio process");
@@ -238,9 +247,6 @@ int JackClient::clearAudioProcessCallback(void)
 		m_nonaudio_process = 0;
 		if (rv) ERRORLOG("JACK returned an error when clearing the process callback.");
 	}
-	if (jack_activate(m_client)) {
-		ERRORLOG("Could not activate JACK client.");
-	}		
 	m_audio_process = 0;
 	return rv;
 }
@@ -249,9 +255,7 @@ int JackClient::clearNonAudioProcessCallback(void)
 {
 	int rv = 0;
 	if (!m_audio_process) {
-		if (jack_deactivate(m_client)) {
-			ERRORLOG("Could not deactivate JACK client.");
-		}
+		deactivate();
 		rv = jack_set_process_callback(m_client, 0, 0);
 		if (rv) {
 			ERRORLOG("JACK returned an error when clearing out the process callback.");

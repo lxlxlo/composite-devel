@@ -67,7 +67,7 @@ void jackDriverShutdown( void *arg )
 {
 	UNUSED( arg );
 //	jackDriverInstance->deactivate();
-	JackClient::get_instance(false)->clearAudioProcessCallback();
+	JackClient::get_instance()->clearAudioProcessCallback();
 	Hydrogen::get_instance()->raiseError( Hydrogen::JACK_SERVER_SHUTDOWN );
 }
 
@@ -171,7 +171,7 @@ void JackOutput::disconnect()
 {
 	INFOLOG( "disconnect" );
 	jack_client_t* client;
-	client = JackClient::get_instance(false)->ref();
+	client = JackClient::get_instance()->ref();
 
 	deactivate();
 
@@ -187,7 +187,7 @@ void JackOutput::disconnect()
 				jack_port_unregister(client, track_output_ports_R[j]);
 		}
 	}
-	JackClient::get_instance(false)->unsubscribe((void*)this);
+	JackClient::get_instance()->unsubscribe((void*)this);
 }
 
 
@@ -196,7 +196,7 @@ void JackOutput::disconnect()
 void JackOutput::deactivate()
 {
 	INFOLOG( "[deactivate]" );
-	JackClient::get_instance(false)->clearAudioProcessCallback();
+	JackClient::get_instance()->clearAudioProcessCallback();
 	memset( track_output_ports_L, 0, sizeof(track_output_ports_L) );
 	memset( track_output_ports_R, 0, sizeof(track_output_ports_R) );
 }
@@ -265,7 +265,8 @@ int JackOutput::init( unsigned /*nBufferSize*/ )
 	*/
 	JackClient::get_instance()->setAudioProcessCallback(this->processCallback);
 
-
+	#warning "XXX TO-DO: These need to be moved to JackClient"
+	JackClient::get_instance()->deactivate();
 	/* tell the JACK server to call `srate()' whenever
 	   the sample rate of the system changes.
 	*/
@@ -282,6 +283,7 @@ int JackOutput::init( unsigned /*nBufferSize*/ )
 	*/
 	jack_on_shutdown ( client, jackDriverShutdown, 0 );
 
+	JackClient::get_instance()->activate();
 
 	/* create two ports */
 	output_port_1 = jack_port_register ( client, "out_L", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0 );

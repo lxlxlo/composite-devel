@@ -153,12 +153,12 @@ void JackMidiDriver::open(void)
 void JackMidiDriver::close(void)
 {
 	if(m_port) {
-		jack_client_t* client = JackClient::get_instance(false)->ref();
+		jack_client_t* client = JackClient::get_instance()->ref();
 		if(client) {
 			if (jack_port_unregister(client, m_port)) {
 				ERRORLOG("JACK returned an error when unregistering port.");
 			}
-		JackClient::get_instance(false)->unsubscribe((void*)this);
+		JackClient::get_instance()->unsubscribe((void*)this);
 		}
 		m_port = 0;
 	}

@@ -111,6 +111,7 @@
 #include "IO/PortMidiDriver.h"
 #include "IO/CoreAudioDriver.h"
 #include "IO/JackMidiDriver.h"
+#include "IO/JackClient.h"
 
 namespace H2Core
 {
@@ -401,6 +402,9 @@ void audioEngine_init()
 #ifdef LADSPA_SUPPORT
 	Effects::create_instance();
 #endif
+#ifdef JACK_SUPPORT
+	JackClient::create_instance(false);
+#endif
 	AudioEngine::create_instance();
 	// Playlist::create_instance();
 
@@ -672,15 +676,15 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 	timeval startTimeval = currentTime2();
 	m_nFreeRollingFrameCounter += nframes;
 
-	// Hook for MIDI in-process callbacks.  It calls its own locks
-	// on the audioengine
-	if (m_pMidiDriver) m_pMidiDriver->processAudio(nframes);
-
 	audioEngine_process_clearAudioBuffers( nframes );
 
 	if( m_audioEngineState < STATE_READY) {
 		return 0;
 	}
+
+	// Hook for MIDI in-process callbacks.  It calls its own locks
+	// on the audioengine
+	if (m_pMidiDriver) m_pMidiDriver->processAudio(nframes);
 
 	AudioEngine::get_instance()->lock( RIGHT_HERE );
 
@@ -1347,6 +1351,7 @@ AudioOutput* createDriver( const QString& sDriver )
 			pDriver = NULL;
 		}
 	} else if ( sDriver == "Jack" ) {
+		JackClient::get_instance()->open();
 		pDriver = new JackOutput( audioEngine_process );
 		if ( pDriver->get_class_name() == "NullDriver" ) {
 			delete pDriver;
@@ -1484,9 +1489,10 @@ void audioEngine_startAudioDrivers()
 #endif
 	} else if ( preferencesMng->m_sMidiDriver == "JackMidi" ) {
 #ifdef JACK_MIDI_SUPPORT
-	    m_pMidiDriver = new JackMidiDriver();
-	    m_pMidiDriver->open();
-	    m_pMidiDriver->setActive( true );
+		JackClient::get_instance()->open();
+		m_pMidiDriver = new JackMidiDriver();
+		m_pMidiDriver->open();
+		m_pMidiDriver->setActive( true );
 #endif
 	}
 
@@ -1508,6 +1514,12 @@ void audioEngine_startAudioDrivers()
 	// are fully initialized.
 	mx.unlock();
 	AudioEngine::get_instance()->unlock();
+
+#ifdef JACK_SUPPORT
+	if( JackClient::get_instance()->ref() ) {
+		JackClient::get_instance()->activate();
+	}
+#endif
 
 	if ( m_pAudioDriver ) {
 		int res = m_pAudioDriver->connect();
@@ -1582,6 +1594,10 @@ void audioEngine_stopAudioDrivers()
 		m_pAudioDriver = NULL;
 		mx.unlock();
 	}
+
+#ifdef JACK_SUPPORT
+	JackClient::get_instance()->close();
+#endif
 
 	AudioEngine::get_instance()->unlock();
 }

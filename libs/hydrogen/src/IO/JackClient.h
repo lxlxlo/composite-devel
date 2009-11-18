@@ -40,10 +40,13 @@
 namespace H2Core
 {
 
+class Hydrogen;
+
 class JackClient : public Object
 {
 public:
-    static JackClient* get_instance(bool init_jack = true);
+    static JackClient* get_instance() { assert(__instance); return __instance; }
+    static void create_instance(bool init_jack = true);
 
     ~JackClient(void);
 
@@ -56,17 +59,24 @@ public:
     void subscribe(void* child_obj);
     void unsubscribe(void* child_obj);
 
-private:
-    JackClient(void);
+    void activate();
+    void deactivate();
+
+    #warning "TODO: These should be private:"
     void open(void);
     void close(void);
 
-    static JackClient* instance;
+private:
+    JackClient(void);
+
+    static JackClient* __instance;
 
     jack_client_t* m_client;
     std::set<void*> m_children;
     JackProcessCallback m_audio_process;
     JackProcessCallback m_nonaudio_process;
+
+    friend class Hydrogen;
 };
 
 } // namespace H2Core
