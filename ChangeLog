@@ -1,3 +1,14 @@
+composite (0.002) experimental; urgency=low
+
+  * Replaced 'Hydrogen' with 'Composite' everywhere external.
+  * Added artwork and icons for Composite.
+  * Fixed JACK audio/midi drivers (esp. initialization code).
+  * Set JACK driver default for audio and MIDI.
+  * Removed obsolete tutorials.
+  * Removed translations of manual.
+
+ -- Gabriel M. Beddingfield <gabriel@teuton.org>  Tue, 17 Nov 2009 12:00:00 +0000
+
 composite (0.001) experimental; urgency=low
 	
   * Development between 0.000 and 0.002

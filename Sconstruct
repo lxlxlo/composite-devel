@@ -11,7 +11,7 @@ import subprocess
 import sys
 import glob
 
-COMPOSITE_VERSION = "0.001"
+COMPOSITE_VERSION = "0.002"
 
 def printStatus( value ):
     if str(value) == "1":
