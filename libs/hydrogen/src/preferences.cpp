@@ -108,11 +108,11 @@ Preferences::Preferences()
 	m_pDefaultUIStyle = new UIStyle();
 
 #ifdef Q_OS_MACX
-	m_sPreferencesFilename = QDir::homePath().append( "/Library/Application Support/Composite/hydrogen.conf" );
+	m_sPreferencesFilename = QDir::homePath().append( "/Library/Application Support/Composite/composite.conf" );
 	m_sPreferencesDirectory = QDir::homePath().append( "/Library/Application Support/Composite/" );
 	m_sDataDirectory = QDir::homePath().append( "/Library/Application Support/Composite/data/" );
 #else
-	m_sPreferencesFilename = QDir::homePath().append( "/.composite/hydrogen.conf" );
+	m_sPreferencesFilename = QDir::homePath().append( "/.composite/composite.conf" );
 	m_sPreferencesDirectory = QDir::homePath().append( "/.composite/" );
 	m_sDataDirectory = QDir::homePath().append( "/.composite/data/" );
 #endif
