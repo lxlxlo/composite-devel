@@ -1,0 +1,22 @@
+#ifndef HYD_CONFIG_H
+#define HYD_CONFIG_H
+#include <string>
+#ifndef QT_BEGIN_NAMESPACE
+#    define QT_BEGIN_NAMESPACE
+#endif
+#ifndef QT_END_NAMESPACE
+#    define QT_END_NAMESPACE
+#endif
+#define CONFIG_PREFIX "${CMAKE_INSTALL_PREFIX}"
+#cmakedefine LIBARCHIVE_SUPPORTX
+#cmakedefine OSS_SUPPORTX
+#cmakedefine ALSA_SUPPORTX
+#cmakedefine JACK_SUPPORTX
+#cmakedefine LASH_SUPPORTX
+#cmakedefine PORTAUDIO_SUPPORTX
+#cmakedefine PORTMIDI_SUPPORTX
+#cmakedefine FLAC_SUPPORTX
+#cmakedefine LRDF_SUPPORTX
+#cmakedefine LADSPA_SUPPORTX
+#define DATA_PATH "${DATA_PATH}"
+#endif
