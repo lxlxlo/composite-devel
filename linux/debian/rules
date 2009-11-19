@@ -25,23 +25,28 @@ else
 	endif
 endif
 
-configure: 
+BUILDDIR=$(CURDIR)/build
+DESTDIR=$(CURDIR)/debian/composite
+
+configure: configure-stamp
+
+configure-stamp:
+	if [ ! -d $(BUILDDIR) ] ; then mkdir $(BUILDDIR) ; fi
+	cd $(BUILDDIR) ; cmake -D CMAKE_INSTALL_PREFIX=/usr/ ../..
+	touch $@
 
 build: build-stamp
 
-build-stamp:
+build-stamp: configure-stamp
 	dh_testdir
-
-	mkdir -p $(CURDIR)/debian/composite/usr/bin
-	cd ..; scons $(H2_PARALLEL_BUILDS) --no-cache DESTDIR=$(CURDIR)/debian/composite/ prefix=/usr/
-
+	cd $(BUILDDIR) && make $(H2_PARALLEL_BUILDS)
 	touch $@
 
 clean:
 	dh_testdir
 	dh_testroot
 
-	cd ..; scons -c
+	rm -rf $(BUILDDIR) $(DESTDIR)
 
 	dh_clean
 
@@ -52,11 +57,8 @@ install: build
 	dh_clean -k
 	dh_installdirs
 
-	mkdir -p $(CURDIR)/debian/composite/usr/bin
-	cd ..; scons install
-#	Clean out subversion's working copy folders (if accidentally copied
-#	into the target).
-	find $(CURDIR)/debian/composite -type d -name '.svn' -print0 | xargs --null rm -rf
+	mkdir -p $(DESTDIR)/usr/bin
+	cd $(BUILDDIR) && make install DESTDIR=$(DESTDIR)
 
 	touch $@
 

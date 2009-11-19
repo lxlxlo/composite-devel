@@ -148,7 +148,7 @@ ADD_SUBDIRECTORY(gui)
 #ADD_SUBDIRECTORY(extra)
 
 INSTALL(DIRECTORY data DESTINATION ${DATA_PATH}/..)
-INSTALL(FILES data/composite.desktop DESTINATION "${CMAKE_INSTALL_PREFIX}/share/applications")
+INSTALL(FILES ${CMAKE_BINARY_DIR}/composite.desktop DESTINATION "${CMAKE_INSTALL_PREFIX}/share/applications")
 
 INCLUDE(InstallRequiredSystemLibraries)
 
