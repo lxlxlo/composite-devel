@@ -50,7 +50,7 @@ SET(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}")
 #IF(VERSION_SUFFIX)
 #    SET(VERSION "${VERSION}-${VERSION_SUFFIX}")
 #ENDIF(VERSION_SUFFIX)
-#ADD_DEFINITIONS(-D'HYDROGEN_VERSION="${VERSION}"')
+#ADD_DEFINITIONS(-D'COMPOSITE_VERSION="${VERSION}"')
 
 # HEADER CHECKS
 INCLUDE(CheckIncludeFiles)
@@ -107,7 +107,7 @@ FIND_PACKAGE(Qt4 4.3.0 REQUIRED)
 INCLUDE(${QT_USE_FILE})
 
 
-SET(DATA_PATH "${CMAKE_INSTALL_PREFIX}/share/hydrogen/data")
+SET(DATA_PATH "${CMAKE_INSTALL_PREFIX}/share/composite/data")
 #
 MESSAGE("\n"
 "Installation Summary\n"
@@ -163,7 +163,7 @@ ADD_SUBDIRECTORY(gui)
 #ADD_SUBDIRECTORY(extra)
 
 INSTALL(DIRECTORY data DESTINATION ${DATA_PATH}/..)
-INSTALL(FILES data/hydrogen.desktop DESTINATION "${CMAKE_INSTALL_PREFIX}/share/applications")
+INSTALL(FILES data/composite.desktop DESTINATION "${CMAKE_INSTALL_PREFIX}/share/applications")
 
 INCLUDE(InstallRequiredSystemLibraries)
 
@@ -192,7 +192,7 @@ ENDIF(VERSION_SUFFIX)
     #SET(CPACK_NSIS_MENU_LINKS "lmms.exe;Linux MultiMedia Studio")
 #ELSE(WIN32)
 #    SET(CPACK_STRIP_FILES "bin/lmms;${PLUGIN_DIR}/*.so")
-#    SET(CPACK_PACKAGE_EXECUTABLES "hydrogen-gui" "Hydrogen binary")
+#    SET(CPACK_PACKAGE_EXECUTABLES "composite-gui" "Composite binary")
 #ENDIF(WIN32)
 
 SET(MACOSX_BUNDLE_ICON_FILE "${CMAKE_SOURCE_DIR}/data/img/gray/icon.svg")
