@@ -71,15 +71,13 @@ installed on your system, and the development header files:
 	* Qt 4 Library (>=4.4.0, 4.3.x might work, 4.2.x won't)
 	* Qt 4 SDK (moc, uic, etc.)
 	* GNU g++ compiler (>=4.0, 3.x might work)
-	* scons (>=0.98, 1.0 preferred, <0.98 might work)
+	* CMake (>= 2.6, earlier might work)
+	* JACK (jack1 >= 0.109.0, jack2 >= 1.9.3, earlier ones may
+          work on some systems)
 	* libsndfile >=1.0.17
 	* zlib and libtar -OR- libarchive
 	  OS X: You will probably need to build libarchive from source.
-	* At least 1 audio and 1 midi driver
 	* OS X: Xcode
-
-	DRIVERS AVAILABLE
-	* JACK Audio Connection Kit (>=0.103.0)
 
 	OPTIONAL SUPPORT
 	* libFLAC for handling FLAC sound files.
@@ -93,39 +91,22 @@ On a single, 500MHz processor Composite takes about 1.5 hours to build.
 After you have all the prerequisites, building and installing will
 look like this:
 
-	$ tar xjf composite-0.9.4.tar.bz2
-	$ cd composite-0.9.4
-	$ scons
-	$ sudo scons install
+	$ tar xjf composite-0.004.tar.bz2
+        $ mkdir sandbox
+	$ cd sandbox
+	$ cmake ../composite-0.004 CMAKE_INSTALL_PREFIX=/usr/local
+	$ make
+        $ sudo make install
 
-If you wish to configure features like LADSPA plugins, FLAC support,
-or debugging symbols, get more information like this:
+To change the directory where Composite is installed, it is done like
+this on the last step:
 
-	$ scons --help
+	$ sudo make install DESTDIR=/mnt/chroot
 
-To change the directory where scons is installed, it is done like
-this:
+THERE IS NO UNINSTALL. USE A PACKAGE MANAGER.
 
-	$ scons prefix=/path/to/install/dir
-	$ sudo scons install
-
-Uninstalling Composite is done like this:
-
-	$ sudo scons -c install
-
-Note that scons is a build system and not a package manager.  While we
-make every effort to ensure that Composite uninstalls cleanly, it is
-not a guarantee.
-
-Composite uses a scons tool that detects the correct Qt settings, but
-sometimes it needs a little help.  If Composite fails to build
-(typically when a .ui file fails), set the Qt 4 install directory like
-this:
-
-	$ QTDIR=/opt/lib/qt4 scons
-
-It's also best to ensure that your PATH is pointing to the Qt 4
-versions of moc and uic, and not the Qt 3 versions.
+Composite uses a tool that detects the correct Qt settings.  Please
+make sure that qmake for Qt4 is in your path... and all will be well.
 
 ___CREATING A BINARY PACKAGE___
 
@@ -144,8 +125,8 @@ In order to create a .deb package for Debian or Debian-based systems
 
 To build the Composite package:
 
-	$ tar xjf composite-0.9.4.tar
-	$ cd composite-0.9.4
+	$ tar xjf composite-0.004.tar
+	$ cd composite-0.004
 	$ cd linux
 	$ fakeroot dpkg-buildpackage
 
@@ -155,6 +136,9 @@ edit linux/debian/changelog to set the version.
 
 6. INSTALL.txt Changelog
 ------------------------
+
+2009-11-19 Gabriel M. Beddingfield <gabriel@teuton.org>
+	* Convert build system from scons to CMake.
 
 2009-11-15 Gabriel M. Beddingfield <gabriel@teuton.org>
         * Rebrand from Hydrogen to Composite
