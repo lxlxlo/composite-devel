@@ -149,11 +149,8 @@ Preferences::Preferences()
 	m_nBufferSize = 1024;
 	m_nSampleRate = 44100;
 
-	//___ oss driver properties ___
-	m_sOSSDevice = QString("/dev/dsp");
-
 	//___ MIDI Driver properties
-	m_sMidiDriver = QString("ALSA");
+	m_sMidiDriver = QString("JackMidi");
 	m_sMidiPortName = QString("None");
 	m_nMidiChannelFilter = -1;
 	m_bMidiNoteOffIgnore = false;
@@ -414,15 +411,6 @@ void Preferences::loadPreferences( bool bGlobal )
 				m_nBufferSize = LocalFileMng::readXmlInt( audioEngineNode, "buffer_size", m_nBufferSize );
 				m_nSampleRate = LocalFileMng::readXmlInt( audioEngineNode, "samplerate", m_nSampleRate );
 
-				//// OSS DRIVER ////
-				QDomNode ossDriverNode = audioEngineNode.firstChildElement( "oss_driver" );
-				if ( ossDriverNode.isNull()  ) {
-					WARNINGLOG( "oss_driver node not found" );
-					recreate = true;
-				} else {
-					m_sOSSDevice = LocalFileMng::readXmlString( ossDriverNode, "ossDevice", m_sOSSDevice );
-				}
-
 				//// JACK DRIVER ////
 				QDomNode jackDriverNode = audioEngineNode.firstChildElement( "jack_driver" );
 				if ( jackDriverNode.isNull() ) {
@@ -454,22 +442,13 @@ void Preferences::loadPreferences( bool bGlobal )
 				}
 
 
-				/// ALSA AUDIO DRIVER ///
-				QDomNode alsaAudioDriverNode = audioEngineNode.firstChildElement( "alsa_audio_driver" );
-				if ( alsaAudioDriverNode.isNull() ) {
-					WARNINGLOG( "alsa_audio_driver node not found" );
-					recreate = true;
-				} else {
-					m_sAlsaAudioDevice = LocalFileMng::readXmlString( alsaAudioDriverNode, "alsa_audio_device", m_sAlsaAudioDevice );
-				}
-
 				/// MIDI DRIVER ///
 				QDomNode midiDriverNode = audioEngineNode.firstChildElement( "midi_driver" );
 				if ( midiDriverNode.isNull() ) {
 					WARNINGLOG( "midi_driver node not found" );
 					recreate = true;
 				} else {
-					m_sMidiDriver = LocalFileMng::readXmlString( midiDriverNode, "driverName", "ALSA" );
+					m_sMidiDriver = LocalFileMng::readXmlString( midiDriverNode, "driverName", "JackMidi" );
 					m_sMidiPortName = LocalFileMng::readXmlString( midiDriverNode, "port_name", "None" );
 					m_nMidiChannelFilter = LocalFileMng::readXmlInt( midiDriverNode, "channel_filter", -1 );
 					m_bMidiNoteOffIgnore = LocalFileMng::readXmlBool( midiDriverNode, "ignore_note_off", true );
@@ -749,13 +728,6 @@ void Preferences::savePreferences()
 		LocalFileMng::writeXmlString( audioEngineNode, "buffer_size", QString("%1").arg( m_nBufferSize ) );
 		LocalFileMng::writeXmlString( audioEngineNode, "samplerate", QString("%1").arg( m_nSampleRate ) );
 
-		//// OSS DRIVER ////
-		QDomNode ossDriverNode = doc.createElement( "oss_driver" );
-		{
-			LocalFileMng::writeXmlString( ossDriverNode, "ossDevice", m_sOSSDevice );
-		}
-		audioEngineNode.appendChild( ossDriverNode );
-
 		//// JACK DRIVER ////
 		QDomNode jackDriverNode = doc.createElement( "jack_driver" );
 		{
@@ -799,13 +771,6 @@ void Preferences::savePreferences()
 			LocalFileMng::writeXmlString( jackDriverNode, "jack_track_outs", jackTrackOutsString );
 		}
 		audioEngineNode.appendChild( jackDriverNode );
-
-		//// ALSA AUDIO DRIVER ////
-		QDomNode alsaAudioDriverNode = doc.createElement( "alsa_audio_driver" );
-		{
-			LocalFileMng::writeXmlString( alsaAudioDriverNode, "alsa_audio_device", m_sAlsaAudioDevice );
-		}
-		audioEngineNode.appendChild( alsaAudioDriverNode );
 
 		/// MIDI DRIVER ///
 		QDomNode midiDriverNode = doc.createElement( "midi_driver" );

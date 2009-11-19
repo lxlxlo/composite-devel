@@ -223,12 +223,6 @@ int main(int argc, char *argv[])
 		else if (sSelectedDriver == "jack") {
 			pPref->m_sAudioDriver = "Jack";
 		}
-		else if ( sSelectedDriver == "oss" ) {
-			pPref->m_sAudioDriver = "Oss";
-		}
-		else if ( sSelectedDriver == "alsa" ) {
-			pPref->m_sAudioDriver = "Alsa";
-		}
 
 		QString family = pPref->getApplicationFontFamily();
 		pQApp->setFont( QFont( family, pPref->getApplicationFontPointSize() ) );
@@ -383,7 +377,7 @@ void showInfo()
 void showUsage()
 {
 	std::cout << "Usage: composite [-v] [-h] -s file" << std::endl;
-	std::cout << "   -d, --driver AUDIODRIVER - Use the selected audio driver (jack, alsa, oss)" << std::endl;
+	std::cout << "   -d, --driver AUDIODRIVER - Use the selected audio driver (jack)" << std::endl;
 	std::cout << "   -s, --song FILE - Load a song (*.h2song) at startup" << std::endl;
 #ifdef LASH_SUPPORT
 	std::cout << "   --lash-no-start-server - If LASH server not running, don't start" << endl

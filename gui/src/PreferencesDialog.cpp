@@ -61,12 +61,6 @@ PreferencesDialog::PreferencesDialog(QWidget* parent)
 	driverComboBox->clear();
 	driverComboBox->addItem( "Auto" );
 	driverComboBox->addItem( "JACK" );
-	driverComboBox->addItem( "ALSA" );
-	driverComboBox->addItem( "OSS" );
-	driverComboBox->addItem( "PortAudio" );
-#ifdef Q_OS_MACX
-	driverComboBox->addItem( "CoreAudio" );
-#endif
 
 	// Selected audio Driver
 	QString sAudioDriver = pPref->m_sAudioDriver;
@@ -76,40 +70,16 @@ PreferencesDialog::PreferencesDialog(QWidget* parent)
 	else if (sAudioDriver == "Jack") {
 		driverComboBox->setCurrentIndex(1);
 	}
-	else if ( sAudioDriver == "Alsa" ) {
-		driverComboBox->setCurrentIndex(2);
-	}
-	else if ( sAudioDriver == "Oss" ) {
-		driverComboBox->setCurrentIndex(3);
-	}
-	else if ( sAudioDriver == "PortAudio" ) {
-		driverComboBox->setCurrentIndex(4);
-	}
-	else if ( sAudioDriver == "CoreAudio" ) {
-		driverComboBox->setCurrentIndex(5);
-	}
 	else {
 		ERRORLOG( "Unknown audio driver from preferences [" + sAudioDriver + "]" );
 	}
 
 
 	m_pMidiDriverComboBox->clear();
-	m_pMidiDriverComboBox->addItem( "ALSA" );
-	m_pMidiDriverComboBox->addItem( "PortMidi" );
-	m_pMidiDriverComboBox->addItem( "CoreMidi" );
 	m_pMidiDriverComboBox->addItem( "JackMidi" );
 
-	if ( pPref->m_sMidiDriver == "ALSA" ) {
+	if ( pPref->m_sMidiDriver == "JackMidi" ) {
 		m_pMidiDriverComboBox->setCurrentIndex(0);
-	}
-	else if ( pPref->m_sMidiDriver == "PortMidi" ) {
-		m_pMidiDriverComboBox->setCurrentIndex(1);
-	}
-	else if ( pPref->m_sMidiDriver == "CoreMidi" ) {
-		m_pMidiDriverComboBox->setCurrentIndex(2);
-	}
-	else if ( pPref->m_sMidiDriver == "JackMidi" ) {
-		m_pMidiDriverComboBox->setCurrentIndex(3);
 	}
 	else {
 		ERRORLOG( "Unknown midi input from preferences [" + pPref->m_sMidiDriver + "]" );
@@ -291,20 +261,6 @@ void PreferencesDialog::on_okBtn_clicked()
 	else if (driverComboBox->currentText() == "JACK" ) {
 		pPref->m_sAudioDriver = "Jack";
 	}
-	else if (driverComboBox->currentText() == "ALSA" ) {
-		pPref->m_sAudioDriver = "Alsa";
-		pPref->m_sAlsaAudioDevice = m_pAudioDeviceTxt->text();
-	}
-	else if (driverComboBox->currentText() == "OSS" ) {
-		pPref->m_sAudioDriver = "Oss";
-		pPref->m_sOSSDevice = m_pAudioDeviceTxt->text();
-	}
-	else if (driverComboBox->currentText() == "PortAudio" ) {
-		pPref->m_sAudioDriver = "PortAudio";
-	}
-	else if (driverComboBox->currentText() == "CoreAudio" ) {
-		pPref->m_sAudioDriver = "CoreAudio";
-	}
 	else {
 		ERRORLOG( "[okBtnClicked] Invalid audio driver" );
 	}
@@ -345,16 +301,7 @@ void PreferencesDialog::on_okBtn_clicked()
 
 
 
-	if ( m_pMidiDriverComboBox->currentText() == "ALSA" ) {
-		pPref->m_sMidiDriver = "ALSA";
-	}
-	else if ( m_pMidiDriverComboBox->currentText() == "PortMidi" ) {
-		pPref->m_sMidiDriver = "PortMidi";
-	}
-	else if ( m_pMidiDriverComboBox->currentText() == "CoreMidi" ) {
-		pPref->m_sMidiDriver = "CoreMidi";
-	}
-	else if ( m_pMidiDriverComboBox->currentText() == "JackMidi" ) {
+	if ( m_pMidiDriverComboBox->currentText() == "JackMidi" ) {
 		pPref->m_sMidiDriver = "JackMidi";
 	}
 
@@ -455,27 +402,6 @@ void PreferencesDialog::updateDriverInfo()
 	bJack_support = true;
 	#endif
 
-	bool bAlsa_support = false;
-	#ifdef ALSA_SUPPORT
-	bAlsa_support = true;
-	#endif
-
-	bool bOss_support = false;
-	#ifdef OSS_SUPPORT
-	bOss_support = true;
-	#endif
-
-	bool bPortAudio_support = false;
-	#ifdef PORTAUDIO_SUPPORT
-	bPortAudio_support = true;
-	#endif
-
-	bool bCoreAudio_support = false;
-	#ifdef COREAUDIO_SUPPORT
-	bCoreAudio_support = true;
-	#endif
-
-
 	if ( driverComboBox->currentText() == "Auto" ) {
 		info += trUtf8("<b>Automatic driver selection</b>");
 
@@ -485,19 +411,6 @@ void PreferencesDialog::updateDriverInfo()
 		sampleRateComboBox->setEnabled( false );
 		trackOutputComboBox->setEnabled( false );
 		connectDefaultsCheckBox->setEnabled( false );
-	}
-	else if ( driverComboBox->currentText() == "OSS" ) {	// OSS
-		info += trUtf8("<b>Open Sound System</b><br>Simple audio driver [/dev/dsp]");
-		if ( !bOss_support ) {
-			info += trUtf8("<br><b><font color=\"red\">Not compiled</font></b>");
-		}
-		m_pAudioDeviceTxt->setEnabled(true);
-		m_pAudioDeviceTxt->setText( pPref->m_sOSSDevice );
-		bufferSizeSpinBox->setEnabled(true);
-		sampleRateComboBox->setEnabled(true);
-		trackOutputComboBox->setEnabled( false );
-		trackOutsCheckBox->setEnabled( false );
-		connectDefaultsCheckBox->setEnabled(false);
 	}
 	else if ( driverComboBox->currentText() == "JACK" ) {	// JACK
 		info += trUtf8("<b>Jack Audio Connection Kit Driver</b><br>Low latency audio driver");
@@ -511,44 +424,6 @@ void PreferencesDialog::updateDriverInfo()
 		trackOutputComboBox->setEnabled( true );
 		connectDefaultsCheckBox->setEnabled(true);
 		trackOutsCheckBox->setEnabled( true );
-	}
-	else if ( driverComboBox->currentText() == "ALSA" ) {	// ALSA
-		info += trUtf8("<b>ALSA Driver</b><br>");
-		if ( !bAlsa_support ) {
-			info += trUtf8("<br><b><font color=\"red\">Not compiled</font></b>");
-		}
-		m_pAudioDeviceTxt->setEnabled(true);
-		m_pAudioDeviceTxt->setText( pPref->m_sAlsaAudioDevice );
-		bufferSizeSpinBox->setEnabled(true);
-		sampleRateComboBox->setEnabled(true);
-		trackOutputComboBox->setEnabled( false );
-		trackOutsCheckBox->setEnabled( false );
-		connectDefaultsCheckBox->setEnabled(false);
-	}
-	else if ( driverComboBox->currentText() == "PortAudio" ) {
-		info += trUtf8( "<b>PortAudio Driver</b><br>" );
-		if ( !bPortAudio_support ) {
-			info += trUtf8("<br><b><font color=\"red\">Not compiled</font></b>");
-		}
-		m_pAudioDeviceTxt->setEnabled(false);
-		m_pAudioDeviceTxt->setText( "" );
-		bufferSizeSpinBox->setEnabled(true);
-		sampleRateComboBox->setEnabled(true);
-		trackOutsCheckBox->setEnabled( false );
-		connectDefaultsCheckBox->setEnabled(false);
-	}
-	else if ( driverComboBox->currentText() == "CoreAudio" ) {
-		info += trUtf8( "<b>CoreAudio Driver</b><br>" );
-		if ( !bCoreAudio_support ) {
-			info += trUtf8("<br><b><font color=\"red\">Not compiled</font></b>");
-		}
-		m_pAudioDeviceTxt->setEnabled(false);
-		m_pAudioDeviceTxt->setText( "" );
-		bufferSizeSpinBox->setEnabled(true);
-		sampleRateComboBox->setEnabled(true);
-		trackOutputComboBox->setEnabled( false );
-		trackOutsCheckBox->setEnabled( false );
-		connectDefaultsCheckBox->setEnabled(false);
 	}
 	else {
 		QString selectedDriver = driverComboBox->currentText();
@@ -657,11 +532,8 @@ void PreferencesDialog::on_m_pMidiDriverComboBox_currentIndexChanged( const QStr
 			int index = driverComboBox->findText("JACK");
 			if (index < 0) index = 0;
 			driverComboBox->setCurrentIndex(index);
-		} else {
-			int index = m_pMidiDriverComboBox->findText("ALSA");
-			if (index < 0) index = 0;
-			m_pMidiDriverComboBox->setCurrentIndex(index);
-		}			
+		}
+		#warning "XXX TODO: ...else??"
 	}
 #endif // JACK_MIDI_SUPPORT
 	m_bNeedDriverRestart = true;

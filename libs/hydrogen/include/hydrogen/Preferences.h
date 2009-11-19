@@ -187,9 +187,6 @@ public:
 	unsigned m_nBufferSize;		///< Audio buffer size
 	unsigned m_nSampleRate;		///< Audio sample rate
 
-	//___ oss driver properties ___
-	QString m_sOSSDevice;		///< Device used for output
-
 	//___ MIDI Driver properties
 	QString m_sMidiDriver;
 	QString m_sMidiPortName;

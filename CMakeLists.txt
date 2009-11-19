@@ -15,11 +15,7 @@ SET(MANDATORY_PACKAGES_LIST)
 # OPTIONS
 OPTION(WANT_DEBUG	"build with debug information" OFF)                                             # TODO
 OPTION(WANT_LIBARCHIVE	"Enable use of libarchive instead of libtar" OFF)                               # TODO
-#option(WANT_OSS	        "Include OSS (Open Sound System) support" OFF)
-OPTION(WANT_ALSA	"Include ALSA (Advanced Linux Sound Architecture) support" ON)
 OPTION(WANT_JACK	"Include JACK (Jack Audio Connection Kit) support" ON)
-OPTION(WANT_PORTAUDIO	"Include PortAudio support" OFF)
-#OPtIoN(WANT_PORTMIDI	"Include PortMidi support" OFF)
 OPTION(WANT_LASH	"Include LASH (Linux Audio Session Handler) support" OFF)
 OPTION(WANT_LRDF	"Include LRDF (Lightweight Resource Description Framework with special support for LADSPA plugins) support" OFF)
 OPTION(WANT_FLAC	"Include FLAC (Free Lossless Audio Codec) support" ON)
@@ -28,8 +24,6 @@ OPTION(WANT_FLACPP	"Include FLAC++ (Free Lossless Audio Codec) support" ON) # kl
 # DEFAULT OPTIONS
 IF(WIN32)
     MESSAGE( "?????")
-    SET(WANT_ALSA OFF)
-    SET(STATUS_ALSA "<not supported on this platform>")
     SET(WANT_JACK OFF)
     SET(STATUS_JACK "<not supported on this platform>")
 ELSE(WIN32)
@@ -83,9 +77,7 @@ ENDMACRO(my_check)
 
 #
 MY_CHECK(LIBSNDFILE sndfile libsndfile-dev)
-MY_CHECK(ALSA alsa libasound2-dev)
 MY_CHECK(JACK jack>=0.77 libjack0.100.0-dev)
-MY_CHECK(PORTAUDIO portaudio-2.0 libportaudio-dev)
 MY_CHECK(LASH lash-1.0 lash-0.6.0-dev)
 MY_CHECK(LRDF lrdf liblrdf-dev)
 MY_CHECK(FLAC flac libflac-dev)
@@ -121,11 +113,7 @@ MESSAGE("\n"
 MESSAGE(
 "Supported audio interfaces\n"
 "--------------------------\n"
-"* ALSA                        : ${STATUS_ALSA}\n"
-#"* OSS                         : ${STATUS_OSS}\n"
 "* JACK                        : ${STATUS_JACK}\n"
-"* PortAudio                   : ${STATUS_PORTAUDIO}\n"
-#"* PortMidi                    : ${STATUS_MIDI}\n"
 )
 
 MESSAGE(

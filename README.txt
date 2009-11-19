@@ -42,10 +42,10 @@ __Sequencer and mixer__
 
 __Other__
 
-	* JACK, ALSA, PortAudio and OSS audio drivers.
+	* JACK audio drivers.
 
-	* JACK, ALSA, and PortMidi for MIDI input with
-          assignable midi-in channel (1..16, ALL).
+	* JACK MIDI input with assignable midi-in
+          channel (1..16, ALL).
 
 	* Import/export of drumkits.
 

@@ -9,12 +9,8 @@
 #endif
 #define CONFIG_PREFIX "${CMAKE_INSTALL_PREFIX}"
 #cmakedefine LIBARCHIVE_SUPPORTX
-#cmakedefine OSS_SUPPORTX
-#cmakedefine ALSA_SUPPORTX
 #cmakedefine JACK_SUPPORTX
 #cmakedefine LASH_SUPPORTX
-#cmakedefine PORTAUDIO_SUPPORTX
-#cmakedefine PORTMIDI_SUPPORTX
 #cmakedefine FLAC_SUPPORTX
 #cmakedefine LRDF_SUPPORTX
 #cmakedefine LADSPA_SUPPORTX

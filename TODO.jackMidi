@@ -18,11 +18,6 @@ STILL OUTSTANDING
   ported over in the latest merge.  It needs to be.
   (gabe 2/19/09)
 
-* (OT) Note: H2 insists on using a SIGNED 16-BIT LITTLE-END stream
-  (S16_LE) for PCM in the Alsa driver.  As it happens, my sound card
-  requires S32_LE.  :-/ This is probably also why xmms won't work with
-  ALSA on this machine.
-
 * Need to do some sample-accuracy tests.
 
 COMPLETED (KEEP UNTIL MERGED INTO TRUNK)

@@ -87,7 +87,6 @@
 #include <hydrogen/IO/JackOutput.h>
 #include <hydrogen/IO/NullDriver.h>
 #include <hydrogen/IO/MidiInput.h>
-#include <hydrogen/IO/CoreMidiDriver.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/data_path.h>
 #include <hydrogen/sampler/Sampler.h>
@@ -102,14 +101,8 @@
 #include "BeatCounter.h"
 #include "SongSequencer.h"
 
-#include "IO/OssDriver.h"
 #include "IO/FakeDriver.h"
-#include "IO/AlsaAudioDriver.h"
-#include "IO/PortAudioDriver.h"
 #include "IO/DiskWriterDriver.h"
-#include "IO/AlsaMidiDriver.h"
-#include "IO/PortMidiDriver.h"
-#include "IO/CoreAudioDriver.h"
 #include "IO/JackMidiDriver.h"
 #include "IO/JackClient.h"
 
@@ -1344,13 +1337,7 @@ AudioOutput* createDriver( const QString& sDriver )
 	Preferences *pPref = Preferences::get_instance();
 	AudioOutput *pDriver = NULL;
 
-	if ( sDriver == "Oss" ) {
-		pDriver = new OssDriver( audioEngine_process );
-		if ( pDriver->get_class_name() == "NullDriver" ) {
-			delete pDriver;
-			pDriver = NULL;
-		}
-	} else if ( sDriver == "Jack" ) {
+	if ( sDriver == "Jack" ) {
 		JackClient::get_instance()->open();
 		pDriver = new JackOutput( audioEngine_process );
 		if ( pDriver->get_class_name() == "NullDriver" ) {
@@ -1363,30 +1350,7 @@ AudioOutput* createDriver( const QString& sDriver )
 				);
 #endif
 		}
-	} else if ( sDriver == "Alsa" ) {
-		pDriver = new AlsaAudioDriver( audioEngine_process );
-		if ( pDriver->get_class_name() == "NullDriver" ) {
-			delete pDriver;
-			pDriver = NULL;
-		}
-	} else if ( sDriver == "PortAudio" ) {
-		pDriver = new PortAudioDriver( audioEngine_process );
-		if ( pDriver->get_class_name() == "NullDriver" ) {
-			delete pDriver;
-			pDriver = NULL;
-		}
-	}
-//#ifdef Q_OS_MACX
-	else if ( sDriver == "CoreAudio" ) {
-		_INFOLOG( "Creating CoreAudioDriver" );
-		pDriver = new CoreAudioDriver( audioEngine_process );
-		if ( pDriver->get_class_name() == "NullDriver" ) {
-			delete pDriver;
-			pDriver = NULL;
-		}
-	}
-//#endif
-	else if ( sDriver == "Fake" ) {
+	} else if ( sDriver == "Fake" ) {
 		_WARNINGLOG( "*** Using FAKE audio driver ***" );
 		pDriver = new FakeDriver( audioEngine_process );
 	} else {
@@ -1439,21 +1403,13 @@ void audioEngine_startAudioDrivers()
 //	sAudioDriver = "Auto";
 	if ( sAudioDriver == "Auto" ) {
 		if ( ( m_pAudioDriver = createDriver( "Jack" ) ) == NULL ) {
-			if ( ( m_pAudioDriver = createDriver( "Alsa" ) ) == NULL ) {
-				if ( ( m_pAudioDriver = createDriver( "CoreAudio" ) ) == NULL ) {
-					if ( ( m_pAudioDriver = createDriver( "PortAudio" ) ) == NULL ) {
-						if ( ( m_pAudioDriver = createDriver( "Oss" ) ) == NULL ) {
-							audioEngine_raiseError( Hydrogen::ERROR_STARTING_DRIVER );
-							_ERRORLOG( "Error starting audio driver" );
-							_ERRORLOG( "Using the NULL output audio driver" );
+			audioEngine_raiseError( Hydrogen::ERROR_STARTING_DRIVER );
+			_ERRORLOG( "Error starting audio driver" );
+			_ERRORLOG( "Using the NULL output audio driver" );
 
-							// use the NULL output driver
-							m_pAudioDriver = new NullDriver( audioEngine_process );
-							m_pAudioDriver->init( 0 );
-						}
-					}
-				}
-			}
+			// use the NULL output driver
+			m_pAudioDriver = new NullDriver( audioEngine_process );
+			m_pAudioDriver->init( 0 );
 		}
 	} else {
 		m_pAudioDriver = createDriver( sAudioDriver );
@@ -1468,26 +1424,7 @@ void audioEngine_startAudioDrivers()
 		}
 	}
 	
-	if ( preferencesMng->m_sMidiDriver == "ALSA" ) {
-#ifdef ALSA_SUPPORT
-		// Create MIDI driver
-		m_pMidiDriver = new AlsaMidiDriver();
-		m_pMidiDriver->open();
-		m_pMidiDriver->setActive( true );
-#endif
-	} else if ( preferencesMng->m_sMidiDriver == "PortMidi" ) {
-#ifdef PORTMIDI_SUPPORT
-		m_pMidiDriver = new PortMidiDriver();
-		m_pMidiDriver->open();
-		m_pMidiDriver->setActive( true );
-#endif
-	} else if ( preferencesMng->m_sMidiDriver == "CoreMidi" ) {
-#ifdef COREMIDI_SUPPORT
-		m_pMidiDriver = new CoreMidiDriver();
-		m_pMidiDriver->open();
-		m_pMidiDriver->setActive( true );
-#endif
-	} else if ( preferencesMng->m_sMidiDriver == "JackMidi" ) {
+	if ( preferencesMng->m_sMidiDriver == "JackMidi" ) {
 #ifdef JACK_MIDI_SUPPORT
 		JackClient::get_instance()->open();
 		m_pMidiDriver = new JackMidiDriver();

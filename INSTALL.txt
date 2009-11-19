@@ -80,12 +80,6 @@ installed on your system, and the development header files:
 
 	DRIVERS AVAILABLE
 	* JACK Audio Connection Kit (>=0.103.0)
-	* ALSA (Advanced Linux Sound Architecture)
-	* OSS
-	* PortAudio (v18, not v19)
-	* PortMIDI
-	* CoreAudio (OS X)
-	* CoreMidi (OS X)
 
 	OPTIONAL SUPPORT
 	* LASH (Linux Audio Session Handler)

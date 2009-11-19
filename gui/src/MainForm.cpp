@@ -148,10 +148,6 @@ MainForm::MainForm( QApplication *app, const QString& songFilename )
 			// send alsa client id now since it can only be sent
 			// after the audio engine has been started.
 			Preferences *pref = Preferences::get_instance();
-			if ( pref->m_sMidiDriver == "ALSA" ) {
-	//			infoLog("[LASH] Sending alsa seq id to LASH server");
-				lashClient->sendAlsaClientId();
-			}
 			// start timer for polling lash events
 			lashPollTimer = new QTimer(this);
 			connect( lashPollTimer, SIGNAL( timeout() ), this, SLOT( onLashPollTimer() ) );
