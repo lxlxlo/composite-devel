@@ -34,10 +34,6 @@
 #include <hydrogen/Preferences.h>
 #include <hydrogen/globals.h>
 
-#ifdef LASH_SUPPORT
-#include <hydrogen/LashClient.h>
-#endif
-
 namespace H2Core
 {
 
@@ -120,22 +116,6 @@ int JackOutput::connect()
 	
 	memset( track_output_ports_L, 0, sizeof(track_output_ports_L) );
 	memset( track_output_ports_R, 0, sizeof(track_output_ports_R) );
-
-#ifdef LASH_SUPPORT
-	if ( Preferences::get_instance()->useLash() ){
-		LashClient* lashClient = LashClient::get_instance();
-		if (lashClient && !lashClient->isNewProject())
-		{
-	//		infoLog("[LASH] Sending Jack client name to LASH server");
-			lashClient->sendJackClientName();
-			
-			if (!lashClient->isNewProject())
-			{
-				connect_output_ports = false;
-			}
-		}
-	}
-#endif
 
 	if ( connect_output_ports ) {
 //	if ( connect_out_flag ) {

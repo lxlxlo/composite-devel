@@ -26,9 +26,6 @@ COMPLETED (KEEP UNTIL MERGED INTO TRUNK)
 * Get MIDI working in a sample-perfect mode....
   [DONE]
 
-* Don't forget to add LASH support.
-  [DONE]
-
 * Solve the exit-segfault problem.
   [DONE, I think]
 

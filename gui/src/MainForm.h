@@ -99,7 +99,6 @@ class MainForm : public QMainWindow, public EventListener, public Object
 
 		void action_file_open_recent( QAction *pAction );
 		void latestVersionDone(bool bError);
-		void onLashPollTimer();
 
 	private slots:
 		void onAutoSaveTimer();
@@ -136,9 +135,6 @@ class MainForm : public QMainWindow, public EventListener, public Object
 
 		void getLatestVersion();
 		QString getAutoSaveFilename();
-	#ifdef LASH_SUPPORT
-		QTimer *lashPollTimer;
-	#endif
 
 };
 

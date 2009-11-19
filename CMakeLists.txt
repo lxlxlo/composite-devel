@@ -16,7 +16,6 @@ SET(MANDATORY_PACKAGES_LIST)
 OPTION(WANT_DEBUG	"build with debug information" OFF)                                             # TODO
 OPTION(WANT_LIBARCHIVE	"Enable use of libarchive instead of libtar" OFF)                               # TODO
 OPTION(WANT_JACK	"Include JACK (Jack Audio Connection Kit) support" ON)
-OPTION(WANT_LASH	"Include LASH (Linux Audio Session Handler) support" OFF)
 OPTION(WANT_LRDF	"Include LRDF (Lightweight Resource Description Framework with special support for LADSPA plugins) support" OFF)
 OPTION(WANT_FLAC	"Include FLAC (Free Lossless Audio Codec) support" ON)
 OPTION(WANT_FLACPP	"Include FLAC++ (Free Lossless Audio Codec) support" ON) # kludge
@@ -78,7 +77,6 @@ ENDMACRO(my_check)
 #
 MY_CHECK(LIBSNDFILE sndfile libsndfile-dev)
 MY_CHECK(JACK jack>=0.77 libjack0.100.0-dev)
-MY_CHECK(LASH lash-1.0 lash-0.6.0-dev)
 MY_CHECK(LRDF lrdf liblrdf-dev)
 MY_CHECK(FLAC flac libflac-dev)
 MY_CHECK(FLACPP flac++ libflac++-dev)
@@ -119,7 +117,6 @@ MESSAGE(
 MESSAGE(
 "Usefull extensions\n"
 "-----------------------------------------\n"
-"* LASH                        : ${STATUS_LASH}\n"
 "* LRDF                        : ${STATUS_LRDF}\n"
 )
 

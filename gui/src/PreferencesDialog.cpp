@@ -39,7 +39,6 @@
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/IO/MidiInput.h>
-#include <hydrogen/LashClient.h>
 
 using namespace H2Core;
 
@@ -201,17 +200,6 @@ PreferencesDialog::PreferencesDialog(QWidget* parent)
 	// General tab
 	restoreLastUsedSongCheckbox->setChecked( pPref->isRestoreLastSongEnabled() );
 
-
-	//restore the right m_bsetlash value 
-	if ( pPref->m_brestartLash == true ){ 
-		if (pPref->m_bsetLash == false ){ 
-		 	pPref->m_bsetLash = true ;
-			pPref->m_brestartLash = false;
-		}
-
-	}
-	useLashCheckbox->setChecked( pPref->m_bsetLash );	
-
 	sBcountOffset->setValue( pPref->m_countOffset );
 	sBstartOffset->setValue( pPref->m_startOffset );
 
@@ -232,15 +220,6 @@ void PreferencesDialog::on_cancelBtn_clicked()
 {
 	Preferences *preferencesMng = Preferences::get_instance();
 	preferencesMng->loadPreferences( false );	// reload old user's preferences
-
-	//restore the right m_bsetlash value
-	if ( preferencesMng->m_brestartLash == true ){ 
-		if (preferencesMng->m_bsetLash == false ){
-		 	preferencesMng->m_bsetLash = true ;
-			preferencesMng->m_brestartLash = false;
-		}
-
-	}
 
 	reject();
 }
@@ -337,12 +316,6 @@ void PreferencesDialog::on_okBtn_clicked()
 
 	// General tab
 	pPref->setRestoreLastSongEnabled( restoreLastUsedSongCheckbox->isChecked() );
-	pPref->m_bsetLash = useLashCheckbox->isChecked(); //restore m_bsetLash after saving pref. 
-
-	//check preferences 
-	if ( pPref->m_brestartLash == true ){ 
-		pPref->m_bsetLash = true ; 
-	}
 
 	pPref->m_countOffset = sBcountOffset->value();
 	pPref->m_startOffset = sBstartOffset->value();
@@ -557,18 +530,3 @@ void PreferencesDialog::on_styleComboBox_activated( int index )
 	Preferences *pPref = Preferences::get_instance();
 	pPref->setQTStyle( sStyle );
 }
-
-
-
-void PreferencesDialog::on_useLashCheckbox_clicked()
-{
-	if ( useLashCheckbox->isChecked() ){
-		Preferences::get_instance()->m_brestartLash = true;
-	}
-	else
-	{
-		 Preferences::get_instance()->m_bsetLash = false ;
-	}
-	QMessageBox::information ( this, "Hydrogen", trUtf8 ( "Please restart hydrogen to enable/disable LASH support" ) );
-}
-

@@ -69,9 +69,6 @@ Preferences::Preferences()
 	//Default jack track-outputs are post fader
 	m_nJackTrackOutputMode = POST_FADER;
 	m_bJackTrackOuts = false;
-	// switch to enable / disable lash, only on h2 startup
-	m_brestartLash = false;
-	m_bsetLash = false;
 
 	//server list
 	std::list<QString> sServerList;
@@ -129,8 +126,6 @@ Preferences::Preferences()
 	/////////////////// DEFAULT SETTINGS ////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
 	m_bFollowPlayhead = true;
-	// SEE ABOVE: m_brestartLash
-	// SEE ABOVE: m_bsetLash
 
 	m_bbc = false;
 	m_mmcsetplay = false;
@@ -175,7 +170,6 @@ Preferences::Preferences()
 	//___ General properties ___
 	m_bPatternModePlaysSelected = true;
 	restoreLastSong = true;
-	m_bUseLash = false;
 	m_bShowDevelWarning = false;
 	// NONE: lastSongFilename;
 	hearNewNotes = true;
@@ -338,11 +332,7 @@ void Preferences::loadPreferences( bool bGlobal )
 			m_bShowDevelWarning = LocalFileMng::readXmlBool( rootNode, "showDevelWarning", m_bShowDevelWarning );
 			restoreLastSong = LocalFileMng::readXmlBool( rootNode, "restoreLastSong", restoreLastSong );
 			m_bPatternModePlaysSelected = LocalFileMng::readXmlBool( rootNode, "patternModePlaysSelected", TRUE );
-			m_bUseLash = LocalFileMng::readXmlBool( rootNode, "useLash", FALSE );
 			
-			//restore the right m_bsetlash value
-			m_bsetLash = m_bUseLash;
-
 			hearNewNotes = LocalFileMng::readXmlBool( rootNode, "hearNewNotes", hearNewNotes );
 			recordEvents = LocalFileMng::readXmlBool( rootNode, "recordEvents", recordEvents );
 			quantizeEvents = LocalFileMng::readXmlBool( rootNode, "quantizeEvents", quantizeEvents );
@@ -654,8 +644,6 @@ void Preferences::savePreferences()
 	LocalFileMng::writeXmlString( rootNode, "restoreLastSong", restoreLastSong ? "true": "false" );
 	
 	LocalFileMng::writeXmlString( rootNode, "patternModePlaysSelected", m_bPatternModePlaysSelected ? "true": "false" );
-
-	LocalFileMng::writeXmlString( rootNode, "useLash", m_bsetLash ? "true": "false" );
 
 	//show development version warning
 	LocalFileMng::writeXmlString( rootNode, "showDevelWarning", m_bShowDevelWarning ? "true": "false" );

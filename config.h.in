@@ -10,7 +10,6 @@
 #define CONFIG_PREFIX "${CMAKE_INSTALL_PREFIX}"
 #cmakedefine LIBARCHIVE_SUPPORTX
 #cmakedefine JACK_SUPPORTX
-#cmakedefine LASH_SUPPORTX
 #cmakedefine FLAC_SUPPORTX
 #cmakedefine LRDF_SUPPORTX
 #cmakedefine LADSPA_SUPPORTX

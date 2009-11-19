@@ -30,10 +30,6 @@
 #include "HydrogenApp.h"
 #include "MainForm.h"
 
-#ifdef LASH_SUPPORT
-#include <hydrogen/LashClient.h>
-#endif
-
 #include <hydrogen/midiMap.h>
 #include <hydrogen/audio_engine.h>
 #include <hydrogen/hydrogen.h>
@@ -211,12 +207,6 @@ int main(int argc, char *argv[])
 
 		H2Core::Preferences *pPref = H2Core::Preferences::get_instance();
 
-#ifdef LASH_SUPPORT
-
-		LashClient::create_instance("composite", "Composite", &argc, &argv);
-		LashClient* lashClient = LashClient::get_instance();
-
-#endif
 		if (sSelectedDriver == "auto") {
 			pPref->m_sAudioDriver = "Auto";
 		}
@@ -278,33 +268,6 @@ int main(int argc, char *argv[])
 		else {
 			pSplash->show();
 		}
-
-#ifdef LASH_SUPPORT
-	if ( H2Core::Preferences::get_instance()->useLash() ){	
-		if (lashClient->isConnected())
-		{
-			lash_event_t* lash_event = lashClient->getNextEvent();
-			if (lash_event && lash_event_get_type(lash_event) == LASH_Restore_File)
-			{
-				// notify client that this project was not a new one
-				lashClient->setNewProject(false);
-				
-				songFilename = "";
-				songFilename.append( QString::fromLocal8Bit(lash_event_get_string(lash_event)) );
-				songFilename.append("/composite.h2song"); 
-				
-//				Logger::get_instance()->log("[LASH] Restore file: " + songFilename);
-	
-				lash_event_destroy(lash_event);
-			}
-			else if (lash_event)
-			{
-//				Logger::get_instance()->log("[LASH] ERROR: Instead of restore file got event: " + lash_event_get_type(lash_event));
-				lash_event_destroy(lash_event);
-			}
-		}
-	}	
-#endif
 
 		// Hydrogen here to honor all preferences.
 		H2Core::Hydrogen::create_instance();
@@ -379,12 +342,6 @@ void showUsage()
 	std::cout << "Usage: composite [-v] [-h] -s file" << std::endl;
 	std::cout << "   -d, --driver AUDIODRIVER - Use the selected audio driver (jack)" << std::endl;
 	std::cout << "   -s, --song FILE - Load a song (*.h2song) at startup" << std::endl;
-#ifdef LASH_SUPPORT
-	std::cout << "   --lash-no-start-server - If LASH server not running, don't start" << endl
-		  << "                            it (LASH 0.5.3 and later)." << std::endl;
-	std::cout << "   --lash-no-autoresume - Tell LASH server not to assume I'm returning" << std::endl
-		  << "                          from a crash." << std::endl;
-#endif
 	std::cout << "   -n, --nosplash - Hide splash screen" << std::endl;
 	std::cout << "   -V[Level], --verbose[=Level] - Print a lot of debugging info" << std::endl;
         std::cout << "                 Level, if present, may be None, Error, Warning, Info, Debug or 0xHHHH" << std::endl;
