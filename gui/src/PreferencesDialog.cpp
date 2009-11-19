@@ -337,7 +337,7 @@ void PreferencesDialog::on_driverComboBox_activated( int index )
 {
 	UNUSED( index );
 	QString selectedDriver = driverComboBox->currentText();
-#ifdef JACK_MIDI_SUPPORT
+#ifdef JACK_SUPPORT
 	if (m_pMidiDriverComboBox->currentText() == "JackMidi"
 	    && selectedDriver != "JACK") {
 		QMessageBox::StandardButtons res;
@@ -359,7 +359,7 @@ void PreferencesDialog::on_driverComboBox_activated( int index )
 			driverComboBox->setCurrentIndex(index);
 		}			
 	}
-#endif // JACK_MIDI_SUPPORT
+#endif // JACK_SUPPORT
 	updateDriverInfo();
 	m_bNeedDriverRestart = true;
 }
@@ -488,7 +488,7 @@ void PreferencesDialog::on_selectMixerFontBtn_clicked()
 
 void PreferencesDialog::on_m_pMidiDriverComboBox_currentIndexChanged( const QString& midi_driver )
 {
-#ifdef JACK_MIDI_SUPPORT
+#ifdef JACK_SUPPORT
 	if (midi_driver == "JackMidi"
 	    && driverComboBox->currentText() != "JACK") {
 		QMessageBox::StandardButtons res;
@@ -508,7 +508,7 @@ void PreferencesDialog::on_m_pMidiDriverComboBox_currentIndexChanged( const QStr
 		}
 		#warning "XXX TODO: ...else??"
 	}
-#endif // JACK_MIDI_SUPPORT
+#endif // JACK_SUPPORT
 	m_bNeedDriverRestart = true;
 }
 

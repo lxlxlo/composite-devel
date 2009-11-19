@@ -1425,7 +1425,7 @@ void audioEngine_startAudioDrivers()
 	}
 	
 	if ( preferencesMng->m_sMidiDriver == "JackMidi" ) {
-#ifdef JACK_MIDI_SUPPORT
+#ifdef JACK_SUPPORT
 		JackClient::get_instance()->open();
 		m_pMidiDriver = new JackMidiDriver();
 		m_pMidiDriver->open();
@@ -2306,7 +2306,7 @@ void Hydrogen::togglePlaysSelected()
 	
 }
 
-#ifdef JACK_MIDI_SUPPORT
+#ifdef JACK_SUPPORT
 int jackMidiFallbackProcess(jack_nframes_t nframes, void* /*arg*/)
 {
     JackMidiDriver* instance =

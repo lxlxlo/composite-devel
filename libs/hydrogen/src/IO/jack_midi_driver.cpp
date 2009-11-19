@@ -30,11 +30,13 @@
 #include <hydrogen/Preferences.h> // For preferred auto-connection
 #include <cerrno> // EEXIST for jack_connect()
 
-#ifdef JACK_MIDI_SUPPORT
+#ifdef JACK_SUPPORT
 
 
 /*********************************************************
  * Notes on JACK versions with respect to MIDI
+ *
+ * NOTE: COMPOSITE REQUIRES JACK 0.109.0 OR GREATER.
  *
  * First, jack/version.h defines the macro JACK_PROTOCOL_VERSION
  * to an integer... and this is *supposed* to be the reliable indicator
@@ -73,37 +75,8 @@
  * with every commit.  However, the protocol version changes have
  * odd overlaps (with respect to MIDI).
  *
- * To manage this while the API stabilizes, the following macros
- * should be set by the build system:
- *
- * JACK_MIDI_SUPPORT - Include JACK MIDI support
- *
- * Then, there must be one and only one of the following set:
- *
- *    JACK_MIDI_0_102_0  - Conforms to API of 0.102.0
- *    JACK_MIDI_0_102_27 - Conforms to API of 0.102.27
- *    JACK_MIDI_0_105_0  - Conforms to API of 0.105.0
- *
  ********************************************************
  */
-
-#if defined(JACK_MIDI_0_102_0) && defined(JACK_MIDI_0_102_27)
-#  error "JACK_MIDI_0_102_0 and JACK_MIDI_0_102_27 both defined -- only ONE should be."
-#endif
-#if defined(JACK_MIDI_0_102_0) && defined(JACK_MIDI_0_105_0)
-#  error "JACK_MIDI_0_102_0 and JACK_MIDI_0_105_0 both defined -- only ONE should be."
-#endif
-#if defined(JACK_MIDI_0_102_27) && defined(JACK_MIDI_0_105_0)
-#  error "JACK_MIDI_0_102_27 and JACK_MIDI_0_105_0 both defined -- only ONE should be."
-#endif
-
-// Macro to help readability for API change where nframes parameter
-// is eliminated.
-#ifdef JACK_MIDI_0_105_0
-#  define NFPARAM(x)
-#else
-#  define NFPARAM(x) , (x)
-#endif
 
 using namespace std;
 using namespace H2Core;
@@ -356,17 +329,10 @@ int JackMidiDriver::process(jack_nframes_t nframes, bool use_frame)
 	H2Core::MidiMessage msg;
 
 	void* port_buf = jack_port_get_buffer(m_port, nframes);
-#ifdef JACK_MIDI_0_102_0
-	event_ct = jack_midi_port_get_info(port_buf, nframes)->event_count;
-#else
-	event_ct = jack_midi_get_event_count(port_buf NFPARAM(nframes));
-#endif
+	event_ct = jack_midi_get_event_count(port_buf);
 
 	for ( event_pos=0 ; event_pos<event_ct ; ++event_pos ) {
-		if (jack_midi_event_get(&jack_event,
-					port_buf,
-					event_pos
-					NFPARAM(nframes))) {
+		if ( jack_midi_event_get(&jack_event, port_buf, event_pos) ) {
 			break;
 		}
 		translate_jack_midi_to_h2(msg, jack_event, use_frame);
@@ -382,4 +348,4 @@ std::vector<QString> JackMidiDriver::getOutputPortList(void)
 	return JackClient::get_instance()->getMidiOutputPortList();
 }
 
-#endif // JACK_MIDI_SUPPORT
+#endif // JACK_SUPPORT

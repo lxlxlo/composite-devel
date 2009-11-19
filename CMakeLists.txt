@@ -76,7 +76,7 @@ ENDMACRO(my_check)
 
 #
 MY_CHECK(LIBSNDFILE sndfile libsndfile-dev)
-MY_CHECK(JACK jack>=0.77 libjack0.100.0-dev)
+MY_CHECK(JACK jack>=0.109.0 libjack-dev)
 MY_CHECK(LRDF lrdf liblrdf-dev)
 MY_CHECK(FLAC flac libflac-dev)
 MY_CHECK(FLACPP flac++ libflac++-dev)

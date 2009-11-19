@@ -30,10 +30,7 @@
 #ifndef JACK_MIDI_DRIVER_H
 #define JACK_MIDI_DRIVER_H
 
-#ifdef JACK_MIDI_SUPPORT
-#ifndef JACK_SUPPORT
-#  error "JACK_SUPPORT must be defined since JACK_MIDI_SUPPORT is.  This is a configuration error."
-#endif
+#ifdef JACK_SUPPORT
 
 #include <hydrogen/IO/MidiInput.h>
 #include <hydrogen/h2_exception.h>
@@ -69,6 +66,6 @@ private:
 
 } // namespace H2Core
 
-#endif // JACK_MIDI_SUPPORT
+#endif // JACK_SUPPORT
 
 #endif // JACK_MIDI_DRIVER_H
