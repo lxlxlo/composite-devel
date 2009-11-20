@@ -20,13 +20,13 @@
  *
  */
 
-#include <hydrogen/Preferences.h>
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/instrument.h>
-#include <hydrogen/Pattern.h>
-#include <hydrogen/audio_engine.h>
-#include <hydrogen/event_queue.h>
-#include <hydrogen/Transport.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/instrument.h>
+#include <Tritium/Pattern.h>
+#include <Tritium/audio_engine.h>
+#include <Tritium/event_queue.h>
+#include <Tritium/Transport.h>
 using namespace H2Core;
 
 

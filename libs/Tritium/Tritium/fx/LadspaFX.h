@@ -29,7 +29,7 @@
 #include <vector>
 #include <list>
 #include "ladspa.h"
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 
 namespace H2Core
 {

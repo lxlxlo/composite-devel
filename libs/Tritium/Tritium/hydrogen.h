@@ -23,12 +23,12 @@
 #define HYDROGEN_H
 
 #include <stdint.h> // for uint32_t et al
-#include <hydrogen/action.h>
-#include <hydrogen/Song.h>
-#include <hydrogen/Object.h>
-#include <hydrogen/IO/AudioOutput.h>
-#include <hydrogen/IO/MidiInput.h>
-#include <hydrogen/SoundLibrary.h>
+#include <Tritium/action.h>
+#include <Tritium/Song.h>
+#include <Tritium/Object.h>
+#include <Tritium/IO/AudioOutput.h>
+#include <Tritium/IO/MidiInput.h>
+#include <Tritium/SoundLibrary.h>
 #include <cassert>
 
 // Engine states  (It's ok to use ==, <, and > when testing)

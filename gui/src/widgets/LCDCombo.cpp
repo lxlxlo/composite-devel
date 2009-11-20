@@ -26,7 +26,7 @@
 #include "LCD.h"
 #include "Button.h"
 
-#include <hydrogen/globals.h>
+#include <Tritium/globals.h>
 
 const QString LCDCombo::SEPARATOR("--sep--");
 

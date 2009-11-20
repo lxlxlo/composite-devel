@@ -24,7 +24,7 @@
 
 #include <QtCore/QMutex>
 #include <jack/transport.h>
-#include <hydrogen/JackTimeMasterEvents.h>
+#include <Tritium/JackTimeMasterEvents.h>
 
 namespace H2Core
 {

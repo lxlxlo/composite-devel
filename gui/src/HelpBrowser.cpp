@@ -25,7 +25,7 @@
 #include "Skin.h"
 
 #include <QtGui>
-#include <hydrogen/globals.h>
+#include <Tritium/globals.h>
 
 SimpleHTMLBrowser::SimpleHTMLBrowser( QWidget *pParent, const QString& sDataPath, const QString& sFilename, SimpleHTMLBrowserType type )
  : QDialog( pParent )

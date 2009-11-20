@@ -20,9 +20,9 @@
  *
  */
 
-#include <hydrogen/SeqScript.h>
-#include <hydrogen/SeqEvent.h>
-#include <hydrogen/SeqScriptIterator.h>
+#include <Tritium/SeqScript.h>
+#include <Tritium/SeqEvent.h>
+#include <Tritium/SeqScriptIterator.h>
 
 #include <cassert>
 

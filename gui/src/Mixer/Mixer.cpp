@@ -30,13 +30,13 @@
 #include "../widgets/Button.h"
 #include "../widgets/PixmapWidget.h"
 
-#include <hydrogen/audio_engine.h>
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/instrument.h>
-#include <hydrogen/Song.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/note.h>
-#include <hydrogen/fx/Effects.h>
+#include <Tritium/audio_engine.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/instrument.h>
+#include <Tritium/Song.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/note.h>
+#include <Tritium/fx/Effects.h>
 using namespace H2Core;
 
 #include <cassert>

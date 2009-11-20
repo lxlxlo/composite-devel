@@ -22,7 +22,7 @@
 #ifndef H2CORE_SEQSCRIPTPRIVATE_H
 #define H2CORE_SEQSCRIPTPRIVATE_H
 
-#include <hydrogen/SeqEvent.h>
+#include <Tritium/SeqEvent.h>
 #include <vector>
 
 namespace H2Core

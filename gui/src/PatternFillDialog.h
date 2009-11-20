@@ -28,7 +28,7 @@
 #include <QtGui>
 #include "ui_PatternFillDialog_UI.h"
 
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 
 namespace H2Core
 {

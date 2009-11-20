@@ -25,11 +25,11 @@
 
 #include <cassert>
 
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/instrument.h>
-#include <hydrogen/note.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/Pattern.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/instrument.h>
+#include <Tritium/note.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/Pattern.h>
 using namespace H2Core;
 
 #include "../HydrogenApp.h"

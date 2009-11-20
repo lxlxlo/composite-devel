@@ -42,19 +42,19 @@
 #include "../InstrumentRack.h"
 #include "../InstrumentEditor/InstrumentEditorPanel.h"
 
-#include <hydrogen/adsr.h>
-#include <hydrogen/audio_engine.h>
-#include <hydrogen/Transport.h>
-#include <hydrogen/data_path.h>
-#include <hydrogen/h2_exception.h>
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/instrument.h>
-#include <hydrogen/LocalFileMng.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/Pattern.h>
-#include <hydrogen/sample.h>
-#include <hydrogen/Song.h>
-#include <hydrogen/SoundLibrary.h>
+#include <Tritium/adsr.h>
+#include <Tritium/audio_engine.h>
+#include <Tritium/Transport.h>
+#include <Tritium/data_path.h>
+#include <Tritium/h2_exception.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/instrument.h>
+#include <Tritium/LocalFileMng.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/Pattern.h>
+#include <Tritium/sample.h>
+#include <Tritium/Song.h>
+#include <Tritium/SoundLibrary.h>
 
 using namespace H2Core;
 

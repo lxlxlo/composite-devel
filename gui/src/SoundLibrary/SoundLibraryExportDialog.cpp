@@ -21,18 +21,18 @@
  */
 
 #include "SoundLibraryExportDialog.h"
-#include <hydrogen/LocalFileMng.h>
-#include <hydrogen/SoundLibrary.h>
+#include <Tritium/LocalFileMng.h>
+#include <Tritium/SoundLibrary.h>
 
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/Preferences.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/Preferences.h>
 
-#include <hydrogen/adsr.h>
-#include <hydrogen/sample.h>
-#include <hydrogen/instrument.h>
-#include <hydrogen/h2_exception.h>
-#include <hydrogen/SoundLibrary.h>
-#include <hydrogen/data_path.h>
+#include <Tritium/adsr.h>
+#include <Tritium/sample.h>
+#include <Tritium/instrument.h>
+#include <Tritium/h2_exception.h>
+#include <Tritium/SoundLibrary.h>
+#include <Tritium/data_path.h>
 
 #include <memory>
 #include <QtGui>

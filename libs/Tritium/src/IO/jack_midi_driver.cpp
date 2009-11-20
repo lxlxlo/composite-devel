@@ -27,7 +27,7 @@
 #include "JackClient.h"
 #include <cassert>
 #include <cstdlib> // free()
-#include <hydrogen/Preferences.h> // For preferred auto-connection
+#include <Tritium/Preferences.h> // For preferred auto-connection
 #include <cerrno> // EEXIST for jack_connect()
 
 #ifdef JACK_SUPPORT

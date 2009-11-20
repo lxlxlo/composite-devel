@@ -30,15 +30,15 @@
 #include "HydrogenApp.h"
 #include "MainForm.h"
 
-#include <hydrogen/midiMap.h>
-#include <hydrogen/audio_engine.h>
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/globals.h>
-#include <hydrogen/event_queue.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/data_path.h>
-#include <hydrogen/h2_exception.h>
-#include <hydrogen/playlist.h>
+#include <Tritium/midiMap.h>
+#include <Tritium/audio_engine.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/globals.h>
+#include <Tritium/event_queue.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/data_path.h>
+#include <Tritium/h2_exception.h>
+#include <Tritium/playlist.h>
 
 #include <iostream>
 using namespace std;

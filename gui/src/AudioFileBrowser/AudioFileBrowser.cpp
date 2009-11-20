@@ -27,10 +27,10 @@
 #include "../widgets/Button.h"
 #include "../Skin.h"
 
-#include <hydrogen/data_path.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/sample.h>
-#include <hydrogen/audio_engine.h>
+#include <Tritium/data_path.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/sample.h>
+#include <Tritium/audio_engine.h>
 
 #include <QModelIndex>
 #include <QTreeWidget>

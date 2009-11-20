@@ -24,7 +24,7 @@
 
 #include <QtGui>
 
-#include <hydrogen/globals.h>
+#include <Tritium/globals.h>
 
 ClickableLabel::ClickableLabel( QWidget *pParent )
  : QLabel( pParent )

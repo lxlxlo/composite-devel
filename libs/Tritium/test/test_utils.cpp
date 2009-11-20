@@ -21,8 +21,8 @@
  */
 
 #include "test_utils.h"
-#include <hydrogen/TransportPosition.h>
-#include <hydrogen/Song.h>
+#include <Tritium/TransportPosition.h>
+#include <Tritium/Song.h>
 #include <transport/songhelpers.h>
 #include <cmath>
 

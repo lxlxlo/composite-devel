@@ -21,7 +21,7 @@
  */
 #ifndef ACTION_H
 #define ACTION_H
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 #include <map>
 #include <string>
 #include <cassert>

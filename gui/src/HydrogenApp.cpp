@@ -42,11 +42,11 @@
 #include "Mixer/Mixer.h"
 #include "Mixer/MixerLine.h"
 
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/event_queue.h>
-#include <hydrogen/fx/LadspaFX.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/Song.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/event_queue.h>
+#include <Tritium/fx/LadspaFX.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/Song.h>
 
 #include <QtGui>
 

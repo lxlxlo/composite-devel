@@ -24,11 +24,11 @@
 #include "MidiSenseWidget.h"
 #include "midiTable.h"
 
-#include <hydrogen/midiMap.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/globals.h>
-#include <hydrogen/action.h>
-#include <hydrogen/hydrogen.h>
+#include <Tritium/midiMap.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/globals.h>
+#include <Tritium/action.h>
+#include <Tritium/hydrogen.h>
 
 MidiTable::MidiTable( QWidget *pParent )
  : QTableWidget( pParent )

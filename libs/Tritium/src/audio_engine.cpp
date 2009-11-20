@@ -20,12 +20,12 @@
  *
  */
 
-#include <hydrogen/audio_engine.h>
+#include <Tritium/audio_engine.h>
 
-#include <hydrogen/fx/Effects.h>
-#include <hydrogen/sampler/Sampler.h>
+#include <Tritium/fx/Effects.h>
+#include <Tritium/sampler/Sampler.h>
 
-#include <hydrogen/hydrogen.h>	// TODO: remove this line as soon as possible
+#include <Tritium/hydrogen.h>	// TODO: remove this line as soon as possible
 #include <cassert>
 
 namespace H2Core

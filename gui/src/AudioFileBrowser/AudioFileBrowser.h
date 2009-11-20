@@ -28,8 +28,8 @@
 #include "InstrumentEditor/InstrumentEditor.h"
 
 #include <QDialog>
-#include <hydrogen/Object.h>
-#include <hydrogen/Preferences.h>
+#include <Tritium/Object.h>
+#include <Tritium/Preferences.h>
 
 
 class Button;

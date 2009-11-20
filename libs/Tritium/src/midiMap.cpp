@@ -20,8 +20,8 @@
  *
  */
 
-#include <hydrogen/action.h>
-#include <hydrogen/midiMap.h>
+#include <Tritium/action.h>
+#include <Tritium/midiMap.h>
 #include <map>
 #include <QMutexLocker>
 

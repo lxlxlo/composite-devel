@@ -32,8 +32,8 @@
 
 #ifdef JACK_SUPPORT
 
-#include <hydrogen/IO/MidiInput.h>
-#include <hydrogen/h2_exception.h>
+#include <Tritium/IO/MidiInput.h>
+#include <Tritium/h2_exception.h>
 #include <jack/jack.h>
 #include <jack/midiport.h>
 #include <vector>

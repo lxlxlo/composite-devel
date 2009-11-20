@@ -20,10 +20,10 @@
  *
  */
 
-#include <hydrogen/smf/SMF.h>
-#include <hydrogen/Pattern.h>
-#include <hydrogen/note.h>
-#include <hydrogen/instrument.h>
+#include <Tritium/smf/SMF.h>
+#include <Tritium/Pattern.h>
+#include <Tritium/note.h>
+#include <Tritium/instrument.h>
 
 #include <fstream>
 

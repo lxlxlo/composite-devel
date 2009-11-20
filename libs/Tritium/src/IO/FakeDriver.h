@@ -23,7 +23,7 @@
 #ifndef FAKE_DRIVER_H
 #define FAKE_DRIVER_H
 
-#include <hydrogen/IO/AudioOutput.h>
+#include <Tritium/IO/AudioOutput.h>
 #include <inttypes.h>
 
 namespace H2Core

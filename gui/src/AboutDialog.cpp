@@ -25,7 +25,7 @@
 #include "AboutDialog.h"
 #include "Skin.h"
 
-#include <hydrogen/globals.h>
+#include <Tritium/globals.h>
 
 #include <vector>
 

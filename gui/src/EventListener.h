@@ -22,8 +22,8 @@
 #ifndef EVENT_LISTENER
 #define EVENT_LISTENER
 
-#include <hydrogen/globals.h>
-#include <hydrogen/TransportPosition.h>
+#include <Tritium/globals.h>
+#include <Tritium/TransportPosition.h>
 
 class EventListener
 {

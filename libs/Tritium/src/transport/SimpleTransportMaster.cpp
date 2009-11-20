@@ -20,11 +20,11 @@
  *
  */
 
-#include <hydrogen/Transport.h>
-#include <hydrogen/TransportPosition.h>
+#include <Tritium/Transport.h>
+#include <Tritium/TransportPosition.h>
 #include "SimpleTransportMaster.h"
 
-#include <hydrogen/Song.h>
+#include <Tritium/Song.h>
 
 #include <jack/transport.h>
 #include <QtCore/QMutex>

@@ -20,7 +20,7 @@
  *
  */
 
-#include <hydrogen/event_queue.h>
+#include <Tritium/event_queue.h>
 
 namespace H2Core
 {

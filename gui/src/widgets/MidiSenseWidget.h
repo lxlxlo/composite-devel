@@ -24,7 +24,7 @@
 
 	#include <QtGui>
 
-	#include <hydrogen/Object.h>
+	#include <Tritium/Object.h>
 
 	class MidiSenseWidget : public QDialog ,public Object
 	{

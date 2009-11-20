@@ -28,7 +28,7 @@
 
 #include <QtGui>
 
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 
 ///
 /// Fader and VuMeter widget

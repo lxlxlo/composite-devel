@@ -27,7 +27,7 @@
 
 #include <QtGui>
 
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 
 namespace H2Core
 {

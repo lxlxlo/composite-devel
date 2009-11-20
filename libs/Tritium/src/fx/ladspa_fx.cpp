@@ -22,8 +22,8 @@
 
 #ifdef LADSPA_SUPPORT
 
-#include <hydrogen/fx/LadspaFX.h>
-#include <hydrogen/Preferences.h>
+#include <Tritium/fx/LadspaFX.h>
+#include <Tritium/Preferences.h>
 
 #include <QDir>
 

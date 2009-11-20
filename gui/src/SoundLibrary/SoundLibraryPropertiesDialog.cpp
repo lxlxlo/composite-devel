@@ -26,8 +26,8 @@
 #include "SoundLibraryPropertiesDialog.h"
 #include "../InstrumentRack.h"
 #include "SoundLibraryPanel.h"
-#include <hydrogen/SoundLibrary.h>
-#include <hydrogen/hydrogen.h>
+#include <Tritium/SoundLibrary.h>
+#include <Tritium/hydrogen.h>
 
 namespace H2Core
 {

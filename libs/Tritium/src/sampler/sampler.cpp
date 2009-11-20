@@ -24,23 +24,23 @@
 #include <cmath>
 #include <list>
 
-#include <hydrogen/IO/AudioOutput.h>
-#include <hydrogen/IO/JackOutput.h>
+#include <Tritium/IO/AudioOutput.h>
+#include <Tritium/IO/JackOutput.h>
 
-#include <hydrogen/adsr.h>
-#include <hydrogen/audio_engine.h>
-#include <hydrogen/data_path.h>
-#include <hydrogen/globals.h>
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/instrument.h>
-#include <hydrogen/note.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/sample.h>
-#include <hydrogen/SeqScriptIterator.h>
+#include <Tritium/adsr.h>
+#include <Tritium/audio_engine.h>
+#include <Tritium/data_path.h>
+#include <Tritium/globals.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/instrument.h>
+#include <Tritium/note.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/sample.h>
+#include <Tritium/SeqScriptIterator.h>
 
-#include <hydrogen/fx/Effects.h>
-#include <hydrogen/sampler/Sampler.h>
-#include <hydrogen/TransportPosition.h>
+#include <Tritium/fx/Effects.h>
+#include <Tritium/sampler/Sampler.h>
+#include <Tritium/TransportPosition.h>
 
 using namespace H2Core;
 

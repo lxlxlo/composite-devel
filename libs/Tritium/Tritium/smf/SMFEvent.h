@@ -24,7 +24,7 @@
 #define SMF_EVENT_H
 
 #include <vector>
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 
 namespace H2Core
 {

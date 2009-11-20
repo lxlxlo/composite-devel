@@ -25,7 +25,7 @@
 
 #include "config.h"
 #include "ui_SoundLibraryPropertiesDialog_UI.h"
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 
 ///
 ///

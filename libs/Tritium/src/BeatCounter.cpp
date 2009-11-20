@@ -23,9 +23,9 @@
 #include <cstring>
 #include <sys/time.h>
 
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/Transport.h>
-#include <hydrogen/Preferences.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/Transport.h>
+#include <Tritium/Preferences.h>
 #include "BeatCounter.h"
 
 using namespace H2Core;

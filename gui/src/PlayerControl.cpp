@@ -37,12 +37,12 @@
 #include "PatternEditor/PatternEditorPanel.h"
 #include "InstrumentEditor/InstrumentEditorPanel.h"
 
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/Transport.h>
-#include <hydrogen/audio_engine.h>
-#include <hydrogen/IO/JackOutput.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/JackTimeMasterEvents.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/Transport.h>
+#include <Tritium/audio_engine.h>
+#include <Tritium/IO/JackOutput.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/JackTimeMasterEvents.h>
 using namespace H2Core;
 
 

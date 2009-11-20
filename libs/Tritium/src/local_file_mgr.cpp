@@ -24,19 +24,19 @@
 #include "version.h"
 
 
-#include <hydrogen/adsr.h>
-#include <hydrogen/data_path.h>
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/h2_exception.h>
-#include <hydrogen/instrument.h>
-#include <hydrogen/LocalFileMng.h>
-#include <hydrogen/note.h>
-#include <hydrogen/Pattern.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/Song.h>
-#include <hydrogen/SoundLibrary.h>
-#include <hydrogen/sample.h>
-#include <hydrogen/fx/Effects.h>
+#include <Tritium/adsr.h>
+#include <Tritium/data_path.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/h2_exception.h>
+#include <Tritium/instrument.h>
+#include <Tritium/LocalFileMng.h>
+#include <Tritium/note.h>
+#include <Tritium/Pattern.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/Song.h>
+#include <Tritium/SoundLibrary.h>
+#include <Tritium/sample.h>
+#include <Tritium/fx/Effects.h>
 
 
 #include <cstdlib>

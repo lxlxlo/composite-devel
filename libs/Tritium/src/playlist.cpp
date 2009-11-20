@@ -24,12 +24,12 @@
 #include "gui/src/InstrumentRack.h"
 #include "gui/src/SoundLibrary/SoundLibraryPanel.h"
 
-#include <hydrogen/LocalFileMng.h>
-#include <hydrogen/h2_exception.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/Transport.h>
-#include <hydrogen/playlist.h>
+#include <Tritium/LocalFileMng.h>
+#include <Tritium/h2_exception.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/Transport.h>
+#include <Tritium/playlist.h>
 
 #include <vector>
 #include <cstdlib>

@@ -20,8 +20,8 @@
  *
  */
 
-#include <hydrogen/IO/NullDriver.h>
-#include <hydrogen/globals.h>
+#include <Tritium/IO/NullDriver.h>
+#include <Tritium/globals.h>
 
 
 namespace H2Core

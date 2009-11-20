@@ -21,7 +21,7 @@
  */
 
 #include <SeqScriptPrivate.h>
-#include <hydrogen/instrument.h>
+#include <Tritium/instrument.h>
 #include <vector>
 #include <memory>
 #include <map>

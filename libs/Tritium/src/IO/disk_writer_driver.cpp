@@ -21,11 +21,11 @@
  */
 #include "DiskWriterDriver.h"
 
-#include <hydrogen/Preferences.h>
-#include <hydrogen/event_queue.h>
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/Transport.h>
-#include <hydrogen/TransportPosition.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/event_queue.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/Transport.h>
+#include <Tritium/TransportPosition.h>
 
 #include <QThread>
 #include <cassert>

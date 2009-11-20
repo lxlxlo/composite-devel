@@ -22,8 +22,8 @@
 
 #include "songhelpers.h"
 
-#include <hydrogen/Song.h>
-#include <hydrogen/Pattern.h>
+#include <Tritium/Song.h>
+#include <Tritium/Pattern.h>
 
 #include <vector>
 

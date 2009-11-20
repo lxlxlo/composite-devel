@@ -26,7 +26,7 @@
 
 #include "config.h"
 
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 
 #include <QtGui>
 

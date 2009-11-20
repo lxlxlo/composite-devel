@@ -20,8 +20,8 @@
  *
  */
 
-#include <hydrogen/Object.h>
-#include <hydrogen/util.h>
+#include <Tritium/Object.h>
+#include <Tritium/util.h>
 
 #include <QDir>
 #include <QThread>

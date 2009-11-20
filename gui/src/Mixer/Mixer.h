@@ -28,8 +28,8 @@
 
 #include <QtGui>
 
-#include <hydrogen/Object.h>
-#include <hydrogen/globals.h>
+#include <Tritium/Object.h>
+#include <Tritium/globals.h>
 #include "../EventListener.h"
 
 class Button;

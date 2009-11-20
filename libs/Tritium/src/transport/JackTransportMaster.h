@@ -22,7 +22,7 @@
 #ifndef JACKTRANSPORTMASTER_H
 #define JACKTRANSPORTMASTER_H
 
-#include <hydrogen/Transport.h>
+#include <Tritium/Transport.h>
 
 namespace H2Core
 {

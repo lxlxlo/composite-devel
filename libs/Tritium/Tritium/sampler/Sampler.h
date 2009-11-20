@@ -24,9 +24,9 @@
 #ifndef SAMPLER_H
 #define SAMPLER_H
 
-#include <hydrogen/Object.h>
-#include <hydrogen/globals.h>
-#include <hydrogen/SeqScriptIterator.h>
+#include <Tritium/Object.h>
+#include <Tritium/globals.h>
+#include <Tritium/SeqScriptIterator.h>
 
 #include <inttypes.h>
 #include <vector>

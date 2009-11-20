@@ -26,11 +26,11 @@
 
 #include "config.h"
 
-#include <hydrogen/globals.h>
+#include <Tritium/globals.h>
 
 #include <QtGui>
 
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 #include "../widgets/PixmapWidget.h"
 
 namespace H2Core

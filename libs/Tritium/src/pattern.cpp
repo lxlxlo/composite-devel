@@ -20,10 +20,10 @@
  *
  */
 
-#include <hydrogen/Pattern.h>
-#include <hydrogen/Song.h>
-#include <hydrogen/note.h>
-#include <hydrogen/audio_engine.h>
+#include <Tritium/Pattern.h>
+#include <Tritium/Song.h>
+#include <Tritium/note.h>
+#include <Tritium/audio_engine.h>
 
 #include <vector>
 #include <cassert>

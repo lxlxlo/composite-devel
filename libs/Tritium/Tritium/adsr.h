@@ -23,7 +23,7 @@
 #ifndef ADSR_H
 #define ADSR_H
 
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 
 namespace H2Core
 {

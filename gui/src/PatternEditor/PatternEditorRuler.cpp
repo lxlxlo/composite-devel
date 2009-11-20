@@ -23,10 +23,10 @@
 #include <QTimer>
 #include <QPainter>
 
-#include <hydrogen/Preferences.h>
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/Transport.h>
-#include <hydrogen/Pattern.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/Transport.h>
+#include <Tritium/Pattern.h>
 using namespace H2Core;
 
 #include "PatternEditorRuler.h"

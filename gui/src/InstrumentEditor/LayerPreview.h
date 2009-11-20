@@ -25,8 +25,8 @@
 #include "config.h"
 #include <QtGui>
 
-#include <hydrogen/Object.h>
-#include <hydrogen/instrument.h>
+#include <Tritium/Object.h>
+#include <Tritium/instrument.h>
 #include "../EventListener.h"
 
 

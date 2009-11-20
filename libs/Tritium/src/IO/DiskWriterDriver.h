@@ -27,8 +27,8 @@
 
 #include <inttypes.h>
 
-#include <hydrogen/IO/AudioOutput.h>
-#include <hydrogen/Object.h>
+#include <Tritium/IO/AudioOutput.h>
+#include <Tritium/Object.h>
 
 namespace H2Core
 {

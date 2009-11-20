@@ -21,9 +21,9 @@
  */
 
 #include <stdlib.h>
-#include <hydrogen/Preferences.h>
+#include <Tritium/Preferences.h>
 
-#include <hydrogen/LocalFileMng.h>
+#include <Tritium/LocalFileMng.h>
 
 #ifndef WIN32
 #include <pwd.h>
@@ -36,9 +36,9 @@
 #include <iostream>
 #include <cstdio>
 #include <list>
-#include <hydrogen/midiMap.h>
+#include <Tritium/midiMap.h>
 
-#include <hydrogen/data_path.h>
+#include <Tritium/data_path.h>
 #include "config.h"
 #include "version.h"
 

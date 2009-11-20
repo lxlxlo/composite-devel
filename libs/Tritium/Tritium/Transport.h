@@ -23,7 +23,7 @@
 #define H2CORE_TRANSPORT_H
 
 #include <stdint.h>  // int32_t, uint32_t
-#include <hydrogen/TransportPosition.h>
+#include <Tritium/TransportPosition.h>
 
 namespace H2Core
 {

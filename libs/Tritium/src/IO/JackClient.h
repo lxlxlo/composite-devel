@@ -31,8 +31,8 @@
 #ifdef JACK_SUPPORT
 
 #include <jack/types.h>
-#include <hydrogen/h2_exception.h>
-#include <hydrogen/Object.h>
+#include <Tritium/h2_exception.h>
+#include <Tritium/Object.h>
 #include <QtCore/QString>
 #include <vector>
 #include <set>

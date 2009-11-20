@@ -25,9 +25,9 @@
 
 #ifdef LADSPA_SUPPORT
 
-#include <hydrogen/globals.h>
-#include <hydrogen/Object.h>
-#include <hydrogen/fx/LadspaFX.h>
+#include <Tritium/globals.h>
+#include <Tritium/Object.h>
+#include <Tritium/fx/LadspaFX.h>
 
 #include <vector>
 #include <cassert>

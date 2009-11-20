@@ -22,8 +22,8 @@
 
 #include "SoundLibraryRepositoryDialog.h"
 
-#include <hydrogen/SoundLibrary.h>
-#include <hydrogen/Preferences.h>
+#include <Tritium/SoundLibrary.h>
+#include <Tritium/Preferences.h>
 
 #include <QList>
 #include <QInputDialog>

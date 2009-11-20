@@ -25,8 +25,8 @@
 #define INSTRUMENT_H
 
 #include <QtCore/QString>
-#include <hydrogen/globals.h>
-#include <hydrogen/Object.h>
+#include <Tritium/globals.h>
+#include <Tritium/Object.h>
 #include <cassert>
 
 namespace H2Core

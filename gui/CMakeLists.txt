@@ -7,7 +7,7 @@ QT4_WRAP_UI(composite_UIS_H ${composite_UIS}) # ui_ files are generated in place
 QT4_WRAP_CPP(composite_MOC ${composite_H} OPTIONS -nw) 
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/libs/hydrogen/include
+    ${CMAKE_SOURCE_DIR}/libs/Tritium
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_BINARY_DIR})

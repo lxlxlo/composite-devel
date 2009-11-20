@@ -28,8 +28,8 @@
 
 #include <cstdlib>
 #include <time.h>
-#include <hydrogen/SeqScript.h>
-#include <hydrogen/instrument.h>
+#include <Tritium/SeqScript.h>
+#include <Tritium/instrument.h>
 #include <memory>
 
 // CHANGE THIS TO MATCH YOUR FILE:

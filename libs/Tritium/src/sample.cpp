@@ -20,9 +20,9 @@
  *
  */
 
-#include <hydrogen/sample.h>
+#include <Tritium/sample.h>
 
-#include <hydrogen/Preferences.h>
+#include <Tritium/Preferences.h>
 #include "flac_file.h"
 #include <sndfile.h>
 #include <iostream>

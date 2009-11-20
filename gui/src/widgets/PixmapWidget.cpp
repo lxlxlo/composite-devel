@@ -24,7 +24,7 @@
 #include "../Skin.h"
 #include <QPainter>
 
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 
 PixmapWidget::PixmapWidget( QWidget *pParent, const QString& sClassName )
  : Object( sClassName )

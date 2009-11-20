@@ -23,7 +23,7 @@
 #ifndef PIANO_ROLL_EDITOR_H
 #define PIANO_ROLL_EDITOR_H
 
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 #include "../EventListener.h"
 
 #include <QtGui>

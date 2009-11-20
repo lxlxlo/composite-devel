@@ -32,9 +32,9 @@
 #include "../widgets/Button.h"
 #include "../widgets/LCD.h"
 
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/audio_engine.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/audio_engine.h>
 using namespace H2Core;
 
 #include "MixerLine.h"

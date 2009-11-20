@@ -20,15 +20,15 @@
  *
  */
 
-#include <hydrogen/IO/MidiInput.h>
-#include <hydrogen/event_queue.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/Transport.h>
-#include <hydrogen/instrument.h>
-#include <hydrogen/note.h>
-#include <hydrogen/action.h>
-#include <hydrogen/midiMap.h>
+#include <Tritium/IO/MidiInput.h>
+#include <Tritium/event_queue.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/Transport.h>
+#include <Tritium/instrument.h>
+#include <Tritium/note.h>
+#include <Tritium/action.h>
+#include <Tritium/midiMap.h>
 
 namespace H2Core
 {

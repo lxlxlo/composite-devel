@@ -20,7 +20,7 @@
  *
  */
 
-#include <hydrogen/SeqEvent.h>
+#include <Tritium/SeqEvent.h>
 
 using namespace H2Core;
 

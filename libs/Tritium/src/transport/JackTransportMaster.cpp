@@ -20,8 +20,8 @@
  *
  */
 
-#include <hydrogen/Transport.h>
-#include <hydrogen/TransportPosition.h>
+#include <Tritium/Transport.h>
+#include <Tritium/TransportPosition.h>
 #include "JackTransportMaster.h"
 
 #include <jack/jack.h>

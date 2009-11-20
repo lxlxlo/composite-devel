@@ -27,10 +27,10 @@
 
 #include <QDialog>
 #include "ui_PlaylistDialog_UI.h"
-#include <hydrogen/Object.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/playlist.h>
+#include <Tritium/Object.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/playlist.h>
 
 
 class Button;

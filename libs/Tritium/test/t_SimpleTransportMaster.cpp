@@ -22,8 +22,8 @@
 
 #include <transport/SimpleTransportMaster.h>
 #include <transport/songhelpers.h>
-#include <hydrogen/Song.h>
-#include <hydrogen/TransportPosition.h>
+#include <Tritium/Song.h>
+#include <Tritium/TransportPosition.h>
 
 #include <stdint.h>  // uint32_t, etc.
 

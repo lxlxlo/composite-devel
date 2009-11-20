@@ -24,15 +24,15 @@
 #include "PatternEditorPanel.h"
 #include "NotePropertiesRuler.h"
 
-#include <hydrogen/globals.h>
-#include <hydrogen/Song.h>
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/event_queue.h>
-#include <hydrogen/instrument.h>
-#include <hydrogen/Pattern.h>
-#include <hydrogen/note.h>
-#include <hydrogen/audio_engine.h>
+#include <Tritium/globals.h>
+#include <Tritium/Song.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/event_queue.h>
+#include <Tritium/instrument.h>
+#include <Tritium/Pattern.h>
+#include <Tritium/note.h>
+#include <Tritium/audio_engine.h>
 
 #include "../HydrogenApp.h"
 #include "../Mixer/Mixer.h"

@@ -26,7 +26,7 @@
 #include "LCD.h"
 
 #include <QtGui>
-#include <hydrogen/globals.h>
+#include <Tritium/globals.h>
 
 Fader::Fader( QWidget *pParent, bool bUseIntSteps, bool bWithoutKnob )
  : QWidget( pParent )

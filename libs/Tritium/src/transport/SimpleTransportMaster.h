@@ -22,7 +22,7 @@
 #ifndef SIMPLETRANSPORTMASTER_H
 #define SIMPLETRANPOSRTMASTER_H
 
-#include <hydrogen/Transport.h>
+#include <Tritium/Transport.h>
 
 namespace H2Core
 {

@@ -26,8 +26,8 @@
 
 #include <QtGui>
 
-#include <hydrogen/Object.h>
-#include <hydrogen/TransportPosition.h>
+#include <Tritium/Object.h>
+#include <Tritium/TransportPosition.h>
 
 #include "../EventListener.h"
 

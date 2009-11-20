@@ -29,7 +29,7 @@
 #include <QtGui>
 
 #include "../EventListener.h"
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 
 class MidiActivityWidget : public QWidget, public EventListener, public Object
 {

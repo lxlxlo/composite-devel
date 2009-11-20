@@ -21,18 +21,18 @@
  */
 
 #include "JackClient.h"
-#include <hydrogen/IO/JackOutput.h>
+#include <Tritium/IO/JackOutput.h>
 #ifdef JACK_SUPPORT
 
 #include <sys/types.h>
 #include <unistd.h>
 #include <cstdlib>
 #include <cassert>
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/instrument.h>
-#include <hydrogen/Song.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/globals.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/instrument.h>
+#include <Tritium/Song.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/globals.h>
 
 namespace H2Core
 {

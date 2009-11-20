@@ -25,8 +25,8 @@
 
 #include <string>
 
-#include <hydrogen/globals.h>
-#include <hydrogen/Object.h>
+#include <Tritium/globals.h>
+#include <Tritium/Object.h>
 
 namespace H2Core
 {

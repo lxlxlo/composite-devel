@@ -26,7 +26,7 @@
 #include "config.h"
 #include <QtGui>
 
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 
 class PixmapWidget : public Object, public QWidget
 {

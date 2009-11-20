@@ -26,14 +26,14 @@
 
 #include "HydrogenApp.h"
 
-#include <hydrogen/Pattern.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/Transport.h>
-#include <hydrogen/IO/MidiInput.h>
-#include <hydrogen/IO/AudioOutput.h>
-#include <hydrogen/sampler/Sampler.h>
-#include <hydrogen/audio_engine.h>
+#include <Tritium/Pattern.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/Transport.h>
+#include <Tritium/IO/MidiInput.h>
+#include <Tritium/IO/AudioOutput.h>
+#include <Tritium/sampler/Sampler.h>
+#include <Tritium/audio_engine.h>
 using namespace H2Core;
 
 #include "Skin.h"

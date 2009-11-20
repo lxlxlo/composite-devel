@@ -31,7 +31,7 @@
 #include "EventListener.h"
 #include "config.h"
 
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 
 class HydrogenApp;
 

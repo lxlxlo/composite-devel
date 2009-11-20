@@ -30,11 +30,11 @@
 
 #include "SongEditor.h"
 
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/audio_engine.h>
-#include <hydrogen/Pattern.h>
-#include <hydrogen/Transport.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/audio_engine.h>
+#include <Tritium/Pattern.h>
+#include <Tritium/Transport.h>
 
 using namespace H2Core;
 using namespace std;

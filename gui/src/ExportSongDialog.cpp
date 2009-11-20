@@ -28,9 +28,9 @@
 #include "ExportSongDialog.h"
 #include "Skin.h"
 #include "HydrogenApp.h"
-#include <hydrogen/Song.h>
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/IO/AudioOutput.h>
+#include <Tritium/Song.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/IO/AudioOutput.h>
 
 #include <memory>
 

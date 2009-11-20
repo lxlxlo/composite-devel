@@ -23,7 +23,7 @@
 #ifndef FLAC_FILE_H
 #define FLAC_FILE_H
 
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 #include <string>
 
 namespace H2Core

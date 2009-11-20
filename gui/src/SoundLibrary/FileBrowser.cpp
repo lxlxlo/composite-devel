@@ -28,9 +28,9 @@
 #include "math.h"
 #include "string.h"
 
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/sample.h>
-#include <hydrogen/audio_engine.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/sample.h>
+#include <Tritium/audio_engine.h>
 using namespace H2Core;
 
 FileBrowser::FileBrowser( QWidget* pParent )

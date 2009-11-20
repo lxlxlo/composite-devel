@@ -26,8 +26,8 @@
 
 #include <QtGui>
 
-#include <hydrogen/Object.h>
-#include <hydrogen/globals.h>
+#include <Tritium/Object.h>
+#include <Tritium/globals.h>
 
 class Fader;
 class MasterFader;

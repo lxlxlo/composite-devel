@@ -26,7 +26,7 @@
 #include <QtGui>
 
 #include "EventListener.h"
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 
 namespace H2Core
 {

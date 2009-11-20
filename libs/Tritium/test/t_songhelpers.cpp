@@ -20,8 +20,8 @@
  *
  */
 
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/Song.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/Song.h>
 #include <transport/songhelpers.h>
 
 #define THIS_NAMESPACE t_songhelpers

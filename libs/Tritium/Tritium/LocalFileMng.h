@@ -28,7 +28,7 @@
 #include <vector>
 #include <string>
 
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 
 #include <QDomDocument>
 

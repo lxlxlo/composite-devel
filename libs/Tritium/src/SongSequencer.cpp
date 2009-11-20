@@ -23,12 +23,12 @@
 #include <cassert>
 #include <QtCore/QMutexLocker>
 
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/TransportPosition.h>
-#include <hydrogen/Song.h>
-#include <hydrogen/SeqScript.h>
-#include <hydrogen/Pattern.h>
-#include <hydrogen/instrument.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/TransportPosition.h>
+#include <Tritium/Song.h>
+#include <Tritium/SeqScript.h>
+#include <Tritium/Pattern.h>
+#include <Tritium/instrument.h>
 
 #include "SongSequencer.h"
 #include "transport/songhelpers.h"

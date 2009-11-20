@@ -21,9 +21,9 @@
  */
 #include "config.h"
 
-#include <hydrogen/sample.h>
-#include <hydrogen/Song.h>
-#include <hydrogen/instrument.h>
+#include <Tritium/sample.h>
+#include <Tritium/Song.h>
+#include <Tritium/instrument.h>
 using namespace H2Core;
 
 #include "WaveDisplay.h"

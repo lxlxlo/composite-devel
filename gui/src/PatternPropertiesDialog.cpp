@@ -23,9 +23,9 @@
 #include "PatternPropertiesDialog.h"
 #include "Skin.h"
 
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/Pattern.h>
-#include <hydrogen/Preferences.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/Pattern.h>
+#include <Tritium/Preferences.h>
 
 using namespace std;
 using namespace H2Core;

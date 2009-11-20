@@ -20,7 +20,7 @@
  *
  */
 
-#include <hydrogen/TransportPosition.h>
+#include <Tritium/TransportPosition.h>
 #include <cstdlib> // rand()
 #include <cassert>
 #include <cmath>

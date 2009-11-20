@@ -26,14 +26,14 @@
 #include <math.h>
 #include <assert.h>
 
-#include <hydrogen/Song.h>
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/globals.h>
-#include <hydrogen/adsr.h>
-#include <hydrogen/sample.h>
-#include <hydrogen/instrument.h>
-#include <hydrogen/audio_engine.h>
-#include <hydrogen/event_queue.h>
+#include <Tritium/Song.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/globals.h>
+#include <Tritium/adsr.h>
+#include <Tritium/sample.h>
+#include <Tritium/instrument.h>
+#include <Tritium/audio_engine.h>
+#include <Tritium/event_queue.h>
 using namespace H2Core;
 
 #include "../HydrogenApp.h"

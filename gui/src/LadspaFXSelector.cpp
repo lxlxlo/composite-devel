@@ -22,13 +22,13 @@
 
 #include "LadspaFXSelector.h"
 #include "HydrogenApp.h"
-#include <hydrogen/hydrogen.h>
+#include <Tritium/hydrogen.h>
 #include "Skin.h"
-#include <hydrogen/Song.h>
-#include <hydrogen/Preferences.h>
+#include <Tritium/Song.h>
+#include <Tritium/Preferences.h>
 
-#include <hydrogen/fx/Effects.h>
-#include <hydrogen/fx/LadspaFX.h>
+#include <Tritium/fx/Effects.h>
+#include <Tritium/fx/LadspaFX.h>
 
 using namespace std;
 using namespace H2Core;

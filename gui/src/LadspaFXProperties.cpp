@@ -20,12 +20,12 @@
  *
  */
 
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/audio_engine.h>
-#include <hydrogen/Song.h>
-#include <hydrogen/fx/Effects.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/IO/AudioOutput.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/audio_engine.h>
+#include <Tritium/Song.h>
+#include <Tritium/fx/Effects.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/IO/AudioOutput.h>
 
 
 #include "LadspaFXProperties.h"

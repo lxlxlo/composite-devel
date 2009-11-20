@@ -20,7 +20,7 @@
  *
  */
 
-#include <hydrogen/SeqEvent.h>
+#include <Tritium/SeqEvent.h>
 
 #include <vector>
 #include <cassert>

@@ -20,11 +20,11 @@
  *
  */
 
-#include <hydrogen/Preferences.h>
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/instrument.h>
-#include <hydrogen/Pattern.h>
-#include <hydrogen/note.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/instrument.h>
+#include <Tritium/Pattern.h>
+#include <Tritium/note.h>
 using namespace H2Core;
 
 #include <cassert>

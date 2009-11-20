@@ -23,14 +23,14 @@
 #ifndef SMF_H
 #define SMF_H
 
-#include <hydrogen/Object.h>
-#include <hydrogen/Song.h>
+#include <Tritium/Object.h>
+#include <Tritium/Song.h>
 
 #include <string>
 #include <cstdio>
 #include <vector>
 
-#include <hydrogen/smf/SMFEvent.h>
+#include <Tritium/smf/SMFEvent.h>
 
 namespace H2Core
 {

@@ -22,8 +22,8 @@
 
 #include "SongPropertiesDialog.h"
 #include "Skin.h"
-#include <hydrogen/Song.h>
-#include <hydrogen/hydrogen.h>
+#include <Tritium/Song.h>
+#include <Tritium/hydrogen.h>
 
 #include <QPixmap>
 

@@ -22,7 +22,7 @@
 #ifndef H2_AUDIO_OUTPUT_H
 #define H2_AUDIO_OUTPUT_H
 
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 
 namespace H2Core
 {

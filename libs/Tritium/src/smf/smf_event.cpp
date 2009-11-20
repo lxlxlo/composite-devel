@@ -20,7 +20,7 @@
  *
  */
 
-#include <hydrogen/smf/SMFEvent.h>
+#include <Tritium/smf/SMFEvent.h>
 
 namespace H2Core
 {

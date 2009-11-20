@@ -22,14 +22,14 @@
 
 #include "PatternEditorInstrumentList.h"
 
-#include <hydrogen/audio_engine.h>
-#include <hydrogen/event_queue.h>
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/instrument.h>
-#include <hydrogen/note.h>
-#include <hydrogen/Pattern.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/Song.h>
+#include <Tritium/audio_engine.h>
+#include <Tritium/event_queue.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/instrument.h>
+#include <Tritium/note.h>
+#include <Tritium/Pattern.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/Song.h>
 using namespace H2Core;
 
 #include "PatternEditorPanel.h"

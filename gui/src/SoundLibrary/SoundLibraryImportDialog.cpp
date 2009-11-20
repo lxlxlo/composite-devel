@@ -29,10 +29,10 @@
 #include "../HydrogenApp.h"
 #include "../InstrumentRack.h"
 
-#include <hydrogen/LocalFileMng.h>
-#include <hydrogen/h2_exception.h>
-#include <hydrogen/SoundLibrary.h>
-#include <hydrogen/Preferences.h>
+#include <Tritium/LocalFileMng.h>
+#include <Tritium/h2_exception.h>
+#include <Tritium/SoundLibrary.h>
+#include <Tritium/Preferences.h>
 
 
 #include <QTreeWidget>

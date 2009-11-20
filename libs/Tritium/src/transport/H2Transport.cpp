@@ -21,7 +21,7 @@
  */
 
 #include <memory>
-#include <hydrogen/event_queue.h>
+#include <Tritium/event_queue.h>
 #include "H2Transport.h"
 #include "SimpleTransportMaster.h"
 #include "JackTimeMaster.h"

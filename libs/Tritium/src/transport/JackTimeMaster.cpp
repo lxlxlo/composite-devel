@@ -22,7 +22,7 @@
 
 #include <QtCore/QMutex>
 #include <QtCore/QMutexLocker>
-#include <hydrogen/IO/JackOutput.h>
+#include <Tritium/IO/JackOutput.h>
 #include "../IO/JackClient.h"
 #include "JackTimeMaster.h"
 

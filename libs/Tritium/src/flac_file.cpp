@@ -21,7 +21,7 @@
  */
 
 #include "flac_file.h"
-#include <hydrogen/sample.h>
+#include <Tritium/sample.h>
 
 #include <vector>
 #include <fstream>

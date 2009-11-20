@@ -23,7 +23,7 @@
 #define H2CORE_SEQEVENT_H
 
 #include <stdint.h>  // int32_t, uint32_t
-#include <hydrogen/note.h>
+#include <Tritium/note.h>
 
 namespace H2Core
 {

@@ -20,13 +20,13 @@
  *
  */
 
-#include <hydrogen/instrument.h>
-#include <hydrogen/adsr.h>
-#include <hydrogen/sample.h>
-#include <hydrogen/Song.h>
-#include <hydrogen/LocalFileMng.h>
-#include <hydrogen/SoundLibrary.h>
-#include <hydrogen/audio_engine.h>
+#include <Tritium/instrument.h>
+#include <Tritium/adsr.h>
+#include <Tritium/sample.h>
+#include <Tritium/Song.h>
+#include <Tritium/LocalFileMng.h>
+#include <Tritium/SoundLibrary.h>
+#include <Tritium/audio_engine.h>
 
 #include <cassert>
 

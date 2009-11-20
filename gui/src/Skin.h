@@ -23,7 +23,7 @@
 #define H2_SKIN_H
 
 #include <QString>
-#include <hydrogen/data_path.h>
+#include <Tritium/data_path.h>
 
 ///
 /// Skin support

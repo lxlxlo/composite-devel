@@ -1,6 +1,6 @@
 
-#include <hydrogen/SeqScriptIterator.h>
-#include <hydrogen/SeqEvent.h>
+#include <Tritium/SeqScriptIterator.h>
+#include <Tritium/SeqEvent.h>
 #include "SeqScriptPrivate.h"
 
 #include <cassert>

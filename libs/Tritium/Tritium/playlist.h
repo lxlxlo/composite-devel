@@ -24,10 +24,10 @@
 #define PLAYLIST_H
 
 #include <QDialog>
-#include <hydrogen/Object.h>
-#include <hydrogen/globals.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/hydrogen.h>
+#include <Tritium/Object.h>
+#include <Tritium/globals.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/hydrogen.h>
 #include "gui/src/HydrogenApp.h"
 #include <vector>
 #include <cassert>

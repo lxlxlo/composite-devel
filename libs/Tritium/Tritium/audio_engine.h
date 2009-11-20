@@ -23,8 +23,8 @@
 #ifndef AUDIO_ENGINE_H
 #define AUDIO_ENGINE_H
 
-#include <hydrogen/Object.h>
-#include <hydrogen/sampler/Sampler.h>
+#include <Tritium/Object.h>
+#include <Tritium/sampler/Sampler.h>
 
 #include <QMutex>
 #include <string>

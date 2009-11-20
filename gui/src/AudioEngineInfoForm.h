@@ -25,7 +25,7 @@
 #define AUDIO_ENGINE_INFO_FORM_H
 
 #include "config.h"
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 
 #include "EventListener.h"
 #include "ui_AudioEngineInfoForm_UI.h"

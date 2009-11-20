@@ -21,16 +21,16 @@
  */
 #include "version.h"
 
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/Transport.h>
-#include <hydrogen/playlist.h>
-#include <hydrogen/audio_engine.h>
-#include <hydrogen/adsr.h>
-#include <hydrogen/smf/SMF.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/LocalFileMng.h>
-#include <hydrogen/Pattern.h>
-#include <hydrogen/event_queue.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/Transport.h>
+#include <Tritium/playlist.h>
+#include <Tritium/audio_engine.h>
+#include <Tritium/adsr.h>
+#include <Tritium/smf/SMF.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/LocalFileMng.h>
+#include <Tritium/Pattern.h>
+#include <Tritium/event_queue.h>
 using namespace H2Core;
 
 #include "AboutDialog.h"

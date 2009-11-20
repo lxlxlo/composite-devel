@@ -20,7 +20,7 @@
  *
  */
 
-#include <hydrogen/TransportPosition.h>
+#include <Tritium/TransportPosition.h>
 #include <cmath>
 
 #define THIS_NAMESPACE t_TransportPosition

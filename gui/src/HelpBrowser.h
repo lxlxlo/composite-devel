@@ -30,7 +30,7 @@
 #include <string>
 #include <QtGui>
 
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 
 class SimpleHTMLBrowser : public QDialog, public Object
 {

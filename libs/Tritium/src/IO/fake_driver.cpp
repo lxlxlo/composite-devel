@@ -20,8 +20,8 @@
  *
  */
 
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/Transport.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/Transport.h>
 #include "FakeDriver.h"
 
 namespace H2Core

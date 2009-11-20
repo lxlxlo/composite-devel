@@ -24,7 +24,7 @@
 #ifndef NULL_AUDIO_DRIVER_H
 #define NULL_AUDIO_DRIVER_H
 
-#include <hydrogen/IO/AudioOutput.h>
+#include <Tritium/IO/AudioOutput.h>
 
 #include <inttypes.h>
 

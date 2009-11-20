@@ -22,7 +22,7 @@
 #ifndef H2CORE_H2TRANSPORT_H
 #define H2CORE_H2TRANSPORT_H
 
-#include <hydrogen/Transport.h>
+#include <Tritium/Transport.h>
 
 namespace H2Core
 {

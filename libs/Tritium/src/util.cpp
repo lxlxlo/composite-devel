@@ -20,7 +20,7 @@
  *
  */
 
-#include <hydrogen/util.h>
+#include <Tritium/util.h>
 
 #include <ctype.h>
 #include <cassert>

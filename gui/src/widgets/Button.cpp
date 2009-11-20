@@ -31,7 +31,7 @@
 	#include <QSvgRenderer>
 #endif
 
-#include <hydrogen/globals.h>
+#include <Tritium/globals.h>
 
 
 Button::Button( QWidget * pParent, const QString& sOnImage, const QString& sOffImage, const QString& sOverImage, QSize size, bool use_skin_style )

@@ -35,10 +35,10 @@
 
 #include "widgets/midiTable.h"
 
-#include <hydrogen/midiMap.h>
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/IO/MidiInput.h>
+#include <Tritium/midiMap.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/IO/MidiInput.h>
 
 using namespace H2Core;
 

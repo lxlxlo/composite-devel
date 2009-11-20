@@ -26,7 +26,7 @@
 
 #include <QtGui>
 
-#include <hydrogen/globals.h>
+#include <Tritium/globals.h>
 
 QPixmap* LCDDigit::m_pSmallBlueFontSet = NULL;
 QPixmap* LCDDigit::m_pSmallRedFontSet = NULL;

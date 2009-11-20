@@ -20,8 +20,8 @@
  *
  */
 
-#include <hydrogen/SeqEvent.h>
-#include <hydrogen/instrument.h>
+#include <Tritium/SeqEvent.h>
+#include <Tritium/instrument.h>
 #include <cmath>
 #include <memory>
 

@@ -26,8 +26,8 @@
 #include "config.h"
 
 #include "ui_SoundLibraryImportDialog_UI.h"
-#include <hydrogen/Object.h>
-#include <hydrogen/Preferences.h>
+#include <Tritium/Object.h>
+#include <Tritium/Preferences.h>
 
 #include <vector>
 

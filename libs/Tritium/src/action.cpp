@@ -21,18 +21,18 @@
  */
 #include <QObject>
 
-#include <hydrogen/audio_engine.h>
-#include <hydrogen/event_queue.h>
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/Transport.h>
+#include <Tritium/audio_engine.h>
+#include <Tritium/event_queue.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/Transport.h>
 #include <gui/src/HydrogenApp.h>
 
-#include <hydrogen/instrument.h>
-#include <hydrogen/Song.h>
+#include <Tritium/instrument.h>
+#include <Tritium/Song.h>
 
 
-#include <hydrogen/Preferences.h>
-#include <hydrogen/action.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/action.h>
 #include <map>
 
 ActionManager* ActionManager::__instance = NULL;

@@ -25,7 +25,7 @@
 
 #include "JackClient.h"
 #include <jack/jack.h>
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 #include <cassert>
 
 #ifdef JACK_SUPPORT

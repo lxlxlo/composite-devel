@@ -23,7 +23,7 @@
 #ifndef H2_MIDI_INPUT_H
 #define H2_MIDI_INPUT_H
 
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 #include <vector>
 #include <stdint.h>
 

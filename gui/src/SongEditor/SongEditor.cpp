@@ -24,13 +24,13 @@
 #include <algorithm>
 #include <memory>
 
-#include <hydrogen/Song.h>
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/Preferences.h>
-#include <hydrogen/Pattern.h>
-#include <hydrogen/audio_engine.h>
-#include <hydrogen/event_queue.h>
-#include <hydrogen/instrument.h>
+#include <Tritium/Song.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/Preferences.h>
+#include <Tritium/Pattern.h>
+#include <Tritium/audio_engine.h>
+#include <Tritium/event_queue.h>
+#include <Tritium/instrument.h>
 using namespace H2Core;
 
 
@@ -45,7 +45,7 @@ using namespace H2Core;
 #include "../PatternPropertiesDialog.h"
 #include "../SongPropertiesDialog.h"
 #include "../Skin.h"
-#include <hydrogen/LocalFileMng.h>
+#include <Tritium/LocalFileMng.h>
 
 
 using namespace std;

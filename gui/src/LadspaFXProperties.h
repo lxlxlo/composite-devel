@@ -26,7 +26,7 @@
 #include <vector>
 #include <QtGui>
 
-#include <hydrogen/Object.h>
+#include <Tritium/Object.h>
 
 class Fader;
 class LCDDisplay;

@@ -28,9 +28,9 @@
 #include <vector>
 #include <cassert>
 
-#include <hydrogen/action.h>
-#include <hydrogen/globals.h>
-#include <hydrogen/Object.h>
+#include <Tritium/action.h>
+#include <Tritium/globals.h>
+#include <Tritium/Object.h>
 
 #include <QDomDocument>
 

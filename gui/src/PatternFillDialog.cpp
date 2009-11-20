@@ -23,9 +23,9 @@
 
 #include "PatternFillDialog.h"
 
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/Song.h>
-#include <hydrogen/Pattern.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/Song.h>
+#include <Tritium/Pattern.h>
 
 #include "Skin.h"
 

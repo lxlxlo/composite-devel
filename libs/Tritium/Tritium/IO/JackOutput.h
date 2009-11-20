@@ -23,16 +23,16 @@
 #ifndef H2_JACK_OUTPUT_H
 #define H2_JACK_OUTPUT_H
 
-#include <hydrogen/IO/AudioOutput.h>
-#include <hydrogen/IO/NullDriver.h>
+#include <Tritium/IO/AudioOutput.h>
+#include <Tritium/IO/NullDriver.h>
 
 // check if jack support is enabled
 #ifdef JACK_SUPPORT
 
 #include <jack/jack.h>
 
-#include <hydrogen/globals.h>
-#include <hydrogen/hydrogen.h>
+#include <Tritium/globals.h>
+#include <Tritium/hydrogen.h>
 
 
 

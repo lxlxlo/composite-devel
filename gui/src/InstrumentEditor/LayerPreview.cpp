@@ -22,12 +22,12 @@
 
 #include <QtGui>
 
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/Song.h>
-#include <hydrogen/instrument.h>
-#include <hydrogen/note.h>
-#include <hydrogen/audio_engine.h>
-#include <hydrogen/sampler/Sampler.h>
+#include <Tritium/hydrogen.h>
+#include <Tritium/Song.h>
+#include <Tritium/instrument.h>
+#include <Tritium/note.h>
+#include <Tritium/audio_engine.h>
+#include <Tritium/sampler/Sampler.h>
 using namespace H2Core;
 
 #include "../Skin.h"
