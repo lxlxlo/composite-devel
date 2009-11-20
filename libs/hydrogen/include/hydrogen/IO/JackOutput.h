@@ -29,7 +29,6 @@
 // check if jack support is enabled
 #ifdef JACK_SUPPORT
 
-#include <pthread.h>
 #include <jack/jack.h>
 
 #include <hydrogen/globals.h>

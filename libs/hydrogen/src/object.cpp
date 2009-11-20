@@ -24,8 +24,10 @@
 #include <hydrogen/util.h>
 
 #include <QDir>
+#include <QThread>
+#include <QMutex>
+#include <QMutexLocker>
 #include <iostream>
-#include <pthread.h>
 #include <cassert>
 #include <strings.h>
 
@@ -194,22 +196,29 @@ void Object::print_object_map()
 
 Logger* Logger::__instance = NULL;
 
-pthread_t loggerThread;
-
-void* loggerThread_func( void* param )
+class LoggerThread : public QThread
 {
-	if ( param == NULL ) {
-		// ??????
-		return NULL;
-	}
+	bool m_done;
+	Logger *pLogger;
+public:
+	LoggerThread(Logger* d) :
+		m_done(false),
+		pLogger(d)
+		{}
+	void shutdown() { m_done = true; }
+	void run();
+};
+
+LoggerThread *loggerThread;
+
+void LoggerThread::run()
+{
 
 #ifdef WIN32
 	::AllocConsole();
 //	::SetConsoleTitle( "Hydrogen debug log" );
 	freopen( "CONOUT$", "wt", stdout );
 #endif
-
-	Logger *pLogger = ( Logger* )param;
 
 	FILE *pLogFile = NULL;
 	if ( pLogger->__use_file ) {
@@ -227,7 +236,9 @@ void* loggerThread_func( void* param )
 		}
 	}
 
-	while ( pLogger->__running ) {
+	QMutexLocker logger_mutex(&pLogger->__mutex);
+	logger_mutex.unlock();
+	while ( ! m_done ) {
 #ifdef WIN32
 		Sleep( 1000 );
 #else
@@ -248,9 +259,9 @@ void* loggerThread_func( void* param )
 		// See Object.h for documentation on __mutex and when
 		// it should be locked.
 		queue.erase( queue.begin(), last );
-		pthread_mutex_lock( &pLogger->__mutex );
+		logger_mutex.relock();
 		if( ! queue.empty() ) queue.pop_front();
-		pthread_mutex_unlock( &pLogger->__mutex );
+		logger_mutex.unlock();
 	}
 
 	if ( pLogFile ) {
@@ -268,8 +279,6 @@ void* loggerThread_func( void* param )
 	usleep( 100000 );
 #endif
 
-	pthread_exit( NULL );
-	return NULL;
 }
 
 void Logger::create_instance()
@@ -284,13 +293,10 @@ void Logger::create_instance()
  */
 Logger::Logger()
 		: __use_file( false )
-		, __running( true )
 {
 	__instance = this;
-	pthread_attr_t attr;
-	pthread_attr_init( &attr );
-	pthread_mutex_init( &__mutex, NULL );
-	pthread_create( &loggerThread, &attr, loggerThread_func, this );
+	loggerThread = new LoggerThread(this);
+	loggerThread->start();
 }
 
 /**
@@ -298,9 +304,9 @@ Logger::Logger()
  */
 Logger::~Logger()
 {
-	__running = false;
-	pthread_join( loggerThread, NULL );
-
+	loggerThread->shutdown();
+	loggerThread->wait();
+	delete loggerThread;
 }
 
 void Logger::log( unsigned level,
@@ -347,7 +353,6 @@ void Logger::log( unsigned level,
 		.arg(funcname)
 		.arg(msg);
 
-	pthread_mutex_lock( &__mutex);
+	QMutexLocker mx(&__mutex);
 	__msg_queue.push_back( tmp );
-	pthread_mutex_unlock( &__mutex );
 }

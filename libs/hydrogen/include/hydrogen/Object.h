@@ -32,10 +32,11 @@
 #include <map>
 #include <vector>
 #include <sstream>
-#include <pthread.h>
 #include <cassert>
+#include <QMutex>
 
 class Object;
+class LoggerThread;
 
 /**
  * Class for writing logs to the console
@@ -66,7 +67,6 @@ public:
 	typedef std::list<QString> queue_t;
 
 	bool __use_file;
-	bool __running;
 
 	static void create_instance();
 	static Logger* get_instance() { assert(__instance); return __instance; }
@@ -79,7 +79,7 @@ public:
 
 	void log( unsigned lev, const char* funcname, const QString& class_name, const QString& msg );
 
-	friend void* loggerThread_func(void* param);  // object.cpp
+	friend class LoggerThread;
 
 private:
 	static Logger *__instance;
@@ -102,7 +102,7 @@ private:
 	 *   adding elements to the END of the list.
 	 *
 	 */
-	pthread_mutex_t __mutex;  // Lock for adding or removing elements only
+	QMutex __mutex;  // Lock for adding or removing elements only
 	queue_t __msg_queue;
 	static unsigned __log_level; // A bitmask of log_level_t
 

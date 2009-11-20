@@ -49,8 +49,6 @@ AudioEngine::AudioEngine()
 	__instance = this;
 	INFOLOG( "INIT" );
 
-	pthread_mutex_init( &__engine_mutex, NULL );
-
 	__sampler = new Sampler;
 
 #ifdef LADSPA_SUPPORT
@@ -83,7 +81,7 @@ Sampler* AudioEngine::get_sampler()
 
 void AudioEngine::lock( const char* file, unsigned int line, const char* function )
 {
-	pthread_mutex_lock( &__engine_mutex );
+	__engine_mutex.lock();
 	__locker.file = file;
 	__locker.line = line;
 	__locker.function = function;
@@ -93,8 +91,8 @@ void AudioEngine::lock( const char* file, unsigned int line, const char* functio
 
 bool AudioEngine::try_lock( const char* file, unsigned int line, const char* function )
 {
-	int res = pthread_mutex_trylock( &__engine_mutex );
-	if ( res != 0 ) {
+	bool locked = __engine_mutex.tryLock();
+	if ( ! locked ) {
 		// Lock not obtained
 		return false;
 	}
@@ -109,7 +107,7 @@ bool AudioEngine::try_lock( const char* file, unsigned int line, const char* fun
 void AudioEngine::unlock()
 {
 	// Leave "__locker" dirty.
-	pthread_mutex_unlock( &__engine_mutex );
+	__engine_mutex.unlock();
 }
 
 

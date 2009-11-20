@@ -26,7 +26,7 @@
 #include <hydrogen/Object.h>
 #include <hydrogen/sampler/Sampler.h>
 
-#include <pthread.h>
+#include <QMutex>
 #include <string>
 #include <cassert>
 
@@ -79,7 +79,7 @@ private:
 	Sampler* __sampler;
 
 	/// Mutex for syncronized access to the Song object and the AudioEngine.
-	pthread_mutex_t __engine_mutex;
+	QMutex __engine_mutex;
 
 	struct _locker_struct {
 		const char* file;

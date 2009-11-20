@@ -27,17 +27,29 @@
 #include <hydrogen/Transport.h>
 #include <hydrogen/TransportPosition.h>
 
-#include <pthread.h>
+#include <QThread>
 #include <cassert>
 
 namespace H2Core
 {
 
-pthread_t diskWriterDriverThread;
-
-void* diskWriterDriver_thread( void* param )
+class DiskWriterDriverThread : public QThread
 {
-	DiskWriterDriver *pDriver = ( DiskWriterDriver* )param;
+	bool m_abort;
+	DiskWriterDriver* pDriver;
+public:
+	DiskWriterDriverThread(DiskWriterDriver* d) :
+		m_abort(false),
+		pDriver(d)
+		{}
+	void shutdown() { m_abort = true; }
+	void run();
+};
+
+DiskWriterDriverThread * diskWriterDriverThread;
+
+void DiskWriterDriverThread::run()
+{
 	_INFOLOG( "DiskWriterDriver thread start" );
         Transport* xport = Hydrogen::get_instance()->get_transport();
         TransportPosition xpos;
@@ -54,7 +66,6 @@ void* diskWriterDriver_thread( void* param )
 
 	if ( !sf_format_check( &soundInfo ) ) {
 		_ERRORLOG( "Error in soundInfo" );
-		return 0;
 	}
 
 	SNDFILE* m_file = sf_open( pDriver->m_sFilename.toLocal8Bit(), SFM_WRITE, &soundInfo );
@@ -66,7 +77,8 @@ void* diskWriterDriver_thread( void* param )
 
         uint32_t report_interval = pDriver->m_nBufferSize * 64;
 
-	while ( pDriver->m_processCallback( pDriver->m_nBufferSize, NULL ) == 0 ) {
+	while ( (!m_abort)
+		&& (pDriver->m_processCallback( pDriver->m_nBufferSize, NULL ) == 0) ) {
 		// process...
 		for ( unsigned i = 0; i < pDriver->m_nBufferSize; i++ ) {
 			if(pData_L[i] > 1){
@@ -116,8 +128,6 @@ void* diskWriterDriver_thread( void* param )
 
 	_INFOLOG( "DiskWriterDriver thread end" );
 
-	pthread_exit( NULL );
-	return NULL;
 }
 
 
@@ -162,10 +172,8 @@ int DiskWriterDriver::connect()
 {
 	INFOLOG( "[connect]" );
 
-	pthread_attr_t attr;
-	pthread_attr_init( &attr );
-
-	pthread_create( &diskWriterDriverThread, &attr, diskWriterDriver_thread, this );
+	diskWriterDriverThread = new DiskWriterDriverThread(this);
+	diskWriterDriverThread->start();
 
 	return 0;
 }
@@ -176,6 +184,10 @@ int DiskWriterDriver::connect()
 void DiskWriterDriver::disconnect()
 {
 	INFOLOG( "[disconnect]" );
+
+	diskWriterDriverThread->shutdown();
+	diskWriterDriverThread->wait();
+	delete diskWriterDriverThread;
 
 	delete[] m_pOut_L;
 	m_pOut_L = NULL;

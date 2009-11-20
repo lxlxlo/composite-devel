@@ -57,7 +57,6 @@
 #    include <sys/time.h>
 #endif
 
-#include <pthread.h>
 #include <cassert>
 #include <cstdio>
 #include <deque>
