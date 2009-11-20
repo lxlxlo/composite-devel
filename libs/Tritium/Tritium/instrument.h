@@ -29,7 +29,7 @@
 #include <Tritium/Object.h>
 #include <cassert>
 
-namespace H2Core
+namespace Tritium
 {
 
 class ADSR;

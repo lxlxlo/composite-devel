@@ -24,7 +24,7 @@
 #include <Tritium/sample.h>
 #include <Tritium/Song.h>
 #include <Tritium/instrument.h>
-using namespace H2Core;
+using namespace Tritium;
 
 #include "SampleWaveDisplay.h"
 #include "../Skin.h"

@@ -22,7 +22,7 @@
 
 #include <Tritium/event_queue.h>
 
-namespace H2Core
+namespace Tritium
 {
 
 EventQueue* EventQueue::__instance = NULL;

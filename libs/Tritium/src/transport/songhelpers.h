@@ -29,7 +29,7 @@
 
 #include <stdint.h>
 
-namespace H2Core
+namespace Tritium
 {
     class Song;
 

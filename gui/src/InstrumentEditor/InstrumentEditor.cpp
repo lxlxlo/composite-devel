@@ -34,7 +34,7 @@
 #include <Tritium/instrument.h>
 #include <Tritium/audio_engine.h>
 #include <Tritium/event_queue.h>
-using namespace H2Core;
+using namespace Tritium;
 
 #include "../HydrogenApp.h"
 #include "../Skin.h"
@@ -470,7 +470,7 @@ void InstrumentEditor::rotaryChanged(Rotary *ref)
 			sprintf( tmp, "%#.2f", fVal );
 			m_pLayerGainLCD->setText( tmp );
 
-			H2Core::InstrumentLayer *pLayer = m_pInstrument->get_layer( m_nSelectedLayer );
+			Tritium::InstrumentLayer *pLayer = m_pInstrument->get_layer( m_nSelectedLayer );
 			if ( pLayer ) {
 				pLayer->set_gain( fVal );
 				m_pWaveDisplay->updateDisplay( pLayer );
@@ -479,7 +479,7 @@ void InstrumentEditor::rotaryChanged(Rotary *ref)
 		else if ( ref == m_pLayerPitchCoarseRotary ) {
 			//fVal = fVal * 24.0 - 12.0;
 			m_pLayerPitchCoarseLCD->setText( QString( "%1" ).arg( (int)fVal ) );
-			H2Core::InstrumentLayer *pLayer = m_pInstrument->get_layer( m_nSelectedLayer );
+			Tritium::InstrumentLayer *pLayer = m_pInstrument->get_layer( m_nSelectedLayer );
 			if ( pLayer ) {
 				int nCoarse = (int)m_pLayerPitchCoarseRotary->getValue();
 				float fFine = m_pLayerPitchFineRotary->getValue() / 100.0;
@@ -489,7 +489,7 @@ void InstrumentEditor::rotaryChanged(Rotary *ref)
 		}
 		else if ( ref == m_pLayerPitchFineRotary ) {
 			m_pLayerPitchFineLCD->setText( QString( "%1" ).arg( fVal ) );
-			H2Core::InstrumentLayer *pLayer = m_pInstrument->get_layer( m_nSelectedLayer );
+			Tritium::InstrumentLayer *pLayer = m_pInstrument->get_layer( m_nSelectedLayer );
 			if ( pLayer ) {
 				int nCoarse = (int)m_pLayerPitchCoarseRotary->getValue();
 				float fFine = m_pLayerPitchFineRotary->getValue() / 100.0;
@@ -550,7 +550,7 @@ void InstrumentEditor::buttonClicked( Button* pButton )
 		AudioEngine::get_instance()->lock( RIGHT_HERE );
 
 		if ( m_pInstrument ) {
-			H2Core::InstrumentLayer *pLayer = m_pInstrument->get_layer( m_nSelectedLayer );
+			Tritium::InstrumentLayer *pLayer = m_pInstrument->get_layer( m_nSelectedLayer );
 			if ( pLayer ) {
 				m_pInstrument->set_layer( NULL, m_nSelectedLayer );
 				delete pLayer;
@@ -605,7 +605,7 @@ void InstrumentEditor::loadLayer()
 
 			Sample *newSample = Sample::load( filename[i] );
 	
-			H2Core::Instrument *pInstr = NULL;
+			Tritium::Instrument *pInstr = NULL;
 	
 			AudioEngine::get_instance()->lock( RIGHT_HERE );
 			Song *song = engine->getSong();
@@ -620,7 +620,7 @@ void InstrumentEditor::loadLayer()
 			selectedLayer = m_nSelectedLayer + i - 2;
 
 			
-			H2Core::InstrumentLayer *pLayer = pInstr->get_layer( selectedLayer );
+			Tritium::InstrumentLayer *pLayer = pInstr->get_layer( selectedLayer );
 			if (pLayer != NULL) {
 				// delete old sample
 				Sample *oldSample = pLayer->get_sample();
@@ -630,7 +630,7 @@ void InstrumentEditor::loadLayer()
 				pLayer->set_sample( newSample );
 			}
 			else {
-				pLayer = new H2Core::InstrumentLayer(newSample);
+				pLayer = new Tritium::InstrumentLayer(newSample);
 				pInstr->set_layer( pLayer, selectedLayer );
 			}
 	
@@ -715,7 +715,7 @@ void InstrumentEditor::selectLayer( int nLayer )
 
 	m_nSelectedLayer = nLayer;
 
-	H2Core::InstrumentLayer *pLayer = m_pInstrument->get_layer( nLayer );
+	Tritium::InstrumentLayer *pLayer = m_pInstrument->get_layer( nLayer );
 	m_pWaveDisplay->updateDisplay( pLayer );
 	if (pLayer) {
 		char tmp[20];

@@ -36,7 +36,7 @@
 
 
 
-namespace H2Core
+namespace Tritium
 {
 
 class Song;
@@ -77,7 +77,7 @@ public:
 	int init( unsigned bufferSize );
 
 private:
-	H2Core::Hydrogen *m_pEngine;
+	Tritium::Hydrogen *m_pEngine;
 
 	JackProcessCallback processCallback;
 	jack_port_t *output_port_1;
@@ -93,7 +93,7 @@ private:
 
 #else
 
-namespace H2Core {
+namespace Tritium {
 
 class JackOutput : public NullDriver
 {

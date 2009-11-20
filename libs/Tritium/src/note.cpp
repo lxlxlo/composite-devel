@@ -26,7 +26,7 @@
 #include <cassert>
 #include <cstdlib>
 
-namespace H2Core
+namespace Tritium
 {
 
 Note::Note(

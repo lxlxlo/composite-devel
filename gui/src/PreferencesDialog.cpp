@@ -40,7 +40,7 @@
 #include <Tritium/Preferences.h>
 #include <Tritium/IO/MidiInput.h>
 
-using namespace H2Core;
+using namespace Tritium;
 
 PreferencesDialog::PreferencesDialog(QWidget* parent)
  : QDialog( parent )

@@ -29,7 +29,7 @@
 
 ///
 ///
-namespace H2Core
+namespace Tritium
 {
 
 class Drumkit;

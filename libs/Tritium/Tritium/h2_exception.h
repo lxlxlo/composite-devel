@@ -27,7 +27,7 @@
 #include <stdexcept>
 #include <QString>
 
-namespace H2Core
+namespace Tritium
 {
 
 class H2Exception : public std::runtime_error

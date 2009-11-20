@@ -31,7 +31,7 @@
 #include <Tritium/hydrogen.h>
 #include <Tritium/sample.h>
 #include <Tritium/audio_engine.h>
-using namespace H2Core;
+using namespace Tritium;
 
 FileBrowser::FileBrowser( QWidget* pParent )
  : QWidget( pParent )

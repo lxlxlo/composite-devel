@@ -48,7 +48,7 @@ class LayerPreview : public QWidget, public Object, public EventListener
 	private:
 		static const int m_nLayerHeight = 10;
 		QPixmap m_speakerPixmap;
-		H2Core::Instrument *m_pInstrument;
+		Tritium::Instrument *m_pInstrument;
 		int m_nSelectedLayer;
 		bool m_bMouseGrab;
 		bool m_bGrabLeft;

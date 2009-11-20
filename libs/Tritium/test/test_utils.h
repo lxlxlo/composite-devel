@@ -35,7 +35,7 @@
  * be reused and updated uniformly.
  */
 
-namespace H2Core {
+namespace Tritium {
     struct TransportPosition;
     class Song;
 }
@@ -90,7 +90,7 @@ namespace H2Test
      * Returns:  true if p is within the bounds of s.  false if the
      *           position p is outside the song.
      */
-    bool valid_position(H2Core::TransportPosition& p, H2Core::Song* s);
+    bool valid_position(Tritium::TransportPosition& p, Tritium::Song* s);
 
 } // namespace H2Test
 

@@ -29,7 +29,7 @@
 
 #include <Tritium/Object.h>
 
-namespace H2Core
+namespace Tritium
 {
 	class Pattern;
 }
@@ -62,7 +62,7 @@ class NotePropertiesRuler : public QWidget, public Object, public EventListener
 		NotePropertiesMode m_mode;
 
 		PatternEditorPanel *m_pPatternEditorPanel;
-		H2Core::Pattern *m_pPattern;
+		Tritium::Pattern *m_pPattern;
 		float m_nGridWidth;
 		uint m_nEditorWidth;
 		uint m_nEditorHeight;

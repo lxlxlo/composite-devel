@@ -25,7 +25,7 @@
 #include <ctype.h>
 #include <cassert>
 
-namespace H2Core
+namespace Tritium
 {
 
     /* Convert a single hex digit to an integer.  Digit may be upper
@@ -142,4 +142,4 @@ namespace H2Core
 	return rv;
     }
 
-}; // namespace H2Core
+}; // namespace Tritium

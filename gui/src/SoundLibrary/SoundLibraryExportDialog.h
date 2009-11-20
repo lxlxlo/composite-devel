@@ -48,7 +48,7 @@ class SoundLibraryExportDialog : public QDialog, public Ui_SoundLibraryExportDia
 			void on_drumkitPathTxt_textChanged( QString str );
 			void updateDrumkitList();
 	private:
-			std::vector<H2Core::Drumkit*> drumkitInfoList;
+			std::vector<Tritium::Drumkit*> drumkitInfoList;
 };
 
 

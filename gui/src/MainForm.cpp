@@ -31,7 +31,7 @@
 #include <Tritium/LocalFileMng.h>
 #include <Tritium/Pattern.h>
 #include <Tritium/event_queue.h>
-using namespace H2Core;
+using namespace Tritium;
 
 #include "AboutDialog.h"
 #include "AudioEngineInfoForm.h"
@@ -65,7 +65,7 @@ using namespace H2Core;
 #include <cassert>
 
 using namespace std;
-using namespace H2Core;
+using namespace Tritium;
 
 MainForm::MainForm( QApplication *app, const QString& songFilename )
  : QMainWindow( 0, 0 )
@@ -547,7 +547,7 @@ void MainForm::action_file_openPattern()
 	}
 	else
 	{
-		H2Core::Pattern *pNewPattern = err;
+		Tritium::Pattern *pNewPattern = err;
 		pPatternList->add ( pNewPattern );
 		song->__is_modified = true;
 	}

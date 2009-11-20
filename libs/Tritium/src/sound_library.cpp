@@ -47,7 +47,7 @@
 #include <fcntl.h>
 #include <errno.h>
 
-namespace H2Core
+namespace Tritium
 {
 
 SoundLibrary::SoundLibrary()

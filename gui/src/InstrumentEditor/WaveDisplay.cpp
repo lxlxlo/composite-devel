@@ -24,7 +24,7 @@
 #include <Tritium/sample.h>
 #include <Tritium/Song.h>
 #include <Tritium/instrument.h>
-using namespace H2Core;
+using namespace Tritium;
 
 #include "WaveDisplay.h"
 #include "../Skin.h"
@@ -85,7 +85,7 @@ void WaveDisplay::paintEvent(QPaintEvent *ev)
 
 
 
-void WaveDisplay::updateDisplay( H2Core::InstrumentLayer *pLayer )
+void WaveDisplay::updateDisplay( Tritium::InstrumentLayer *pLayer )
 {
 	if ( pLayer && pLayer->get_sample() ) {
 		// Extract the filename from the complete path

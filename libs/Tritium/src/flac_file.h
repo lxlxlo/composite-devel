@@ -26,7 +26,7 @@
 #include <Tritium/Object.h>
 #include <string>
 
-namespace H2Core
+namespace Tritium
 {
 
 class Sample;

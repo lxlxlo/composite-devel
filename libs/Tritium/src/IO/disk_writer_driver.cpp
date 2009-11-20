@@ -30,7 +30,7 @@
 #include <QThread>
 #include <cassert>
 
-namespace H2Core
+namespace Tritium
 {
 
 class DiskWriterDriverThread : public QThread

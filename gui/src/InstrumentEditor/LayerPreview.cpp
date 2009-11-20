@@ -28,7 +28,7 @@
 #include <Tritium/note.h>
 #include <Tritium/audio_engine.h>
 #include <Tritium/sampler/Sampler.h>
-using namespace H2Core;
+using namespace Tritium;
 
 #include "../Skin.h"
 #include "../HydrogenApp.h"

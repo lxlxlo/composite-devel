@@ -28,7 +28,7 @@
 
 #include "SeqScriptPrivate.h"
 
-using namespace H2Core;
+using namespace Tritium;
 
 SeqScript::SeqScript()
 {

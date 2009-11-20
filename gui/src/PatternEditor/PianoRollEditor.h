@@ -28,7 +28,7 @@
 
 #include <QtGui>
 
-namespace H2Core
+namespace Tritium
 {
 	class Pattern;
 	class Note;
@@ -50,7 +50,7 @@ class PianoRollEditor: public QWidget, public EventListener, public Object
 
 
 	private:
-		H2Core::Pattern *m_pPattern;
+		Tritium::Pattern *m_pPattern;
 
 		unsigned m_nRowHeight;
 		unsigned m_nOctaves;
@@ -60,7 +60,7 @@ class PianoRollEditor: public QWidget, public EventListener, public Object
 
 		void createBackground();
 		void drawPattern();
-		void drawNote( H2Core::Note *pNote, QPainter *pPainter );
+		void drawNote( Tritium::Note *pNote, QPainter *pPainter );
 
 		virtual void paintEvent(QPaintEvent *ev);
 		virtual void mousePressEvent(QMouseEvent *ev);

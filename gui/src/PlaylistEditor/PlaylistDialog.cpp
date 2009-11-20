@@ -47,7 +47,7 @@
 #include <fstream>
 #include <memory>
 
-using namespace H2Core;
+using namespace Tritium;
 using namespace std;
 
 PlaylistDialog::PlaylistDialog ( QWidget* pParent )

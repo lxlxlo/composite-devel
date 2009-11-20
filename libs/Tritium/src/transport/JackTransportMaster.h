@@ -24,7 +24,7 @@
 
 #include <Tritium/Transport.h>
 
-namespace H2Core
+namespace Tritium
 {
     struct TransportPosition;
     class JackTransportMasterPrivate;
@@ -37,13 +37,13 @@ namespace H2Core
      * When Hydrogen is a JACK transport slave, it looks like this:
      *
      * jackd --> jack_position_t --> JackTransportMaster
-     *            --> H2Core::Transport --> Sequencer (Hydrogen)
+     *            --> Tritium::Transport --> Sequencer (Hydrogen)
      *
      * When Hydrogen is the JACK transport master, it looks like this:
      *
      * HydrogenBasicTransportMaster --> JackTimebaseCallback --> jackd
      *    --> jack_position_t --> JackTransportMaster
-     *           --> H2Core::Transport --> Sequencer (Hydrogen)
+     *           --> Tritium::Transport --> Sequencer (Hydrogen)
      */
     class JackTransportMaster : public Transport
     {

@@ -39,7 +39,7 @@
 #include "Mixer/MixerLine.h"
 
 using namespace std;
-using namespace H2Core;
+using namespace Tritium;
 
 LadspaFXProperties::LadspaFXProperties(QWidget* parent, uint nLadspaFX)
  : QWidget( parent )
@@ -346,9 +346,9 @@ void LadspaFXProperties::selectFXBtnClicked()
 		if ( !sSelectedFX.isEmpty() ) {
 			LadspaFX *pFX = NULL;
 
-			vector<H2Core::LadspaFXInfo*> pluginList = Effects::get_instance()->getPluginList();
+			vector<Tritium::LadspaFXInfo*> pluginList = Effects::get_instance()->getPluginList();
 			for (uint i = 0; i < pluginList.size(); i++) {
-				H2Core::LadspaFXInfo *pFXInfo = pluginList[i];
+				Tritium::LadspaFXInfo *pFXInfo = pluginList[i];
 				if (pFXInfo->m_sName == sSelectedFX ) {
 					int nSampleRate = Hydrogen::get_instance()->getAudioOutput()->getSampleRate();
 					pFX = LadspaFX::load( pFXInfo->m_sFilename, pFXInfo->m_sLabel, nSampleRate );

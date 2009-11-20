@@ -45,7 +45,7 @@
 #include <QDir>
 #include <QApplication>
 
-namespace H2Core
+namespace Tritium
 {
 
 Preferences* Preferences::__instance = NULL;

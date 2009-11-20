@@ -28,7 +28,7 @@
 
 #include <glib.h>
 
-namespace H2Core
+namespace Tritium
 {
 
 /* ringbuffer class where the element size is not required to be a power of two */
@@ -278,6 +278,6 @@ RingBufferNPT<T>::get_write_vector (RingBufferNPT<T>::rw_vector *vec)
 	}
 }
 
-} // namespace H2Core
+} // namespace Tritium
 
 #endif /* H2CORE_RINGBUFFER_NPT_H */

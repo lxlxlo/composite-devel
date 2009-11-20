@@ -25,7 +25,7 @@
 #include <stdint.h>
 #include <QtCore/QMutex>
 
-namespace H2Core
+namespace Tritium
 {
 
 class Song;
@@ -47,6 +47,6 @@ private:
     Song* m_pSong;
 };  // class SongSequencer
 
-} // namespace H2Core
+} // namespace Tritium
 
 #endif // H2CORE_H2TRANSPORT_H

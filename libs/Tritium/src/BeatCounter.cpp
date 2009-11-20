@@ -28,7 +28,7 @@
 #include <Tritium/Preferences.h>
 #include "BeatCounter.h"
 
-using namespace H2Core;
+using namespace Tritium;
 
 //100,000 ms in 1 second.
 #define US_DIVIDER .000001

@@ -43,7 +43,7 @@
 
 #include <QDomDocument>
 
-namespace H2Core
+namespace Tritium
 {
 
 // Container for a vector that is thread-safe and
@@ -1089,4 +1089,4 @@ void PatternModeManager::go_to_next_patterns()
 	}
 }
 
-} // namespace H2Core
+} // namespace Tritium

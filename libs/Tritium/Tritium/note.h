@@ -27,7 +27,7 @@
 #include <Tritium/adsr.h>
 #include <stdint.h>
 
-namespace H2Core
+namespace Tritium
 {
 
 class ADSR;
@@ -202,6 +202,6 @@ private:
 	float __pitch;
 }; // class Note
 
-} // namespace H2Core
+} // namespace Tritium
 
 #endif

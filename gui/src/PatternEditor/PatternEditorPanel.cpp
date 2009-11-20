@@ -27,7 +27,7 @@
 #include <Tritium/audio_engine.h>
 #include <Tritium/event_queue.h>
 #include <Tritium/Transport.h>
-using namespace H2Core;
+using namespace Tritium;
 
 
 #include "HydrogenApp.h"

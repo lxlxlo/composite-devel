@@ -30,7 +30,7 @@
 
 class PatternEditorPanel;
 
-namespace H2Core
+namespace Tritium
 {
 	class Pattern;
 }
@@ -69,7 +69,7 @@ class PatternEditorRuler : public QWidget, public Object, public EventListener
 		QTimer *m_pTimer;
 		int m_nTicks;
 		PatternEditorPanel *m_pPatternEditorPanel;
-		H2Core::Pattern *m_pPattern;
+		Tritium::Pattern *m_pPattern;
 
 		// Implements EventListener interface
 		virtual void selectedPatternChangedEvent();

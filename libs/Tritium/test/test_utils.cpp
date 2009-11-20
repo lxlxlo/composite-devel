@@ -26,7 +26,7 @@
 #include <transport/songhelpers.h>
 #include <cmath>
 
-using namespace H2Core;
+using namespace Tritium;
 
 namespace H2Test
 {

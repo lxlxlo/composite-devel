@@ -197,15 +197,15 @@ int main(int argc, char *argv[])
 		// Man your battle stations... this is not a drill.
 		Logger::create_instance();
 		MidiMap::create_instance();
-		H2Core::Preferences::create_instance();
+		Tritium::Preferences::create_instance();
 		Object::set_logging_level( logLevelOpt );
-		// See below for H2Core::Hydrogen.
+		// See below for Tritium::Hydrogen.
 
 
 		_INFOLOG( QString("Using QT version ") + QString( qVersion() ) );
-		_INFOLOG( "Using data path: " + H2Core::DataPath::get_data_path() );
+		_INFOLOG( "Using data path: " + Tritium::DataPath::get_data_path() );
 
-		H2Core::Preferences *pPref = H2Core::Preferences::get_instance();
+		Tritium::Preferences *pPref = Tritium::Preferences::get_instance();
 
 		if (sSelectedDriver == "auto") {
 			pPref->m_sAudioDriver = "Auto";
@@ -237,7 +237,7 @@ int main(int argc, char *argv[])
 				_INFOLOG( QString( "Using locale: %1/%2" ).arg( sTranslationPath ).arg( sTranslationFile ) );
 			}
 			else {
-				sTranslationPath = H2Core::DataPath::get_data_path() + "/i18n";
+				sTranslationPath = Tritium::DataPath::get_data_path() + "/i18n";
 				total = sTranslationPath + "/" + sTranslationFile + ".qm";
 				bTransOk = tor.load( total, "." );
 				if (bTransOk) {
@@ -270,7 +270,7 @@ int main(int argc, char *argv[])
 		}
 
 		// Hydrogen here to honor all preferences.
-		H2Core::Hydrogen::create_instance();
+		Tritium::Hydrogen::create_instance();
 		Playlist::create_instance();
 		MainForm *pMainForm = new MainForm( pQApp, songFilename );
 		pMainForm->show();
@@ -282,8 +282,8 @@ int main(int argc, char *argv[])
 		delete pMainForm;
 		delete pQApp;
 		delete pPref;
-		delete H2Core::EventQueue::get_instance();
-		delete H2Core::AudioEngine::get_instance();
+		delete Tritium::EventQueue::get_instance();
+		delete Tritium::AudioEngine::get_instance();
 
 		delete MidiMap::get_instance();
 		delete ActionManager::get_instance();
@@ -301,7 +301,7 @@ int main(int argc, char *argv[])
 		//	pQApp->dumpObjectTree();
 
 	}
-	catch ( const H2Core::H2Exception& ex ) {
+	catch ( const Tritium::H2Exception& ex ) {
 		std::cerr << "[main] Exception: " << ex.what() << std::endl;
 	}
 	catch (...) {

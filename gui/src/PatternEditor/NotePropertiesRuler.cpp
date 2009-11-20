@@ -25,7 +25,7 @@
 #include <Tritium/instrument.h>
 #include <Tritium/Pattern.h>
 #include <Tritium/note.h>
-using namespace H2Core;
+using namespace Tritium;
 
 #include <cassert>
 

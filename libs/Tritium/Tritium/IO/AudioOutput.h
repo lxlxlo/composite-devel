@@ -24,7 +24,7 @@
 
 #include <Tritium/Object.h>
 
-namespace H2Core
+namespace Tritium
 {
 
 ///

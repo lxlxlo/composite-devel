@@ -30,7 +30,7 @@
 
 using namespace std;
 
-namespace H2Core
+namespace Tritium
 {
 
 Sample::Sample( unsigned frames, const QString& filename, float* data_l, float* data_r )

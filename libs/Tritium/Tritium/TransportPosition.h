@@ -24,7 +24,7 @@
 
 #include <stdint.h>  // int32_t, uint32_t
 
-namespace H2Core
+namespace Tritium
 {
     /**
      * Communicates the current position of the transport for the current

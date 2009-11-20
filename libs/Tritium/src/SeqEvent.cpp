@@ -22,7 +22,7 @@
 
 #include <Tritium/SeqEvent.h>
 
-using namespace H2Core;
+using namespace Tritium;
 
 // NOTE: SeqEvent is fully defined in the header SeqEvent.h
 
@@ -51,7 +51,7 @@ bool SeqEvent::operator<(const SeqEvent& o) const
     return (frame < o.frame);
 }
 
-bool H2Core::less(const SeqEvent& a, const SeqEvent& b)
+bool Tritium::less(const SeqEvent& a, const SeqEvent& b)
 {
     return a < b;
 }

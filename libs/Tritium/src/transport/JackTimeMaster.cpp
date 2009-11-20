@@ -28,10 +28,10 @@
 
 #include <cassert>
 
-using namespace H2Core;
+using namespace Tritium;
 
-namespace H2Core {
-    extern JackOutput* jackDriverInstance;  // H2Core::JackOutput (../IO/jack_output.cpp)
+namespace Tritium {
+    extern JackOutput* jackDriverInstance;  // Tritium::JackOutput (../IO/jack_output.cpp)
 }
 
 bool jack_is_up(void)

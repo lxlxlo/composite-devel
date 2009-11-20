@@ -26,7 +26,7 @@
 #include <QtGui>
 #include <Tritium/Object.h>
 
-namespace H2Core
+namespace Tritium
 {
 	class InstrumentLayer;
 }
@@ -39,7 +39,7 @@ class WaveDisplay : public QWidget, public Object
 		WaveDisplay(QWidget* pParent);
 		~WaveDisplay();
 
-		void updateDisplay( H2Core::InstrumentLayer *pLayer );
+		void updateDisplay( Tritium::InstrumentLayer *pLayer );
 
 		void paintEvent(QPaintEvent *ev);
 

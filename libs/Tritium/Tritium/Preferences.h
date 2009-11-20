@@ -38,7 +38,7 @@
 class TiXmlNode;
 
 
-namespace H2Core
+namespace Tritium
 {
 
 const float FALLOFF_SLOW = 	1.08f;

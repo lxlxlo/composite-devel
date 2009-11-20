@@ -31,7 +31,7 @@
 
 #include <Tritium/Object.h>
 
-namespace H2Core
+namespace Tritium
 {
 	class Song;
 	class Drumkit;
@@ -85,8 +85,8 @@ private:
 	QTreeWidgetItem* __pattern_item;
 	QTreeWidgetItem* __pattern_item_list;
 
-	std::vector<H2Core::Drumkit*> __system_drumkit_info_list;
-	std::vector<H2Core::Drumkit*> __user_drumkit_info_list;
+	std::vector<Tritium::Drumkit*> __system_drumkit_info_list;
+	std::vector<Tritium::Drumkit*> __user_drumkit_info_list;
 	bool __expand_pattern_list;
 	bool __expand_songs_list;
 	void restore_background_color();

@@ -79,7 +79,7 @@
  */
 
 using namespace std;
-using namespace H2Core;
+using namespace Tritium;
 
 JackProcessCallback jackMidiFallbackProcess; // implemented in hydrogen.cpp
 
@@ -138,7 +138,7 @@ void JackMidiDriver::close(void)
 }
 
 
-void translate_jack_midi_to_h2(H2Core::MidiMessage& msg,
+void translate_jack_midi_to_h2(Tritium::MidiMessage& msg,
 			       const jack_midi_event_t& event,
 			       bool use_frame)
 {
@@ -286,7 +286,7 @@ void translate_jack_midi_to_h2(H2Core::MidiMessage& msg,
 		case SONG_STOP:
 			msg.m_type = MidiMessage::STOP;
 			break;
-			// Following not handled by H2Core::MidiMessage
+			// Following not handled by Tritium::MidiMessage
 		case SYSEX_END:
 		case SONG_SELECT:
 		case TUNE_REQ:
@@ -326,7 +326,7 @@ int JackMidiDriver::process(jack_nframes_t nframes, bool use_frame)
 
 	jack_nframes_t event_ct, event_pos;
 	jack_midi_event_t jack_event;
-	H2Core::MidiMessage msg;
+	Tritium::MidiMessage msg;
 
 	void* port_buf = jack_port_get_buffer(m_port, nframes);
 	event_ct = jack_midi_get_event_count(port_buf);

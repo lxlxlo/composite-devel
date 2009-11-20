@@ -30,7 +30,7 @@
 
 #include <QtCore>
 
-namespace H2Core
+namespace Tritium
 {
 
 class DataPath

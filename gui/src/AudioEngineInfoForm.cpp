@@ -34,7 +34,7 @@
 #include <Tritium/IO/AudioOutput.h>
 #include <Tritium/sampler/Sampler.h>
 #include <Tritium/audio_engine.h>
-using namespace H2Core;
+using namespace Tritium;
 
 #include "Skin.h"
 

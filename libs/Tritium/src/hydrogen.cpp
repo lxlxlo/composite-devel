@@ -22,7 +22,7 @@
 
 /*
  In redesigning the Sampler, the following responsibilities were
- shifted over to the Sequencer (H2Core::Hydrogen):
+ shifted over to the Sequencer (Tritium::Hydrogen):
 
    o Must explicitly schedule Note On/Off events.  If Off event
      omitted, the note will stop when the sample ends.
@@ -105,7 +105,7 @@
 #include "IO/JackMidiDriver.h"
 #include "IO/JackClient.h"
 
-namespace H2Core
+namespace Tritium
 {
 
 /**

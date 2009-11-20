@@ -22,13 +22,13 @@
 #ifndef H2CORE_JACKTIMEMASTEREVENTS_H
 #define H2CORE_JACKTIMEMASTEREVENTS_H
 
-namespace H2Core
+namespace Tritium
 {
 
 // Jack Time Master States
 #define JACK_TIME_MASTER_NO_MORE 0
 #define JACK_TIME_MASTER_NOW 1
 
-} // namespace H2Core
+} // namespace Tritium
 
 #endif // H2CORE_JACKTIMEMASTEREVENTS_H

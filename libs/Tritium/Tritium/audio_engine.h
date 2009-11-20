@@ -34,7 +34,7 @@
 #define RIGHT_HERE __FILE__, __LINE__, __PRETTY_FUNCTION__
 #endif
 
-namespace H2Core
+namespace Tritium
 {
 
 ///

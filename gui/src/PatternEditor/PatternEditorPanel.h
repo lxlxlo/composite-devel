@@ -43,7 +43,7 @@ class DrumPatternEditor;
 //class PianoRollEditor;
 
 
-namespace H2Core
+namespace Tritium
 {
 	class Pattern;
 }
@@ -71,7 +71,7 @@ class PatternEditorPanel : public QWidget, public EventListener, public Object
 		virtual void selectedPatternChangedEvent();
 		virtual void selectedInstrumentChangedEvent();
 		virtual void stateChangedEvent(int nState);
-		virtual void transportEvent(H2Core::TransportPosition::State state);
+		virtual void transportEvent(Tritium::TransportPosition::State state);
 		//~ Implements EventListener interface
 
 	private slots:
@@ -98,7 +98,7 @@ class PatternEditorPanel : public QWidget, public EventListener, public Object
 		void moveUpBtnClicked(Button *);
 
 	private:
-		H2Core::Pattern *m_pPattern;
+		Tritium::Pattern *m_pPattern;
 		QPixmap m_backgroundPixmap;
 		QLabel *pSLlabel;
 

@@ -50,7 +50,7 @@
 
 #include <QtGui>
 
-using namespace H2Core;
+using namespace Tritium;
 
 HydrogenApp* HydrogenApp::m_pInstance = NULL;
 
@@ -122,7 +122,7 @@ HydrogenApp::~HydrogenApp()
 
 	Hydrogen *engine = Hydrogen::get_instance();
 	if (engine) {
-		H2Core::Song * song = engine->getSong();
+		Tritium::Song * song = engine->getSong();
 		// Hydrogen calls removeSong on from its destructor, so here we just delete the objects:
 		delete engine;
 		delete song;

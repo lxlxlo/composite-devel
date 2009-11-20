@@ -28,7 +28,7 @@
 #define THIS_NAMESPACE t_SeqEvent
 #include "test_macros.h"
 
-using namespace H2Core;
+using namespace Tritium;
 
 namespace THIS_NAMESPACE
 {

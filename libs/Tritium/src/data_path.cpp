@@ -37,7 +37,7 @@ using namespace std;
 
 #include "config.h"
 
-namespace H2Core
+namespace Tritium
 {
 
 QString DataPath::__data_path;

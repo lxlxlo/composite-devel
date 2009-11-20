@@ -29,7 +29,7 @@
 #include <Tritium/SoundLibrary.h>
 #include <Tritium/hydrogen.h>
 
-namespace H2Core
+namespace Tritium
 {
 
 //globals
@@ -106,7 +106,7 @@ void SoundLibraryPropertiesDialog::on_saveBtn_clicked()
 	}
 
 	//save the drumkit	
-	H2Core::Drumkit::save(
+	Tritium::Drumkit::save(
 			nameTxt->text(),
 			authorTxt->text(),
 			infoTxt->toHtml(),

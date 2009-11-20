@@ -26,9 +26,9 @@
 #include "SimpleTransportMaster.h"
 #include "JackTimeMaster.h"
 
-using namespace H2Core;
+using namespace Tritium;
 
-class H2Core::H2TransportPrivate
+class Tritium::H2TransportPrivate
 {
 public:
     std::auto_ptr<Transport> xport;

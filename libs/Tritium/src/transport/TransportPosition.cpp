@@ -25,7 +25,7 @@
 #include <cassert>
 #include <cmath>
 
-using namespace H2Core;
+using namespace Tritium;
 
 /**
  * Returns a random number in the range [-0.5, 0.5]
@@ -290,14 +290,14 @@ TransportPosition& TransportPosition::operator--()
     return *this;
 }
 
-TransportPosition H2Core::operator+(const TransportPosition& pos, int ticks)
+TransportPosition Tritium::operator+(const TransportPosition& pos, int ticks)
 {
     TransportPosition rv(pos);
     rv += ticks;
     return rv;
 }
 
-TransportPosition H2Core::operator-(const TransportPosition& pos, int ticks)
+TransportPosition Tritium::operator-(const TransportPosition& pos, int ticks)
 {
     return operator+(pos, -ticks);
 }

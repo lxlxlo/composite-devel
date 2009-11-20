@@ -28,7 +28,7 @@
 #include <QtGui>
 #include "ui_PatternPropertiesDialog_UI.h"
 
-namespace H2Core
+namespace Tritium
 {
 	class Pattern;
 }
@@ -40,7 +40,7 @@ class PatternPropertiesDialog : public QDialog, public Ui_PatternPropertiesDialo
 {
 	Q_OBJECT
 	public:
-		PatternPropertiesDialog( QWidget* parent, H2Core::Pattern* pattern, bool save );
+		PatternPropertiesDialog( QWidget* parent, Tritium::Pattern* pattern, bool save );
 
 		~PatternPropertiesDialog();
 
@@ -55,7 +55,7 @@ class PatternPropertiesDialog : public QDialog, public Ui_PatternPropertiesDialo
 		void on_categoryComboBox_editTextChanged();
 
 	private:
-		H2Core::Pattern *pattern;
+		Tritium::Pattern *pattern;
 
 };
 

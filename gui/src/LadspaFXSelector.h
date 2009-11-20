@@ -33,7 +33,7 @@
 #include <string>
 #include <vector>
 
-namespace H2Core {
+namespace Tritium {
 	class LadspaFXInfo;
 	class LadspaFXGroup;
 }
@@ -58,11 +58,11 @@ class LadspaFXSelector : public QDialog, public Ui_LadspaFXSelector_UI, public O
 		void buildLadspaGroups();
 
 #ifdef LADSPA_SUPPORT
-		void addGroup(QTreeWidgetItem *parent, H2Core::LadspaFXGroup *pGroup);
-		void addGroup( QTreeWidget *parent, H2Core::LadspaFXGroup *pGroup );
-		void buildGroup(QTreeWidgetItem *pNewItem, H2Core::LadspaFXGroup *pGroup);
+		void addGroup(QTreeWidgetItem *parent, Tritium::LadspaFXGroup *pGroup);
+		void addGroup( QTreeWidget *parent, Tritium::LadspaFXGroup *pGroup );
+		void buildGroup(QTreeWidgetItem *pNewItem, Tritium::LadspaFXGroup *pGroup);
 
-		std::vector<H2Core::LadspaFXInfo*> findPluginsInGroup( const QString& sSelectedGroup, H2Core::LadspaFXGroup *pGroup );
+		std::vector<Tritium::LadspaFXInfo*> findPluginsInGroup( const QString& sSelectedGroup, Tritium::LadspaFXGroup *pGroup );
 #endif
 
 };

@@ -31,7 +31,7 @@
 #include <Tritium/fx/LadspaFX.h>
 
 using namespace std;
-using namespace H2Core;
+using namespace Tritium;
 
 LadspaFXSelector::LadspaFXSelector(int nLadspaFX)
  : QDialog( NULL )
@@ -102,9 +102,9 @@ void LadspaFXSelector::buildLadspaGroups()
 // 	m_pGroupsListView->addTopLevelItem( pRootItem );
 // 	m_pGroupsListView->setItemExpanded( pRootItem, true );
 	
-	H2Core::LadspaFXGroup* pFXGroup = Effects::get_instance()->getLadspaFXGroup();
+	Tritium::LadspaFXGroup* pFXGroup = Effects::get_instance()->getLadspaFXGroup();
 	for (uint i = 0; i < pFXGroup->getChildList().size(); i++) {
-		H2Core::LadspaFXGroup *pNewGroup = ( pFXGroup->getChildList() )[ i ];
+		Tritium::LadspaFXGroup *pNewGroup = ( pFXGroup->getChildList() )[ i ];
 		addGroup( m_pGroupsListView, pNewGroup );
 	}
 	m_pGroupsListView->setCurrentItem( m_pCurrentItem );
@@ -114,7 +114,7 @@ void LadspaFXSelector::buildLadspaGroups()
 
 
 #ifdef LADSPA_SUPPORT
-void LadspaFXSelector::addGroup( QTreeWidget *parent, H2Core::LadspaFXGroup *pGroup )
+void LadspaFXSelector::addGroup( QTreeWidget *parent, Tritium::LadspaFXGroup *pGroup )
 {
 	QTreeWidgetItem* pNewItem = new QTreeWidgetItem( parent );
 	QFont f = pNewItem->font( 0 );
@@ -123,13 +123,13 @@ void LadspaFXSelector::addGroup( QTreeWidget *parent, H2Core::LadspaFXGroup *pGr
 	buildGroup( pNewItem, pGroup );
 }
 
-void LadspaFXSelector::addGroup( QTreeWidgetItem * parent, H2Core::LadspaFXGroup *pGroup )
+void LadspaFXSelector::addGroup( QTreeWidgetItem * parent, Tritium::LadspaFXGroup *pGroup )
 {
 	QTreeWidgetItem* pNewItem = new QTreeWidgetItem( parent );
 	buildGroup( pNewItem, pGroup );
 }
 
-void LadspaFXSelector::buildGroup( QTreeWidgetItem *pNewItem, H2Core::LadspaFXGroup *pGroup )
+void LadspaFXSelector::buildGroup( QTreeWidgetItem *pNewItem, Tritium::LadspaFXGroup *pGroup )
 {
 	QString sGroupName = pGroup->getName();
 	if (sGroupName == QString("Uncategorized")) {
@@ -145,12 +145,12 @@ void LadspaFXSelector::buildGroup( QTreeWidgetItem *pNewItem, H2Core::LadspaFXGr
 
 
 	for ( uint i = 0; i < pGroup->getChildList().size(); i++ ) {
-		H2Core::LadspaFXGroup *pNewGroup = ( pGroup->getChildList() )[ i ];
+		Tritium::LadspaFXGroup *pNewGroup = ( pGroup->getChildList() )[ i ];
 
 		addGroup( pNewItem, pNewGroup );
 	}
 	for(uint i = 0; i < pGroup->getLadspaInfo().size(); i++) {
-		H2Core::LadspaFXInfo* pInfo = (pGroup->getLadspaInfo())[i];
+		Tritium::LadspaFXInfo* pInfo = (pGroup->getLadspaInfo())[i];
 		if (pInfo->m_sName == m_sSelectedPluginName) {
 			m_pCurrentItem = pNewItem;
 			break;
@@ -179,9 +179,9 @@ void LadspaFXSelector::pluginSelected()
 	m_sSelectedPluginName = sSelected;
 
 
-	std::vector<H2Core::LadspaFXInfo*> pluginList = Effects::get_instance()->getPluginList();
+	std::vector<Tritium::LadspaFXInfo*> pluginList = Effects::get_instance()->getPluginList();
 	for (uint i = 0; i < pluginList.size(); i++) {
-		H2Core::LadspaFXInfo *pFXInfo = pluginList[i];
+		Tritium::LadspaFXInfo *pFXInfo = pluginList[i];
 		if (pFXInfo->m_sName == m_sSelectedPluginName ) {
 
 			m_nameLbl->setText(  pFXInfo->m_sName );
@@ -242,9 +242,9 @@ void LadspaFXSelector::on_m_pGroupsListView_currentItemChanged( QTreeWidgetItem 
 // 		m_pPluginsListBox->takeItem( 0 );    // This way of clearing the list causes multiple signal emissions,
 // 	}                                            // each time calling pluginSelected().  Jakob.
 
-	H2Core::LadspaFXGroup* pFXGroup = Effects::get_instance()->getLadspaFXGroup();
+	Tritium::LadspaFXGroup* pFXGroup = Effects::get_instance()->getLadspaFXGroup();
 
-	std::vector<H2Core::LadspaFXInfo*> pluginList = findPluginsInGroup( itemText, pFXGroup );
+	std::vector<Tritium::LadspaFXInfo*> pluginList = findPluginsInGroup( itemText, pFXGroup );
 	
 	int selectedIndex = -1;
 	for (int i = 0; i < (int)pluginList.size(); i++) {
@@ -261,15 +261,15 @@ void LadspaFXSelector::on_m_pGroupsListView_currentItemChanged( QTreeWidgetItem 
 
 
 #ifdef LADSPA_SUPPORT
-std::vector<H2Core::LadspaFXInfo*> LadspaFXSelector::findPluginsInGroup( const QString& sSelectedGroup, H2Core::LadspaFXGroup *pGroup )
+std::vector<Tritium::LadspaFXInfo*> LadspaFXSelector::findPluginsInGroup( const QString& sSelectedGroup, Tritium::LadspaFXGroup *pGroup )
 {
 	//INFOLOG( "group: " + sSelectedGroup );
-	vector<H2Core::LadspaFXInfo*> list;
+	vector<Tritium::LadspaFXInfo*> list;
 
 	if ( pGroup->getName() == sSelectedGroup ) {
 		//INFOLOG( "found..." );
 		for ( uint i = 0; i < pGroup->getLadspaInfo().size(); ++i ) {
-			H2Core::LadspaFXInfo *pInfo = ( pGroup->getLadspaInfo() )[i];
+			Tritium::LadspaFXInfo *pInfo = ( pGroup->getLadspaInfo() )[i];
 			list.push_back( pInfo );
 		}
 		return list;
@@ -277,7 +277,7 @@ std::vector<H2Core::LadspaFXInfo*> LadspaFXSelector::findPluginsInGroup( const Q
 	else {
 		//INFOLOG( "not found...searching in the child groups" );
 		for ( uint i = 0; i < pGroup->getChildList().size(); ++i ) {
-			H2Core::LadspaFXGroup *pNewGroup = ( pGroup->getChildList() )[ i ];
+			Tritium::LadspaFXGroup *pNewGroup = ( pGroup->getChildList() )[ i ];
 			list = findPluginsInGroup( sSelectedGroup, pNewGroup );
 			if (list.size() != 0) {
 				return list;

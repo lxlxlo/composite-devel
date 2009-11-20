@@ -25,7 +25,7 @@
 #include <Tritium/SeqEvent.h>
 #include <vector>
 
-namespace H2Core
+namespace Tritium
 {
 
     struct SeqEventWrap

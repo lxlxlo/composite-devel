@@ -34,7 +34,7 @@ class Skin
 		static QString getImagePath()
 		{
 			QString sSkin = "gray";
-			return QString( H2Core::DataPath::get_data_path() ).append( "/img/" ).append( sSkin );
+			return QString( Tritium::DataPath::get_data_path() ).append( "/img/" ).append( sSkin );
 		}
 
 };

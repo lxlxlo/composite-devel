@@ -26,7 +26,7 @@
 #include <Tritium/globals.h>
 #include <Tritium/Object.h>
 
-namespace H2Core
+namespace Tritium
 {
 
 class Note;

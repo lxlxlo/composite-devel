@@ -38,7 +38,7 @@ using namespace std;
 #define LADSPA_IS_CONTROL_OUTPUT(x) (LADSPA_IS_PORT_OUTPUT(x) && LADSPA_IS_PORT_CONTROL(x))
 #define LADSPA_IS_AUDIO_OUTPUT(x) (LADSPA_IS_PORT_OUTPUT(x) && LADSPA_IS_PORT_AUDIO(x))
 
-namespace H2Core
+namespace Tritium
 {
 
 LadspaFXGroup::LadspaFXGroup( const QString& sName )

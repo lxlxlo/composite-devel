@@ -27,7 +27,7 @@
 
 #include <QPixmap>
 
-using namespace H2Core;
+using namespace Tritium;
 
 SongPropertiesDialog::SongPropertiesDialog(QWidget* parent)
  : QDialog(parent)

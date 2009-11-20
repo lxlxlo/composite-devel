@@ -36,7 +36,7 @@
  * sound generators, or loggers, etc.
  */
 
-namespace H2Core
+namespace Tritium
 {
     class SeqScriptPrivate;
 
@@ -54,8 +54,8 @@ namespace H2Core
      *         SeqInputInterface* pSongSeq;  // i.e. Song -> SeqEvents
      *         SeqInputInterface* pMidiInput;
      *         SeqInputInterface* pGuiInput;
-     *         SeqOutputInterface* pSampler; // i.e. H2Core::Sampler
-     *         SeqOutputInterface* pMidiOut; // i.e. H2Core::MidiOutput
+     *         SeqOutputInterface* pSampler; // i.e. Tritium::Sampler
+     *         SeqOutputInterface* pMidiOut; // i.e. Tritium::MidiOutput
      *
      *         // Get events from input sources
      *

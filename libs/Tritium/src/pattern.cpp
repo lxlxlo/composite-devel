@@ -27,7 +27,7 @@
 
 #include <vector>
 #include <cassert>
-namespace H2Core
+namespace Tritium
 {
 
 Pattern::Pattern( const QString& name, const QString& category, unsigned length )
@@ -66,7 +66,7 @@ void Pattern::purge_instrument( Instrument * I )
 		
 		if ( pNote->get_instrument() == I ) {
 			if ( !locked ) {
-				H2Core::AudioEngine::get_instance()->lock( RIGHT_HERE );
+				Tritium::AudioEngine::get_instance()->lock( RIGHT_HERE );
 				locked = true;
 			}
 			slate.push_back( pNote );
@@ -78,7 +78,7 @@ void Pattern::purge_instrument( Instrument * I )
 	}
 	
 	if ( locked ) {
-		H2Core::AudioEngine::get_instance()->unlock();
+		Tritium::AudioEngine::get_instance()->unlock();
 		while ( slate.size() ) {
 			delete slate.front();
 			slate.pop_front();

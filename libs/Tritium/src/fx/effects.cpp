@@ -38,7 +38,7 @@
 
 using namespace std;
 
-namespace H2Core
+namespace Tritium
 {
 
 // static data

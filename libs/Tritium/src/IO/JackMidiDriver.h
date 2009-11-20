@@ -40,7 +40,7 @@
 #include <QtCore/QString>
 #include <memory>
 
-namespace H2Core
+namespace Tritium
 {
 
 class JackMidiDriver : public MidiInput
@@ -64,7 +64,7 @@ private:
 
 }; // JackMidiDriver
 
-} // namespace H2Core
+} // namespace Tritium
 
 #endif // JACK_SUPPORT
 

@@ -36,7 +36,7 @@
 
 
 
-using namespace H2Core;
+using namespace Tritium;
 
 //playlist globals
 int selectedSongNumber = -1;

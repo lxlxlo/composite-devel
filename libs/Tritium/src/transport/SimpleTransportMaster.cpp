@@ -33,9 +33,9 @@
 #include "songhelpers.h"
 #include <cassert>
 
-using namespace H2Core;
+using namespace Tritium;
 
-class H2Core::SimpleTransportMasterPrivate
+class Tritium::SimpleTransportMasterPrivate
 {
 public:
     SimpleTransportMasterPrivate();

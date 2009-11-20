@@ -37,7 +37,7 @@
 #include <memory>
 #include <QtGui>
 
-using namespace H2Core;
+using namespace Tritium;
 
 SoundLibraryExportDialog::SoundLibraryExportDialog( QWidget* pParent )
  : QDialog( pParent )
@@ -72,7 +72,7 @@ void SoundLibraryExportDialog::on_exportBtn_clicked()
 
 	QString drumkitName = drumkitList->currentText();
 
-	H2Core::LocalFileMng fileMng;
+	Tritium::LocalFileMng fileMng;
 	QString drumkitDir = fileMng.getDrumkitDirectory( drumkitName );
 
 	QString saveDir = drumkitPathTxt->text();

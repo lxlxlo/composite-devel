@@ -26,7 +26,7 @@
 #include <jack/transport.h>
 #include <Tritium/JackTimeMasterEvents.h>
 
-namespace H2Core
+namespace Tritium
 {
     class Song;
 
@@ -62,6 +62,6 @@ namespace H2Core
 // FOR THE EVENT QUEUE DEFINES, SEE JackTimeMasterEvents.h //
 /////////////////////////////////////////////////////////////
 
-} // namespace H2Core
+} // namespace Tritium
 
 #endif // H2CORE_H2TRANSPORT_H

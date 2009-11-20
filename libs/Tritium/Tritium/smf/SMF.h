@@ -32,7 +32,7 @@
 
 #include <Tritium/smf/SMFEvent.h>
 
-namespace H2Core
+namespace Tritium
 {
 
 class SMFHeader : public SMFBase, public Object

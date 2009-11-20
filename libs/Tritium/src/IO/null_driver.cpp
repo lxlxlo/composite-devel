@@ -24,7 +24,7 @@
 #include <Tritium/globals.h>
 
 
-namespace H2Core
+namespace Tritium
 {
 
 NullDriver::NullDriver( audioProcessCallback processCallback )

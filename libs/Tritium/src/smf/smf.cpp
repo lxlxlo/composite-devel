@@ -29,7 +29,7 @@
 
 using std::vector;
 
-namespace H2Core
+namespace Tritium
 {
 
 SMFHeader::SMFHeader( int nFormat, int nTracks, int nTPQN )

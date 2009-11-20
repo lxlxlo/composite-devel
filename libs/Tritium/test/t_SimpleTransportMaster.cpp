@@ -32,7 +32,7 @@
 #include "test_macros.h"
 #include "test_utils.h"
 
-using namespace H2Core;
+using namespace Tritium;
 
 namespace THIS_NAMESPACE
 {

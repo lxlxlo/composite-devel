@@ -28,7 +28,7 @@
 #include <Tritium/hydrogen.h>	// TODO: remove this line as soon as possible
 #include <cassert>
 
-namespace H2Core
+namespace Tritium
 {
 
 
@@ -111,4 +111,4 @@ void AudioEngine::unlock()
 }
 
 
-}; // namespace H2Core
+}; // namespace Tritium

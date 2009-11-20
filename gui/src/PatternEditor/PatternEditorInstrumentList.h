@@ -33,7 +33,7 @@
 #include <Tritium/Object.h>
 #include "../widgets/PixmapWidget.h"
 
-namespace H2Core
+namespace Tritium
 {
 	class Pattern;
 }
@@ -72,7 +72,7 @@ class InstrumentLine : public PixmapWidget
 		ToggleButton *m_pSoloBtn;
 
 		virtual void mousePressEvent(QMouseEvent *ev);
-		H2Core::Pattern* getCurrentPattern();
+		Tritium::Pattern* getCurrentPattern();
 };
 
 
@@ -97,7 +97,7 @@ class PatternEditorInstrumentList : public QWidget, public Object {
 
 	protected:
 		PatternEditorPanel *m_pPatternEditorPanel;
-		H2Core::Pattern *m_pPattern;
+		Tritium::Pattern *m_pPattern;
 		uint m_nGridHeight;
 		uint m_nEditorWidth;
 		uint m_nEditorHeight;

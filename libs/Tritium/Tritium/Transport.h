@@ -25,7 +25,7 @@
 #include <stdint.h>  // int32_t, uint32_t
 #include <Tritium/TransportPosition.h>
 
-namespace H2Core
+namespace Tritium
 {
     class Song;
 

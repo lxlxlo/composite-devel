@@ -36,7 +36,7 @@
 #include <QTreeWidget>
 #include <QMessageBox>
 
-using namespace H2Core;
+using namespace Tritium;
 using namespace std;
 
 AudioFileBrowser::AudioFileBrowser ( QWidget* pParent )

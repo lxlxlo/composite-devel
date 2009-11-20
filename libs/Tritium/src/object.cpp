@@ -136,7 +136,7 @@ void Object::set_logging_level(const char* level)
 		log_level = Logger::Error | Logger::Warning | Logger::Info | Logger::Debug;
 		use = true;
 	} else {
-		int val = H2Core::hextoi(level, -1);
+		int val = Tritium::hextoi(level, -1);
 		if( val == 0 ) {
 			// Probably means hex was invalid.  Use -VNone instead.
 			log_level = Logger::Error;

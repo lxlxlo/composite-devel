@@ -55,7 +55,7 @@ void SoundLibrarySaveDialog::on_saveBtn_clicked()
 			return;
 	}
 
-	H2Core::Drumkit::save(
+	Tritium::Drumkit::save(
 			nameTxt->text(),
 			authorTxt->text(),
 			infoTxt->toHtml(),

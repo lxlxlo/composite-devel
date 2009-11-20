@@ -33,7 +33,7 @@
 #include "SongSequencer.h"
 #include "transport/songhelpers.h"
 
-using namespace H2Core;
+using namespace Tritium;
 
 SongSequencer::SongSequencer() :
     m_pSong( 0 )

@@ -30,7 +30,7 @@
 #include <Tritium/Pattern.h>
 #include <Tritium/Preferences.h>
 #include <Tritium/Song.h>
-using namespace H2Core;
+using namespace Tritium;
 
 #include "PatternEditorPanel.h"
 #include "DrumPatternEditor.h"
@@ -191,7 +191,7 @@ void InstrumentLine::mousePressEvent(QMouseEvent *ev)
 
 
 
-H2Core::Pattern* InstrumentLine::getCurrentPattern()
+Tritium::Pattern* InstrumentLine::getCurrentPattern()
 {
 	Hydrogen *pEngine = Hydrogen::get_instance();
 	PatternList *pPatternList = pEngine->getSong()->get_pattern_list();

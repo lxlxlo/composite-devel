@@ -27,7 +27,7 @@
 #include <cstring>
 #include <glib.h>
 
-namespace H2Core
+namespace Tritium
 {
 
 template<class T>
@@ -284,6 +284,6 @@ RingBuffer<T>::get_write_vector (RingBuffer<T>::rw_vector *vec)
 	}
 }
 
-} // namespace H2Core
+} // namespace Tritium
 
 #endif // H2CORE_RINGBUFFER_H

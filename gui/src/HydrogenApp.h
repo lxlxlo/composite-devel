@@ -34,7 +34,7 @@
 #include <vector>
 #include <QtGui>
 
-namespace H2Core
+namespace Tritium
 {
 	class Song;
 }
@@ -59,14 +59,14 @@ class HydrogenApp : public QObject, public Object
 {
 	Q_OBJECT
 	public:
-		HydrogenApp( MainForm* pMainForm, H2Core::Song *pFirstSong );
+		HydrogenApp( MainForm* pMainForm, Tritium::Song *pFirstSong );
 
 		/// Returns the instance of HydrogenApp class
 		static HydrogenApp* get_instance();
 
 		virtual ~HydrogenApp();
 
-		void setSong( H2Core::Song* pSong );
+		void setSong( Tritium::Song* pSong );
 
 		void showPreferencesDialog();
 		void showMixer(bool bShow);

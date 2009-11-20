@@ -66,7 +66,7 @@ class SoundLibraryImportDialog : public QDialog, public Ui_SoundLibraryImportDia
 
 	private:
 		std::vector<SoundLibraryInfo> m_soundLibraryList;
-		H2Core::Preferences *pPref;
+		Tritium::Preferences *pPref;
 
 		QTreeWidgetItem* m_pDrumkitsItem;
 		QTreeWidgetItem* m_pSongItem;

@@ -132,7 +132,7 @@ class SongEditorPatternList : public QWidget, public Object, public EventListene
 
 		QMenu *m_pPatternPopup;
 		QLineEdit *line;
-		H2Core::Pattern *patternBeingEdited;
+		Tritium::Pattern *patternBeingEdited;
 		void inlineEditPatternName( int row );
 
 		virtual void mousePressEvent( QMouseEvent *ev );

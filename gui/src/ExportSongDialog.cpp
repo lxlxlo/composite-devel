@@ -34,7 +34,7 @@
 
 #include <memory>
 
-using namespace H2Core;
+using namespace Tritium;
 
 ExportSongDialog::ExportSongDialog(QWidget* parent)
  : QDialog(parent)

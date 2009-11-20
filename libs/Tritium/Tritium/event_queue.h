@@ -28,7 +28,7 @@
 
 #define MAX_EVENTS 1024
 
-namespace H2Core
+namespace Tritium
 {
 
 enum EventType {

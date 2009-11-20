@@ -27,7 +27,7 @@
 #include <Tritium/hydrogen.h>
 #include <Tritium/Transport.h>
 #include <Tritium/Pattern.h>
-using namespace H2Core;
+using namespace Tritium;
 
 #include "PatternEditorRuler.h"
 #include "PatternEditorPanel.h"

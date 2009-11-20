@@ -39,7 +39,7 @@ class EventListener
 		virtual void errorEvent( int nErrorCode ) { UNUSED( nErrorCode ); }
 		virtual void metronomeEvent( int nValue ) { UNUSED( nValue ); }
 		virtual void progressEvent( int nValue ) { UNUSED( nValue ); }
-		virtual void transportEvent( H2Core::TransportPosition::State state ) { UNUSED( state ); }
+		virtual void transportEvent( Tritium::TransportPosition::State state ) { UNUSED( state ); }
 		virtual void jackTimeMasterEvent( int nValue ) { UNUSED( nValue ); }
 
 		virtual ~EventListener() {}

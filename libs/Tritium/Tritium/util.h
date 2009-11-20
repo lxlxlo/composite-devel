@@ -23,7 +23,7 @@
 #ifndef H2CORE_UTIL_H
 #define H2CORE_UTIL_H
 
-namespace H2Core
+namespace Tritium
 {
 
     /** Converts a hex string to an integer.
@@ -40,7 +40,7 @@ namespace H2Core
      */
     int hextoi(const char* str, long len);
 
-}; // namepace H2Core
+}; // namepace Tritium
 
 
 #endif // H2CORE_UTIL_H

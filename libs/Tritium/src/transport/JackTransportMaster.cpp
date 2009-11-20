@@ -32,9 +32,9 @@
 #warning "JackTransportMaster is **NOT** implemented yet."
 #warning "We have not handled the client pointer or set up any callbacks yet."
 
-using namespace H2Core;
+using namespace Tritium;
 
-class H2Core::JackTransportMasterPrivate
+class Tritium::JackTransportMasterPrivate
 {
 public:
     jack_client_t* client;

@@ -24,7 +24,7 @@
 #include "table/getTableValue.h"
 #include "table/TableExponential.h"
 
-namespace H2Core
+namespace Tritium
 {
 
 inline static float linear_interpolation( float fVal_A, float fVal_B, double fVal )

@@ -32,7 +32,7 @@
 #include <vector>
 #include <cassert>
 
-namespace H2Core
+namespace Tritium
 {
 
 /**

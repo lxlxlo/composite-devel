@@ -24,7 +24,7 @@
 
 #include <Tritium/Transport.h>
 
-namespace H2Core
+namespace Tritium
 {
     class H2TransportPrivate;
     class Song;

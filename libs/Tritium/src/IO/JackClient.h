@@ -37,7 +37,7 @@
 #include <vector>
 #include <set>
 
-namespace H2Core
+namespace Tritium
 {
 
 class Hydrogen;
@@ -79,7 +79,7 @@ private:
     friend class Hydrogen;
 };
 
-} // namespace H2Core
+} // namespace Tritium
 
 #endif // JACK_SUPPORT
 

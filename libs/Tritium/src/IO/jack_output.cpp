@@ -34,7 +34,7 @@
 #include <Tritium/Preferences.h>
 #include <Tritium/globals.h>
 
-namespace H2Core
+namespace Tritium
 {
 
 unsigned long jack_server_sampleRate = 0;

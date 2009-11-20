@@ -56,7 +56,7 @@
 //#include <cstdio>
 //#include <vector>
 
-namespace H2Core
+namespace Tritium
 {
 
 LocalFileMng::LocalFileMng()
@@ -430,7 +430,7 @@ std::vector<QString> LocalFileMng::getAllPatternName()
 
 std::vector<QString> LocalFileMng::getAllCategoriesFromPattern()
 {
-	Preferences *pPref = H2Core::Preferences::get_instance();
+	Preferences *pPref = Tritium::Preferences::get_instance();
 	std::list<QString>::const_iterator cur_testpatternCategories;
 
 	std::vector<QString> categorylist;

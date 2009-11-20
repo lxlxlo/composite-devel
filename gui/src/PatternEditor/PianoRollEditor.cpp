@@ -30,7 +30,7 @@
 #include <Tritium/note.h>
 #include <Tritium/Preferences.h>
 #include <Tritium/Pattern.h>
-using namespace H2Core;
+using namespace Tritium;
 
 #include "../HydrogenApp.h"
 

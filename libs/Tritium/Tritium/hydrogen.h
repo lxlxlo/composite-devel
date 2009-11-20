@@ -42,7 +42,7 @@
 
 inline int randomValue( int max );
 
-namespace H2Core
+namespace Tritium
 {
 
 class Transport;

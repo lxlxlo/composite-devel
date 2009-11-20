@@ -31,7 +31,7 @@
 #include "ladspa.h"
 #include <Tritium/Object.h>
 
-namespace H2Core
+namespace Tritium
 {
 
 class LadspaFXInfo : public Object

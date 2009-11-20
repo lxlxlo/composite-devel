@@ -36,7 +36,7 @@
 #include <Tritium/Pattern.h>
 #include <Tritium/Transport.h>
 
-using namespace H2Core;
+using namespace Tritium;
 using namespace std;
 
 SongEditorPanel::SongEditorPanel(QWidget *pParent)

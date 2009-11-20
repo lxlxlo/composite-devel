@@ -22,7 +22,7 @@
 
 #include <Tritium/smf/SMFEvent.h>
 
-namespace H2Core
+namespace Tritium
 {
 
 void SMFBuffer::writeByte( short int nByte )

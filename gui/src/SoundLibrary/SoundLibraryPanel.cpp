@@ -56,7 +56,7 @@
 #include <Tritium/Song.h>
 #include <Tritium/SoundLibrary.h>
 
-using namespace H2Core;
+using namespace Tritium;
 
 #include <cassert>
 
@@ -714,7 +714,7 @@ void SoundLibraryPanel::on_songLoadAction()
 	Hydrogen *engine = Hydrogen::get_instance();
 	engine->get_transport()->stop();
 
-	H2Core::LocalFileMng mng;
+	Tritium::LocalFileMng mng;
 	Song *pSong = Song::load( sFilename );
 	if ( pSong == NULL ) {
 		QMessageBox::information( this, "Hydrogen", trUtf8("Error loading song.") );
@@ -772,7 +772,7 @@ void SoundLibraryPanel::on_patternLoadAction()
 		ERRORLOG( "Error loading the pattern" );
 	}
 	else {
-		H2Core::Pattern *pNewPattern = err;
+		Tritium::Pattern *pNewPattern = err;
 		pPatternList->add ( pNewPattern );
 		song->__is_modified = true;
 	}

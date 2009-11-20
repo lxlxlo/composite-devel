@@ -31,7 +31,7 @@
 #ifdef JACK_SUPPORT
 
 using namespace std;
-namespace H2Core
+namespace Tritium
 {
 
 JackClient* JackClient::__instance = NULL;
@@ -290,6 +290,6 @@ std::vector<QString> JackClient::getMidiOutputPortList(void)
 	return ports;
 }
 
-} // namespace H2Core
+} // namespace Tritium
 
 #endif // JACK_SUPPORT

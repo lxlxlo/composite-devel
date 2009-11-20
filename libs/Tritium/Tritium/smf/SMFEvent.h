@@ -26,7 +26,7 @@
 #include <vector>
 #include <Tritium/Object.h>
 
-namespace H2Core
+namespace Tritium
 {
 
 class SMFBuffer : public Object

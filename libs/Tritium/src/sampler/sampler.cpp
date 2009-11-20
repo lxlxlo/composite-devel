@@ -42,7 +42,7 @@
 #include <Tritium/sampler/Sampler.h>
 #include <Tritium/TransportPosition.h>
 
-using namespace H2Core;
+using namespace Tritium;
 
 inline static float linear_interpolation( float fVal_A, float fVal_B, float fVal )
 {
@@ -51,7 +51,7 @@ inline static float linear_interpolation( float fVal_A, float fVal_B, float fVal
 //	return fVal_A + ((fVal_B - fVal_A) * fVal);
 }
 
-struct H2Core::SamplerPrivate : public Object
+struct Tritium::SamplerPrivate : public Object
 {
 	Sampler& parent;
 	typedef std::list<Note> NoteList;

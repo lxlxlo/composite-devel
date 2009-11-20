@@ -74,7 +74,7 @@ class InstrumentEditor : public QWidget, public Object, public EventListener
 
 
 	private:
-		H2Core::Instrument *m_pInstrument;
+		Tritium::Instrument *m_pInstrument;
 		int m_nSelectedLayer;
 
 		ToggleButton *m_pShowInstrumentBtn;

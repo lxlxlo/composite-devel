@@ -25,7 +25,7 @@
 #include <stdint.h>  // int32_t, uint32_t
 #include <sys/time.h>
 
-namespace H2Core
+namespace Tritium
 {
     class BeatCounter
     {
@@ -83,6 +83,6 @@ namespace H2Core
 
     };
 
-} // namespace H2Core
+} // namespace Tritium
 
 #endif // H2CORE_BEATCOUNTER_H

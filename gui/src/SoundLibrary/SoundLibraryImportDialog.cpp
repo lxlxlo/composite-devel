@@ -85,7 +85,7 @@ SoundLibraryImportDialog::~SoundLibraryImportDialog()
 //update combo box
 void SoundLibraryImportDialog::updateRepositoryCombo()
 {
-	H2Core::Preferences* pref = H2Core::Preferences::get_instance();
+	Tritium::Preferences* pref = Tritium::Preferences::get_instance();
 
 	/*
 		Read serverList from config and put servers into the comboBox
@@ -248,14 +248,14 @@ bool SoundLibraryImportDialog::isSoundLibraryItemAlreadyInstalled( SoundLibraryI
 	soundLibraryItemName = soundLibraryItemName.left( soundLibraryItemName.lastIndexOf( "." ) );
 
 	if ( sInfo.m_sType == "drumkit" ) {
-		std::vector<QString> systemList = H2Core::Drumkit::getSystemDrumkitList();
+		std::vector<QString> systemList = Tritium::Drumkit::getSystemDrumkitList();
 		for ( uint i = 0; i < systemList.size(); ++i ) {
 			if ( systemList[ i ].endsWith(soundLibraryItemName) ) {
 				return true;
 			}
 		}
 
-		std::vector<QString> userList = H2Core::Drumkit::getUserDrumkitList();
+		std::vector<QString> userList = Tritium::Drumkit::getUserDrumkitList();
 		for ( uint i = 0; i < userList.size(); ++i ) {
 			if ( userList[ i ].endsWith(soundLibraryItemName) ) {
 				return true;
@@ -264,7 +264,7 @@ bool SoundLibraryImportDialog::isSoundLibraryItemAlreadyInstalled( SoundLibraryI
 	}
 
 	if ( sInfo.m_sType == "pattern" ) {
-		H2Core::LocalFileMng mng;
+		Tritium::LocalFileMng mng;
 		std::vector<QString> patternList = mng.getAllPatternName();
 		for ( uint i = 0; i < patternList.size(); ++i ) {
 			if ( patternList[ i ] == soundLibraryItemName ) {
@@ -274,7 +274,7 @@ bool SoundLibraryImportDialog::isSoundLibraryItemAlreadyInstalled( SoundLibraryI
 	}
 
 	if ( sInfo.m_sType == "song" ) {
-		H2Core::LocalFileMng mng;
+		Tritium::LocalFileMng mng;
 		std::vector<QString> songList = mng.getSongList();
 		for ( uint i = 0; i < songList.size(); ++i ) {
 			if ( songList[ i ] == soundLibraryItemName ) {
@@ -341,7 +341,7 @@ void SoundLibraryImportDialog::on_DownloadBtn_clicked()
 			QString sType = m_soundLibraryList[ i ].m_sType;
 			QString sLocalFile;
 
-			QString dataDir = H2Core::Preferences::get_instance()->getDataDirectory();
+			QString dataDir = Tritium::Preferences::get_instance()->getDataDirectory();
 
 			if( sType == "drumkit") {
 				sLocalFile = QDir::tempPath() + "/" + QFileInfo( sURL ).fileName();
@@ -374,7 +374,7 @@ void SoundLibraryImportDialog::on_DownloadBtn_clicked()
 
 			try {
 				if ( sType == "drumkit" ) {
-					H2Core::Drumkit::install( sLocalFile );
+					Tritium::Drumkit::install( sLocalFile );
 					QApplication::restoreOverrideCursor();
 					QMessageBox::information( this, "Hydrogen", QString( trUtf8( "SoundLibrary imported in %1" ) ).arg( dataDir ) );
 				}
@@ -383,7 +383,7 @@ void SoundLibraryImportDialog::on_DownloadBtn_clicked()
 					QApplication::restoreOverrideCursor();
 				}
 			}
-			catch( H2Core::H2Exception ex ) {
+			catch( Tritium::H2Exception ex ) {
 				QApplication::restoreOverrideCursor();
 				QMessageBox::warning( this, "Hydrogen", trUtf8( "An error occurred importing the SoundLibrary."  ) );
 			}
@@ -438,16 +438,16 @@ void SoundLibraryImportDialog::on_InstallBtn_clicked()
 {
 	QApplication::setOverrideCursor(Qt::WaitCursor);
 
-	QString dataDir = H2Core::Preferences::get_instance()->getDataDirectory();
+	QString dataDir = Tritium::Preferences::get_instance()->getDataDirectory();
 	try {
-		H2Core::Drumkit::install( SoundLibraryPathTxt->text() );
+		Tritium::Drumkit::install( SoundLibraryPathTxt->text() );
 		QMessageBox::information( this, "Hydrogen", QString( trUtf8( "SoundLibrary imported in %1" ).arg( dataDir )  ) );
 		// update the drumkit list
 		HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->test_expandedItems();
 		HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->updateDrumkitList();
 		QApplication::restoreOverrideCursor();
 	}
-	catch( H2Core::H2Exception ex ) {
+	catch( Tritium::H2Exception ex ) {
 		QApplication::restoreOverrideCursor();
 		QMessageBox::warning( this, "Hydrogen", trUtf8( "An error occurred importing the SoundLibrary."  ) );
 	}

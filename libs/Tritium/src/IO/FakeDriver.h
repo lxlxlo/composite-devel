@@ -26,7 +26,7 @@
 #include <Tritium/IO/AudioOutput.h>
 #include <inttypes.h>
 
-namespace H2Core
+namespace Tritium
 {
 
 typedef int  ( *audioProcessCallback )( uint32_t, void * );

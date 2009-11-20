@@ -30,7 +30,7 @@
 
 #include <Tritium/Object.h>
 
-namespace H2Core
+namespace Tritium
 {
 	class Pattern;
 }
@@ -60,7 +60,7 @@ class PatternFillDialog : public QDialog, public Ui_PatternFillDialog_UI, public
 		void on_toText_textChanged(const QString & text);
 
 	private:
-		H2Core::Pattern* __pattern;
+		Tritium::Pattern* __pattern;
 		FillRange* __fill_range;
 
 		/// Does some name check

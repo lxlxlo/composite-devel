@@ -34,7 +34,7 @@
 
 class TiXmlNode;
 
-namespace H2Core
+namespace Tritium
 {
 
 class Note;

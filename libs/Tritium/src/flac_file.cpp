@@ -31,7 +31,7 @@
 //#include "FLAC/file_decoder.h"
 #include <FLAC++/all.h>
 
-namespace H2Core
+namespace Tritium
 {
 
 

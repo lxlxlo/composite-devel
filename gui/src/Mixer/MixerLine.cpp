@@ -35,7 +35,7 @@
 #include <Tritium/hydrogen.h>
 #include <Tritium/Preferences.h>
 #include <Tritium/audio_engine.h>
-using namespace H2Core;
+using namespace Tritium;
 
 #include "MixerLine.h"
 
@@ -46,7 +46,7 @@ using namespace H2Core;
 #define MIXERLINE_LABEL_H		115
 #define MASTERMIXERLINE_FADER_H	75
 
-using namespace H2Core;
+using namespace Tritium;
 
 MixerLine::MixerLine(QWidget* parent)
  : PixmapWidget( parent, "MixerLine" )

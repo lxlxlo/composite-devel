@@ -28,7 +28,7 @@
 #include "EventListener.h"
 #include <Tritium/Object.h>
 
-namespace H2Core
+namespace Tritium
 {
 	class Hydrogen;
 }
@@ -122,7 +122,7 @@ class PlayerControl : public QLabel, public Object, public EventListener
 		//~ beatcounter
 
 	private:
-		H2Core::Hydrogen *m_pEngine;
+		Tritium::Hydrogen *m_pEngine;
 		QPixmap m_background;
 
 		Button *m_pRwdBtn;

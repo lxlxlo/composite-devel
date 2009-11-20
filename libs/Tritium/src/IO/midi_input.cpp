@@ -30,7 +30,7 @@
 #include <Tritium/action.h>
 #include <Tritium/midiMap.h>
 
-namespace H2Core
+namespace Tritium
 {
 
 MidiInput::MidiInput( const QString class_name )

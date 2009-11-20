@@ -24,7 +24,7 @@
 #include <Tritium/Transport.h>
 #include "FakeDriver.h"
 
-namespace H2Core
+namespace Tritium
 {
 
 FakeDriver::FakeDriver( audioProcessCallback processCallback )

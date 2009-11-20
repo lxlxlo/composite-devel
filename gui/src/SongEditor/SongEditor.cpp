@@ -31,7 +31,7 @@
 #include <Tritium/audio_engine.h>
 #include <Tritium/event_queue.h>
 #include <Tritium/instrument.h>
-using namespace H2Core;
+using namespace Tritium;
 
 
 #include "SongEditor.h"
@@ -187,7 +187,7 @@ void SongEditor::mousePressEvent( QMouseEvent *ev )
 		}
 	}
 	else if ( actionMode == DRAW_ACTION ) {
-		H2Core::Pattern *pPattern = pPatternList->get( nRow );
+		Tritium::Pattern *pPattern = pPatternList->get( nRow );
 		vector<PatternList*> *pColumns = pSong->get_pattern_group_vector();	// E' la lista di "colonne" di pattern
 		if ( nColumn < (int)pColumns->size() ) {
 			PatternList *pColumn = ( *pColumns )[ nColumn ];
@@ -318,7 +318,7 @@ void SongEditor::mouseMoveEvent(QMouseEvent *ev)
 				if ( nRow >= (int)pPatternList->get_size() || nRow < 0 || nCol < 0 ) {
 					return;
 				}
-				H2Core::Pattern *pPattern = pPatternList->get( nRow );
+				Tritium::Pattern *pPattern = pPatternList->get( nRow );
 
 				if ( nCol < (int)pColumns->size() ) {
 					PatternList *pColumn = ( *pColumns )[ nCol ];
@@ -555,12 +555,12 @@ void SongEditor::drawSequence()
 		PatternList* pColumn = (*pColumns)[ i ];
 
 		for (uint nPat = 0; nPat < pColumn->get_size(); ++nPat) {
-			H2Core::Pattern *pat = pColumn->get( nPat );
+			Tritium::Pattern *pat = pColumn->get( nPat );
 
 			int position = -1;
 			// find the position in pattern list
 			for (uint j = 0; j < listLength; j++) {
-				H2Core::Pattern *pat2 = patList->get( j );
+				Tritium::Pattern *pat2 = patList->get( j );
 				if (pat == pat2) {
 					position = j;
 					break;
@@ -883,7 +883,7 @@ void SongEditorPatternList::createBackground()
 
 	/// paint the foreground (pattern name etc.)
 	for ( int i = 0; i < nPatterns; i++ ) {
-		H2Core::Pattern *pPattern = pSong->get_pattern_list()->get(i);
+		Tritium::Pattern *pPattern = pSong->get_pattern_list()->get(i);
 		//uint y = m_nGridHeight * i;
 
 		// Text
@@ -958,7 +958,7 @@ void SongEditorPatternList::patternPopup_load()
 	if ( err == 0 ) {
 		_ERRORLOG( "Error loading the pattern" );
 	}else{
-		H2Core::Pattern *pNewPattern = err;
+		Tritium::Pattern *pNewPattern = err;
 		pPatternList->add( pNewPattern );
 		song->__is_modified = true;
 		createBackground();
@@ -1031,7 +1031,7 @@ void SongEditorPatternList::patternPopup_properties()
 	PatternList *patternList = song->get_pattern_list();
 
 	int nSelectedPattern = engine->getSelectedPatternNumber();
-	H2Core::Pattern *pattern = patternList->get( nSelectedPattern );
+	Tritium::Pattern *pattern = patternList->get( nSelectedPattern );
 
 	PatternPropertiesDialog *dialog = new PatternPropertiesDialog(this, pattern, false);
 	if (dialog->exec() == QDialog::Accepted) {
@@ -1072,7 +1072,7 @@ void SongEditorPatternList::patternPopup_delete()
 	Song *song = pEngine->getSong();
 	PatternList *pSongPatternList = song->get_pattern_list();
 
-	H2Core::Pattern *pattern = pSongPatternList->get( pEngine->getSelectedPatternNumber() );
+	Tritium::Pattern *pattern = pSongPatternList->get( pEngine->getSelectedPatternNumber() );
 	INFOLOG( QString("[patternPopup_delete] Delete pattern: %1 @%2").arg(pattern->get_name()).arg( (long)pattern ) );
 	pSongPatternList->del(pattern);
 
@@ -1084,7 +1084,7 @@ void SongEditorPatternList::patternPopup_delete()
 
 		uint j = 0;
 		while ( j < list->get_size() ) {
-			H2Core::Pattern *pOldPattern = list->get( j );
+			Tritium::Pattern *pOldPattern = list->get( j );
 			if (pOldPattern == pattern ) {
 				list->del( j );
 				continue;
@@ -1113,7 +1113,7 @@ void SongEditorPatternList::patternPopup_delete()
 	list->del( pattern );
 	// se esiste, seleziono il primo pattern
 	if ( pSongPatternList->get_size() > 0 ) {
-		H2Core::Pattern *pFirstPattern = pSongPatternList->get( 0 );
+		Tritium::Pattern *pFirstPattern = pSongPatternList->get( 0 );
 		list->add( pFirstPattern );
 		// Cambio due volte...cosi' il pattern editor viene costretto ad aggiornarsi
 		pEngine->setSelectedPatternNumber( -1 );
@@ -1147,9 +1147,9 @@ void SongEditorPatternList::patternPopup_copy()
 	Song *pSong = pEngine->getSong();
 	PatternList *pPatternList = pSong->get_pattern_list();
 	int nSelectedPattern = pEngine->getSelectedPatternNumber();
-	H2Core::Pattern *pPattern = pPatternList->get( nSelectedPattern );
+	Tritium::Pattern *pPattern = pPatternList->get( nSelectedPattern );
 
-	H2Core::Pattern *pNewPattern = pPattern->copy();
+	Tritium::Pattern *pNewPattern = pPattern->copy();
 	pPatternList->add( pNewPattern );
 
 	// rename the copied pattern
@@ -1198,7 +1198,7 @@ void SongEditorPatternList::fillRangeWithPattern(FillRange* pRange, int nPattern
 
 	Song *pSong = pEngine->getSong();
 	PatternList *pPatternList = pSong->get_pattern_list();
-	H2Core::Pattern *pPattern = pPatternList->get( nPattern );
+	Tritium::Pattern *pPattern = pPatternList->get( nPattern );
 	vector<PatternList*> *pColumns = pSong->get_pattern_group_vector();	// E' la lista di "colonne" di pattern
 	PatternList *pColumn;
 
@@ -1312,11 +1312,11 @@ void SongEditorPatternList::dropEvent(QDropEvent *event)
 		if ( err == 0 ) {
 			_ERRORLOG( "Error loading the pattern" );
 		}else{
-			H2Core::Pattern *pNewPattern = err;
+			Tritium::Pattern *pNewPattern = err;
 			pPatternList->add( pNewPattern );
 
 			for (int nPatr = pPatternList->get_size() +1 ; nPatr >= nTargetPattern; nPatr--) {
-				H2Core::Pattern *pPattern = pPatternList->get(nPatr - 1);
+				Tritium::Pattern *pPattern = pPatternList->get(nPatr - 1);
 				pPatternList->replace( pPattern, nPatr );
 			}
 			pPatternList->replace( pNewPattern, nTargetPattern );
@@ -1343,17 +1343,17 @@ void SongEditorPatternList::movePatternLine( int nSourcePattern , int nTargetPat
 
 
 		// move instruments...
-		H2Core::Pattern *pSourcePattern = pPatternList->get( nSourcePattern );//Instrument *pSourceInstr = pPatternList->get(nSourcePattern);
+		Tritium::Pattern *pSourcePattern = pPatternList->get( nSourcePattern );//Instrument *pSourceInstr = pPatternList->get(nSourcePattern);
 		if ( nSourcePattern < nTargetPattern) {
 			for (int nPatr = nSourcePattern; nPatr < nTargetPattern; nPatr++) {
-				H2Core::Pattern *pPattern = pPatternList->get(nPatr + 1);
+				Tritium::Pattern *pPattern = pPatternList->get(nPatr + 1);
 				pPatternList->replace( pPattern, nPatr );
 			}
 			pPatternList->replace( pSourcePattern, nTargetPattern );
 		}
 		else {
 			for (int nPatr = nSourcePattern; nPatr >= nTargetPattern; nPatr--) {
-				H2Core::Pattern *pPattern = pPatternList->get(nPatr - 1);
+				Tritium::Pattern *pPattern = pPatternList->get(nPatr - 1);
 				pPatternList->replace( pPattern, nPatr );
 			}
 			pPatternList->replace( pSourcePattern, nTargetPattern );
@@ -1522,7 +1522,7 @@ void SongEditorPositionRuler::paintEvent( QPaintEvent *ev )
 	float fPos = H->getPatternPos();
 
 	if ( H->getCurrentPatternList()->get_size() != 0 ) {
-		H2Core::Pattern *pPattern = H->getCurrentPatternList()->get( 0 );
+		Tritium::Pattern *pPattern = H->getCurrentPatternList()->get( 0 );
 		fPos += (float)H->getTickPosition() / (float)pPattern->get_length();
 	}
 	else {

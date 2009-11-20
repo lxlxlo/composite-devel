@@ -44,7 +44,7 @@
 #include <QtGui>
 
 using namespace std;
-using namespace H2Core;
+using namespace Tritium;
 
 DrumPatternEditor::DrumPatternEditor(QWidget* parent, PatternEditorPanel *panel)
  : QWidget( parent )

@@ -27,18 +27,18 @@
 
 #include <vector>
 
-using namespace H2Core;
+using namespace Tritium;
 
 typedef std::vector<PatternList*> pgrp_list;
 typedef pgrp_list::iterator pgrp_list_iter;
 
-uint32_t H2Core::song_bar_count(Song* s)
+uint32_t Tritium::song_bar_count(Song* s)
 {
     if( s == 0 ) return -1;
     return s->get_pattern_group_vector()->size();
 }
 
-uint32_t H2Core::song_tick_count(Song* s)
+uint32_t Tritium::song_tick_count(Song* s)
 {
     if( s == 0 ) return -1;
     uint32_t count = 0;
@@ -54,7 +54,7 @@ uint32_t H2Core::song_tick_count(Song* s)
     return count;
 }
 
-uint32_t H2Core::pattern_group_index_for_bar(Song* s, uint32_t bar)
+uint32_t Tritium::pattern_group_index_for_bar(Song* s, uint32_t bar)
 {
     if( s == 0 ) return -1;
     if( bar <= song_bar_count(s) ) {
@@ -63,7 +63,7 @@ uint32_t H2Core::pattern_group_index_for_bar(Song* s, uint32_t bar)
     return -1;
 }
 
-uint32_t H2Core::bar_for_absolute_tick(Song* s, uint32_t abs_tick)
+uint32_t Tritium::bar_for_absolute_tick(Song* s, uint32_t abs_tick)
 {
     if( s == 0 ) return -1;
     uint32_t tick_count = abs_tick;
@@ -79,7 +79,7 @@ uint32_t H2Core::bar_for_absolute_tick(Song* s, uint32_t abs_tick)
     return bar_count;
 }
 
-uint32_t H2Core::bar_start_tick(Song* s, uint32_t bar)
+uint32_t Tritium::bar_start_tick(Song* s, uint32_t bar)
 {
     if( s == 0 ) return -1;
     if( bar > song_bar_count(s) ) return -1;
@@ -91,7 +91,7 @@ uint32_t H2Core::bar_start_tick(Song* s, uint32_t bar)
     return count;
 }
 
-uint32_t H2Core::ticks_in_bar(Song* s, uint32_t bar)
+uint32_t Tritium::ticks_in_bar(Song* s, uint32_t bar)
 {
     if( s == 0 ) return -1;
     if( bar < 1 ) return -1;

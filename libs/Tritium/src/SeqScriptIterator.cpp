@@ -7,7 +7,7 @@
 
 
 
-namespace H2Core
+namespace Tritium
 {
 
     // E stands for SeqEvent
@@ -91,4 +91,4 @@ namespace H2Core
     template class _SeqScriptIterator<SeqEvent>;
     template class _SeqScriptIterator<const SeqEvent>;
 
-} // namespace H2Core
+} // namespace Tritium

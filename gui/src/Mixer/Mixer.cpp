@@ -37,7 +37,7 @@
 #include <Tritium/Preferences.h>
 #include <Tritium/note.h>
 #include <Tritium/fx/Effects.h>
-using namespace H2Core;
+using namespace Tritium;
 
 #include <cassert>
 

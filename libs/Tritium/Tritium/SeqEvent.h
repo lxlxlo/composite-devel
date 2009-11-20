@@ -25,7 +25,7 @@
 #include <stdint.h>  // int32_t, uint32_t
 #include <Tritium/note.h>
 
-namespace H2Core
+namespace Tritium
 {
     /**
      * A container that maps a frame and a note object.
@@ -55,6 +55,6 @@ namespace H2Core
 
     bool less(const SeqEvent& a, const SeqEvent& b);
 
-} // namespace H2Core
+} // namespace Tritium
 
 #endif // H2CORE_SEQEVENT_H

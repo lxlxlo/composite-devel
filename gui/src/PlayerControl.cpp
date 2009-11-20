@@ -43,7 +43,7 @@
 #include <Tritium/IO/JackOutput.h>
 #include <Tritium/Preferences.h>
 #include <Tritium/JackTimeMasterEvents.h>
-using namespace H2Core;
+using namespace Tritium;
 
 
 //beatconter global

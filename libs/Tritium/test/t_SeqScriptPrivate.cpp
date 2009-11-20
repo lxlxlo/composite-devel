@@ -31,7 +31,7 @@
 #define THIS_NAMESPACE t_SeqScriptPrivate
 #include "test_macros.h"
 
-using namespace H2Core;
+using namespace Tritium;
 
 namespace THIS_NAMESPACE
 {

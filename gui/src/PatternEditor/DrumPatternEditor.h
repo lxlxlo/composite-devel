@@ -31,7 +31,7 @@
 
 #include <QtGui>
 
-namespace H2Core
+namespace Tritium
 {
 	class Note;
 	class Pattern;
@@ -82,15 +82,15 @@ class DrumPatternEditor : public QWidget, public EventListener, public Object
 		// usati per la lunghezza della nota
 		// "used for the length of the note"
 		bool m_bRightBtnPressed;
-		H2Core::Note *m_pDraggedNote;
+		Tritium::Note *m_pDraggedNote;
 		int m_nDraggedNoteStartPosition;
 		//~
 
-		H2Core::Pattern *m_pPattern;
+		Tritium::Pattern *m_pPattern;
 
 		PatternEditorPanel *m_pPatternEditorPanel;
 
-		void __draw_note( uint position, H2Core::Note* note, QPainter& painter );
+		void __draw_note( uint position, Tritium::Note* note, QPainter& painter );
 		void __draw_pattern( QPainter& painter );
 		void __draw_grid( QPainter& painter );
 		void __create_background( QPainter& pointer );

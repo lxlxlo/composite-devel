@@ -37,7 +37,7 @@
 
 ActionManager* ActionManager::__instance = NULL;
 
-using namespace H2Core;
+using namespace Tritium;
 
 /* Class Action */
 Action::Action( QString s ) : Object( "Action" ) {

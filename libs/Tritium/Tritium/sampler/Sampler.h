@@ -33,7 +33,7 @@
 
 
 
-namespace H2Core
+namespace Tritium
 {
 
 class Note;
@@ -75,7 +75,7 @@ private:
 	SamplerPrivate *d;
 }; // class Sampler
 
-} // namespace H2Core
+} // namespace Tritium
 
 #endif
 
