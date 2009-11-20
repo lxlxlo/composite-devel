@@ -141,7 +141,7 @@ CONFIGURE_FILE(version.cpp.in version.cpp)
 CONFIGURE_FILE(composite.desktop.in composite.desktop)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
-ADD_SUBDIRECTORY(libs/hydrogen)
+ADD_SUBDIRECTORY(libs/Tritium)
 ADD_SUBDIRECTORY(gui)
 #ADD_SUBDIRECTORY(plugins)
 #ADD_SUBDIRECTORY(extra)
