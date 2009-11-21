@@ -80,6 +80,10 @@ MY_CHECK(LRDF lrdf liblrdf-dev)
 MY_CHECK(FLAC flac libflac-dev)
 MY_CHECK(FLACPP flac++ libflac++-dev)
 
+SET(ZLIB_LIBRARIES z)
+
+message("ZLIB: ${ZLIB_FOUND} ${ZLIB_LIBRARIES} ${ZLIB_INCLUDE_DIR} ${JACK_LIBRARIES}")
+
 FOREACH( _pkg ${MANDATORY_PACKAGES_LIST})
     if(NOT ${_pkg}_SUPPORT)
         MESSAGE(FATAL_ERROR "${_pkg} is required but was not found")

@@ -162,7 +162,6 @@ MainForm::~MainForm()
 	hide();
 
 	if (h2app != NULL) {
-		delete Playlist::get_instance();
 		delete h2app;
 		h2app = NULL;
 	}

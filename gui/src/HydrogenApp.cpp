@@ -38,6 +38,8 @@
 #include "SongEditor/SongEditorPanel.h"
 #include "PlaylistEditor/PlaylistDialog.h"
 //#include "AudioFileBrowser/AudioFileBrowser.h"
+#include "gui/src/InstrumentRack.h"
+#include "gui/src/SoundLibrary/SoundLibraryPanel.h"
 
 #include "Mixer/Mixer.h"
 #include "Mixer/MixerLine.h"
@@ -47,12 +49,39 @@
 #include <Tritium/fx/LadspaFX.h>
 #include <Tritium/Preferences.h>
 #include <Tritium/Song.h>
+#include <Tritium/playlist.h>
 
 #include <QtGui>
 
 using namespace Tritium;
 
 HydrogenApp* HydrogenApp::m_pInstance = NULL;
+
+class AppPlaylistListener : public Tritium::PlaylistListener
+{
+public:
+    HydrogenApp* q;
+    Tritium::Playlist *d;
+
+    AppPlaylistListener() : q(0), d(0) {}
+    ~AppPlaylistListener() {
+	if(d) d->unsubscribe();
+    }
+
+    void selection_changed() {
+	if(q) {
+	    q->getInstrumentRack()
+		->getSoundLibraryPanel()
+		->update_background_color();
+	}
+    }
+
+    void set_song(Tritium::Song* pSong) {
+	if(q) {
+	    q->setSong(pSong);
+	}
+    }
+};
 
 HydrogenApp::HydrogenApp( MainForm *pMainForm, Song *pFirstSong )
  : Object( "HydrogenApp" )
@@ -103,7 +132,12 @@ HydrogenApp::HydrogenApp( MainForm *pMainForm, Song *pFirstSong )
 		m_pAudioEngineInfoForm->hide();
 	}
 	
-	 m_pPlaylistDialog = new PlaylistDialog( 0 );
+	m_pAppPlaylistListener = new AppPlaylistListener;
+	m_pAppPlaylistListener->q = this;
+	m_pAppPlaylistListener->d = Playlist::get_instance();
+	m_pAppPlaylistListener->d->subscribe(m_pAppPlaylistListener);
+	// Unsubscription done by the destructor.
+	m_pPlaylistDialog = new PlaylistDialog( 0 );
 	
 	showInfoSplash();	// First time information
 }
@@ -119,6 +153,7 @@ HydrogenApp::~HydrogenApp()
 	delete m_pAudioEngineInfoForm;
 	delete m_pMixer;
 	delete m_pPlaylistDialog;
+	delete m_pAppPlaylistListener;
 
 	Hydrogen *engine = Hydrogen::get_instance();
 	if (engine) {

@@ -24,55 +24,90 @@
 #define PLAYLIST_H
 
 #include <QDialog>
+#include <QMutex>
 #include <Tritium/Object.h>
 #include <Tritium/globals.h>
 #include <Tritium/Preferences.h>
 #include <Tritium/hydrogen.h>
-#include "gui/src/HydrogenApp.h"
 #include <vector>
 #include <cassert>
 
-
+namespace Tritium
+{
 
 ///
 /// handle playlist  
 ///
 
-class Playlist :  public Object
+/**
+ * This class gives an interactive experience between HydrogenApp and
+ * the Playlist object without requiring the Playlist to have a
+ * pointer to HydrogenApp.
+ */
+class Song;
 
+class PlaylistListener
 {
-	
-	public:
-		static void create_instance();
-		static Playlist* get_instance() { assert(__instance); return __instance; }
-		
-		~Playlist();
+public:
+	virtual ~PlaylistListener() {}
 
-//		std::vector<HPlayListNode> m_PlayList;
-		void setNextSongByNumber(int SongNumber);	
-		void setNextSongPlaylist();
-		void setPrevSongPlaylist();
-		void setSelectedSongNr( int songNumber);
-
-		int selectedSongNumber;
-		
-		int getSelectedSongNr();
-		void setActiveSongNumber( int ActiveSongNumber);
-		int getActiveSongNumber();
-
-		QString __playlistName;
-
-
-	private:
-
-		static Playlist* __instance;
-
-		/// Constructor
-		Playlist();
-
-		void loadSong( QString songName );
-		void execScript( int index);
+	/**
+	 * Signals that the playist selection has changed
+	 * and any vies need to be updated.
+	 */
+	virtual void selection_changed() = 0;
+	/**
+	 * Signals that the current song should be
+	 * changed to the one pointed to by @pSong.
+	 */
+	virtual void set_song(Song* pSong) = 0;
 };
 
+class Playlist :  public Object
+{
+	
+public:
+	static void create_instance();
+	static Playlist* get_instance() { assert(__instance); return __instance; }
+		
+	~Playlist();
 
-#endif
+	/**
+	 * Subscribe to the playlist's signals.  There may be only
+	 * on subscriber... and this function will overwrite whoever
+	 * the current subscriber is.
+	 */
+	void subscribe(PlaylistListener* listener);
+	void unsubscribe();
+
+//		std::vector<HPlayListNode> m_PlayList;
+	void setNextSongByNumber(int SongNumber);
+	void setNextSongPlaylist();
+	void setPrevSongPlaylist();
+	void setSelectedSongNr( int songNumber);
+
+	int selectedSongNumber;
+		
+	int getSelectedSongNr();
+	void setActiveSongNumber( int ActiveSongNumber);
+	int getActiveSongNumber();
+
+	QString __playlistName;
+
+
+private:
+
+	static Playlist* __instance;
+	PlaylistListener* m_listener;
+	QMutex m_listener_mutex;
+
+	/// Constructor
+	Playlist();
+
+	void loadSong( QString songName );
+	void execScript( int index);
+};
+
+} // namespace Tritium
+
+#endif // PLAYLIST_H

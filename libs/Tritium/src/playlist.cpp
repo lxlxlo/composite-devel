@@ -20,10 +20,6 @@
  *
  */
 
-#include "gui/src/HydrogenApp.h"
-#include "gui/src/InstrumentRack.h"
-#include "gui/src/SoundLibrary/SoundLibraryPanel.h"
-
 #include <Tritium/LocalFileMng.h>
 #include <Tritium/h2_exception.h>
 #include <Tritium/Preferences.h>
@@ -33,7 +29,7 @@
 
 #include <vector>
 #include <cstdlib>
-
+#include <QMutexLocker>
 
 
 using namespace Tritium;
@@ -46,13 +42,9 @@ Playlist* Playlist::__instance = NULL;
 
 
 Playlist::Playlist()
-		: Object( "Playlist" )
+	: Object( "Playlist" ),
+	  m_listener(0)
 {
-	if ( __instance ) {class HydrogenApp;
-
-		_ERRORLOG( "Playlist in use" );
-	}class HydrogenApp;
-
 	//_INFOLOG( "[Playlist]" );
 	__instance = this;
 	__playlistName = "";
@@ -67,7 +59,16 @@ Playlist::~Playlist()
 	__instance = NULL;
 }
 
+void Playlist::subscribe(PlaylistListener* listener)
+{
+	QMutexLocker lock(&m_listener_mutex);
+	m_listener = listener;
+}
 
+void Playlist::unsubscribe()
+{
+	subscribe(0);
+}
 
 void Playlist::create_instance()
 {
@@ -95,7 +96,8 @@ void Playlist::setNextSongByNumber(int SongNumber)
 	loadSong( selected );
 	execScript( realNumber );
 
-	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
+	if(m_listener)
+		m_listener->selection_changed();
 }
 
 
@@ -126,7 +128,8 @@ void Playlist::setNextSongPlaylist()
 	loadSong( selected );
 	execScript( index );
 
-	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
+	if(m_listener)
+		m_listener->selection_changed();
 }
 
 
@@ -158,7 +161,8 @@ void Playlist::setPrevSongPlaylist()
 	loadSong( selected );
 	execScript( index );
 
-	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
+	if(m_listener)
+		m_listener->selection_changed();
 }
 
 
@@ -193,8 +197,6 @@ int Playlist::getActiveSongNumber()
 
 void Playlist::loadSong( QString songName )
 {
-
-	HydrogenApp *pH2App = HydrogenApp::get_instance();
 	Hydrogen *engine = Hydrogen::get_instance();
 	
 
@@ -206,7 +208,8 @@ void Playlist::loadSong( QString songName )
 		return;
 	}
 
-	pH2App->setSong ( pSong );
+	if(m_listener)
+		m_listener->set_song(pSong);
 	engine->setSelectedPatternNumber ( 0 );
 }
 

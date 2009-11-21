@@ -12,7 +12,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_BINARY_DIR})
 
-ADD_EXECUTABLE(composite-gui ${composite_SRCS} ${composite_MOC} ${composite_UIS_H} ${CMAKE_BINARY_DIR}/version.cpp)
+ADD_EXECUTABLE(composite-gui ${composite_SRCS} ${composite_MOC} ${composite_UIS_H})
 TARGET_LINK_LIBRARIES(composite-gui Tritium
     ${LIBTAR_LIBRARIES}
     ${QT_LIBRARIES}

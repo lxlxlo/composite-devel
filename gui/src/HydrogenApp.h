@@ -53,6 +53,7 @@ class LadspaFXInfo;
 class LadspaFXGroup;
 class InstrumentRack;
 class PlaylistDialog;
+class AppPlaylistListener;
 //class AudioFileBrowser;
 
 class HydrogenApp : public QObject, public Object
@@ -119,6 +120,7 @@ class HydrogenApp : public QObject, public Object
 		InstrumentRack* m_pInstrumentRack;
 		PlayerControl *m_pPlayerControl;
 		PlaylistDialog *m_pPlaylistDialog;
+		AppPlaylistListener *m_pAppPlaylistListener;
 //		AudioFileBrowser *m_pAudioFileBrowser;
 
 		QTimer *m_pEventQueueTimer;
