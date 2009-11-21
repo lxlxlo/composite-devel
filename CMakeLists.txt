@@ -1,135 +1,179 @@
+######################################################################
+### Composite Build Script (CMake)                                 ###
+### http://gabe.is-a-geek.org/composite/                           ###
+######################################################################
+
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
+######################################################################
+### PROJECT META-INFO                                              ###
+######################################################################
+
 PROJECT(composite)
+SET(VERSION_MAJOR "0")
+SET(VERSION_MINOR "003")
+#SET(VERSION_PATCH "")
+SET(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}")
 
-SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
+######################################################################
+### CMAKE SETUP                                                    ###
+######################################################################
 
-# The CMake Policy mechanism is designed to help keep existing projects building as new versions of CMake introduce changes in behavior.
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
+
+# The CMake Policy mechanism is designed to help keep existing
+# projects building as new versions of CMake introduce changes in
+# behavior.
 # http://www.cmake.org/cmake/help/cmake2.6docs.html#command:cmake_policy
 IF(COMMAND CMAKE_POLICY)
 #	CMAKE_POLICY(SET CMP0005 NEW)
 	CMAKE_POLICY(SET CMP0003 NEW)   # add_library
 ENDIF(COMMAND CMAKE_POLICY)
 
-SET(MANDATORY_PACKAGES_LIST)
-# OPTIONS
-OPTION(WANT_DEBUG	"build with debug information" OFF)                                             # TODO
-OPTION(WANT_LIBARCHIVE	"Enable use of libarchive instead of libtar" OFF)                               # TODO
-OPTION(WANT_JACK	"Include JACK (Jack Audio Connection Kit) support" ON)
+######################################################################
+### CONFIGURATION OPTIONS                                          ###
+######################################################################
+
+# XXX TODO!!
+
+# OPTION(WANT_DEBUG	"build with debug information" OFF)
 OPTION(WANT_LRDF	"Include LRDF (Lightweight Resource Description Framework with special support for LADSPA plugins) support" OFF)
-OPTION(WANT_FLAC	"Include FLAC (Free Lossless Audio Codec) support" ON)
-OPTION(WANT_FLACPP	"Include FLAC++ (Free Lossless Audio Codec) support" ON) # kludge
 
-# DEFAULT OPTIONS
-IF(WIN32)
-    MESSAGE( "?????")
-    SET(WANT_JACK OFF)
-    SET(STATUS_JACK "<not supported on this platform>")
-ELSE(WIN32)
-    IF(APPLE)
-        MESSAGE( "?????")
-    ELSE(APPLE)
-        SET(WANT_LIBSNDFILE ON)
-        LIST(APPEND MANDATORY_PACKAGES_LIST LIBSNDFILE)
-        EXECUTE_PROCESS(COMMAND svnversion -n OUTPUT_VARIABLE SVN_VERSION )
-    ENDIF(APPLE)
-ENDIF(WIN32)
+OPTION(WANT_LIBARCHIVE
+	"Enable use of libarchive instead of libtar"
+	OFF)
 
-# VERSION
-SET(VERSION_MAJOR "0")
-SET(VERSION_MINOR "003")
-#SET(VERSION_PATCH "0")
-SET(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}")
-#IF(VERSION_SUFFIX)
-#    SET(VERSION "${VERSION}-${VERSION_SUFFIX}")
-#ENDIF(VERSION_SUFFIX)
-#ADD_DEFINITIONS(-D'COMPOSITE_VERSION="${VERSION}"')
 
-# HEADER CHECKS
-INCLUDE(CheckIncludeFiles)
-INCLUDE(CheckLibraryExists)
-CHECK_INCLUDE_FILES(zlib.h HAVE_ZLIB_H)
-CHECK_LIBRARY_EXISTS (tar tar_open TODO HAVE_LIBTAR)            # TODO
-CHECK_INCLUDE_FILES(time.h HAVE_TIME_H)
+######################################################################
+### REQUIRED LIBRARIES                                             ###
+######################################################################
 
-IF (HAVE_LIBTAR)
-    SET(LIBTAR_LIBRARIES tar)
-ENDIF(HAVE_LIBTAR)
+###
+### Qt 4 http://qt.nokia.com/
+###
 
-# PKG-CONFIG CHECKS
-INCLUDE(FindPkgConfig)
-MACRO(my_check var_name version to_install)
-    IF(WANT_${var_name})
-        PKG_SEARCH_MODULE(${var_name} ${version})
-        IF(${var_name}_FOUND)
-            SET(STATUS_${var_name} "${${var_name}_VERSION}")
-            SET(${var_name}_SUPPORT ON)
-            ADD_DEFINITIONS(-D${var_name}_SUPPORT)              # COMPOSITE IS ACTUALLY FLAG DRIVEN
-        ELSE(${var_name}_FOUND)
-            SET(STATUS_${var_name} "not found, please install ${to_install} (or similiar) if you require ${var_name} support")
-        ENDIF(${var_name}_FOUND)
-    ELSE(WANT_${var_name})
-        SET(STATUS_${var_name} "not desired")
-    ENDIF(WANT_${var_name})
-ENDMACRO(my_check)
-
-#
-MY_CHECK(LIBSNDFILE sndfile libsndfile-dev)
-MY_CHECK(JACK jack>=0.109.0 libjack-dev)
-MY_CHECK(LRDF lrdf liblrdf-dev)
-MY_CHECK(FLAC flac libflac-dev)
-MY_CHECK(FLACPP flac++ libflac++-dev)
-
-SET(ZLIB_LIBRARIES z)
-
-message("ZLIB: ${ZLIB_FOUND} ${ZLIB_LIBRARIES} ${ZLIB_INCLUDE_DIR} ${JACK_LIBRARIES}")
-
-FOREACH( _pkg ${MANDATORY_PACKAGES_LIST})
-    if(NOT ${_pkg}_SUPPORT)
-        MESSAGE(FATAL_ERROR "${_pkg} is required but was not found")
-    ENDIF(NOT ${_pkg}_SUPPORT)
-ENDFOREACH(_pkg)
-
-# CHECK FOR Qt4
-#SET(QT_MIN_VERSION "4.3.0")
-#find_package(Qt4 4.3.0 COMPONENTS QtCore QtGui QtNetwork QtXml REQUIRED )
-#include(${QT_USE_FILE})
 SET(QT_USE_QTNETWORK true)
 SET(QT_USE_QTXML true)
 FIND_PACKAGE(Qt4 4.3.0 REQUIRED)
 INCLUDE(${QT_USE_FILE})
 
+###
+### JACK http://jackaudio.org/
+###
+find_package(JACK REQUIRED)
+include_directories(${JACK_INCLUDE_DIRS})
+set(LIBS ${JACK_LIBRARIES})
+add_definitions(-DJACK_SUPPORT)
+
+###
+### FLAC http://flac.sourceforge.net/
+###
+find_package(FLAC REQUIRED)
+include_directories(${FLAC_INCLUDE_DIRS})
+set(LIBS ${FLAC_LIBRARIES})
+add_definitions(-DFLAC_SUPPORT)
+
+find_package(FLAC++ REQUIRED)
+include_directories(${FLAC++_INCLUDE_DIRS})
+set(LIBS ${FLAC++_LIBRARIES})
+add_definitions(-DFLAC_SUPPORT)
+
+###
+### libsndfile http://www.mega-nerd.com/libsndfile/
+###
+find_package(LibSndfile REQUIRED)
+include_directories(${LibSndfile_INCLUDE_DIRS})
+set(LIBS ${LibSndfile_LIBRARIES})
+
+### ...................................................
+### Either libtar and libz, or libarchive are required.
+### ...................................................
+
+###
+### libtar http://www.feep.net/libtar/
+### Zlib http://www.zlib.net/
+###
+find_package(LibTar)
+find_package(ZLIB)
+IF(LibTar_FOUND AND ZLIB_FOUND)
+	include_directories(${LibTar_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
+	set(LIBS ${LibSndfile_LIBRARIES} ${ZLIB_INCLUDE_DIRS})
+ENDIF()
+
+###
+### libarchive http://code.google.com/p/libarchive/
+###
+IF(LibTar_FOUND AND ZLIB_FOUND)
+ELSE()
+       find_package(LibArchive REQUIRED)
+       include_directories(${LibArchive_INCLUDE_DIRS})
+       set(LIBS ${LibArchive_LIBRARIES})
+       add_definitions(-DLIBARCHIVE_SUPPORT)
+ENDIF()  
+
+######################################################################
+### OPTIONAL LIBRARIES                                             ###
+######################################################################
+
+IF(WANT_LRDF)
+  find_package(LRDF REQUIRED)
+  include_directories(${LRDF_INCLUDE_DIRS})
+  set(LIBS ${LRDF_LIBRARIES})
+  add_definitions(-DLRDF_SUPPORT)
+ENDIF(WANT_LRDF)
+
+######################################################################
+### HEADER CHECKS                                                  ###
+######################################################################
+
+#INCLUDE(CheckIncludeFiles)
+#INCLUDE(CheckLibraryExists)
+#CHECK_INCLUDE_FILES(zlib.h HAVE_ZLIB_H)
+#CHECK_LIBRARY_EXISTS (tar tar_open TODO HAVE_LIBTAR)            # TODO
+#CHECK_INCLUDE_FILES(time.h HAVE_TIME_H)
+#
+#IF (HAVE_LIBTAR)
+#    SET(LIBTAR_LIBRARIES tar)
+#ENDIF(HAVE_LIBTAR)
+
+######################################################################
+### INSTALL SETUP                                                  ###
+######################################################################
 
 SET(DATA_PATH "${CMAKE_INSTALL_PREFIX}/share/composite/data")
-#
+
+######################################################################
+### CONFIGURATION SUMMARY                                          ###
+######################################################################
+
 MESSAGE("\n"
 "Installation Summary\n"
 "--------------------\n"
 "* Install Directory           : ${CMAKE_INSTALL_PREFIX}\n"
 "* Data path                   : ${DATA_PATH}\n"
-"* Qt4 version                 : ${QT_VERSION_MAJOR}.${QT_VERSION_MINOR}.${QT_VERSION_PATCH}\n"
-"* libsndfile                  : ${STATUS_LIBSNDFILE}\n"
 )
 
-MESSAGE(
-"Supported audio interfaces\n"
-"--------------------------\n"
-"* JACK                        : ${STATUS_JACK}\n"
-)
+MACRO(lib_report name)
+  IF(${name}_FOUND)
+    message("FOUND..... ${name}")
+  ELSE()
+    message("missing... ${name}")
+  ENDIF()
+ENDMACRO(lib_report)
 
 MESSAGE(
-"Usefull extensions\n"
-"-----------------------------------------\n"
-"* LRDF                        : ${STATUS_LRDF}\n"
+"LIBRARIES\n"
+"---------\n"
 )
-
-MESSAGE(
-"Supported file formats for samples\n"
-"-----------------------------------------\n"
-"* WAVE                        : builtin\n"
-"* FLAC                        : ${STATUS_FLAC}\n"
-"* FLAC++                      : ${STATUS_FLACPP}\n"
-)
+lib_report(QT4)
+lib_report(JACK)
+lib_report(LibSndfile)
+lib_report(LRDF)
+lib_report(FLAC)
+lib_report(FLAC++)
+lib_report(LibTar)
+lib_report(ZLIB)
+lib_report(LibArchive)
 
 MESSAGE(
 "\n"
@@ -140,6 +184,10 @@ MESSAGE(
 "-----------------------------------------------------------------\n"
 )
 
+######################################################################
+### CONFIGURING THE SOFTWARE....                                   ###
+######################################################################
+
 CONFIGURE_FILE(config.h.in config.h)
 CONFIGURE_FILE(version.cpp.in version.cpp)
 CONFIGURE_FILE(composite.desktop.in composite.desktop)
@@ -147,8 +195,6 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
 ADD_SUBDIRECTORY(libs/Tritium)
 ADD_SUBDIRECTORY(gui)
-#ADD_SUBDIRECTORY(plugins)
-#ADD_SUBDIRECTORY(extra)
 
 INSTALL(DIRECTORY data DESTINATION ${DATA_PATH}/..)
 INSTALL(FILES ${CMAKE_BINARY_DIR}/composite.desktop DESTINATION "${CMAKE_INSTALL_PREFIX}/share/applications")
@@ -196,4 +242,3 @@ SET(MACOSX_BUNDLE_COPYRIGHT "Jérémy Zurcher, 2009")
 #INCLUDE(CPack)
 
 add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
-
