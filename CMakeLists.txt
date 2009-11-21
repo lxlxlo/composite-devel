@@ -125,10 +125,17 @@ IF(WANT_LRDF)
 ENDIF(WANT_LRDF)
 
 ######################################################################
-### INSTALL SETUP                                                  ###
+### BUILD/INSTALL SETUP                                            ###
 ######################################################################
 
 SET(DATA_PATH "${CMAKE_INSTALL_PREFIX}/share/composite/data")
+IF(NOT ${CMAKE_BUILD_TYPE} OR ${CMAKE_BUILD_TYPE} STREQUAL "")
+  SET(CMAKE_BUILD_TYPE RelWithDebInfo
+    CACHE STRING "Choose the type of build, options are:
+ None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel (default)."
+    FORCE
+    )
+ENDIF()
 
 ######################################################################
 ### CONFIGURATION SUMMARY                                          ###
