@@ -1,8 +1,28 @@
-DEVELOPER INFO
-==============
+DEVELOPER INFO FOR COMPOSITE
+============================
 
-VERSIONS
+CONTENTS
 --------
+
+0. Where to Get Started
+1. Versions
+2. Making a Release and/or Bumping Versions
+3. Coding Conventions
+4. Documentation
+5. Recommended Dev Environment
+
+0. WHERE TO GET STARTED
+-----------------------
+
+Composite is in massive flux at the moment.  If you have an idea on
+how to help, tell us about it on the mailing list.  We can let you
+know how it will fit in with what's planned.  Links to everything you
+need are here:
+
+    http://gabe.is-a-geek.org/composite/
+
+1. VERSIONS
+-----------
 
 For the development of composite, versions shall be like this:
 
@@ -22,25 +42,22 @@ etc.).
 This is done to improve communication with people who test the
 development copies of Composite.
 
-MAKING A RELEASE AND/OR BUMPING VERSIONS
-----------------------------------------
+2. MAKING A RELEASE AND/OR BUMPING VERSIONS
+-------------------------------------------
 
 Transitioning the code to remove some of the development hooks in
 order to make a release has several, easy-to-forget steps.  They are:
 
   1. Remove the developer hook for 'version':
 
-     a. Near the end of SConstruct, where it has 'extra_version',
-        remove that.
+     a. Near the top of CMakeLists.txt, set VERSION_MAJOR and
+        VERSION_MINOR.
 
-     b. If you are bumping the revision, also do that in SConstruct,
-        at the beginning where it says "COMPOSITE_VERSION."
-
-     c. Update ChangeLog (and linux/debian/changelog if it's not
+     b. Update ChangeLog (and linux/debian/changelog if it's not
         symlinked)
 
-     d. composite.desktop and linux/composite.desktop has a version
-        in it that should be updated.
+     c. linux/composite.desktop has a version in it that should be
+        updated.
 
   2. Remove the 'developer warning': in data/composite.default.conf
      change hydrogen_preferences/showDevelWarning to "false".
@@ -54,7 +71,7 @@ order to make a release has several, easy-to-forget steps.  They are:
   5. Make a tarball of the release (gzipped).  Use gzip instead of
      bzip2 for the folks on Windows.  Tarballs should be named:
                    
-                    +--- Relese version
+                    +--- Release version
                     |
                     |    +--- Extra release version info
                   __|__ _|_
@@ -83,8 +100,8 @@ order to make a release has several, easy-to-forget steps.  They are:
 
   10. Make announcements.
 
-CODING CONVENTIONS
-------------------
+3. CODING CONVENTIONS
+---------------------
 
 Use 'stroustrup' indention.  (i.e. 4 spaces) Allow a little extra
 space within parentheses, but don't go overboard.  Like this:
@@ -104,8 +121,58 @@ And not like this:
 Lines should /not/ exceed 80 columns... unless you have a really good
 reason.
 
-DOCUMENTATION
--------------
+4. DOCUMENTATION
+----------------
 
 Use Doxygen formatting.  Place the documentation with the
 /implementation/, and not necc. in the headers.
+
+5. RECOMMENDED DEV ENVIRONMENT
+------------------------------
+
+CMake supports out-of-tree builds... which is a Good Thing.  However,
+there are two problems with Composite: (1) the system data directory
+search path is designed for in-tree builds (left over from Hydrogen),
+and (2) CMake doesn't make an uninstall by default.
+
+Following is a recommended dev. setup.  While it works around the
+problem, I think it's a pretty good setup anyway.
+
+    A. Create a folder for building and for installing:
+
+        $ mkdir build-composite
+        $ mkdir install-composite
+
+    B. ENVIRONMENT VARIABLES
+
+    Add this near the end of ${HOME}/.bashrc
+
+        #############################################
+        ### COMPOSITE DEVELOPMENT                 ###
+        #############################################
+
+        COMPOSITE_PARALLEL=1
+        export COMPOSITE_PARALLEL
+        PATH=${HOME}/install-composite/bin:${PATH}
+        LD_LIBRARY_PATH=${HOME}/install-composite/lib:${LD_LIBRARY_PATH}
+
+        #############################################
+        ### END OF COMPOSITE DEV                  ###
+        #############################################
+
+    Then log off and log back on.  Note that COMPOSITE_PARALLEL sets
+    the -j parameter for doing parallel builds when packaging for
+    Debian.  Change it to the number of processors (or distcc hosts)
+    that you have.
+
+    C. When you build, build like this:
+
+        $ cmake -DCMAKE_INSTALL_PREFIX=${HOME}/install-composite /path/to/srcs
+        $ make && make install
+
+    D. Now, composite-gui is in your path.  To uninstall, just...
+
+        $ rm -rf ${HOME}/install-composite/*
+
+HAVE PHUN!
+-gabriel
