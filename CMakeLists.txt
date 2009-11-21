@@ -34,14 +34,14 @@ ENDIF(COMMAND CMAKE_POLICY)
 ### CONFIGURATION OPTIONS                                          ###
 ######################################################################
 
-# XXX TODO!!
-
-# OPTION(WANT_DEBUG	"build with debug information" OFF)
-OPTION(WANT_LRDF	"Include LRDF (Lightweight Resource Description Framework with special support for LADSPA plugins) support" OFF)
+OPTION(WANT_LRDF
+  "Include LRDF (Lightweight Resource Description Framework with special support for LADSPA plugins) support <http://sourceforge.net/projects/lrdf/>"
+  OFF
+  )
 
 OPTION(WANT_LIBARCHIVE
-	"Enable use of libarchive instead of libtar"
-	OFF)
+  "Enable use of libarchive instead of libtar and libz.  Windows builds will usually want to set this one."
+  OFF )
 
 
 ######################################################################
@@ -93,8 +93,10 @@ set(LIBS ${LibSndfile_LIBRARIES})
 ### libtar http://www.feep.net/libtar/
 ### Zlib http://www.zlib.net/
 ###
-find_package(LibTar)
-find_package(ZLIB)
+IF(NOT WANT_LIBARCHIVE)
+  find_package(LibTar)
+  find_package(ZLIB)
+ENDIF()
 IF(LibTar_FOUND AND ZLIB_FOUND)
 	include_directories(${LibTar_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
 	set(LIBS ${LibSndfile_LIBRARIES} ${ZLIB_INCLUDE_DIRS})
@@ -123,20 +125,6 @@ IF(WANT_LRDF)
 ENDIF(WANT_LRDF)
 
 ######################################################################
-### HEADER CHECKS                                                  ###
-######################################################################
-
-#INCLUDE(CheckIncludeFiles)
-#INCLUDE(CheckLibraryExists)
-#CHECK_INCLUDE_FILES(zlib.h HAVE_ZLIB_H)
-#CHECK_LIBRARY_EXISTS (tar tar_open TODO HAVE_LIBTAR)            # TODO
-#CHECK_INCLUDE_FILES(time.h HAVE_TIME_H)
-#
-#IF (HAVE_LIBTAR)
-#    SET(LIBTAR_LIBRARIES tar)
-#ENDIF(HAVE_LIBTAR)
-
-######################################################################
 ### INSTALL SETUP                                                  ###
 ######################################################################
 
@@ -155,9 +143,9 @@ MESSAGE("\n"
 
 MACRO(lib_report name)
   IF(${name}_FOUND)
-    message("FOUND..... ${name}")
+    message("ENABLED..... ${name}")
   ELSE()
-    message("missing... ${name}")
+    message("disabled.... ${name}")
   ENDIF()
 ENDMACRO(lib_report)
 
@@ -178,6 +166,8 @@ lib_report(LibArchive)
 MESSAGE(
 "\n"
 "-----------------------------------------------------------------\n"
+"FOR ADVANCED CONFIGURATION, USE ccmake INSTEAD OF cmake\n"
+"\n"
 "IMPORTANT:\n"
 "after installing missing packages, remove CMakeCache.txt before\n"
 "running cmake again!\n"

@@ -9,8 +9,9 @@ Contents:
 2. Download
 3. Binary Packages
 4. Prerequisites to Build from Source
-5. Build and Install from Source
-6. INSTALL.txt Changelog
+5. Build and Install from Source (Simple)
+6. Build and Install from Source (Detailed Configuration)
+7. INSTALL.txt Changelog
 
 1. System Requirements
 ----------------------
@@ -78,15 +79,15 @@ installed on your system, and the development header files:
 	* zlib and libtar -OR- libarchive
 	  OS X: You will probably need to build libarchive from source.
 	* OS X: Xcode
+	* libFLAC for handling FLAC sound files.
 
 	OPTIONAL SUPPORT
-	* libFLAC for handling FLAC sound files.
 	* liblrdf for LADSPA plugins
 
 On a single, 500MHz processor Composite takes about 1.5 hours to build.
 
-5. Build and Install from Source
---------------------------------
+5. Build and Install from Source (Simple)
+-----------------------------------------
 
 After you have all the prerequisites, building and installing will
 look like this:
@@ -134,8 +135,43 @@ This will place the .deb package and description files in the parent
 directory.  If you wish to change the version number for the archive,
 edit linux/debian/changelog to set the version.
 
-6. INSTALL.txt Changelog
+6. Build and Install from Source (Detailed Configuration)
+---------------------------------------------------------
+
+Unfortunately, CMake doesn't have something that works exactly like
+'./configure --help' that will show you all the configuration
+options.  The best way to see the standard options is to run:
+
+	$ ccmake /path/to/sources/composite-0.004
+
+Which will give you a listing of the options from the CMakeLists.txt
+file.  You have the following commands (and more) available:
+
+	h - get help on the current field/option
+	c - Reconfigure
+	g - Generate makefiles
+	t - Toggle advanced mode so that you can set
+            -funroll-loops -fomit-frame-pointer
+
+The following information is for your convenience, and is bound to go
+out-of date as things change:
+
+  DEBUG BUILDS -- Either `cmake -DCMAKE_BUILD_TYPE=Debug /path/to/srcs`
+                  or     `cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo /path/to/srcs`
+
+  LIBARCHIVE -- `cmake -DWANT_LIBARCHIVE=ON /path/to/srcs`
+
+  LRDF -- `cmake -DWANT_LRDF=ON /path/to/srcs`
+
+  PREFIX -- `cmake -DCMAKE_INSTALL_PREFIX=/usr/local /path/to/srcs`
+
+  DESTDIR -- With GNU Makefiles, `make install DESTDIR=/mnt/chroot`
+
+7. INSTALL.txt Changelog
 ------------------------
+
+2009-11-21 Gabriel M. Beddingfield <gabriel@teuton.org>
+	* Add Detailed build and install instructions.
 
 2009-11-19 Gabriel M. Beddingfield <gabriel@teuton.org>
 	* Convert build system from scons to CMake.
