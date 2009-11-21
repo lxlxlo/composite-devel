@@ -780,21 +780,6 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 
 	m_fMaxProcessTime = 1000.0 / ( (float)pos.frame_rate / nframes );
 
-#ifdef CONFIG_DEBUG
-	if ( m_fProcessTime > m_fMaxProcessTime ) {
-		_WARNINGLOG( "" );
-		_WARNINGLOG( "----XRUN----" );
-		_WARNINGLOG( QString( "XRUN of %1 msec (%2 > %3)" )
-			     .arg( ( m_fProcessTime - m_fMaxProcessTime ) )
-			     .arg( m_fProcessTime ).arg( m_fMaxProcessTime ) );
-		_WARNINGLOG( QString( "Ladspa process time = %1" ).arg( fLadspaTime ) );
-		_WARNINGLOG( "------------" );
-		_WARNINGLOG( "" );
-		// raise xRun event
-		EventQueue::get_instance()->push_event( EVENT_XRUN, -1 );
-	}
-#endif
-
 	AudioEngine::get_instance()->unlock();
 
  	if ( m_sendPatternChange ) {
