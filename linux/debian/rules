@@ -6,9 +6,9 @@
 #export DH_VERBOSE=1
 #
 # To enable scons PARALLEL BUILDS (e.g. -j 4), run like this:
-#     $ H2_PARALLEL=4 dpkg-buildpackage -rfakeroot
+#     $ COMPOSITE_PARALLEL=4 dpkg-buildpackage -rfakeroot
 # ...or uncomment the following line:
-#H2_PARALLEL=4
+#COMPOSITE_PARALLEL=4
 # ...or invoke dpkg-buildpackage like this:
 #     $ dpkg-buildpackage -j4 -rfakeroot
 # However, the -j4 here will run more than gcc in parallel.
@@ -17,11 +17,11 @@
 # NUMJOBS script goodie courtesy of http://lists.debian.org/debian-policy/2007/08/msg00005.html
 , := ,
 NUMJOBS=$(patsubst parallel=%,%,$(filter parallel=%,$(subst $(,), ,$(DEB_BUILD_OPTIONS))))
-ifneq ("$(H2_PARALLEL)","")
-	H2_PARALLEL_BUILDS=-j $(H2_PARALLEL)
+ifneq ("$(COMPOSITE_PARALLEL)","")
+	COMPOSITE_PARALLEL_BUILDS=-j $(COMPOSITE_PARALLEL)
 else
 	ifneq ("$(NUMJOBS)","")
-		H2_PARALLEL_BUILDS=-j $(NUMJOBS)
+		COMPOSITE_PARALLEL_BUILDS=-j $(NUMJOBS)
 	endif
 endif
 
@@ -32,21 +32,25 @@ configure: configure-stamp
 
 configure-stamp:
 	if [ ! -d $(BUILDDIR) ] ; then mkdir $(BUILDDIR) ; fi
-	cd $(BUILDDIR) ; cmake -D CMAKE_INSTALL_PREFIX=/usr/ ../..
+	cd $(BUILDDIR) ; \
+		cmake \
+		-DCMAKE_INSTALL_PREFIX=/usr/ \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		../..
 	touch $@
 
 build: build-stamp
 
 build-stamp: configure-stamp
 	dh_testdir
-	cd $(BUILDDIR) && make $(H2_PARALLEL_BUILDS)
+	cd $(BUILDDIR) && make $(COMPOSITE_PARALLEL_BUILDS)
 	touch $@
 
 clean:
 	dh_testdir
 	dh_testroot
 
-	rm -rf $(BUILDDIR) $(DESTDIR)
+	rm -rf $(BUILDDIR) $(DESTDIR) build-stamp configure-stamp
 
 	dh_clean
 
