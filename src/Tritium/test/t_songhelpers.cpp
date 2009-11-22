@@ -1,8 +1,8 @@
 /*
- * Hydrogen
- * Copyright(c) 2002-2008 by Alex >Comix< Cominu [comix@users.sourceforge.net]
+ * Tritium
+ * Copyright(c) 2009 by Gabriel M. Beddingfield <gabriel@teuton.org>
  *
- * http://www.hydrogen-music.org
+ * http://gabe.is-a-geek.org/composite/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
