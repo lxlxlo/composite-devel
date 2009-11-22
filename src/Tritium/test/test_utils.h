@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef __HYDROGEN_TEST_UTILS__
-#define __HYDROGEN_TEST_UTILS__
+#ifndef __TRITIUM_TEST_UTILS__
+#define __TRITIUM_TEST_UTILS__
 
 #include <stdint.h>
 #include <cstring>
@@ -104,4 +104,4 @@ namespace H2Test
 // feedback on the line number where it happened.
 #define H2TEST_VALID_POS(p, s) BOOST_CHECK(H2Test::valid_position(p, s))
 
-#endif // __HYDROGEN_TEST_UTILS__
+#endif // __TRITIUM_TEST_UTILS__
