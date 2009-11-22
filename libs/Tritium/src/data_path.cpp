@@ -44,6 +44,7 @@ QString DataPath::__data_path;
 
 QString DataPath::get_data_path()
 {
+	#warning "TODO: QApplication used in libTritium"
 #ifdef Q_OS_MACX
 
 	QString qStringPath = qApp->applicationDirPath() + QString ( "/../Resources/data" ) ;
