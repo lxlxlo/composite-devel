@@ -66,7 +66,7 @@ Mac OS X:
 -------------------------------------
 
 In order to build from source, you will need the following libraries
-installed on your system, and the development header files:
+installed on your system, and the development header files.
 
 	REQUIRED
 	* Qt 4 Library (>=4.4.0, 4.3.x might work, 4.2.x won't)
@@ -77,14 +77,20 @@ installed on your system, and the development header files:
           work on some systems)
 	* libsndfile >=1.0.17
 	* zlib and libtar -OR- libarchive
+	  Linux: You probably already have zlib and libtar.
 	  OS X: You will probably need to build libarchive from source.
+	  Windows: You will probably want to use libarchive.
 	* OS X: Xcode
 	* libFLAC for handling FLAC sound files.
 
 	OPTIONAL SUPPORT
 	* liblrdf for LADSPA plugins
+        * boost unit test framework (**)
 
 On a single, 500MHz processor Composite takes about 1.5 hours to build.
+
+(**) These tests check that Tritium works correctly on your machine,
+     and with any changes the developers have added.
 
 5. Build and Install from Source (Simple)
 -----------------------------------------
