@@ -25,7 +25,6 @@
 #include <Tritium/event_queue.h>
 #include <Tritium/hydrogen.h>
 #include <Tritium/Transport.h>
-#include <gui/src/HydrogenApp.h>
 
 #include <Tritium/instrument.h>
 #include <Tritium/Song.h>

@@ -38,8 +38,8 @@
 #include "SongEditor/SongEditorPanel.h"
 #include "PlaylistEditor/PlaylistDialog.h"
 //#include "AudioFileBrowser/AudioFileBrowser.h"
-#include "gui/src/InstrumentRack.h"
-#include "gui/src/SoundLibrary/SoundLibraryPanel.h"
+#include "InstrumentRack.h"
+#include "SoundLibrary/SoundLibraryPanel.h"
 
 #include "Mixer/Mixer.h"
 #include "Mixer/MixerLine.h"
