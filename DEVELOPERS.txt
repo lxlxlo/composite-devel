@@ -124,8 +124,13 @@ reason.
 4. DOCUMENTATION
 ----------------
 
-Use Doxygen formatting.  Place the documentation with the
-/implementation/, and not necc. in the headers.
+Use Doxygen formatting.  JavaDoc syntax is preferred (/**, \brief,
+///<).
+
+Place the documentation with the /implementation/, and not necc. in
+the headers (declaration).  If you place a brief with both the
+declaration and the implementation... Doxygen will only use the one
+from the declaration -- so indicate somehow that it needs updating.
 
 5. RECOMMENDED DEV ENVIRONMENT
 ------------------------------
