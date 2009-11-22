@@ -22,7 +22,7 @@
 
 #include <Tritium/hydrogen.h>
 #include <Tritium/Song.h>
-#include <transport/songhelpers.h>
+#include "../src/transport/songhelpers.h"
 
 #define THIS_NAMESPACE t_songhelpers
 #include "test_macros.h"

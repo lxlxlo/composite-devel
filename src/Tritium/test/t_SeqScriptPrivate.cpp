@@ -20,7 +20,7 @@
  *
  */
 
-#include <SeqScriptPrivate.h>
+#include "../src/SeqScriptPrivate.h"
 #include <Tritium/instrument.h>
 #include <vector>
 #include <memory>

@@ -20,8 +20,8 @@
  *
  */
 
-#include <transport/SimpleTransportMaster.h>
-#include <transport/songhelpers.h>
+#include "../src/transport/SimpleTransportMaster.h"
+#include "../src/transport/songhelpers.h"
 #include <Tritium/Song.h>
 #include <Tritium/TransportPosition.h>
 

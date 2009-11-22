@@ -124,6 +124,12 @@ IF(WANT_LRDF)
   add_definitions(-DLRDF_SUPPORT)
 ENDIF(WANT_LRDF)
 
+###
+### Boost Framework http://www.boost.org/
+### Used for unit testing
+###
+find_package(Boost 1.33 COMPONENTS unit_test_framework)
+
 ######################################################################
 ### BUILD/INSTALL SETUP                                            ###
 ######################################################################
@@ -169,6 +175,8 @@ lib_report(FLAC++)
 lib_report(LibTar)
 lib_report(ZLIB)
 lib_report(LibArchive)
+lib_report(Boost)
+lib_report(Boost_UNIT_TEST_FRAMEWORK)
 
 MESSAGE(
 "\n"
@@ -191,6 +199,8 @@ CONFIGURE_FILE(composite.desktop.in composite.desktop)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
 ADD_SUBDIRECTORY(src)
+
+ENABLE_TESTING()
 
 INSTALL(DIRECTORY data DESTINATION ${DATA_PATH}/..)
 INSTALL(FILES ${CMAKE_BINARY_DIR}/composite.desktop DESTINATION "${CMAKE_INSTALL_PREFIX}/share/applications")

@@ -23,7 +23,7 @@
 #include "test_utils.h"
 #include <Tritium/TransportPosition.h>
 #include <Tritium/Song.h>
-#include <transport/songhelpers.h>
+#include "../src/transport/songhelpers.h"
 #include <cmath>
 
 using namespace Tritium;
