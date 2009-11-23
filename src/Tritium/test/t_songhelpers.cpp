@@ -31,6 +31,7 @@ using namespace Tritium;
 
 namespace THIS_NAMESPACE
 {
+    const char song_file_name[] = T_SONGHELPERS_H2SONG;
 
     struct Fixture
     {
@@ -40,12 +41,15 @@ namespace THIS_NAMESPACE
 	    Logger::create_instance();
 	    Hydrogen::create_instance();
 	    // Path relative to location of t_Hydrogen executable
-	    s = Song::load("test/t_songhelpers.h2song");
+	    BOOST_MESSAGE(song_file_name);
+	    s = Song::load(song_file_name);
 	    BOOST_REQUIRE( s != 0 );
 	}
 
 	~Fixture() {
 	    delete s;
+	    delete Hydrogen::get_instance();
+	    delete Logger::get_instance();
 	}
     };
 

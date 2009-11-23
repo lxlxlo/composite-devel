@@ -55,4 +55,14 @@ IF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
     ADD_TEST(${T} ${T})
   ENDFOREACH()
 
+  ###
+  ### Test-specific properties
+  ###
+  ### Note the this /overrides/ the props set above.
+  ###
+  SET_SOURCE_FILES_PROPERTIES(t_songhelpers.cpp
+    PROPERTIES
+    COMPILE_FLAGS
+      "-DBOOST_TEST_MAIN -DT_SONGHELPERS_H2SONG=\"\\\"${CMAKE_CURRENT_SOURCE_DIR}/t_songhelpers.h2song\\\"\""
+    )
 ENDIF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
