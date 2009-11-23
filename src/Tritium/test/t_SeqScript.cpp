@@ -287,7 +287,8 @@ TEST_CASE( 050_consumed_pass_1 )
 
 TEST_CASE( 060_consumed_pass_2 )
 {
-    CK( false );  // TODO:  Need to add tests.
+    // TODO: Add more tests.
+    BOOST_ERROR("This module is needing more tests... so it fails.");
 }
 
 // Need more tests.
