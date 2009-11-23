@@ -22,6 +22,7 @@
 
 #include "../src/transport/SimpleTransportMaster.h"
 #include "../src/transport/songhelpers.h"
+#include <Tritium/hydrogen.h>
 #include <Tritium/Song.h>
 #include <Tritium/TransportPosition.h>
 
@@ -36,6 +37,7 @@ using namespace Tritium;
 
 namespace THIS_NAMESPACE
 {
+    const char song_file_name[] = T_SIMPLETRANSPORTMASTER_H2SONG;
 
     struct Fixture
     {
@@ -44,12 +46,15 @@ namespace THIS_NAMESPACE
 
 	Fixture() {
 	    Logger::create_instance();
-	    s = Song::load( "test/t_SimpleTransportMaster.h2song" );
+	    Hydrogen::create_instance();
+	    s = Song::load(song_file_name);
 	    x.set_current_song(s);
 	}
 	~Fixture() {
 	    x.set_current_song(0);
 	    delete s;
+	    delete Logger::get_instance();
+	    delete Hydrogen::get_instance();
 	}
     };
 
