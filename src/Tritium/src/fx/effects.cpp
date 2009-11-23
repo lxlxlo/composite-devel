@@ -86,6 +86,7 @@ Effects::~Effects()
 	for ( int nFX = 0; nFX < MAX_FX; ++nFX ) {
 		delete m_FXList[ nFX ];
 	}
+	__instance = 0;
 }
 
 

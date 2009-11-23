@@ -307,6 +307,7 @@ Logger::~Logger()
 	loggerThread->shutdown();
 	loggerThread->wait();
 	delete loggerThread;
+	__instance = 0;
 }
 
 void Logger::log( unsigned level,

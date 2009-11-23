@@ -51,7 +51,7 @@ EventQueue::EventQueue()
 
 EventQueue::~EventQueue()
 {
-//	infoLog( "DESTROY" );
+	__instance = 0;
 }
 
 

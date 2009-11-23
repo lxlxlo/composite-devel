@@ -150,6 +150,7 @@ JackClient::~JackClient()
 {
 	INFOLOG( "DESTROY" );
 	close();
+	__instance = 0;
 }
 
 void JackClient::close(void)

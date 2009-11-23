@@ -98,8 +98,7 @@ ActionManager::ActionManager() : Object( "ActionManager" )
 
 
 ActionManager::~ActionManager(){
-	//INFOLOG( "ActionManager delete" );
-	__instance = NULL;
+	__instance = 0;
 }
 
 void ActionManager::create_instance()

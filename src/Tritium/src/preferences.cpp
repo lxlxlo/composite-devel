@@ -238,7 +238,7 @@ Preferences::~Preferences()
 	savePreferences();
 
 	INFOLOG( "DESTROY" );
-	__instance = NULL;
+	__instance = 0;
 	delete m_pDefaultUIStyle;
 }
 

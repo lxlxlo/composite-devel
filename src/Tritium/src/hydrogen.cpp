@@ -1573,7 +1573,7 @@ Hydrogen::~Hydrogen()
 	audioEngine_destroy();
 	__kill_instruments();
 	delete m_pTransport;
-	__instance = NULL;
+	__instance = 0;
 }
 
 

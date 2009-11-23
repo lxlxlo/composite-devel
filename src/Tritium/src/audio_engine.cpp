@@ -67,6 +67,7 @@ AudioEngine::~AudioEngine()
 #endif
 
 	delete __sampler;
+	__instance = 0;
 }
 
 

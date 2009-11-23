@@ -55,7 +55,7 @@ MidiMap::~MidiMap()
 		delete __cc_array[ i ];
 	}
 
-	__instance = NULL;
+	__instance = 0;
 }
 
 void MidiMap::create_instance()

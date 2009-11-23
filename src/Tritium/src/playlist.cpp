@@ -55,8 +55,7 @@ Playlist::Playlist()
 
 Playlist::~Playlist()
 {
-	//_INFOLOG( "[~Playlist]" );
-	__instance = NULL;
+	__instance = 0;
 }
 
 void Playlist::subscribe(PlaylistListener* listener)
