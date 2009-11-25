@@ -27,6 +27,8 @@
 namespace Tritium
 {
     /**
+     * \brief Describes a musical time-line location in bars, beats, and ticks.
+     *
      * Communicates the current position of the transport for the current
      * process() cycle.  All values refer to the first frame of the cycle.
      *
@@ -34,28 +36,29 @@ namespace Tritium
      */
     struct TransportPosition
     {
-        enum State { STOPPED, ROLLING } state; /// The current transport state.
-        bool new_position;        /// True if this position is not a continuation
-                                  /// of the last one (i.e. we've relocated)
-        uint32_t frame;           /// The current frame of the transport.  When
-                                  /// sequencing, this is just FYI.  All
-                                  /// sequencing shall be done based on the
-                                  /// other fields (esp. B:b:t).
-        uint32_t frame_rate;      /// The audio sample rate (frames per second)
-        int32_t bar;              /// The current measure (1, 2, 3...)
-	                          ///   see also bar_start_tick
-        int32_t beat;             /// The current beat in measure (1, 2, 3...)
-        int32_t tick;             /// The current tick in beat (0, 1, 2...)
-        uint32_t bbt_offset;      /// bar, beat, and tick refer to bbt_offset
-                                  /// frames BEFORE the current process cycle.
-        uint32_t bar_start_tick;  /// Absolute number of ticks elapsed in song
-                                  /// at the start of this bar.
-	                          /// WARNING:  If you manually adjust 'bar',
-	                          /// you must also manually adjust 'bar_start_tick'.
-        uint8_t beats_per_bar;    /// The top number in the time signature
-        uint8_t beat_type;        /// The bottom number in the time signature
-        uint32_t ticks_per_beat;  /// Number of ticks in a single beat
-        double beats_per_minute;  /// The song tempo (beats per minute)
+        enum State { STOPPED, ROLLING } state; ///< The current transport state.
+        bool new_position;        ///< True if this position is not a continuation
+                                  ///  of the last one (i.e. we've relocated)
+        uint32_t frame;           ///< The current frame of the transport.  When
+                                  ///  sequencing, this is just FYI.  All
+                                  ///  sequencing shall be done based on the
+                                  ///  other fields (esp. B:b:t).
+        uint32_t frame_rate;      ///< The audio sample rate (frames per second)
+        int32_t bar;              ///< The current measure (1, 2, 3...)
+	                          ///    see also bar_start_tick
+        int32_t beat;             ///< The current beat in measure (1, 2, 3...)
+        int32_t tick;             ///< The current tick in beat (0, 1, 2...)
+        double bbt_offset;        ///< bar, beat, and tick refer to bbt_offset
+                                  ///  frames BEFORE the current process cycle.
+				  ///  Normalized range: [-.5, frames_per_tick()-.5)
+        uint32_t bar_start_tick;  ///< Absolute number of ticks elapsed in song
+                                  ///  at the start of this bar.
+	                          ///  WARNING:  If you manually adjust 'bar',
+	                          ///  you must also manually adjust 'bar_start_tick'.
+        uint8_t beats_per_bar;    ///< The top number in the time signature
+        uint8_t beat_type;        ///< The bottom number in the time signature
+        uint32_t ticks_per_beat;  ///< Number of ticks in a single beat
+        double beats_per_minute;  ///< The song tempo (beats per minute)
 
 	/**
 	 * Constructors

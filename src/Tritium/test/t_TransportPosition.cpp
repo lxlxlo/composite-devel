@@ -249,7 +249,8 @@ TEST_CASE( 040_normalize )
     CK( 349 == a.bar );
     CK( 7 == a.beat );
     CK( 41 == a.tick );
-    CK( 165 == a.bbt_offset );
+    BOOST_MESSAGE( a.bbt_offset );
+    CK( fabs(165 - a.bbt_offset) <= 1.0 );
     CK( 67921 == a.bar_start_tick );
     CK( H2TEST_DRIFT(frame, a.frame, 1) );    
 }
@@ -301,8 +302,8 @@ TEST_CASE( 050_increment )
 	CK( 349 == x.bar );
 	CK( 5 == x.beat );
 	CK( k == x.tick );
-	CK( 115 == x.bbt_offset );
-	CK( H2TEST_DRIFT( frame, x.frame, k ) );
+	CK( H2TEST_DRIFT(115.0, x.bbt_offset, k) );
+	CK( H2TEST_DRIFT(frame, x.frame, k) );
     }
     CK( x.tick == 98 );
     ++x;
@@ -310,7 +311,7 @@ TEST_CASE( 050_increment )
     CK( 349 == x.bar );
     CK( 6 == x.beat );
     CK( 0 == x.tick );
-    CK( 115 == x.bbt_offset );
+    CK( H2TEST_DRIFT( 115.0, x.bbt_offset, k+1) );
     CK( H2TEST_DRIFT( frame, x.frame, k+1 ) );
 
     x.beat = 7;
@@ -320,7 +321,7 @@ TEST_CASE( 050_increment )
     CK( 350 == x.bar );
     CK( 1 == x.beat );
     CK( 0 == x.tick );
-    CK( 115 == x.bbt_offset );
+    CK( H2TEST_DRIFT( 115.0, x.bbt_offset, k+2) );
     CK( H2TEST_DRIFT( frame, x.frame, k+2 ) );
     BOOST_MESSAGE( "++ drift = " << (frame - x.frame) );
 }
@@ -482,7 +483,7 @@ TEST_CASE( 070_floor )
     CK( tmp.bar == 349 );
     CK( tmp.beat == 5 );
     CK( tmp.tick == 0 );
-    CK( tmp.bbt_offset == 0 );
+    CK( fabs(tmp.bbt_offset) <= 0.5 );
     lastframe -= 18.0 * tmp.frames_per_tick();
     CK( H2TEST_DRIFT(lastframe, tmp.frame, 1) );
     // Repeating when already floored should
@@ -491,7 +492,7 @@ TEST_CASE( 070_floor )
     CK( tmp.bar == 349 );
     CK( tmp.beat == 5 );
     CK( tmp.tick == 0 );
-    CK( tmp.bbt_offset == 0 );
+    CK( fabs(tmp.bbt_offset) <= 0.5 );
     CK( H2TEST_DRIFT(lastframe, tmp.frame, 1) );
 
     tmp = x;
@@ -499,7 +500,7 @@ TEST_CASE( 070_floor )
     CK( tmp.bar == 349 );
     CK( tmp.beat == 1 );
     CK( tmp.tick == 0 );
-    CK( tmp.bbt_offset == 0 );
+    CK( fabs(tmp.bbt_offset) <= 0.5 );
     lastframe = x.frame - 4.0 * 99.0 * tmp.frames_per_tick()
 	- x.tick * tmp.frames_per_tick() - x.bbt_offset;
     CK( H2TEST_DRIFT(lastframe, tmp.frame, 1) );
@@ -509,7 +510,7 @@ TEST_CASE( 070_floor )
     CK( tmp.bar == 349 );
     CK( tmp.beat == 1 );
     CK( tmp.tick == 0 );
-    CK( tmp.bbt_offset == 0 );
+    CK( fabs(tmp.bbt_offset) <= 0.5 );
     CK( H2TEST_DRIFT(lastframe, tmp.frame, 1) );
 
 }
@@ -543,7 +544,7 @@ TEST_CASE( 080_ceil )
     CK( 1 == p.beat );
     CK( 2 == p.tick );
     CK( H2TEST_DRIFT(frame, p.frame, 1) );
-    CK( 0 == p.bbt_offset );
+    CK( fabs(p.bbt_offset) <= 0.5 );
     p.tick = 1;
     p.bbt_offset = 921;
     p.frame = round(fpt);
@@ -554,7 +555,7 @@ TEST_CASE( 080_ceil )
     // frame = [1:1.8.0] + fpt * (192-8)
     //       = 79 + 125.0 * 184 = 23079
     CK( H2TEST_DRIFT(23079.0, p.frame, 2) ); // 2 internal ops.
-    CK( 0 == p.bbt_offset );
+    CK( fabs(p.bbt_offset) <= 0.5 );
     p.tick = 1;
     p.bbt_offset = 921;
     p.frame = round(fpt);
@@ -568,7 +569,7 @@ TEST_CASE( 080_ceil )
     //       = 125 + fpt* ((2 * 192) + (192-9)) + (125-46)
     //       = 71079.0
     CK( H2TEST_DRIFT(71079.0, p.frame, 2) ); // 2 internal ops
-    CK( 0 == p.bbt_offset );
+    CK( fabs(p.bbt_offset) <= 0.5 );
     CK( 192 * 4 == p.bar_start_tick );
 
     p.tick = 1;
@@ -584,7 +585,7 @@ TEST_CASE( 080_ceil )
     //       = 63 + fpt* ((3 * 192) + (192-9)) + (125-46)
     //       = 95017
     CK( H2TEST_DRIFT(95017.0, p.frame, 2) );
-    CK( 0 == p.bbt_offset );
+    CK( fabs(p.bbt_offset) <= 0.5 );
     CK( 192 * 4 * 2 == p.bar_start_tick );
 
     // TODO:  ADD MORE TESTS FOR BAR START TICK
@@ -595,7 +596,7 @@ TEST_CASE( 080_ceil )
     CK( tmp.bar == 349 );
     CK( tmp.beat == 5 );
     CK( tmp.tick == 19 );
-    CK( tmp.bbt_offset == 0 );
+    CK( fabs(tmp.bbt_offset) <= 0.5 );
     lastframe += (x.frames_per_tick() - 115.0);
     CK( H2TEST_DRIFT(lastframe, tmp.frame, 1) );
     // Repeating when already ceiled should
@@ -604,7 +605,7 @@ TEST_CASE( 080_ceil )
     CK( tmp.bar == 349 );
     CK( tmp.beat == 5 );
     CK( tmp.tick == 19 );
-    CK( tmp.bbt_offset == 0 );
+    CK( fabs(tmp.bbt_offset) <= 0.5 );
     CK( H2TEST_DRIFT(lastframe, tmp.frame, 1) );
 
     tmp = x;
@@ -613,7 +614,7 @@ TEST_CASE( 080_ceil )
     CK( tmp.bar == 349 );
     CK( tmp.beat == 6 );
     CK( tmp.tick == 0 );
-    CK( tmp.bbt_offset == 0 );
+    CK( fabs(tmp.bbt_offset) <= 0.5 );
     lastframe += (99.0 - 18.0) * tmp.frames_per_tick() - 115.0;
     CK( H2TEST_DRIFT(lastframe, tmp.frame, 1) );
     // Repeating when already ceiled should
@@ -622,7 +623,7 @@ TEST_CASE( 080_ceil )
     CK( tmp.bar == 349 );
     CK( tmp.beat == 6 );
     CK( tmp.tick == 0 );
-    CK( tmp.bbt_offset == 0 );
+    CK( fabs(tmp.bbt_offset) <= 0.5 );
     CK( H2TEST_DRIFT(lastframe, tmp.frame, 1) );
 
     tmp = x;
@@ -633,7 +634,7 @@ TEST_CASE( 080_ceil )
     CK( tmp.bar == 350 );
     CK( tmp.beat == 1 );
     CK( tmp.tick == 0 );
-    CK( tmp.bbt_offset == 0 );
+    CK( fabs(tmp.bbt_offset) <= 0.5 );
     CK( H2TEST_DRIFT(lastframe, tmp.frame, 1) );
     // Repeating when already ceiled should
     // give the same result.
@@ -641,7 +642,7 @@ TEST_CASE( 080_ceil )
     CK( tmp.bar == 350 );
     CK( tmp.beat == 1 );
     CK( tmp.tick == 0 );
-    CK( tmp.bbt_offset == 0 );
+    CK( fabs(tmp.bbt_offset) <= 0.5 );
     CK( H2TEST_DRIFT(lastframe, tmp.frame, 1) );
 }
 
@@ -656,19 +657,19 @@ TEST_CASE( 090_round )
     CK( 1 == a.bar );
     CK( 1 == a.beat );
     CK( 0 == a.tick );
-    CK( 0 == a.bbt_offset );
+    CK( fabs(a.bbt_offset) <= 0.5 );
     a.round(TransportPosition::BEAT);
     CK( 0 == a.frame );
     CK( 1 == a.bar );
     CK( 1 == a.beat );
     CK( 0 == a.tick );
-    CK( 0 == a.bbt_offset );
+    CK( fabs(a.bbt_offset) <= 0.5 );
     a.round(TransportPosition::BAR);
     CK( 0 == a.frame );
     CK( 1 == a.bar );
     CK( 1 == a.beat );
     CK( 0 == a.tick );
-    CK( 0 == a.bbt_offset );
+    CK( fabs(a.bbt_offset) <= 0.5 );
 
     a = p;
     a.bbt_offset = a.frames_per_tick() / 4.0;
@@ -677,7 +678,7 @@ TEST_CASE( 090_round )
     CK( 1 == a.bar );
     CK( 1 == a.beat );
     CK( 0 == a.tick );
-    CK( 0 == a.bbt_offset );
+    CK( fabs(a.bbt_offset) <= 0.5 );
     a.bbt_offset = a.frames_per_tick() * 3.0 / 4.0;
     frame = a.frame + round(a.frames_per_tick() / 4.0);
     a.round(TransportPosition::TICK);
@@ -685,14 +686,14 @@ TEST_CASE( 090_round )
     CK( 1 == a.bar );
     CK( 1 == a.beat );
     CK( 1 == a.tick );
-    CK( 0 == a.bbt_offset );
+    CK( fabs(a.bbt_offset) <= 0.5 );
     // Re-rounding should not change anything
     a.round(TransportPosition::TICK);
     CK( H2TEST_DRIFT( frame, a.frame, 1 ) );
     CK( 1 == a.bar );
     CK( 1 == a.beat );
     CK( 1 == a.tick );
-    CK( 0 == a.bbt_offset );
+    CK( fabs(a.bbt_offset) <= 0.5 );
 
     // Could use more checks near the zero-point,
     // but we'll move on.
@@ -704,7 +705,7 @@ TEST_CASE( 090_round )
     CK( 349 == a.bar );
     CK( 5 == a.beat );
     CK( 19 == a.tick );
-    CK( 0 == a.bbt_offset );
+    CK( fabs(a.bbt_offset) <= 0.5 );
     CK( H2TEST_DRIFT( frame, a.frame, 1 ) );
 
     frame -= a.frames_per_tick() * double(a.tick);
@@ -712,7 +713,7 @@ TEST_CASE( 090_round )
     CK( 349 == a.bar );
     CK( 5 == a.beat );
     CK( 0 == a.tick );
-    CK( 0 == a.bbt_offset );
+    CK( fabs(a.bbt_offset) <= 0.5 );
     CK( H2TEST_DRIFT( frame, a.frame, 2 ) );
 
     frame += a.frames_per_tick() * 99.0 * 3.0;
@@ -720,7 +721,7 @@ TEST_CASE( 090_round )
     CK( 350 == a.bar );
     CK( 1 == a.beat );
     CK( 0 == a.tick );
-    CK( 0 == a.bbt_offset );
+    CK( fabs(a.bbt_offset) <= 0.5 );
     CK( H2TEST_DRIFT( frame, a.frame, 3 ) );
 
     // Could use more checks... but we'll move on.
@@ -738,7 +739,7 @@ TEST_CASE( 100_operator_plus )
     CK( 1 == a.bar );
     CK( 1 == a.beat );
     CK( 0 == a.tick );
-    CK( 0 == a.bbt_offset );
+    CK( fabs(a.bbt_offset) <= 0.5 );
     CK( 0 == a.frame );
 
     a = p;
@@ -772,7 +773,7 @@ TEST_CASE( 100_operator_plus )
     CK( 350 == a.bar );
     CK( 3 == a.beat );
     CK( 82 == a.tick );
-    CK( 115 == a.bbt_offset );
+    CK( H2TEST_DRIFT( 115.0, a.bbt_offset, 1) );
     CK( H2TEST_DRIFT( frame, a.frame, 1 ) );
 
     a = a + (-k);
@@ -780,7 +781,7 @@ TEST_CASE( 100_operator_plus )
     CK( 349 == a.bar );
     CK( 5 == a.beat );
     CK( 18 == a.tick );
-    CK( 115 == a.bbt_offset );
+    CK( H2TEST_DRIFT( 115.0, a.bbt_offset, 2) );
     CK( H2TEST_DRIFT( frame, a.frame, 2 ) );
 }
 
@@ -824,7 +825,7 @@ TEST_CASE( 110_operator_minus )
     CK( 349 == a.bar );
     CK( 2 == a.beat );
     CK( 87 == a.tick );
-    CK( 115 == a.bbt_offset );
+    CK( H2TEST_DRIFT( 115.0, a.bbt_offset, 1 ) );
     CK( H2TEST_DRIFT( double(x.frame) - (double(k) * fpt), a.frame, 1 ) );
 
     k = 99 * 5 + 64;
@@ -832,14 +833,14 @@ TEST_CASE( 110_operator_minus )
     CK( 348 == a.bar );
     CK( 6 == a.beat );
     CK( 53 == a.tick );
-    CK( 115 == a.bbt_offset );
+    CK( H2TEST_DRIFT( 115.0, a.bbt_offset, 1 ) );
     CK( H2TEST_DRIFT( double(x.frame) - double(k) * fpt, a.frame, 1 ) );
 
     a = a - (-k);
     CK( 349 == a.bar );
     CK( 5 == a.beat );
     CK( 18 == a.tick );
-    CK( 115 == a.bbt_offset );
+    CK( H2TEST_DRIFT( 115.0, a.bbt_offset, 2 ) );
     CK( H2TEST_DRIFT( double(x.frame), a.frame, 2 ) );
 }
 
@@ -881,14 +882,14 @@ TEST_CASE( 120_operator_plus_equals )
     CK( 350 == a.bar );
     CK( 3 == a.beat );
     CK( 82 == a.tick );
-    CK( 115 == a.bbt_offset );
+    CK( H2TEST_DRIFT( 115.0, a.bbt_offset, 1 ) );
     CK( H2TEST_DRIFT( double(x.frame) + double(k) * fpt, a.frame, 1 ) );
 
     a += (-k);
     CK( 349 == a.bar );
     CK( 5 == a.beat );
     CK( 18 == a.tick );
-    CK( 115 == a.bbt_offset );
+    CK( H2TEST_DRIFT( 115.0, a.bbt_offset, 2 ) );
     CK( H2TEST_DRIFT( double(x.frame), a.frame, 2 ) );
 }
 
@@ -934,7 +935,7 @@ TEST_CASE( 130_operator_minus_equals )
     CK( 349 == a.bar );
     CK( 2 == a.beat );
     CK( 87 == a.tick );
-    CK( 115 == a.bbt_offset );
+    CK( H2TEST_DRIFT( 115.0, a.bbt_offset, 1 ) );
     CK( H2TEST_DRIFT( double(x.frame) - (double(k) * fpt), a.frame, 1 ) );
 
     k = 99 * 5 + 64;
@@ -943,14 +944,14 @@ TEST_CASE( 130_operator_minus_equals )
     CK( 348 == a.bar );
     CK( 6 == a.beat );
     CK( 53 == a.tick );
-    CK( 115 == a.bbt_offset );
+    CK( H2TEST_DRIFT( 115.0, a.bbt_offset, 1 ) );
     CK( H2TEST_DRIFT( double(x.frame) - double(k) * fpt, a.frame, 1 ) );
 
     a -= (-k);
     CK( 349 == a.bar );
     CK( 5 == a.beat );
     CK( 18 == a.tick );
-    CK( 115 == a.bbt_offset );
+    CK( H2TEST_DRIFT( 115.0, a.bbt_offset, 2 ) );
     CK( H2TEST_DRIFT( double(x.frame), a.frame, 2 ) );
 }
 
