@@ -98,7 +98,6 @@ class MainForm : public QMainWindow, public EventListener, public Object
 		void onOpenAccelEvent();
 
 		void action_file_open_recent( QAction *pAction );
-		void latestVersionDone(bool bError);
 
 	private slots:
 		void onAutoSaveTimer();
@@ -133,7 +132,6 @@ class MainForm : public QMainWindow, public EventListener, public Object
 		std::map<int,int>  keycodeInstrumentMap;
 		void initKeyInstMap();
 
-		void getLatestVersion();
 		QString getAutoSaveFilename();
 
 };

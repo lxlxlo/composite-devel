@@ -126,10 +126,6 @@ MainForm::MainForm( QApplication *app, const QString& songFilename )
 
 	installEventFilter( this );
 
-	connect(&m_http, SIGNAL(done(bool)), this, SLOT(latestVersionDone(bool)));
-	getLatestVersion();
-
-
 	connect( &m_autosaveTimer, SIGNAL(timeout()), this, SLOT(onAutoSaveTimer()));
 	m_autosaveTimer.start( 60 * 1000 );
 
@@ -1335,121 +1331,6 @@ void MainForm::action_window_showPatternEditor()
 	bool isVisible = HydrogenApp::get_instance()->getPatternEditorPanel()->isVisible();
 	HydrogenApp::get_instance()->getPatternEditorPanel()->setHidden( isVisible );
 }
-
-
-///
-/// Retrieve from the website the latest version available.
-///
-/// Warning: Hydrogen is not a spyware!!
-/// Hydrogen sends only the current version and the OS used in order to let possible
-/// to use an auto-updater in the future (this feature is not ready yet).
-///
-/// *** No user data will be stored in the server ***
-///
-void MainForm::getLatestVersion()
-{
-	#if defined( Q_OS_MACX )
-	QString os = "Mac";
-	#elif defined( Q_OS_WIN32 )
-	QString os = "Windows";
-	#elif defined( Q_OS_WIN64 )
-	QString os = "Windows64";
-	#elif defined( Q_OS_LINUX )
-	QString os = "Linux";
-	#elif defined( Q_OS_FREEBSD )
-	QString os = "FreeBSD";
-	#elif defined( Q_OS_UNIX )
-	QString os = "Unix";
-	#else
-	QString os = "Unknown";
-	#endif
-
-
-	QString sRequest = QString("/getLatestVersion.php?UsingVersion=%1").arg( get_version().c_str() );
-	sRequest += QString( "&OS=%1" ).arg( os );
-
-	//INFOLOG( sRequest );
-
-	QHttpRequestHeader header( "GET", sRequest );
-	header.setValue( "Host", "www.hydrogen-music.org" );
-
-	m_http.setHost( "www.hydrogen-music.org" );
-	m_http.request( header );
-}
-
-
-
-void MainForm::latestVersionDone(bool bError)
-{
-	if ( bError ) {
-		INFOLOG( "[MainForm::latestVersionDone] Error." );
-		return;
-	}
-
-	QString sLatestVersion( m_http.readAll() );
-	sLatestVersion = sLatestVersion.simplified();
-	QString sLatest_major = sLatestVersion.section( '.', 0, 0 );
-	QString sLatest_minor = sLatestVersion.section( '.', 1, 1 );
-	QString sLatest_micro = sLatestVersion.section( '.', 2, 2 );
-//	INFOLOG( "Latest available version is: " + QString( sLatestVersion.ascii() ) );
-
-	QString sCurrentVersion = get_version().c_str();
-	QString sCurrent_major = sCurrentVersion.section( '.', 0, 0 );
-	QString sCurrent_minor = sCurrentVersion.section( '.', 1, 1 );
-	QString sCurrent_micro = sCurrentVersion.section( '.', 2, 2 );
-	if ( sCurrent_micro.section( '-', 0, 0 ) != "" ) {
-		sCurrent_micro = sCurrent_micro.section( '-', 0, 0 );
-	}
-
-	bool bExistsNewVersion = false;
-	if ( sLatest_major > sCurrent_major ) {
-		bExistsNewVersion = true;
-	}
-	else if ( sLatest_minor > sCurrent_minor ) {
-			bExistsNewVersion = true;
-	}
-	else if ( sLatest_micro > sCurrent_micro ) {
-		bExistsNewVersion = true;
-	}
-
-	bool bUsingDevelVersion = false;
-	if ( sLatest_major < sCurrent_major ) {
-		bUsingDevelVersion = true;
-	}
-	else if ( sLatest_major == sCurrent_major && sLatest_minor < sCurrent_minor ) {
-		bUsingDevelVersion = true;
-	}
-	else if ( sLatest_major == sCurrent_major && sLatest_minor == sCurrent_minor && sLatest_micro < sCurrent_micro ) {
-		bUsingDevelVersion = true;
-	}
-
-	if ( bExistsNewVersion ) {
-		#warning "XXX TO-DO: Newer version check is for Hydrogen"
-		QString sLatest = QString(sLatest_major) + "." +  QString(sLatest_minor) + "." + QString(sLatest_micro);
-		WARNINGLOG( "\n\n*** A newer version (v" + sLatest + ") of Composite is available at http://www.hydrogen-music.org\n" );
-	}
-        if ( bUsingDevelVersion ) {
-                Preferences *pref = Preferences::get_instance();
-                bool isDevelWarningEnabled = pref->getShowDevelWarning();
-                if(isDevelWarningEnabled) {
-
-                        QString msg = trUtf8( "You're using a development version of Composite, please help us reporting bugs or suggestions in the hydrogen-devel mailing list.<br><br>Thank you!" );
-                        QMessageBox develMessageBox( this );
-                        develMessageBox.setText( msg );
-                        develMessageBox.addButton( QMessageBox::Ok );
-                        develMessageBox.addButton( trUtf8( "Don't show this message anymore" ) , QMessageBox::AcceptRole );
-
-                        if( develMessageBox.exec() == 0 ){
-                                //don't show warning again
-                                pref->setShowDevelWarning( false );
-                        }
-          }
-
-
-        }
-}
-
-
 
 QString MainForm::getAutoSaveFilename()
 {
