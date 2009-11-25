@@ -28,7 +28,7 @@
 
 using namespace Tritium;
 
-namespace H2Test
+namespace TritiumTest
 {
 
     /**********************************************************************
@@ -145,4 +145,4 @@ namespace H2Test
 	return rv;
     }
 
-} // namespace H2Test
+} // namespace TritiumTest

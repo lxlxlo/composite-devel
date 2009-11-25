@@ -40,7 +40,7 @@ namespace Tritium {
     class Song;
 }
 
-namespace H2Test
+namespace TritiumTest
 {
     /*
      * check_frame_drift()
@@ -49,7 +49,7 @@ namespace H2Test
      * a little drift is inherent.  This function checks to see if it
      * is within expected bounds.
      *
-     * It is recommended that you use the H2TEST_DRIFT() macro
+     * It is recommended that you use the TT_DRIFT() macro
      * instead of this function.
      *
      * Parameters:  TrueVal - The expected frame value.
@@ -92,16 +92,16 @@ namespace H2Test
      */
     bool valid_position(Tritium::TransportPosition& p, Tritium::Song* s);
 
-} // namespace H2Test
+} // namespace TritiumTest
 
 // Convenience macro for check_frame_drift()
-#define H2TEST_DRIFT(t, f, n) H2Test::check_frame_drift(t, f, n, __FILE__, __LINE__)
+#define TT_DRIFT(t, f, n) TritiumTest::check_frame_drift(t, f, n, __FILE__, __LINE__)
 
 // This tests that the positions is valid for the given song.
 // Transports should always give a BBT within the current song.
 //
 // This is wrapped inside a BOOST_CHECK so that the user gets
 // feedback on the line number where it happened.
-#define H2TEST_VALID_POS(p, s) BOOST_CHECK(H2Test::valid_position(p, s))
+#define TT_VALID_POS(p, s) BOOST_CHECK(TritiumTest::valid_position(p, s))
 
 #endif // __TRITIUM_TEST_UTILS__

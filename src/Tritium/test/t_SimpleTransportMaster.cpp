@@ -71,7 +71,7 @@ TEST_CASE( 010_defaults )
     CK( x.get_state() == TransportPosition::STOPPED );
     CK( 0 == x.get_current_frame() );
     x.get_position(&pos);
-    H2TEST_VALID_POS(pos, s);
+    TT_VALID_POS(pos, s);
     CK( pos.bar == 1 );
     CK( pos.beat == 1 );
     CK( pos.tick == 0 );
@@ -97,10 +97,10 @@ TEST_CASE( 020_start_stop )
 {
     TransportPosition pos, posb;
     x.get_position(&pos);
-    H2TEST_VALID_POS(pos, s);
+    TT_VALID_POS(pos, s);
     x.processed_frames(1024);
     x.get_position(&posb);
-    H2TEST_VALID_POS(posb, s);
+    TT_VALID_POS(posb, s);
     CK( pos.frame == 0 );
     CK( pos.bbt_offset == 0 );
     CK( pos.frame == posb.frame );
@@ -120,7 +120,7 @@ TEST_CASE( 020_start_stop )
     x.start();
     for( frame = 0 ; frame <= tot_frames ; frame += delta ) {
 	x.get_position(&pos);
-	H2TEST_VALID_POS(pos, s);
+	TT_VALID_POS(pos, s);
 
 	CK( pos.beats_per_minute == 100.0 );
 	map_frame_to_bbt(frame, bar, beat, tick, bbt_offset, __bar_start_tick, pos.frames_per_tick());

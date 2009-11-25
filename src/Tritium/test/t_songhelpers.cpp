@@ -40,7 +40,6 @@ namespace THIS_NAMESPACE
 	Fixture() : s(0) {
 	    Logger::create_instance();
 	    Hydrogen::create_instance();
-	    // Path relative to location of t_Hydrogen executable
 	    BOOST_MESSAGE(song_file_name);
 	    s = Song::load(song_file_name);
 	    BOOST_REQUIRE( s != 0 );
