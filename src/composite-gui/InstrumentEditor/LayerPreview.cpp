@@ -21,18 +21,18 @@
 
 #include <QtGui>
 
-#include <Tritium/hydrogen.h>
-#include <Tritium/Song.h>
-#include <Tritium/instrument.h>
-#include <Tritium/note.h>
-#include <Tritium/audio_engine.h>
-#include <Tritium/sampler/Sampler.h>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Song.hpp>
+#include <Tritium/Instrument.hpp>
+#include <Tritium/Note.hpp>
+#include <Tritium/AudioEngine.hpp>
+#include <Tritium/sampler/Sampler.hpp>
 using namespace Tritium;
 
-#include "../Skin.h"
-#include "../HydrogenApp.h"
-#include "InstrumentEditorPanel.h"
-#include "LayerPreview.h"
+#include "../Skin.hpp"
+#include "../HydrogenApp.hpp"
+#include "InstrumentEditorPanel.hpp"
+#include "LayerPreview.hpp"
 
 
 LayerPreview::LayerPreview( QWidget* pParent )

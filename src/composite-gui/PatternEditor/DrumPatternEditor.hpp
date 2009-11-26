@@ -20,13 +20,13 @@
  */
 
 
-#ifndef COMPOSITE_DRUMPATTERNEDITOR_H
-#define COMPOSITE_DRUMPATTERNEDITOR_H
+#ifndef COMPOSITE_DRUMPATTERNEDITOR_HPP
+#define COMPOSITE_DRUMPATTERNEDITOR_HPP
 
 #include "config.h"
-#include "../EventListener.h"
+#include "../EventListener.hpp"
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 #include <QtGui>
 
@@ -106,4 +106,4 @@ class DrumPatternEditor : public QWidget, public EventListener, public Object
 };
 
 
-#endif // COMPOSITE_DRUMPATTERNEDITOR_H
+#endif // COMPOSITE_DRUMPATTERNEDITOR_HPP

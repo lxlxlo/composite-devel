@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef TRITIUM_SONG_H
-#define TRITIUM_SONG_H
+#ifndef TRITIUM_SONG_HPP
+#define TRITIUM_SONG_HPP
 
 
 #include <QString>
@@ -28,7 +28,7 @@
 #include <vector>
 #include <map>
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 class TiXmlNode;
 
@@ -260,4 +260,4 @@ private:
 
 } // namespace Tritium
 
-#endif // TRITIUM_SONG_H
+#endif // TRITIUM_SONG_HPP

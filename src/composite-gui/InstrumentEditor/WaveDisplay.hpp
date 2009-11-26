@@ -19,11 +19,11 @@
  *
  */
 
-#ifndef COMPOSITE_WAVEDISPLAY_H
-#define COMPOSITE_WAVEDISPLAY_H
+#ifndef COMPOSITE_WAVEDISPLAY_HPP
+#define COMPOSITE_WAVEDISPLAY_HPP
 
 #include <QtGui>
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 namespace Tritium
 {
@@ -49,4 +49,4 @@ class WaveDisplay : public QWidget, public Object
 };
 
 
-#endif // COMPOSITE_WAVEDISPLAY_H
+#endif // COMPOSITE_WAVEDISPLAY_HPP

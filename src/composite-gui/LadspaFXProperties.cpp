@@ -19,23 +19,23 @@
  *
  */
 
-#include <Tritium/hydrogen.h>
-#include <Tritium/audio_engine.h>
-#include <Tritium/Song.h>
-#include <Tritium/fx/Effects.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/IO/AudioOutput.h>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/AudioEngine.hpp>
+#include <Tritium/Song.hpp>
+#include <Tritium/fx/Effects.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/IO/AudioOutput.hpp>
 
 
-#include "LadspaFXProperties.h"
-#include "HydrogenApp.h"
-#include "LadspaFXSelector.h"
-#include "Skin.h"
-#include "widgets/Fader.h"
-#include "widgets/LCD.h"
+#include "LadspaFXProperties.hpp"
+#include "HydrogenApp.hpp"
+#include "LadspaFXSelector.hpp"
+#include "Skin.hpp"
+#include "widgets/Fader.hpp"
+#include "widgets/LCD.hpp"
 
-#include "Mixer/Mixer.h"
-#include "Mixer/MixerLine.h"
+#include "Mixer/Mixer.hpp"
+#include "Mixer/MixerLine.hpp"
 
 using namespace std;
 using namespace Tritium;

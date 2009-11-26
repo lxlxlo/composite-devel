@@ -19,7 +19,7 @@
  *
  */
 
-#include <Tritium/smf/SMFEvent.h>
+#include <Tritium/smf/SMFEvent.hpp>
 
 namespace Tritium
 {

@@ -19,15 +19,15 @@
  *
  */
 
-#ifndef COMPOSITE_PATTERNFILLDIALOG_H
-#define COMPOSITE_PATTERNFILLDIALOG_H
+#ifndef COMPOSITE_PATTERNFILLDIALOG_HPP
+#define COMPOSITE_PATTERNFILLDIALOG_HPP
 
 #include "config.h"
 
 #include <QtGui>
 #include "ui_PatternFillDialog_UI.h"
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 namespace Tritium
 {
@@ -69,4 +69,4 @@ class PatternFillDialog : public QDialog, public Ui_PatternFillDialog_UI, public
 };
 
 
-#endif // COMPOSITE_PATTERNFILLDIALOG_H
+#endif // COMPOSITE_PATTERNFILLDIALOG_HPP

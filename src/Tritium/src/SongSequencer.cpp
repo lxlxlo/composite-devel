@@ -22,15 +22,15 @@
 #include <cassert>
 #include <QtCore/QMutexLocker>
 
-#include <Tritium/hydrogen.h>
-#include <Tritium/TransportPosition.h>
-#include <Tritium/Song.h>
-#include <Tritium/SeqScript.h>
-#include <Tritium/Pattern.h>
-#include <Tritium/instrument.h>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/TransportPosition.hpp>
+#include <Tritium/Song.hpp>
+#include <Tritium/SeqScript.hpp>
+#include <Tritium/Pattern.hpp>
+#include <Tritium/Instrument.hpp>
 
-#include "SongSequencer.h"
-#include "transport/songhelpers.h"
+#include "SongSequencer.hpp"
+#include "transport/songhelpers.hpp"
 
 using namespace Tritium;
 

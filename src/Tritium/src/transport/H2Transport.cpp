@@ -20,10 +20,10 @@
  */
 
 #include <memory>
-#include <Tritium/event_queue.h>
-#include "H2Transport.h"
-#include "SimpleTransportMaster.h"
-#include "JackTimeMaster.h"
+#include <Tritium/EventQueue.hpp>
+#include "H2Transport.hpp"
+#include "SimpleTransportMaster.hpp"
+#include "JackTimeMaster.hpp"
 
 using namespace Tritium;
 

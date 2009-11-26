@@ -19,10 +19,10 @@
  *
  */
 
-#ifndef TRITIUM_EVENT_QUEUE_H
-#define TRITIUM_EVENT_QUEUE_H
+#ifndef TRITIUM_EVENT_QUEUE_HPP
+#define TRITIUM_EVENT_QUEUE_HPP
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 #include <cassert>
 
 #define MAX_EVENTS 1024
@@ -79,4 +79,4 @@ private:
 
 } // namespace Tritium
 
-#endif // TRITIUM_EVENT_QUEUE_H
+#endif // TRITIUM_EVENT_QUEUE_HPP

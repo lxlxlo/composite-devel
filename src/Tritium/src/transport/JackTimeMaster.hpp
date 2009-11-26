@@ -18,12 +18,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef TRITIUM_JACKTIMEMASTER_H
-#define TRITIUM_JACKTIMEMASTER_H
+#ifndef TRITIUM_JACKTIMEMASTER_HPP
+#define TRITIUM_JACKTIMEMASTER_HPP
 
 #include <QtCore/QMutex>
 #include <jack/transport.h>
-#include <Tritium/JackTimeMasterEvents.h>
+#include <Tritium/JackTimeMasterEvents.hpp>
 
 namespace Tritium
 {
@@ -57,10 +57,10 @@ namespace Tritium
 	QMutex m_mutex;
     }; // class JackTimeMaster
 
-/////////////////////////////////////////////////////////////
-// FOR THE EVENT QUEUE DEFINES, SEE JackTimeMasterEvents.h //
-/////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+// FOR THE EVENT QUEUE DEFINES, SEE JackTimeMasterEvents.hpp //
+///////////////////////////////////////////////////////////////
 
 } // namespace Tritium
 
-#endif // TRITIUM_H2TRANSPORT_H
+#endif // TRITIUM_H2TRANSPORT_HPP

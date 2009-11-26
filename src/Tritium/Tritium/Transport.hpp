@@ -18,11 +18,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef TRITIUM_TRANSPORT_H
-#define TRITIUM_TRANSPORT_H
+#ifndef TRITIUM_TRANSPORT_HPP
+#define TRITIUM_TRANSPORT_HPP
 
 #include <stdint.h>  // int32_t, uint32_t
-#include <Tritium/TransportPosition.h>
+#include <Tritium/TransportPosition.hpp>
 
 namespace Tritium
 {
@@ -63,4 +63,4 @@ namespace Tritium
 
 } // namespace Tritium
 
-#endif // TRITIUM_TRANSPORT_H
+#endif // TRITIUM_TRANSPORT_HPP

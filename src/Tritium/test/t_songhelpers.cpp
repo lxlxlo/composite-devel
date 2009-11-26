@@ -19,12 +19,12 @@
  *
  */
 
-#include <Tritium/hydrogen.h>
-#include <Tritium/Song.h>
-#include "../src/transport/songhelpers.h"
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Song.hpp>
+#include "../src/transport/songhelpers.hpp"
 
 #define THIS_NAMESPACE t_songhelpers
-#include "test_macros.h"
+#include "test_macros.hpp"
 
 using namespace Tritium;
 

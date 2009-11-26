@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef COMPOSITE_ABOUTDIALOG_H
-#define COMPOSITE_ABOUTDIALOG_H
+#ifndef COMPOSITE_ABOUTDIALOG_HPP
+#define COMPOSITE_ABOUTDIALOG_HPP
 
 #include "config.h"
 
@@ -49,4 +49,4 @@ private:
 	};
 };
 
-#endif // COMPOSITE_ABOUTDIALOG_H
+#endif // COMPOSITE_ABOUTDIALOG_HPP

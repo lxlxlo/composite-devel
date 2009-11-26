@@ -21,12 +21,12 @@
 
 #include <QtGui>
 
-#include "../HydrogenApp.h"
-#include "SoundLibraryPropertiesDialog.h"
-#include "../InstrumentRack.h"
-#include "SoundLibraryPanel.h"
-#include <Tritium/SoundLibrary.h>
-#include <Tritium/hydrogen.h>
+#include "../HydrogenApp.hpp"
+#include "SoundLibraryPropertiesDialog.hpp"
+#include "../InstrumentRack.hpp"
+#include "SoundLibraryPanel.hpp"
+#include <Tritium/SoundLibrary.hpp>
+#include <Tritium/Hydrogen.hpp>
 
 namespace Tritium
 {

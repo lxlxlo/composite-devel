@@ -19,15 +19,15 @@
  *
  */
 
-#include "LadspaFXSelector.h"
-#include "HydrogenApp.h"
-#include <Tritium/hydrogen.h>
-#include "Skin.h"
-#include <Tritium/Song.h>
-#include <Tritium/Preferences.h>
+#include "LadspaFXSelector.hpp"
+#include "HydrogenApp.hpp"
+#include <Tritium/Hydrogen.hpp>
+#include "Skin.hpp"
+#include <Tritium/Song.hpp>
+#include <Tritium/Preferences.hpp>
 
-#include <Tritium/fx/Effects.h>
-#include <Tritium/fx/LadspaFX.h>
+#include <Tritium/fx/Effects.hpp>
+#include <Tritium/fx/LadspaFX.hpp>
 
 using namespace std;
 using namespace Tritium;

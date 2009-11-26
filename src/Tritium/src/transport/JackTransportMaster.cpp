@@ -19,9 +19,9 @@
  *
  */
 
-#include <Tritium/Transport.h>
-#include <Tritium/TransportPosition.h>
-#include "JackTransportMaster.h"
+#include <Tritium/Transport.hpp>
+#include <Tritium/TransportPosition.hpp>
+#include "JackTransportMaster.hpp"
 
 #include <jack/jack.h>
 #include <jack/transport.h>

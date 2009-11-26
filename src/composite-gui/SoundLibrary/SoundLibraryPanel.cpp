@@ -19,41 +19,41 @@
  *
  */
 
-#include "SoundLibraryPanel.h"
+#include "SoundLibraryPanel.hpp"
 
 #include <QtGui>
 
-#include "SoundLibraryTree.h"
-#include "FileBrowser.h"
+#include "SoundLibraryTree.hpp"
+#include "FileBrowser.hpp"
 
-#include "SoundLibrarySaveDialog.h"
-#include "SoundLibraryPropertiesDialog.h"
-#include "SoundLibraryExportDialog.h"
+#include "SoundLibrarySaveDialog.hpp"
+#include "SoundLibraryPropertiesDialog.hpp"
+#include "SoundLibraryExportDialog.hpp"
 
-#include "../HydrogenApp.h"
-#include "../widgets/Button.h"
-#include "../widgets/PixmapWidget.h"
-#include "../Skin.h"
-#include "../SongEditor/SongEditorPanel.h"
-#include "../PatternEditor/PatternEditorPanel.h"
-#include "../PatternEditor/DrumPatternEditor.h"
-#include "../PatternEditor/PatternEditorInstrumentList.h"
-#include "../InstrumentRack.h"
-#include "../InstrumentEditor/InstrumentEditorPanel.h"
+#include "../HydrogenApp.hpp"
+#include "../widgets/Button.hpp"
+#include "../widgets/PixmapWidget.hpp"
+#include "../Skin.hpp"
+#include "../SongEditor/SongEditorPanel.hpp"
+#include "../PatternEditor/PatternEditorPanel.hpp"
+#include "../PatternEditor/DrumPatternEditor.hpp"
+#include "../PatternEditor/PatternEditorInstrumentList.hpp"
+#include "../InstrumentRack.hpp"
+#include "../InstrumentEditor/InstrumentEditorPanel.hpp"
 
-#include <Tritium/adsr.h>
-#include <Tritium/audio_engine.h>
-#include <Tritium/Transport.h>
-#include <Tritium/data_path.h>
-#include <Tritium/h2_exception.h>
-#include <Tritium/hydrogen.h>
-#include <Tritium/instrument.h>
-#include <Tritium/LocalFileMng.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/Pattern.h>
-#include <Tritium/sample.h>
-#include <Tritium/Song.h>
-#include <Tritium/SoundLibrary.h>
+#include <Tritium/ADSR.hpp>
+#include <Tritium/AudioEngine.hpp>
+#include <Tritium/Transport.hpp>
+#include <Tritium/DataPath.hpp>
+#include <Tritium/H2Exception.hpp>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Instrument.hpp>
+#include <Tritium/LocalFileMng.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/Pattern.hpp>
+#include <Tritium/Sample.hpp>
+#include <Tritium/Song.hpp>
+#include <Tritium/SoundLibrary.hpp>
 
 using namespace Tritium;
 

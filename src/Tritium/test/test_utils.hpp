@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef TRITIUMTEST_TEST_UTILS_H
-#define TRITIUMTEST_TEST_UTILS_H
+#ifndef TRITIUMTEST_TEST_UTILS_HPP
+#define TRITIUMTEST_TEST_UTILS_HPP
 
 #include <stdint.h>
 #include <cstring>
@@ -103,4 +103,4 @@ namespace TritiumTest
 // feedback on the line number where it happened.
 #define TT_VALID_POS(p, s) BOOST_CHECK(TritiumTest::valid_position(p, s))
 
-#endif // TRITIUMTEST_TEST_UTILS_H
+#endif // TRITIUMTEST_TEST_UTILS_HPP

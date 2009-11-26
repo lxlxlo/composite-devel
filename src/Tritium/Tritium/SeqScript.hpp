@@ -18,11 +18,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef TRITIUM_SEQSCRIPT_H
-#define TRITIUM_SEQSCRIPT_H
+#ifndef TRITIUM_SEQSCRIPT_HPP
+#define TRITIUM_SEQSCRIPT_HPP
 
-#include "SeqEvent.h"
-#include "SeqScriptIterator.h"
+#include "SeqEvent.hpp"
+#include "SeqScriptIterator.hpp"
 
 /**
  * The SeqScript is how the sequencer communicates events to sequence
@@ -154,4 +154,4 @@ namespace Tritium
 
 } // namespace Tritium
 
-#endif // TRITIUM_SEQSCRIPT_H
+#endif // TRITIUM_SEQSCRIPT_HPP

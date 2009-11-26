@@ -19,11 +19,11 @@
  *
  */
 
-#include <Tritium/SeqEvent.h>
+#include <Tritium/SeqEvent.hpp>
 
 using namespace Tritium;
 
-// NOTE: SeqEvent is fully defined in the header SeqEvent.h
+// NOTE: SeqEvent is fully defined in the header SeqEvent.hpp
 
 bool SeqEvent::operator==(const SeqEvent& o) const
 {

@@ -19,15 +19,15 @@
  *
  */
 
-#include <Tritium/IO/MidiInput.h>
-#include <Tritium/event_queue.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/hydrogen.h>
-#include <Tritium/Transport.h>
-#include <Tritium/instrument.h>
-#include <Tritium/note.h>
-#include <Tritium/action.h>
-#include <Tritium/midiMap.h>
+#include <Tritium/IO/MidiInput.hpp>
+#include <Tritium/EventQueue.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Transport.hpp>
+#include <Tritium/Instrument.hpp>
+#include <Tritium/Note.hpp>
+#include <Tritium/Action.hpp>
+#include <Tritium/MidiMap.hpp>
 
 namespace Tritium
 {

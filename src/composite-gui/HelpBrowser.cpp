@@ -20,11 +20,11 @@
  */
 
 
-#include "HelpBrowser.h"
-#include "Skin.h"
+#include "HelpBrowser.hpp"
+#include "Skin.hpp"
 
 #include <QtGui>
-#include <Tritium/globals.h>
+#include <Tritium/globals.hpp>
 
 SimpleHTMLBrowser::SimpleHTMLBrowser( QWidget *pParent, const QString& sDataPath, const QString& sFilename, SimpleHTMLBrowserType type )
  : QDialog( pParent )

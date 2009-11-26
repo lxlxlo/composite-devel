@@ -19,15 +19,15 @@
  *
  */
 
-#ifndef TRITIUM_PLAYLIST_H
-#define TRITIUM_PLAYLIST_H
+#ifndef TRITIUM_PLAYLIST_HPP
+#define TRITIUM_PLAYLIST_HPP
 
 #include <QDialog>
 #include <QMutex>
-#include <Tritium/Object.h>
-#include <Tritium/globals.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/hydrogen.h>
+#include <Tritium/Object.hpp>
+#include <Tritium/globals.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/Hydrogen.hpp>
 #include <vector>
 #include <cassert>
 
@@ -109,4 +109,4 @@ private:
 
 } // namespace Tritium
 
-#endif // TRITIUM_PLAYLIST_H
+#endif // TRITIUM_PLAYLIST_HPP

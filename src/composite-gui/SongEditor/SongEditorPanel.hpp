@@ -19,12 +19,12 @@
  *
  */
 
-#ifndef COMPOSITE_SONGEDITORPANEL_H
-#define COMPOSITE_SONGEDITORPANEL_H
+#ifndef COMPOSITE_SONGEDITORPANEL_HPP
+#define COMPOSITE_SONGEDITORPANEL_HPP
 
 
-#include "../EventListener.h"
-#include <Tritium/Object.h>
+#include "../EventListener.hpp"
+#include <Tritium/Object.hpp>
 
 #include <QtGui>
 
@@ -111,4 +111,4 @@ class SongEditorPanel : public QWidget, public EventListener, public Object
 		void resyncExternalScrollBar();
 };
 
-#endif // COMPOSITE_SONGEDITORPANEL_H
+#endif // COMPOSITE_SONGEDITORPANEL_HPP

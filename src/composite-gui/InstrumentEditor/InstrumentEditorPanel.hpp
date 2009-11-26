@@ -19,12 +19,12 @@
  *
  */
 
-#ifndef COMPOSITE_INSTRUMENTEDITORPANEL_H
-#define COMPOSITE_INSTRUMENTEDITORPANEL_H
+#ifndef COMPOSITE_INSTRUMENTEDITORPANEL_HPP
+#define COMPOSITE_INSTRUMENTEDITORPANEL_HPP
 
 #include <QtGui>
-#include <Tritium/Object.h>
-#include "InstrumentEditor.h"
+#include <Tritium/Object.hpp>
+#include "InstrumentEditor.hpp"
 
 ///
 /// Container for the Instrument Editor (Singleton).
@@ -45,4 +45,4 @@ class InstrumentEditorPanel : public QWidget, private Object
 		InstrumentEditorPanel( QWidget *pParent );
 };
 
-#endif // COMPOSITE_INSTRUMENTEDITORPANEL_H
+#endif // COMPOSITE_INSTRUMENTEDITORPANEL_HPP

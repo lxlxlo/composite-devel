@@ -19,11 +19,11 @@
  *
  */
 
-#include "ClickableLabel.h"
+#include "ClickableLabel.hpp"
 
 #include <QtGui>
 
-#include <Tritium/globals.h>
+#include <Tritium/globals.hpp>
 
 ClickableLabel::ClickableLabel( QWidget *pParent )
  : QLabel( pParent )

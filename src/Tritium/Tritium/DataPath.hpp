@@ -27,8 +27,8 @@
  *
  */
 
-#ifndef TRITIUM_DATA_PATH_H
-#define TRITIUM_DATA_PATH_H
+#ifndef TRITIUM_DATA_PATH_HPP
+#define TRITIUM_DATA_PATH_HPP
 
 #include <QtCore>
 
@@ -46,5 +46,5 @@ private:
 
 } // namespace Tritium
 
-#endif // TRITIUM_DATA_PATH_H
+#endif // TRITIUM_DATA_PATH_HPP
 

@@ -19,7 +19,7 @@
  *
  */
 
-#include <Tritium/TransportPosition.h>
+#include <Tritium/TransportPosition.hpp>
 #include <cstdlib> // rand()
 #include <cassert>
 #include <cmath>

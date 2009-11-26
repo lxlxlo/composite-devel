@@ -25,19 +25,19 @@
 #include "version.h"
 #include <getopt.h>
 
-#include "SplashScreen.h"
-#include "HydrogenApp.h"
-#include "MainForm.h"
+#include "SplashScreen.hpp"
+#include "HydrogenApp.hpp"
+#include "MainForm.hpp"
 
-#include <Tritium/midiMap.h>
-#include <Tritium/audio_engine.h>
-#include <Tritium/hydrogen.h>
-#include <Tritium/globals.h>
-#include <Tritium/event_queue.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/data_path.h>
-#include <Tritium/h2_exception.h>
-#include <Tritium/playlist.h>
+#include <Tritium/MidiMap.hpp>
+#include <Tritium/AudioEngine.hpp>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/globals.hpp>
+#include <Tritium/EventQueue.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/DataPath.hpp>
+#include <Tritium/H2Exception.hpp>
+#include <Tritium/Playlist.hpp>
 
 #include <iostream>
 using namespace std;

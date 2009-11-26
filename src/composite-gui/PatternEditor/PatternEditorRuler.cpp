@@ -22,16 +22,16 @@
 #include <QTimer>
 #include <QPainter>
 
-#include <Tritium/Preferences.h>
-#include <Tritium/hydrogen.h>
-#include <Tritium/Transport.h>
-#include <Tritium/Pattern.h>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Transport.hpp>
+#include <Tritium/Pattern.hpp>
 using namespace Tritium;
 
-#include "PatternEditorRuler.h"
-#include "PatternEditorPanel.h"
-#include "../HydrogenApp.h"
-#include "../Skin.h"
+#include "PatternEditorRuler.hpp"
+#include "PatternEditorPanel.hpp"
+#include "../HydrogenApp.hpp"
+#include "../Skin.hpp"
 
 
 PatternEditorRuler::PatternEditorRuler( QWidget* parent )

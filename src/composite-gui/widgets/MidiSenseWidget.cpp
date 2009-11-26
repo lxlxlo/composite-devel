@@ -19,8 +19,8 @@
  *
  */
 
-#include "MidiSenseWidget.h"
-#include <Tritium/hydrogen.h>
+#include "MidiSenseWidget.hpp"
+#include <Tritium/Hydrogen.hpp>
 
 
 MidiSenseWidget::MidiSenseWidget(QWidget* pParent) : QDialog( pParent ) , Object("MidiSenseWidget")

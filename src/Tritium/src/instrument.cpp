@@ -19,13 +19,13 @@
  *
  */
 
-#include <Tritium/instrument.h>
-#include <Tritium/adsr.h>
-#include <Tritium/sample.h>
-#include <Tritium/Song.h>
-#include <Tritium/LocalFileMng.h>
-#include <Tritium/SoundLibrary.h>
-#include <Tritium/audio_engine.h>
+#include <Tritium/Instrument.hpp>
+#include <Tritium/ADSR.hpp>
+#include <Tritium/Sample.hpp>
+#include <Tritium/Song.hpp>
+#include <Tritium/LocalFileMng.hpp>
+#include <Tritium/SoundLibrary.hpp>
+#include <Tritium/AudioEngine.hpp>
 
 #include <cassert>
 

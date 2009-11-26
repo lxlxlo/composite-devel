@@ -21,10 +21,10 @@
 
 #include "config.h"
 #include "version.h"
-#include "AboutDialog.h"
-#include "Skin.h"
+#include "AboutDialog.hpp"
+#include "Skin.hpp"
 
-#include <Tritium/globals.h>
+#include <Tritium/globals.hpp>
 
 #include <vector>
 

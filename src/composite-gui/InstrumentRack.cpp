@@ -19,11 +19,11 @@
  *
  */
 
-#include "InstrumentRack.h"
-#include "Skin.h"
-#include "widgets/Button.h"
-#include "InstrumentEditor/InstrumentEditorPanel.h"
-#include "SoundLibrary/SoundLibraryPanel.h"
+#include "InstrumentRack.hpp"
+#include "Skin.hpp"
+#include "widgets/Button.hpp"
+#include "InstrumentEditor/InstrumentEditorPanel.hpp"
+#include "SoundLibrary/SoundLibraryPanel.hpp"
 
 #include <QGridLayout>
 

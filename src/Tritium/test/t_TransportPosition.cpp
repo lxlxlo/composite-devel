@@ -19,12 +19,12 @@
  *
  */
 
-#include <Tritium/TransportPosition.h>
+#include <Tritium/TransportPosition.hpp>
 #include <cmath>
 
 #define THIS_NAMESPACE t_TransportPosition
-#include "test_macros.h"
-#include "test_utils.h"
+#include "test_macros.hpp"
+#include "test_utils.hpp"
 
 using namespace Tritium;
 

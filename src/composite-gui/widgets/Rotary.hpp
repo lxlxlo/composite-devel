@@ -19,15 +19,15 @@
  *
  */
 
-#ifndef COMPOSITE_ROTARY_H
-#define COMPOSITE_ROTARY_H
+#ifndef COMPOSITE_ROTARY_HPP
+#define COMPOSITE_ROTARY_HPP
 
 #include "config.h"
 #include <QtGui>
 
 class LCDDisplay;
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 class RotaryTooltip : public QWidget
 {
@@ -100,4 +100,4 @@ class Rotary : public QWidget, public Object
 };
 
 
-#endif // COMPOSITE_ROTARY_H
+#endif // COMPOSITE_ROTARY_HPP

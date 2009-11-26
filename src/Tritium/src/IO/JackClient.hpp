@@ -18,20 +18,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-/* JackClient.h
+/* JackClient.hpp
  * Copyright(c) 2008 by Gabriel M. Beddingfield <gabriel@teuton.org>
  *
  * This class manages the Jack client handle (returned by jack_client_open()).
  */
 
-#ifndef TRITIUM_JACKCLIENT_H
-#define TRITIUM_JACKCLIENT_H
+#ifndef TRITIUM_JACKCLIENT_HPP
+#define TRITIUM_JACKCLIENT_HPP
 
 #ifdef JACK_SUPPORT
 
 #include <jack/types.h>
-#include <Tritium/h2_exception.h>
-#include <Tritium/Object.h>
+#include <Tritium/H2Exception.hpp>
+#include <Tritium/Object.hpp>
 #include <QtCore/QString>
 #include <vector>
 #include <set>
@@ -82,4 +82,4 @@ private:
 
 #endif // JACK_SUPPORT
 
-#endif // TRITIUM_JACKCLIENT_H
+#endif // TRITIUM_JACKCLIENT_HPP

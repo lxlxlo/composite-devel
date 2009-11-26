@@ -19,8 +19,8 @@
  *
  */
 
-#include "../src/SeqScriptPrivate.h"
-#include <Tritium/instrument.h>
+#include "../src/SeqScriptPrivate.hpp"
+#include <Tritium/Instrument.hpp>
 #include <vector>
 #include <memory>
 #include <map>
@@ -28,7 +28,7 @@
 
 // CHANGE THIS TO MATCH YOUR FILE:
 #define THIS_NAMESPACE t_SeqScriptPrivate
-#include "test_macros.h"
+#include "test_macros.hpp"
 
 using namespace Tritium;
 

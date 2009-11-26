@@ -19,10 +19,10 @@
  *
  */
 
-#include <Tritium/Pattern.h>
-#include <Tritium/Song.h>
-#include <Tritium/note.h>
-#include <Tritium/audio_engine.h>
+#include <Tritium/Pattern.hpp>
+#include <Tritium/Song.hpp>
+#include <Tritium/Note.hpp>
+#include <Tritium/AudioEngine.hpp>
 
 #include <vector>
 #include <cassert>

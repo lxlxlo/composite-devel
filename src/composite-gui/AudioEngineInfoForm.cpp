@@ -19,23 +19,23 @@
  *
  */
 
-#include "AudioEngineInfoForm.h"
+#include "AudioEngineInfoForm.hpp"
 
 #include <QtGui>
 
-#include "HydrogenApp.h"
+#include "HydrogenApp.hpp"
 
-#include <Tritium/Pattern.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/hydrogen.h>
-#include <Tritium/Transport.h>
-#include <Tritium/IO/MidiInput.h>
-#include <Tritium/IO/AudioOutput.h>
-#include <Tritium/sampler/Sampler.h>
-#include <Tritium/audio_engine.h>
+#include <Tritium/Pattern.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Transport.hpp>
+#include <Tritium/IO/MidiInput.hpp>
+#include <Tritium/IO/AudioOutput.hpp>
+#include <Tritium/sampler/Sampler.hpp>
+#include <Tritium/AudioEngine.hpp>
 using namespace Tritium;
 
-#include "Skin.h"
+#include "Skin.hpp"
 
 AudioEngineInfoForm::AudioEngineInfoForm(QWidget* parent)
  : QWidget( parent )

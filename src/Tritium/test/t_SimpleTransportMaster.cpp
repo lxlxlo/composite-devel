@@ -19,18 +19,18 @@
  *
  */
 
-#include "../src/transport/SimpleTransportMaster.h"
-#include "../src/transport/songhelpers.h"
-#include <Tritium/hydrogen.h>
-#include <Tritium/Song.h>
-#include <Tritium/TransportPosition.h>
+#include "../src/transport/SimpleTransportMaster.hpp"
+#include "../src/transport/songhelpers.hpp"
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Song.hpp>
+#include <Tritium/TransportPosition.hpp>
 
 #include <stdint.h>  // uint32_t, etc.
 
 // CHANGE THIS TO MATCH YOUR FILE:
 #define THIS_NAMESPACE t_SimpleTransportMaster
-#include "test_macros.h"
-#include "test_utils.h"
+#include "test_macros.hpp"
+#include "test_utils.hpp"
 
 using namespace Tritium;
 

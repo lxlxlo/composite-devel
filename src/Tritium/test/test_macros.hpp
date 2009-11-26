@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef TRITIUMTEST_TEST_MACROS_H
-#define TRITIUMTEST_TEST_MACROS_H
+#ifndef TRITIUMTEST_TEST_MACROS_HPP
+#define TRITIUMTEST_TEST_MACROS_HPP
 
 /*
  * test_macros.h
@@ -68,4 +68,4 @@
 #define CK(x) BOOST_CHECK(x)
 
 
-#endif // TRITIUMTEST_TEST_MACROS_H
+#endif // TRITIUMTEST_TEST_MACROS_HPP

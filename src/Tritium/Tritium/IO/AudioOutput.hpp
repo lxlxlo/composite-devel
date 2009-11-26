@@ -18,10 +18,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef TRITIUM_AUDIOOUTPUT_H
-#define TRITIUM_AUDIOOUTPUT_H
+#ifndef TRITIUM_AUDIOOUTPUT_HPP
+#define TRITIUM_AUDIOOUTPUT_HPP
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 namespace Tritium
 {
@@ -57,5 +57,5 @@ protected:
 
 } // namespace Tritium
 
-#endif // TRITIUM_AUDIOOUTPUT_H
+#endif // TRITIUM_AUDIOOUTPUT_HPP
 

@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef TRITIUM_LADSPAFX_H
-#define TRITIUM_LADSPAFX_H
+#ifndef TRITIUM_LADSPAFX_HPP
+#define TRITIUM_LADSPAFX_HPP
 
 #ifdef LADSPA_SUPPORT
 
@@ -28,7 +28,7 @@
 #include <vector>
 #include <list>
 #include "ladspa.h"
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 namespace Tritium
 {
@@ -192,4 +192,4 @@ private:
 
 #endif // LADSPA_SUPPORT
 
-#endif // TRITIUM_LADSPAFX_H
+#endif // TRITIUM_LADSPAFX_HPP

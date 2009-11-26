@@ -20,13 +20,13 @@
  */
 #include "config.h"
 
-#include <Tritium/sample.h>
-#include <Tritium/Song.h>
-#include <Tritium/instrument.h>
+#include <Tritium/Sample.hpp>
+#include <Tritium/Song.hpp>
+#include <Tritium/Instrument.hpp>
 using namespace Tritium;
 
-#include "SampleWaveDisplay.h"
-#include "../Skin.h"
+#include "SampleWaveDisplay.hpp"
+#include "../Skin.hpp"
 
 
 SampleWaveDisplay::SampleWaveDisplay(QWidget* pParent)

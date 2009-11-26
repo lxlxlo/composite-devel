@@ -20,16 +20,16 @@
  */
 
 
-#ifndef COMPOSITE_MIXER_H
-#define COMPOSITE_MIXER_H
+#ifndef COMPOSITE_MIXER_HPP
+#define COMPOSITE_MIXER_HPP
 
 #include "config.h"
 
 #include <QtGui>
 
-#include <Tritium/Object.h>
-#include <Tritium/globals.h>
-#include "../EventListener.h"
+#include <Tritium/Object.hpp>
+#include <Tritium/globals.hpp>
+#include "../EventListener.hpp"
 
 class Button;
 class ToggleButton;
@@ -99,4 +99,4 @@ class Mixer : public QWidget, public EventListener, public Object
 
 
 
-#endif // COMPOSITE_MIXER_H
+#endif // COMPOSITE_MIXER_HPP

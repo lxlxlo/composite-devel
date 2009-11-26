@@ -19,17 +19,17 @@
  *
  */
 
-#ifndef TRITIUM_PREFERENCES_H
-#define TRITIUM_PREFERENCES_H
+#ifndef TRITIUM_PREFERENCES_HPP
+#define TRITIUM_PREFERENCES_HPP
 
 #include <list>
 //#include <string>
 #include <vector>
 #include <cassert>
 
-#include <Tritium/action.h>
-#include <Tritium/globals.h>
-#include <Tritium/Object.h>
+#include <Tritium/Action.hpp>
+#include <Tritium/globals.hpp>
+#include <Tritium/Object.hpp>
 
 #include <QDomDocument>
 
@@ -509,5 +509,5 @@ private:
 
 } // namespace Tritium
 
-#endif // TRITIUM_PREFERENCES_H
+#endif // TRITIUM_PREFERENCES_HPP
 

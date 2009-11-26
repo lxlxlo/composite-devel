@@ -19,10 +19,10 @@
  *
  */
 
-#ifndef TRITIUM_FLAC_FILE_H
-#define TRITIUM_FLAC_FILE_H
+#ifndef TRITIUM_FLAC_FILE_HPP
+#define TRITIUM_FLAC_FILE_HPP
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 #include <string>
 
 namespace Tritium
@@ -43,4 +43,4 @@ public:
 
 } // namespace Tritium
 
-#endif // TRITIUM_FLAC_FILE_H
+#endif // TRITIUM_FLAC_FILE_HPP

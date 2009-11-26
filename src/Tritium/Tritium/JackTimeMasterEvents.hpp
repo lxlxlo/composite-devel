@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef TRITIUM_JACKTIMEMASTEREVENTS_H
-#define TRITIUM_JACKTIMEMASTEREVENTS_H
+#ifndef TRITIUM_JACKTIMEMASTEREVENTS_HPP
+#define TRITIUM_JACKTIMEMASTEREVENTS_HPP
 
 namespace Tritium
 {
@@ -30,4 +30,4 @@ namespace Tritium
 
 } // namespace Tritium
 
-#endif // TRITIUM_JACKTIMEMASTEREVENTS_H
+#endif // TRITIUM_JACKTIMEMASTEREVENTS_HPP

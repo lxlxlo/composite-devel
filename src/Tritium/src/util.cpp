@@ -19,7 +19,7 @@
  *
  */
 
-#include <Tritium/util.h>
+#include <Tritium/util.hpp>
 
 #include <ctype.h>
 #include <cassert>

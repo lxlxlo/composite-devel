@@ -20,17 +20,17 @@
  */
 
 
-#ifndef COMPOSITE_SPLASHSCREEN_H
-#define COMPOSITE_SPLASHSCREEN_H
+#ifndef COMPOSITE_SPLASHSCREEN_HPP
+#define COMPOSITE_SPLASHSCREEN_HPP
 
 #include <QLabel>
 #include <QSplashScreen>
 #include <QTimer>
 #include <QPixmap>
 
-#include "HydrogenApp.h"
+#include "HydrogenApp.hpp"
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 /**
  * Fader and VuMeter widget
@@ -55,4 +55,4 @@ class SplashScreen : public QSplashScreen, public Object
 };
 
 
-#endif // COMPOSITE_SPLASHSCREEN_H
+#endif // COMPOSITE_SPLASHSCREEN_HPP

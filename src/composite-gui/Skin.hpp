@@ -18,11 +18,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef COMPOSITE_SKIN_H
-#define COMPOSITE_SKIN_H
+#ifndef COMPOSITE_SKIN_HPP
+#define COMPOSITE_SKIN_HPP
 
 #include <QString>
-#include <Tritium/data_path.h>
+#include <Tritium/DataPath.hpp>
 
 ///
 /// Skin support
@@ -39,4 +39,4 @@ class Skin
 };
 
 
-#endif // COMPOSITE_SKIN_H
+#endif // COMPOSITE_SKIN_HPP

@@ -19,13 +19,13 @@
  *
  */
 
-#include "LCD.h"
+#include "LCD.hpp"
 
-#include "../Skin.h"
+#include "../Skin.hpp"
 
 #include <QtGui>
 
-#include <Tritium/globals.h>
+#include <Tritium/globals.hpp>
 
 QPixmap* LCDDigit::m_pSmallBlueFontSet = NULL;
 QPixmap* LCDDigit::m_pSmallRedFontSet = NULL;

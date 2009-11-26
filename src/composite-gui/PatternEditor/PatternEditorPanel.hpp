@@ -20,15 +20,15 @@
  */
 
 
-#ifndef COMPOSITE_PATTERNEDITORPANEL_H
-#define COMPOSITE_PATTERNEDITORPANEL_H
+#ifndef COMPOSITE_PATTERNEDITORPANEL_HPP
+#define COMPOSITE_PATTERNEDITORPANEL_HPP
 
 #include <QtGui>
 
-#include <Tritium/Object.h>
-#include <Tritium/TransportPosition.h>
+#include <Tritium/Object.hpp>
+#include <Tritium/TransportPosition.hpp>
 
-#include "../EventListener.h"
+#include "../EventListener.hpp"
 
 
 class Button;
@@ -170,4 +170,4 @@ class PatternEditorPanel : public QWidget, public EventListener, public Object
 
 
 
-#endif // COMPOSITE_PATTERNEDITORPANEL_H
+#endif // COMPOSITE_PATTERNEDITORPANEL_HPP

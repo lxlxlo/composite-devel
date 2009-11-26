@@ -19,14 +19,14 @@
  *
  */
 
-#ifndef COMPOSITE_SOUNDLIBRARYIMPORTDIALOG_H
-#define COMPOSITE_SOUNDLIBRARYIMPORTDIALOG_H
+#ifndef COMPOSITE_SOUNDLIBRARYIMPORTDIALOG_HPP
+#define COMPOSITE_SOUNDLIBRARYIMPORTDIALOG_HPP
 
 #include "config.h"
 
 #include "ui_SoundLibraryImportDialog_UI.h"
-#include <Tritium/Object.h>
-#include <Tritium/Preferences.h>
+#include <Tritium/Object.hpp>
+#include <Tritium/Preferences.hpp>
 
 #include <vector>
 
@@ -77,4 +77,4 @@ class SoundLibraryImportDialog : public QDialog, public Ui_SoundLibraryImportDia
 };
 
 
-#endif // COMPOSITE_SOUNDLIBRARYIMPORTDIALOG_H
+#endif // COMPOSITE_SOUNDLIBRARYIMPORTDIALOG_HPP

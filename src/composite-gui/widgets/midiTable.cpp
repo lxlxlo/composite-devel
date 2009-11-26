@@ -19,15 +19,15 @@
  *
  */
 
-#include "../Skin.h"
-#include "MidiSenseWidget.h"
-#include "midiTable.h"
+#include "../Skin.hpp"
+#include "MidiSenseWidget.hpp"
+#include "midiTable.hpp"
 
-#include <Tritium/midiMap.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/globals.h>
-#include <Tritium/action.h>
-#include <Tritium/hydrogen.h>
+#include <Tritium/MidiMap.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/globals.hpp>
+#include <Tritium/Action.hpp>
+#include <Tritium/Hydrogen.hpp>
 
 MidiTable::MidiTable( QWidget *pParent )
  : QTableWidget( pParent )

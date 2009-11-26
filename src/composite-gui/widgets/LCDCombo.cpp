@@ -19,13 +19,13 @@
  *
  */
 
-#include "LCDCombo.h"
+#include "LCDCombo.hpp"
 
-#include "../Skin.h"
-#include "LCD.h"
-#include "Button.h"
+#include "../Skin.hpp"
+#include "LCD.hpp"
+#include "Button.hpp"
 
-#include <Tritium/globals.h>
+#include <Tritium/globals.hpp>
 
 const QString LCDCombo::SEPARATOR("--sep--");
 

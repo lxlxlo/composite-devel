@@ -23,28 +23,28 @@
 #include <algorithm>
 #include <memory>
 
-#include <Tritium/Song.h>
-#include <Tritium/hydrogen.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/Pattern.h>
-#include <Tritium/audio_engine.h>
-#include <Tritium/event_queue.h>
-#include <Tritium/instrument.h>
+#include <Tritium/Song.hpp>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/Pattern.hpp>
+#include <Tritium/AudioEngine.hpp>
+#include <Tritium/EventQueue.hpp>
+#include <Tritium/Instrument.hpp>
 using namespace Tritium;
 
 
-#include "SongEditor.h"
-#include "SongEditorPanel.h"
-#include "SoundLibrary/SoundLibraryPanel.h"
-#include "../PatternEditor/PatternEditorPanel.h"
-#include "../HydrogenApp.h"
-#include "../InstrumentRack.h"
-#include "../widgets/Button.h"
-#include "../PatternFillDialog.h"
-#include "../PatternPropertiesDialog.h"
-#include "../SongPropertiesDialog.h"
-#include "../Skin.h"
-#include <Tritium/LocalFileMng.h>
+#include "SongEditor.hpp"
+#include "SongEditorPanel.hpp"
+#include "SoundLibrary/SoundLibraryPanel.hpp"
+#include "../PatternEditor/PatternEditorPanel.hpp"
+#include "../HydrogenApp.hpp"
+#include "../InstrumentRack.hpp"
+#include "../widgets/Button.hpp"
+#include "../PatternFillDialog.hpp"
+#include "../PatternPropertiesDialog.hpp"
+#include "../SongPropertiesDialog.hpp"
+#include "../Skin.hpp"
+#include <Tritium/LocalFileMng.hpp>
 
 
 using namespace std;

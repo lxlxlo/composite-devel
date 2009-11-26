@@ -19,11 +19,11 @@
  *
  */
 
-#ifndef TRITIUM_NOTE_H
-#define TRITIUM_NOTE_H
+#ifndef TRITIUM_NOTE_HPP
+#define TRITIUM_NOTE_HPP
 
 #include <cassert>
-#include <Tritium/adsr.h>
+#include <Tritium/ADSR.hpp>
 #include <stdint.h>
 
 namespace Tritium
@@ -203,4 +203,4 @@ private:
 
 } // namespace Tritium
 
-#endif // TRITIUM_NOTE_H
+#endif // TRITIUM_NOTE_HPP

@@ -19,18 +19,18 @@
  *
  */
 
-#ifndef COMPOSITE_INSTRUMENTEDITOR_H
-#define COMPOSITE_INSTRUMENTEDITOR_H
+#ifndef COMPOSITE_INSTRUMENTEDITOR_HPP
+#define COMPOSITE_INSTRUMENTEDITOR_HPP
 
 #include "config.h"
 
 #include <QtGui>
 
-#include <Tritium/instrument.h>
-#include <Tritium/Object.h>
+#include <Tritium/Instrument.hpp>
+#include <Tritium/Object.hpp>
 
-#include "../EventListener.h"
-#include "../widgets/PixmapWidget.h"
+#include "../EventListener.hpp"
+#include "../widgets/PixmapWidget.hpp"
 
 class Fader;
 class LCDDisplay;
@@ -145,4 +145,4 @@ class InstrumentEditor : public QWidget, public Object, public EventListener
 };
 
 
-#endif // COMPOSITE_INSTRUMENTEDITOR_H
+#endif // COMPOSITE_INSTRUMENTEDITOR_HPP

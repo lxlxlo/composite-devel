@@ -20,10 +20,10 @@
  */
 
 
-#ifndef COMPOSITE_INSTRUMENTRACK_H
-#define COMPOSITE_INSTRUMENTRACK_H
+#ifndef COMPOSITE_INSTRUMENTRACK_HPP
+#define COMPOSITE_INSTRUMENTRACK_HPP
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 #include <QtGui>
 
@@ -55,4 +55,4 @@ class InstrumentRack : public QWidget, private Object
 
 };
 
-#endif // COMPOSITE_INSTRUMENTRACK_H
+#endif // COMPOSITE_INSTRUMENTRACK_HPP

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef COMPOSITE_SOUNDLIBRARYPANEL_H
-#define COMPOSITE_SOUNDLIBRARYPANEL_H
+#ifndef COMPOSITE_SOUNDLIBRARYPANEL_HPP
+#define COMPOSITE_SOUNDLIBRARYPANEL_HPP
 
 #include "config.h"
 
@@ -28,7 +28,7 @@
 
 #include <vector>
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 namespace Tritium
 {
@@ -93,4 +93,4 @@ private:
 
 };
 
-#endif // COMPOSITE_SOUNDLIBRARYPANEL_H
+#endif // COMPOSITE_SOUNDLIBRARYPANEL_HPP

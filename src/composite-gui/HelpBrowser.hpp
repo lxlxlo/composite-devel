@@ -20,8 +20,8 @@
  */
 
 
-#ifndef COMPOSITE_HELPBROWSER_H
-#define COMPOSITE_HELPBROWSER_H
+#ifndef COMPOSITE_HELPBROWSER_HPP
+#define COMPOSITE_HELPBROWSER_HPP
 
 #include "config.h"
 
@@ -29,7 +29,7 @@
 #include <string>
 #include <QtGui>
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 class SimpleHTMLBrowser : public QDialog, public Object
 {
@@ -63,4 +63,4 @@ class SimpleHTMLBrowser : public QDialog, public Object
 };
 
 
-#endif // COMPOSITE_HELPBROWSER_H
+#endif // COMPOSITE_HELPBROWSER_HPP

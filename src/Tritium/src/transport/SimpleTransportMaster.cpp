@@ -19,17 +19,17 @@
  *
  */
 
-#include <Tritium/Transport.h>
-#include <Tritium/TransportPosition.h>
-#include "SimpleTransportMaster.h"
+#include <Tritium/Transport.hpp>
+#include <Tritium/TransportPosition.hpp>
+#include "SimpleTransportMaster.hpp"
 
-#include <Tritium/Song.h>
+#include <Tritium/Song.hpp>
 
 #include <jack/transport.h>
 #include <QtCore/QMutex>
 #include <QtCore/QMutexLocker>
 
-#include "songhelpers.h"
+#include "songhelpers.hpp"
 #include <cassert>
 
 using namespace Tritium;

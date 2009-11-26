@@ -19,11 +19,11 @@
  *
  */
 
-#ifndef TRITIUM_SOUNDLIBRARY_H
-#define TRITIUM_SOUNDLIBRARY_H
+#ifndef TRITIUM_SOUNDLIBRARY_HPP
+#define TRITIUM_SOUNDLIBRARY_HPP
 
 #include <string>
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 namespace Tritium
 {
@@ -122,4 +122,4 @@ private:
 
 } // namespace Tritium
 
-#endif // TRITIUM_SOUNDLIBRARY_H
+#endif // TRITIUM_SOUNDLIBRARY_HPP

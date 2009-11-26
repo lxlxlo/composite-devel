@@ -19,7 +19,7 @@
  *
  */
 
-#include <Tritium/event_queue.h>
+#include <Tritium/EventQueue.hpp>
 
 namespace Tritium
 {

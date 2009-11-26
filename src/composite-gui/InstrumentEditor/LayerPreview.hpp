@@ -18,15 +18,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef COMPOSITE_LAYERPREVIEW_H
-#define COMPOSITE_LAYERPREVIEW_H
+#ifndef COMPOSITE_LAYERPREVIEW_HPP
+#define COMPOSITE_LAYERPREVIEW_HPP
 
 #include "config.h"
 #include <QtGui>
 
-#include <Tritium/Object.h>
-#include <Tritium/instrument.h>
-#include "../EventListener.h"
+#include <Tritium/Object.hpp>
+#include <Tritium/Instrument.hpp>
+#include "../EventListener.hpp"
 
 
 class LayerPreview : public QWidget, public Object, public EventListener
@@ -56,4 +56,4 @@ class LayerPreview : public QWidget, public Object, public EventListener
 };
 
 
-#endif // COMPOSITE_LAYERPREVIEW_H
+#endif // COMPOSITE_LAYERPREVIEW_HPP

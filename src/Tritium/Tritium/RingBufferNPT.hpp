@@ -21,8 +21,8 @@
     - Gabriel Beddingfield 2009-04-17, 2009-11-25
 */
 
-#ifndef TRITIUM_RINGBUFFERNPT_H
-#define TRITIUM_RINGBUFFERNPT_H
+#ifndef TRITIUM_RINGBUFFERNPT_HPP
+#define TRITIUM_RINGBUFFERNPT_HPP
 
 //#include <sys/mman.h>
 

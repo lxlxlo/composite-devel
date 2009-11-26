@@ -19,10 +19,10 @@
  *
  */
 
-#include "SongPropertiesDialog.h"
-#include "Skin.h"
-#include <Tritium/Song.h>
-#include <Tritium/hydrogen.h>
+#include "SongPropertiesDialog.hpp"
+#include "Skin.hpp"
+#include <Tritium/Song.hpp>
+#include <Tritium/Hydrogen.hpp>
 
 #include <QPixmap>
 

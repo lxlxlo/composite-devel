@@ -19,20 +19,20 @@
  *
  */
 
-#include <Tritium/Preferences.h>
-#include <Tritium/hydrogen.h>
-#include <Tritium/instrument.h>
-#include <Tritium/Pattern.h>
-#include <Tritium/note.h>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Instrument.hpp>
+#include <Tritium/Pattern.hpp>
+#include <Tritium/Note.hpp>
 using namespace Tritium;
 
 #include <cassert>
 
-#include "../HydrogenApp.h"
+#include "../HydrogenApp.hpp"
 
-#include "NotePropertiesRuler.h"
-#include "PatternEditorPanel.h"
-#include "DrumPatternEditor.h"
+#include "NotePropertiesRuler.hpp"
+#include "PatternEditorPanel.hpp"
+#include "DrumPatternEditor.hpp"
 
 
 NotePropertiesRuler::NotePropertiesRuler( QWidget *parent, PatternEditorPanel *pPatternEditorPanel, NotePropertiesMode mode )

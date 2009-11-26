@@ -19,16 +19,16 @@
  *
  */
 
-#ifndef COMPOSITE_AUDIOFILEBROWSER_H
-#define COMPOSITE_AUDIOFILEBROWSER_H
+#ifndef COMPOSITE_AUDIOFILEBROWSER_HPP
+#define COMPOSITE_AUDIOFILEBROWSER_HPP
 
 #include "config.h"
 #include "ui_AudioFileBrowser_UI.h"
-#include "InstrumentEditor/InstrumentEditor.h"
+#include "InstrumentEditor/InstrumentEditor.hpp"
 
 #include <QDialog>
-#include <Tritium/Object.h>
-#include <Tritium/Preferences.h>
+#include <Tritium/Object.hpp>
+#include <Tritium/Preferences.hpp>
 
 
 class Button;
@@ -90,4 +90,4 @@ class AudioFileBrowser : public QDialog, public Ui_AudioFileBrowser_UI, public O
 };
 
 
-#endif // COMPOSITE_AUDIOFILEBROWSER_H
+#endif // COMPOSITE_AUDIOFILEBROWSER_HPP

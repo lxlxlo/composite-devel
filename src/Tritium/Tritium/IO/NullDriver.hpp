@@ -20,10 +20,10 @@
  */
 
 
-#ifndef TRITIUM_NULLDRIVER_H
-#define TRITIUM_NULLDRIVER_H
+#ifndef TRITIUM_NULLDRIVER_HPP
+#define TRITIUM_NULLDRIVER_HPP
 
-#include <Tritium/IO/AudioOutput.h>
+#include <Tritium/IO/AudioOutput.hpp>
 
 #include <inttypes.h>
 
@@ -50,5 +50,5 @@ public:
 
 } // namespace Tritium
 
-#endif // TRITIUM_NULLDRIVER_H
+#endif // TRITIUM_NULLDRIVER_HPP
 

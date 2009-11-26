@@ -23,19 +23,19 @@
 #include "version.h"
 
 
-#include <Tritium/adsr.h>
-#include <Tritium/data_path.h>
-#include <Tritium/hydrogen.h>
-#include <Tritium/h2_exception.h>
-#include <Tritium/instrument.h>
-#include <Tritium/LocalFileMng.h>
-#include <Tritium/note.h>
-#include <Tritium/Pattern.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/Song.h>
-#include <Tritium/SoundLibrary.h>
-#include <Tritium/sample.h>
-#include <Tritium/fx/Effects.h>
+#include <Tritium/ADSR.hpp>
+#include <Tritium/DataPath.hpp>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/H2Exception.hpp>
+#include <Tritium/Instrument.hpp>
+#include <Tritium/LocalFileMng.hpp>
+#include <Tritium/Note.hpp>
+#include <Tritium/Pattern.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/Song.hpp>
+#include <Tritium/SoundLibrary.hpp>
+#include <Tritium/Sample.hpp>
+#include <Tritium/fx/Effects.hpp>
 
 
 #include <cstdlib>

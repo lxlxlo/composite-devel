@@ -19,16 +19,16 @@
  *
  */
 
-#ifndef COMPOSITE_SONGEDITOR_H
-#define COMPOSITE_SONGEDITOR_H
+#ifndef COMPOSITE_SONGEDITOR_HPP
+#define COMPOSITE_SONGEDITOR_HPP
 
 #include <vector>
 
 #include <QtGui>
 
-#include <Tritium/Object.h>
-#include "../EventListener.h"
-#include "../PatternFillDialog.h"
+#include <Tritium/Object.hpp>
+#include "../EventListener.hpp"
+#include "../PatternFillDialog.hpp"
 
 class Button;
 class ToggleButton;
@@ -185,4 +185,4 @@ class SongEditorPositionRuler : public QWidget, public Object
 };
 
 
-#endif // COMPOSITE_SONGEDITOR_H
+#endif // COMPOSITE_SONGEDITOR_HPP

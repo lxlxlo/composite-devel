@@ -19,17 +19,17 @@
  *
  */
 
-#ifndef TRITIUM_SMF_H
-#define TRITIUM_SMF_H
+#ifndef TRITIUM_SMF_HPP
+#define TRITIUM_SMF_HPP
 
-#include <Tritium/Object.h>
-#include <Tritium/Song.h>
+#include <Tritium/Object.hpp>
+#include <Tritium/Song.hpp>
 
 #include <string>
 #include <cstdio>
 #include <vector>
 
-#include <Tritium/smf/SMFEvent.h>
+#include <Tritium/smf/SMFEvent.hpp>
 
 namespace Tritium
 {
@@ -98,4 +98,4 @@ private:
 
 } // namespace Tritium
 
-#endif // TRITIUM_SMF_H
+#endif // TRITIUM_SMF_HPP

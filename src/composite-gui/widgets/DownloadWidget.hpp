@@ -19,15 +19,15 @@
  *
  */
 
-#ifndef COMPOSITE_DOWNLOADWIDGET_H
-#define COMPOSITE_DOWNLOADWIDGET_H
+#ifndef COMPOSITE_DOWNLOADWIDGET_HPP
+#define COMPOSITE_DOWNLOADWIDGET_HPP
 
 #include "config.h"
 
 #include <QtGui>
 #include <QtNetwork>
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 class Download : public QDialog, public Object
 {
@@ -84,4 +84,4 @@ private:
 	QProgressBar* __progress_bar;
 };
 
-#endif // COMPOSITE_DOWNLOADWIDGET_H
+#endif // COMPOSITE_DOWNLOADWIDGET_HPP

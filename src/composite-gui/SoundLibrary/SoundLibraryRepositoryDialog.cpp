@@ -19,10 +19,10 @@
  *
  */
 
-#include "SoundLibraryRepositoryDialog.h"
+#include "SoundLibraryRepositoryDialog.hpp"
 
-#include <Tritium/SoundLibrary.h>
-#include <Tritium/Preferences.h>
+#include <Tritium/SoundLibrary.hpp>
+#include <Tritium/Preferences.hpp>
 
 #include <QList>
 #include <QInputDialog>

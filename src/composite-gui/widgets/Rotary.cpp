@@ -18,11 +18,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#include "Rotary.h"
-#include "LCD.h"
-#include "../Skin.h"
+#include "Rotary.hpp"
+#include "LCD.hpp"
+#include "../Skin.hpp"
 
-#include <Tritium/globals.h>
+#include <Tritium/globals.hpp>
 
 RotaryTooltip::RotaryTooltip( QPoint pos )
 //  : QWidget( 0, "RotaryTooltip", Qt::WStyle_Customize| Qt::WStyle_NoBorder | Qt::WStyle_StaysOnTop| Qt::WX11BypassWM )

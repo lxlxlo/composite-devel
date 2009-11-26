@@ -19,11 +19,11 @@
  *
  */
 /*
-#ifndef COMPOSITE_PIANOROLLEDITOR_H
-#define COMPOSITE_PIANOROLLEDITOR_H
+#ifndef COMPOSITE_PIANOROLLEDITOR_HPP
+#define COMPOSITE_PIANOROLLEDITOR_HPP
 
-#include <Tritium/Object.h>
-#include "../EventListener.h"
+#include <Tritium/Object.hpp>
+#include "../EventListener.hpp"
 
 #include <QtGui>
 
@@ -67,5 +67,5 @@ class PianoRollEditor: public QWidget, public EventListener, public Object
 
 };
 
-#endif // COMPOSITE_PIANOROLLEDITOR_H
+#endif // COMPOSITE_PIANOROLLEDITOR_HPP
 */

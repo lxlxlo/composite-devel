@@ -19,12 +19,12 @@
  *
  */
 
-#ifndef COMPOSITE_FILEBROWSER_H
-#define COMPOSITE_FILEBROWSER_H
+#ifndef COMPOSITE_FILEBROWSER_HPP
+#define COMPOSITE_FILEBROWSER_HPP
 
 #include "config.h"
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 #include <QtGui>
 
@@ -58,4 +58,4 @@ class FileBrowser : public QWidget, private Object
 };
 
 
-#endif // COMPOSITE_FILEBROWSER_H
+#endif // COMPOSITE_FILEBROWSER_HPP

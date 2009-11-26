@@ -19,19 +19,19 @@
  *
  */
 
-#ifndef TRITIUM_JACKOUTPUT_H
-#define TRITIUM_JACKOUTPUT_H
+#ifndef TRITIUM_JACKOUTPUT_HPP
+#define TRITIUM_JACKOUTPUT_HPP
 
-#include <Tritium/IO/AudioOutput.h>
-#include <Tritium/IO/NullDriver.h>
+#include <Tritium/IO/AudioOutput.hpp>
+#include <Tritium/IO/NullDriver.hpp>
 
 // check if jack support is enabled
 #ifdef JACK_SUPPORT
 
 #include <jack/jack.h>
 
-#include <Tritium/globals.h>
-#include <Tritium/hydrogen.h>
+#include <Tritium/globals.hpp>
+#include <Tritium/Hydrogen.hpp>
 
 
 
@@ -106,5 +106,5 @@ public:
 
 } // namespace Tritium
 
-#endif // TRITIUM_JACKOUTPUT_H
+#endif // TRITIUM_JACKOUTPUT_HPP
 

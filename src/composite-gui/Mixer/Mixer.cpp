@@ -19,23 +19,23 @@
  *
  */
 
-#include "Mixer.h"
-#include "MixerLine.h"
+#include "Mixer.hpp"
+#include "MixerLine.hpp"
 
-#include "../Skin.h"
-#include "../HydrogenApp.h"
-#include "../LadspaFXProperties.h"
-#include "../InstrumentEditor/InstrumentEditorPanel.h"
-#include "../widgets/Button.h"
-#include "../widgets/PixmapWidget.h"
+#include "../Skin.hpp"
+#include "../HydrogenApp.hpp"
+#include "../LadspaFXProperties.hpp"
+#include "../InstrumentEditor/InstrumentEditorPanel.hpp"
+#include "../widgets/Button.hpp"
+#include "../widgets/PixmapWidget.hpp"
 
-#include <Tritium/audio_engine.h>
-#include <Tritium/hydrogen.h>
-#include <Tritium/instrument.h>
-#include <Tritium/Song.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/note.h>
-#include <Tritium/fx/Effects.h>
+#include <Tritium/AudioEngine.hpp>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Instrument.hpp>
+#include <Tritium/Song.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/Note.hpp>
+#include <Tritium/fx/Effects.hpp>
 using namespace Tritium;
 
 #include <cassert>

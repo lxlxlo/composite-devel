@@ -19,10 +19,10 @@
  *
  */
 
-#include "../Skin.h"
-#include "../HydrogenApp.h"
-#include "MidiActivityWidget.h"
-#include <Tritium/hydrogen.h>
+#include "../Skin.hpp"
+#include "../HydrogenApp.hpp"
+#include "MidiActivityWidget.hpp"
+#include <Tritium/Hydrogen.hpp>
 
 #include <QTimer>
 #include <QPainter>

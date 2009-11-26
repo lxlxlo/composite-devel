@@ -19,14 +19,14 @@
  *
  */
 
-#ifndef COMPOSITE_LCD_H
-#define COMPOSITE_LCD_H
+#ifndef COMPOSITE_LCD_HPP
+#define COMPOSITE_LCD_HPP
 
 #include "config.h"
 
 #include <QtGui>
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 #include <vector>
 
@@ -131,4 +131,4 @@ class LCDSpinBox : public QWidget, public Object
 };
 
 
-#endif // COMPOSITE_LCD_H
+#endif // COMPOSITE_LCD_HPP

@@ -25,7 +25,7 @@
  * Copyright (c) 2005 Jonathan Dempsey
  *
  */
-#include <Tritium/data_path.h>
+#include <Tritium/DataPath.hpp>
 
 #include <QFile>
 #include <QApplication>

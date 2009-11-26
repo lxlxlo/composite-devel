@@ -19,12 +19,12 @@
  *
  */
 
-#ifndef COMPOSITE_SOUNDLIBRARYREPOSITORYDIALOG_H
-#define COMPOSITE_SOUNDLIBRARYREPOSITORYDIALOG_H
+#ifndef COMPOSITE_SOUNDLIBRARYREPOSITORYDIALOG_HPP
+#define COMPOSITE_SOUNDLIBRARYREPOSITORYDIALOG_HPP
 
 #include "config.h"
 #include "ui_SoundLibraryRepositoryDialog_UI.h"
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 ///
 ///
@@ -45,4 +45,4 @@ class SoundLibraryRepositoryDialog : public QDialog, public Ui_SoundLibraryRepos
 };
 
 
-#endif // COMPOSITE_SOUNDLIBRARYREPOSITORYDIALOG_H
+#endif // COMPOSITE_SOUNDLIBRARYREPOSITORYDIALOG_HPP

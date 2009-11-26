@@ -19,10 +19,10 @@
  *
  */
 
-#ifndef TRITIUM_ADSR_H
-#define TRITIUM_ADSR_H
+#ifndef TRITIUM_ADSR_HPP
+#define TRITIUM_ADSR_HPP
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 namespace Tritium
 {
@@ -70,4 +70,4 @@ private:
 } // namespace Tritium
 
 
-#endif // TRITIUM_ADSR_H
+#endif // TRITIUM_ADSR_HPP

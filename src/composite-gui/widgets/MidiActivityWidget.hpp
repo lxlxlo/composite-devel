@@ -20,15 +20,15 @@
  */
 
 
-#ifndef COMPOSITE_MIDIACTIVITYWIDGET_H
-#define COMPOSITE_MIDIACTIVITYWIDGET_H
+#ifndef COMPOSITE_MIDIACTIVITYWIDGET_HPP
+#define COMPOSITE_MIDIACTIVITYWIDGET_HPP
 
 #include "config.h"
 
 #include <QtGui>
 
-#include "../EventListener.h"
-#include <Tritium/Object.h>
+#include "../EventListener.hpp"
+#include <Tritium/Object.hpp>
 
 class MidiActivityWidget : public QWidget, public EventListener, public Object
 {
@@ -55,4 +55,4 @@ class MidiActivityWidget : public QWidget, public EventListener, public Object
 		virtual void midiActivityEvent();
 };
 
-#endif // COMPOSITE_MIDIACTIVITYWIDGET_H
+#endif // COMPOSITE_MIDIACTIVITYWIDGET_HPP

@@ -19,10 +19,10 @@
  *
  */
 
-#ifndef TRITIUM_MIDIINPUT_H
-#define TRITIUM_MIDIINPUT_H
+#ifndef TRITIUM_MIDIINPUT_HPP
+#define TRITIUM_MIDIINPUT_HPP
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 #include <vector>
 #include <stdint.h>
 
@@ -117,5 +117,5 @@ protected:
 
 } // namespace Tritium
 
-#endif // TRITIUM_MIDIINPUT_H
+#endif // TRITIUM_MIDIINPUT_HPP
 

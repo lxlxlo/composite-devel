@@ -18,13 +18,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#include "DiskWriterDriver.h"
+#include "DiskWriterDriver.hpp"
 
-#include <Tritium/Preferences.h>
-#include <Tritium/event_queue.h>
-#include <Tritium/hydrogen.h>
-#include <Tritium/Transport.h>
-#include <Tritium/TransportPosition.h>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/EventQueue.hpp>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Transport.hpp>
+#include <Tritium/TransportPosition.hpp>
 
 #include <QThread>
 #include <cassert>

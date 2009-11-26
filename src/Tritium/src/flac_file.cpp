@@ -19,8 +19,8 @@
  *
  */
 
-#include "flac_file.h"
-#include <Tritium/sample.h>
+#include "FLACFile.hpp"
+#include <Tritium/Sample.hpp>
 
 #include <vector>
 #include <fstream>

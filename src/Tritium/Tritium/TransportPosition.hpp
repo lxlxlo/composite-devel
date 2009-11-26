@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef TRITIUM_TRANSPORTPOSITION_H
-#define TRITIUM_TRANSPORTPOSITION_H
+#ifndef TRITIUM_TRANSPORTPOSITION_HPP
+#define TRITIUM_TRANSPORTPOSITION_HPP
 
 #include <stdint.h>  // int32_t, uint32_t
 
@@ -133,4 +133,4 @@ TransportPosition operator-(const TransportPosition& pos, int ticks);
 
 } // namespace Tritium
 
-#endif // TRITIUM_TRANSPORTPOSITION_H
+#endif // TRITIUM_TRANSPORTPOSITION_HPP

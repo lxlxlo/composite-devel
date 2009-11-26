@@ -19,19 +19,19 @@
  *
  */
 
-#include "SoundLibraryExportDialog.h"
-#include <Tritium/LocalFileMng.h>
-#include <Tritium/SoundLibrary.h>
+#include "SoundLibraryExportDialog.hpp"
+#include <Tritium/LocalFileMng.hpp>
+#include <Tritium/SoundLibrary.hpp>
 
-#include <Tritium/hydrogen.h>
-#include <Tritium/Preferences.h>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Preferences.hpp>
 
-#include <Tritium/adsr.h>
-#include <Tritium/sample.h>
-#include <Tritium/instrument.h>
-#include <Tritium/h2_exception.h>
-#include <Tritium/SoundLibrary.h>
-#include <Tritium/data_path.h>
+#include <Tritium/ADSR.hpp>
+#include <Tritium/Sample.hpp>
+#include <Tritium/Instrument.hpp>
+#include <Tritium/H2Exception.hpp>
+#include <Tritium/SoundLibrary.hpp>
+#include <Tritium/DataPath.hpp>
 
 #include <memory>
 #include <QtGui>

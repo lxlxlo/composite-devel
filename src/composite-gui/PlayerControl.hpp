@@ -19,13 +19,13 @@
  *
  */
 
-#ifndef COMPOSITE_PLAYERCONTROL_H
-#define COMPOSITE_PLAYERCONTROL_H
+#ifndef COMPOSITE_PLAYERCONTROL_HPP
+#define COMPOSITE_PLAYERCONTROL_HPP
 
 #include <QtGui>
 
-#include "EventListener.h"
-#include <Tritium/Object.h>
+#include "EventListener.hpp"
+#include <Tritium/Object.hpp>
 
 namespace Tritium
 {
@@ -187,4 +187,4 @@ class PlayerControl : public QLabel, public Object, public EventListener
 };
 
 
-#endif // COMPOSITE_PLAYERCONTROL_H
+#endif // COMPOSITE_PLAYERCONTROL_HPP

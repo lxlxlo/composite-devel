@@ -20,17 +20,17 @@
  */
 
 
-#ifndef COMPOSITE_PATTERNEDITORINSTRUMENTLIST_H
-#define COMPOSITE_PATTERNEDITORINSTRUMENTLIST_H
+#ifndef COMPOSITE_PATTERNEDITORINSTRUMENTLIST_HPP
+#define COMPOSITE_PATTERNEDITORINSTRUMENTLIST_HPP
 
 #include "config.h"
 
-#include <Tritium/globals.h>
+#include <Tritium/globals.hpp>
 
 #include <QtGui>
 
-#include <Tritium/Object.h>
-#include "../widgets/PixmapWidget.h"
+#include <Tritium/Object.hpp>
+#include "../widgets/PixmapWidget.hpp"
 
 namespace Tritium
 {
@@ -111,4 +111,4 @@ class PatternEditorInstrumentList : public QWidget, public Object {
 };
 
 
-#endif // COMPOSITE_PATTERNEDITORINSTRUMENTLIST_H
+#endif // COMPOSITE_PATTERNEDITORINSTRUMENTLIST_HPP

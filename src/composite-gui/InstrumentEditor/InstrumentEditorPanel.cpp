@@ -24,8 +24,8 @@
 #include <QGridLayout>
 
 
-#include "InstrumentEditorPanel.h"
-#include "../Skin.h"
+#include "InstrumentEditorPanel.hpp"
+#include "../Skin.hpp"
 
 
 InstrumentEditorPanel* InstrumentEditorPanel::m_pInstance = NULL;

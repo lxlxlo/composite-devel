@@ -19,23 +19,23 @@
  *
  */
 
-#include "DrumPatternEditor.h"
-#include "PatternEditorPanel.h"
-#include "NotePropertiesRuler.h"
+#include "DrumPatternEditor.hpp"
+#include "PatternEditorPanel.hpp"
+#include "NotePropertiesRuler.hpp"
 
-#include <Tritium/globals.h>
-#include <Tritium/Song.h>
-#include <Tritium/hydrogen.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/event_queue.h>
-#include <Tritium/instrument.h>
-#include <Tritium/Pattern.h>
-#include <Tritium/note.h>
-#include <Tritium/audio_engine.h>
+#include <Tritium/globals.hpp>
+#include <Tritium/Song.hpp>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/EventQueue.hpp>
+#include <Tritium/Instrument.hpp>
+#include <Tritium/Pattern.hpp>
+#include <Tritium/Note.hpp>
+#include <Tritium/AudioEngine.hpp>
 
-#include "../HydrogenApp.h"
-#include "../Mixer/Mixer.h"
-#include "../Skin.h"
+#include "../HydrogenApp.hpp"
+#include "../Mixer/Mixer.hpp"
+#include "../Skin.hpp"
 
 #include <cassert>
 #include <algorithm>

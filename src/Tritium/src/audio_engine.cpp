@@ -19,12 +19,12 @@
  *
  */
 
-#include <Tritium/audio_engine.h>
+#include <Tritium/AudioEngine.hpp>
 
-#include <Tritium/fx/Effects.h>
-#include <Tritium/sampler/Sampler.h>
+#include <Tritium/fx/Effects.hpp>
+#include <Tritium/sampler/Sampler.hpp>
 
-#include <Tritium/hydrogen.h>	// TODO: remove this line as soon as possible
+#include <Tritium/Hydrogen.hpp>	// TODO: remove this line as soon as possible
 #include <cassert>
 
 namespace Tritium

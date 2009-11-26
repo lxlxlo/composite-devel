@@ -19,17 +19,17 @@
  *
  */
 
-#include "AudioFileBrowser.h"
-#include "../HydrogenApp.h"
-#include "InstrumentEditor/InstrumentEditor.h"
-#include "SampleWaveDisplay.h"
-#include "../widgets/Button.h"
-#include "../Skin.h"
+#include "AudioFileBrowser.hpp"
+#include "../HydrogenApp.hpp"
+#include "InstrumentEditor/InstrumentEditor.hpp"
+#include "SampleWaveDisplay.hpp"
+#include "../widgets/Button.hpp"
+#include "../Skin.hpp"
 
-#include <Tritium/data_path.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/sample.h>
-#include <Tritium/audio_engine.h>
+#include <Tritium/DataPath.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/Sample.hpp>
+#include <Tritium/AudioEngine.hpp>
 
 #include <QModelIndex>
 #include <QTreeWidget>

@@ -20,14 +20,14 @@
  */
 
 
-#ifndef COMPOSITE_FADER_H
-#define COMPOSITE_FADER_H
+#ifndef COMPOSITE_FADER_HPP
+#define COMPOSITE_FADER_HPP
 
 #include "config.h"
 
 #include <QtGui>
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 ///
 /// Fader and VuMeter widget
@@ -166,4 +166,4 @@ class Knob : public QWidget, public Object
 };
 
 
-#endif // COMPOSITE_FADER_H
+#endif // COMPOSITE_FADER_HPP

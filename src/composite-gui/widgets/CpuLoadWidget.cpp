@@ -20,11 +20,11 @@
  */
 
 
-#include "CpuLoadWidget.h"
-#include <Tritium/hydrogen.h>
+#include "CpuLoadWidget.hpp"
+#include <Tritium/Hydrogen.hpp>
 
-#include "../Skin.h"
-#include "../HydrogenApp.h"
+#include "../Skin.hpp"
+#include "../HydrogenApp.hpp"
 
 #include <QTimer>
 #include <QMouseEvent>

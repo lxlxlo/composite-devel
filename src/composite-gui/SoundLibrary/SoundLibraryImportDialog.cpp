@@ -20,18 +20,18 @@
  */
 
 
-#include "SoundLibraryImportDialog.h"
-#include "SoundLibraryRepositoryDialog.h"
-#include "SoundLibraryPanel.h"
+#include "SoundLibraryImportDialog.hpp"
+#include "SoundLibraryRepositoryDialog.hpp"
+#include "SoundLibraryPanel.hpp"
 
-#include "../widgets/DownloadWidget.h"
-#include "../HydrogenApp.h"
-#include "../InstrumentRack.h"
+#include "../widgets/DownloadWidget.hpp"
+#include "../HydrogenApp.hpp"
+#include "../InstrumentRack.hpp"
 
-#include <Tritium/LocalFileMng.h>
-#include <Tritium/h2_exception.h>
-#include <Tritium/SoundLibrary.h>
-#include <Tritium/Preferences.h>
+#include <Tritium/LocalFileMng.hpp>
+#include <Tritium/H2Exception.hpp>
+#include <Tritium/SoundLibrary.hpp>
+#include <Tritium/Preferences.hpp>
 
 
 #include <QTreeWidget>

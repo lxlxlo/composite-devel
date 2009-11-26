@@ -20,39 +20,39 @@
  */
 #include "version.h"
 
-#include <Tritium/hydrogen.h>
-#include <Tritium/Transport.h>
-#include <Tritium/playlist.h>
-#include <Tritium/audio_engine.h>
-#include <Tritium/adsr.h>
-#include <Tritium/smf/SMF.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/LocalFileMng.h>
-#include <Tritium/Pattern.h>
-#include <Tritium/event_queue.h>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Transport.hpp>
+#include <Tritium/Playlist.hpp>
+#include <Tritium/AudioEngine.hpp>
+#include <Tritium/ADSR.hpp>
+#include <Tritium/smf/SMF.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/LocalFileMng.hpp>
+#include <Tritium/Pattern.hpp>
+#include <Tritium/EventQueue.hpp>
 using namespace Tritium;
 
-#include "AboutDialog.h"
-#include "AudioEngineInfoForm.h"
-#include "ExportSongDialog.h"
-#include "HydrogenApp.h"
-#include "InstrumentRack.h"
-#include "Skin.h"
-#include "MainForm.h"
-#include "PlayerControl.h"
-#include "HelpBrowser.h"
-#include "LadspaFXProperties.h"
-#include "SongPropertiesDialog.h"
+#include "AboutDialog.hpp"
+#include "AudioEngineInfoForm.hpp"
+#include "ExportSongDialog.hpp"
+#include "HydrogenApp.hpp"
+#include "InstrumentRack.hpp"
+#include "Skin.hpp"
+#include "MainForm.hpp"
+#include "PlayerControl.hpp"
+#include "HelpBrowser.hpp"
+#include "LadspaFXProperties.hpp"
+#include "SongPropertiesDialog.hpp"
 
-#include "Mixer/Mixer.h"
-#include "InstrumentEditor/InstrumentEditorPanel.h"
-#include "PatternEditor/PatternEditorPanel.h"
-#include "SongEditor/SongEditor.h"
-#include "SongEditor/SongEditorPanel.h"
-#include "SoundLibrary/SoundLibraryPanel.h"
-#include "SoundLibrary/SoundLibraryImportDialog.h"
-#include "SoundLibrary/SoundLibrarySaveDialog.h"
-#include "SoundLibrary/SoundLibraryExportDialog.h"
+#include "Mixer/Mixer.hpp"
+#include "InstrumentEditor/InstrumentEditorPanel.hpp"
+#include "PatternEditor/PatternEditorPanel.hpp"
+#include "SongEditor/SongEditor.hpp"
+#include "SongEditor/SongEditorPanel.hpp"
+#include "SoundLibrary/SoundLibraryPanel.hpp"
+#include "SoundLibrary/SoundLibraryImportDialog.hpp"
+#include "SoundLibrary/SoundLibrarySaveDialog.hpp"
+#include "SoundLibrary/SoundLibraryExportDialog.hpp"
 
 #include <QtGui>
 

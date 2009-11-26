@@ -20,28 +20,28 @@
  */
 
 
-#include "Skin.h"
-#include "PlayerControl.h"
-#include "InstrumentRack.h"
-#include "HydrogenApp.h"
+#include "Skin.hpp"
+#include "PlayerControl.hpp"
+#include "InstrumentRack.hpp"
+#include "HydrogenApp.hpp"
 
-#include "widgets/LCD.h"
-#include "widgets/Button.h"
-#include "widgets/CpuLoadWidget.h"
-#include "widgets/MidiActivityWidget.h"
-#include "widgets/PixmapWidget.h"
+#include "widgets/LCD.hpp"
+#include "widgets/Button.hpp"
+#include "widgets/CpuLoadWidget.hpp"
+#include "widgets/MidiActivityWidget.hpp"
+#include "widgets/PixmapWidget.hpp"
 
-#include "Mixer/Mixer.h"
-#include "SongEditor/SongEditorPanel.h"
-#include "PatternEditor/PatternEditorPanel.h"
-#include "InstrumentEditor/InstrumentEditorPanel.h"
+#include "Mixer/Mixer.hpp"
+#include "SongEditor/SongEditorPanel.hpp"
+#include "PatternEditor/PatternEditorPanel.hpp"
+#include "InstrumentEditor/InstrumentEditorPanel.hpp"
 
-#include <Tritium/hydrogen.h>
-#include <Tritium/Transport.h>
-#include <Tritium/audio_engine.h>
-#include <Tritium/IO/JackOutput.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/JackTimeMasterEvents.h>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Transport.hpp>
+#include <Tritium/AudioEngine.hpp>
+#include <Tritium/IO/JackOutput.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/JackTimeMasterEvents.hpp>
 using namespace Tritium;
 
 

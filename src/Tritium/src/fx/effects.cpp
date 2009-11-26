@@ -18,13 +18,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#include <Tritium/fx/Effects.h>
+#include <Tritium/fx/Effects.hpp>
 
 #ifdef LADSPA_SUPPORT
 
-#include <Tritium/Preferences.h>
-#include <Tritium/fx/LadspaFX.h>
-#include <Tritium/audio_engine.h>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/fx/LadspaFX.hpp>
+#include <Tritium/AudioEngine.hpp>
 
 #include <algorithm>
 #include <QDir>

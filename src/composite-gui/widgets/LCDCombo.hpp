@@ -19,14 +19,14 @@
  *
  */
 
-#ifndef COMPOSITE_LCDCOMBO_H
-#define COMPOSITE_LCDCOMBO_H
+#ifndef COMPOSITE_LCDCOMBO_HPP
+#define COMPOSITE_LCDCOMBO_HPP
 
 #include "config.h"
 
 #include <QtGui>
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 class Button;
 class LCDDisplay;
@@ -70,4 +70,4 @@ class LCDCombo : public QWidget, public Object
 };
 
 
-#endif // COMPOSITE_LCDCOMBO_H
+#endif // COMPOSITE_LCDCOMBO_HPP

@@ -19,13 +19,13 @@
  *
  */
 
-#include <Tritium/SeqScript.h>
-#include <Tritium/SeqEvent.h>
-#include <Tritium/SeqScriptIterator.h>
+#include <Tritium/SeqScript.hpp>
+#include <Tritium/SeqEvent.hpp>
+#include <Tritium/SeqScriptIterator.hpp>
 
 #include <cassert>
 
-#include "SeqScriptPrivate.h"
+#include "SeqScriptPrivate.hpp"
 
 using namespace Tritium;
 

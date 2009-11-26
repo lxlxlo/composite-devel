@@ -19,14 +19,14 @@
  *
  */
 
-#ifndef COMPOSITE_NOTEPROPERTIESRULER_H
-#define COMPOSITE_NOTEPROPERTIESRULER_H
+#ifndef COMPOSITE_NOTEPROPERTIESRULER_HPP
+#define COMPOSITE_NOTEPROPERTIESRULER_HPP
 
-#include "../EventListener.h"
+#include "../EventListener.hpp"
 
 #include <QtGui>
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 namespace Tritium
 {
@@ -84,4 +84,4 @@ class NotePropertiesRuler : public QWidget, public Object, public EventListener
 };
 
 
-#endif // COMPOSITE_NOTEPROPERTIESRULER_H
+#endif // COMPOSITE_NOTEPROPERTIESRULER_HPP

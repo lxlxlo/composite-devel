@@ -23,20 +23,20 @@
 
 #include <QPainter>
 
-#include "../InstrumentEditor/InstrumentEditor.h"
-#include "../widgets/Fader.h"
-#include "../HydrogenApp.h"
-#include "../Skin.h"
-#include "../widgets/Rotary.h"
-#include "../widgets/Button.h"
-#include "../widgets/LCD.h"
+#include "../InstrumentEditor/InstrumentEditor.hpp"
+#include "../widgets/Fader.hpp"
+#include "../HydrogenApp.hpp"
+#include "../Skin.hpp"
+#include "../widgets/Rotary.hpp"
+#include "../widgets/Button.hpp"
+#include "../widgets/LCD.hpp"
 
-#include <Tritium/hydrogen.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/audio_engine.h>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/AudioEngine.hpp>
 using namespace Tritium;
 
-#include "MixerLine.h"
+#include "MixerLine.hpp"
 
 #define MIXERLINE_WIDTH			56
 #define MIXERLINE_HEIGHT		254

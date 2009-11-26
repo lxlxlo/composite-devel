@@ -21,14 +21,14 @@
 
 #include <QDir>
 
-#include <Tritium/SoundLibrary.h>
-#include <Tritium/instrument.h>
-#include <Tritium/sample.h>
-#include <Tritium/LocalFileMng.h>
-#include <Tritium/h2_exception.h>
-#include <Tritium/hydrogen.h>
-#include <Tritium/adsr.h>
-#include <Tritium/Preferences.h>
+#include <Tritium/SoundLibrary.hpp>
+#include <Tritium/Instrument.hpp>
+#include <Tritium/Sample.hpp>
+#include <Tritium/LocalFileMng.hpp>
+#include <Tritium/H2Exception.hpp>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/ADSR.hpp>
+#include <Tritium/Preferences.hpp>
 
 #include <cstdlib>
 

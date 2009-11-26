@@ -19,9 +19,9 @@
  *
  */
 
-#include <Tritium/adsr.h>
-#include "table/getTableValue.h"
-#include "table/TableExponential.h"
+#include <Tritium/ADSR.hpp>
+#include "table/getTableValue.hpp"
+#include "table/TableExponential.hpp"
 
 namespace Tritium
 {

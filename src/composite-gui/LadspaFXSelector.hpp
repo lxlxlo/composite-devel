@@ -19,14 +19,14 @@
  *
  */
 
-#ifndef COMPOSITE_LADSPAFXSELECTOR_H
-#define COMPOSITE_LADSPAFXSELECTOR_H
+#ifndef COMPOSITE_LADSPAFXSELECTOR_HPP
+#define COMPOSITE_LADSPAFXSELECTOR_HPP
 
 #include "config.h"
 
 #include "ui_LadspaFXSelector_UI.h"
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 #include <QtGui>
 #include <string>
@@ -67,4 +67,4 @@ class LadspaFXSelector : public QDialog, public Ui_LadspaFXSelector_UI, public O
 };
 
 
-#endif // COMPOSITE_LADSPAFXSELECTOR_H
+#endif // COMPOSITE_LADSPAFXSELECTOR_HPP

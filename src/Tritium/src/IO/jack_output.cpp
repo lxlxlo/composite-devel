@@ -19,19 +19,19 @@
  *
  */
 
-#include "JackClient.h"
-#include <Tritium/IO/JackOutput.h>
+#include "JackClient.hpp"
+#include <Tritium/IO/JackOutput.hpp>
 #ifdef JACK_SUPPORT
 
 #include <sys/types.h>
 #include <unistd.h>
 #include <cstdlib>
 #include <cassert>
-#include <Tritium/hydrogen.h>
-#include <Tritium/instrument.h>
-#include <Tritium/Song.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/globals.h>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Instrument.hpp>
+#include <Tritium/Song.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/globals.hpp>
 
 namespace Tritium
 {

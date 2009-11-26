@@ -19,13 +19,13 @@
  *
  */
 
-#ifndef COMPOSITE_LADSPAFXPROPERTIES_H
-#define COMPOSITE_LADSPAFXPROPERTIES_H
+#ifndef COMPOSITE_LADSPAFXPROPERTIES_HPP
+#define COMPOSITE_LADSPAFXPROPERTIES_HPP
 
 #include <vector>
 #include <QtGui>
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 class Fader;
 class LCDDisplay;
@@ -70,4 +70,4 @@ class LadspaFXProperties : public QWidget, public Object {
 		QTimer* m_pTimer;
 };
 
-#endif // COMPOSITE_LADSPAFXPROPERTIES_H
+#endif // COMPOSITE_LADSPAFXPROPERTIES_HPP

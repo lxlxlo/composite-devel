@@ -19,10 +19,10 @@
  *
  */
 
-#include "songhelpers.h"
+#include "songhelpers.hpp"
 
-#include <Tritium/Song.h>
-#include <Tritium/Pattern.h>
+#include <Tritium/Song.hpp>
+#include <Tritium/Pattern.hpp>
 
 #include <vector>
 

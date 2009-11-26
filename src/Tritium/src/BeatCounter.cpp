@@ -22,10 +22,10 @@
 #include <cstring>
 #include <sys/time.h>
 
-#include <Tritium/hydrogen.h>
-#include <Tritium/Transport.h>
-#include <Tritium/Preferences.h>
-#include "BeatCounter.h"
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Transport.hpp>
+#include <Tritium/Preferences.hpp>
+#include "BeatCounter.hpp"
 
 using namespace Tritium;
 

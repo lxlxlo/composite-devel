@@ -20,13 +20,13 @@
  *
  */
 
-#include "PatternFillDialog.h"
+#include "PatternFillDialog.hpp"
 
-#include <Tritium/hydrogen.h>
-#include <Tritium/Song.h>
-#include <Tritium/Pattern.h>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Song.hpp>
+#include <Tritium/Pattern.hpp>
 
-#include "Skin.h"
+#include "Skin.hpp"
 
 
 PatternFillDialog::PatternFillDialog(QWidget* parent, FillRange* pRange)

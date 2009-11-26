@@ -19,14 +19,14 @@
  *
  */
 
-#ifndef COMPOSITE_SOUNDLIBRARYTREE_H
-#define COMPOSITE_SOUNDLIBRARYTREE_H
+#ifndef COMPOSITE_SOUNDLIBRARYTREE_HPP
+#define COMPOSITE_SOUNDLIBRARYTREE_HPP
 
 #include "config.h"
 
 #include <QtGui>
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 class SoundLibraryTree : public QTreeWidget, private Object
 {
@@ -53,4 +53,4 @@ class SoundLibraryTree : public QTreeWidget, private Object
 
 
 
-#endif // COMPOSITE_SOUNDLIBRARYTREE_H
+#endif // COMPOSITE_SOUNDLIBRARYTREE_HPP

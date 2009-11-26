@@ -19,23 +19,23 @@
  *
  */
 
-#include "PatternEditorInstrumentList.h"
+#include "PatternEditorInstrumentList.hpp"
 
-#include <Tritium/audio_engine.h>
-#include <Tritium/event_queue.h>
-#include <Tritium/hydrogen.h>
-#include <Tritium/instrument.h>
-#include <Tritium/note.h>
-#include <Tritium/Pattern.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/Song.h>
+#include <Tritium/AudioEngine.hpp>
+#include <Tritium/EventQueue.hpp>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Instrument.hpp>
+#include <Tritium/Note.hpp>
+#include <Tritium/Pattern.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/Song.hpp>
 using namespace Tritium;
 
-#include "PatternEditorPanel.h"
-#include "DrumPatternEditor.h"
-#include "../HydrogenApp.h"
-#include "../Mixer/Mixer.h"
-#include "../widgets/Button.h"
+#include "PatternEditorPanel.hpp"
+#include "DrumPatternEditor.hpp"
+#include "../HydrogenApp.hpp"
+#include "../Mixer/Mixer.hpp"
+#include "../widgets/Button.hpp"
 
 #include <QtGui>
 #include <cassert>

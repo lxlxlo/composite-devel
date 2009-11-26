@@ -20,9 +20,9 @@
  */
 
 #include <QMessageBox>
-#include "SoundLibrarySaveDialog.h"
+#include "SoundLibrarySaveDialog.hpp"
 
-#include <Tritium/SoundLibrary.h>
+#include <Tritium/SoundLibrary.hpp>
 
 SoundLibrarySaveDialog::SoundLibrarySaveDialog( QWidget* pParent )
  : QDialog( pParent )

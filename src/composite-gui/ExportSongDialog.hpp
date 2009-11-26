@@ -20,14 +20,14 @@
  */
 
 
-#ifndef COMPOSITE_EXPORTSONGDIALOG_H
-#define COMPOSITE_EXPORTSONGDIALOG_H
+#ifndef COMPOSITE_EXPORTSONGDIALOG_HPP
+#define COMPOSITE_EXPORTSONGDIALOG_HPP
 
 #include "config.h"
 
 #include "ui_ExportSongDialog_UI.h"
-#include "EventListener.h"
-#include <Tritium/Object.h>
+#include "EventListener.hpp"
+#include <Tritium/Object.hpp>
 
 ///
 /// Dialog for exporting song
@@ -54,4 +54,4 @@ class ExportSongDialog : public QDialog, public Ui_ExportSongDialog_UI, public E
 };
 
 
-#endif // COMPOSITE_EXPORTSONGDIALOG_H
+#endif // COMPOSITE_EXPORTSONGDIALOG_HPP

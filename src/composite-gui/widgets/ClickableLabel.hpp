@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef COMPOSITE_CLICKABLELABEL_H
-#define COMPOSITE_CLICKABLELABEL_H
+#ifndef COMPOSITE_CLICKABLELABEL_HPP
+#define COMPOSITE_CLICKABLELABEL_HPP
 
 #include "config.h"
 #include <QtGui>
@@ -39,4 +39,4 @@ class ClickableLabel : public QLabel
 };
 
 
-#endif // COMPOSITE_CLICKABLELABEL_H
+#endif // COMPOSITE_CLICKABLELABEL_HPP

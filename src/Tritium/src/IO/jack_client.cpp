@@ -22,9 +22,9 @@
  * Copyright(c) 2008 by Gabriel M. Beddingfield <gabriel@teuton.org>
  */
 
-#include "JackClient.h"
+#include "JackClient.hpp"
 #include <jack/jack.h>
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 #include <cassert>
 
 #ifdef JACK_SUPPORT

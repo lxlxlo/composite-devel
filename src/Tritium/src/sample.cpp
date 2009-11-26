@@ -19,10 +19,10 @@
  *
  */
 
-#include <Tritium/sample.h>
+#include <Tritium/Sample.hpp>
 
-#include <Tritium/Preferences.h>
-#include "flac_file.h"
+#include <Tritium/Preferences.hpp>
+#include "FLACFile.hpp"
 #include <sndfile.h>
 #include <iostream>
 #include <fstream>

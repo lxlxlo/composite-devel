@@ -19,13 +19,13 @@
  *
  */
 
-#ifndef COMPOSITE_PATTERNEDITORRULER_H
-#define COMPOSITE_PATTERNEDITORRULER_H
+#ifndef COMPOSITE_PATTERNEDITORRULER_HPP
+#define COMPOSITE_PATTERNEDITORRULER_HPP
 
-#include "../EventListener.h"
+#include "../EventListener.hpp"
 
 #include <QtGui>
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 class PatternEditorPanel;
 
@@ -76,4 +76,4 @@ class PatternEditorRuler : public QWidget, public Object, public EventListener
 };
 
 
-#endif // COMPOSITE_PATTERNEDITORRULER_H
+#endif // COMPOSITE_PATTERNEDITORRULER_HPP

@@ -18,22 +18,22 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#include "SongEditorPanel.h"
+#include "SongEditorPanel.hpp"
 
-#include "../HydrogenApp.h"
-#include "../PatternPropertiesDialog.h"
-#include "../SongPropertiesDialog.h"
-#include "../widgets/Button.h"
-#include "../widgets/PixmapWidget.h"
-#include "../Skin.h"
+#include "../HydrogenApp.hpp"
+#include "../PatternPropertiesDialog.hpp"
+#include "../SongPropertiesDialog.hpp"
+#include "../widgets/Button.hpp"
+#include "../widgets/PixmapWidget.hpp"
+#include "../Skin.hpp"
 
-#include "SongEditor.h"
+#include "SongEditor.hpp"
 
-#include <Tritium/hydrogen.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/audio_engine.h>
-#include <Tritium/Pattern.h>
-#include <Tritium/Transport.h>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/AudioEngine.hpp>
+#include <Tritium/Pattern.hpp>
+#include <Tritium/Transport.hpp>
 
 using namespace Tritium;
 using namespace std;

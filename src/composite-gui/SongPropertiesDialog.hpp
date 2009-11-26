@@ -19,13 +19,13 @@
  *
  */
 
-#ifndef COMPOSITE_SONGPROPERTIESDIALOG_H
-#define COMPOSITE_SONGPROPERTIESDIALOG_H
+#ifndef COMPOSITE_SONGPROPERTIESDIALOG_HPP
+#define COMPOSITE_SONGPROPERTIESDIALOG_HPP
 
 #include "config.h"
 
 #include "ui_SongPropertiesDialog_UI.h"
-#include "HydrogenApp.h"
+#include "HydrogenApp.hpp"
 
 /**
  * Song Properties Dialog
@@ -44,4 +44,4 @@ class SongPropertiesDialog : public QDialog, private Ui_SongPropertiesDialog_UI
 
 };
 
-#endif // COMPOSITE_SONGPROPERTIESDIALOG_H
+#endif // COMPOSITE_SONGPROPERTIESDIALOG_HPP

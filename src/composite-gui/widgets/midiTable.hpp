@@ -19,11 +19,11 @@
  *
  */
 
-#ifndef COMPOSITE_MIDITABLE_H
-#define COMPOSITE_MIDITABLE_H
+#ifndef COMPOSITE_MIDITABLE_HPP
+#define COMPOSITE_MIDITABLE_HPP
 
 #include "config.h"
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 #include <QtGui>
 
@@ -50,4 +50,4 @@ class MidiTable : public QTableWidget, public Object
 
 };
 
-#endif // COMPOSITE_MIDITABLE_H
+#endif // COMPOSITE_MIDITABLE_HPP

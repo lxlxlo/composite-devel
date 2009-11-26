@@ -19,15 +19,15 @@
  *
  */
 
-#ifndef TRITIUM_DISKWRITERDRIVER_H
-#define TRITIUM_DISKWRITERDRIVER_H
+#ifndef TRITIUM_DISKWRITERDRIVER_HPP
+#define TRITIUM_DISKWRITERDRIVER_HPP
 
 #include <sndfile.h>
 
 #include <inttypes.h>
 
-#include <Tritium/IO/AudioOutput.h>
-#include <Tritium/Object.h>
+#include <Tritium/IO/AudioOutput.hpp>
+#include <Tritium/Object.hpp>
 
 namespace Tritium
 {
@@ -75,4 +75,4 @@ private:
 
 } // namespace Tritium
 
-#endif // TRITIUM_DISKWRITERDRIVER_H
+#endif // TRITIUM_DISKWRITERDRIVER_HPP

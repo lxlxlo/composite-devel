@@ -20,12 +20,12 @@
  */
 
 
-#include "../Skin.h"
-#include "Fader.h"
-#include "LCD.h"
+#include "../Skin.hpp"
+#include "Fader.hpp"
+#include "LCD.hpp"
 
 #include <QtGui>
-#include <Tritium/globals.h>
+#include <Tritium/globals.hpp>
 
 Fader::Fader( QWidget *pParent, bool bUseIntSteps, bool bWithoutKnob )
  : QWidget( pParent )

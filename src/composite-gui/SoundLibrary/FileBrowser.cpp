@@ -19,7 +19,7 @@
  *
  */
 
-#include "FileBrowser.h"
+#include "FileBrowser.hpp"
 
 #include <QVBoxLayout>
 #include <QDir>
@@ -27,9 +27,9 @@
 #include "math.h"
 #include "string.h"
 
-#include <Tritium/hydrogen.h>
-#include <Tritium/sample.h>
-#include <Tritium/audio_engine.h>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Sample.hpp>
+#include <Tritium/AudioEngine.hpp>
 using namespace Tritium;
 
 FileBrowser::FileBrowser( QWidget* pParent )

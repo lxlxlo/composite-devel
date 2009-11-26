@@ -20,12 +20,12 @@
  */
 
 
-#ifndef TRITIUM_SAMPLER_H
-#define TRITIUM_SAMPLER_H
+#ifndef TRITIUM_SAMPLER_HPP
+#define TRITIUM_SAMPLER_HPP
 
-#include <Tritium/Object.h>
-#include <Tritium/globals.h>
-#include <Tritium/SeqScriptIterator.h>
+#include <Tritium/Object.hpp>
+#include <Tritium/globals.hpp>
+#include <Tritium/SeqScriptIterator.hpp>
 
 #include <inttypes.h>
 #include <vector>
@@ -76,4 +76,4 @@ private:
 
 } // namespace Tritium
 
-#endif // TRITIUM_SAMPLER_H
+#endif // TRITIUM_SAMPLER_HPP

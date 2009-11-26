@@ -20,18 +20,18 @@
  */
 
 /*
-#include "PianoRollEditor.h"
+#include "PianoRollEditor.hpp"
 
 #include <cassert>
 
-#include <Tritium/hydrogen.h>
-#include <Tritium/instrument.h>
-#include <Tritium/note.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/Pattern.h>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Instrument.hpp>
+#include <Tritium/Note.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/Pattern.hpp>
 using namespace Tritium;
 
-#include "../HydrogenApp.h"
+#include "../HydrogenApp.hpp"
 
 PianoRollEditor::PianoRollEditor( QWidget *pParent )
  : QWidget( pParent )

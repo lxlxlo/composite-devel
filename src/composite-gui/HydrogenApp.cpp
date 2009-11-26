@@ -21,34 +21,34 @@
 
 #include "version.h"
 
-#include "HydrogenApp.h"
-#include "Skin.h"
-#include "PreferencesDialog.h"
-#include "MainForm.h"
-#include "PlayerControl.h"
-#include "AudioEngineInfoForm.h"
-#include "HelpBrowser.h"
-#include "LadspaFXProperties.h"
-#include "InstrumentRack.h"
+#include "HydrogenApp.hpp"
+#include "Skin.hpp"
+#include "PreferencesDialog.hpp"
+#include "MainForm.hpp"
+#include "PlayerControl.hpp"
+#include "AudioEngineInfoForm.hpp"
+#include "HelpBrowser.hpp"
+#include "LadspaFXProperties.hpp"
+#include "InstrumentRack.hpp"
 
-#include "PatternEditor/PatternEditorPanel.h"
-#include "InstrumentEditor/InstrumentEditorPanel.h"
-#include "SongEditor/SongEditor.h"
-#include "SongEditor/SongEditorPanel.h"
-#include "PlaylistEditor/PlaylistDialog.h"
-//#include "AudioFileBrowser/AudioFileBrowser.h"
-#include "InstrumentRack.h"
-#include "SoundLibrary/SoundLibraryPanel.h"
+#include "PatternEditor/PatternEditorPanel.hpp"
+#include "InstrumentEditor/InstrumentEditorPanel.hpp"
+#include "SongEditor/SongEditor.hpp"
+#include "SongEditor/SongEditorPanel.hpp"
+#include "PlaylistEditor/PlaylistDialog.hpp"
+//#include "AudioFileBrowser/AudioFileBrowser.hpp"
+#include "InstrumentRack.hpp"
+#include "SoundLibrary/SoundLibraryPanel.hpp"
 
-#include "Mixer/Mixer.h"
-#include "Mixer/MixerLine.h"
+#include "Mixer/Mixer.hpp"
+#include "Mixer/MixerLine.hpp"
 
-#include <Tritium/hydrogen.h>
-#include <Tritium/event_queue.h>
-#include <Tritium/fx/LadspaFX.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/Song.h>
-#include <Tritium/playlist.h>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/EventQueue.hpp>
+#include <Tritium/fx/LadspaFX.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/Song.hpp>
+#include <Tritium/Playlist.hpp>
 
 #include <QtGui>
 

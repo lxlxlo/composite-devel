@@ -19,15 +19,15 @@
  *
  */
 
-#ifndef TRITIUM_LOCALFILEMNG_H
-#define TRITIUM_LOCALFILEMNG_H
+#ifndef TRITIUM_LOCALFILEMNG_HPP
+#define TRITIUM_LOCALFILEMNG_HPP
 
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <string>
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 #include <QDomDocument>
 
@@ -120,5 +120,5 @@ QTextCodec* getCodecForDoc(TiXmlNode* node);
 } // namespace Tritium
 
 
-#endif // TRITIUM_LOCALFILEMNG_H
+#endif // TRITIUM_LOCALFILEMNG_HPP
 

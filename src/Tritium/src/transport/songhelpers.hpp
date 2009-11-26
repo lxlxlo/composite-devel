@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef TRITIUM_SONGHELPERS_H
-#define TRITIUM_SONGHELPERS_H
+#ifndef TRITIUM_SONGHELPERS_HPP
+#define TRITIUM_SONGHELPERS_HPP
 
 /**
  * This declares several functions that are useful in translating Song
@@ -69,4 +69,4 @@ namespace Tritium
 
 } // namespace Tritium
 
-#endif // TRITIUM_SONGHELPERS_H
+#endif // TRITIUM_SONGHELPERS_HPP

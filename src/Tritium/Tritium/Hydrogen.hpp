@@ -18,16 +18,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef TRITIUM_HYDROGEN_H
-#define TRITIUM_HYDROGEN_H
+#ifndef TRITIUM_HYDROGEN_HPP
+#define TRITIUM_HYDROGEN_HPP
 
 #include <stdint.h> // for uint32_t et al
-#include <Tritium/action.h>
-#include <Tritium/Song.h>
-#include <Tritium/Object.h>
-#include <Tritium/IO/AudioOutput.h>
-#include <Tritium/IO/MidiInput.h>
-#include <Tritium/SoundLibrary.h>
+#include <Tritium/Action.hpp>
+#include <Tritium/Song.hpp>
+#include <Tritium/Object.hpp>
+#include <Tritium/IO/AudioOutput.hpp>
+#include <Tritium/IO/MidiInput.hpp>
+#include <Tritium/SoundLibrary.hpp>
 #include <cassert>
 
 // Engine states  (It's ok to use ==, <, and > when testing)
@@ -221,5 +221,5 @@ private:
 
 } // namespace Tritium
 
-#endif  // TRITIUM_HYDROGEN_H
+#endif  // TRITIUM_HYDROGEN_HPP
 

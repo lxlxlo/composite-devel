@@ -18,10 +18,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef TRITIUM_SEQSCRIPTPRIVATE_H
-#define TRITIUM_SEQSCRIPTPRIVATE_H
+#ifndef TRITIUM_SEQSCRIPTPRIVATE_HPP
+#define TRITIUM_SEQSCRIPTPRIVATE_HPP
 
-#include <Tritium/SeqEvent.h>
+#include <Tritium/SeqEvent.hpp>
 #include <vector>
 
 namespace Tritium
@@ -139,4 +139,4 @@ namespace Tritium
 
 } // namespace Tritium
 
-#endif // TRITIUM_SEQSCRIPTPRIVATE_H
+#endif // TRITIUM_SEQSCRIPTPRIVATE_HPP

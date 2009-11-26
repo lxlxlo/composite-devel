@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef TRITIUM_UTIL_H
-#define TRITIUM_UTIL_H
+#ifndef TRITIUM_UTIL_HPP
+#define TRITIUM_UTIL_HPP
 
 namespace Tritium
 {
@@ -42,4 +42,4 @@ namespace Tritium
 } // namepace Tritium
 
 
-#endif // TRITIUM_UTIL_H
+#endif // TRITIUM_UTIL_HPP

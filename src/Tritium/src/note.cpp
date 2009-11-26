@@ -19,8 +19,8 @@
  *
  */
 
-#include <Tritium/note.h>
-#include <Tritium/instrument.h>
+#include <Tritium/Note.hpp>
+#include <Tritium/Instrument.hpp>
 
 #include <cassert>
 #include <cstdlib>

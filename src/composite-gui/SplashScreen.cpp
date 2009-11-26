@@ -21,14 +21,14 @@
 
 #include "config.h"
 #include "version.h"
-#include "SplashScreen.h"
+#include "SplashScreen.hpp"
 
 #include <QPainter>
 #include <QLabel>
 #include <QApplication>
 #include <QDesktopWidget>
 
-#include "Skin.h"
+#include "Skin.hpp"
 
 
 

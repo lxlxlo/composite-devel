@@ -19,15 +19,15 @@
  *
  */
 
-#ifndef COMPOSITE_HYDROGENAPP_H
-#define COMPOSITE_HYDROGENAPP_H
+#ifndef COMPOSITE_HYDROGENAPP_HPP
+#define COMPOSITE_HYDROGENAPP_HPP
 
 #include "config.h"
 
-#include <Tritium/Object.h>
-#include <Tritium/globals.h>
+#include <Tritium/Object.hpp>
+#include <Tritium/globals.hpp>
 
-#include "EventListener.h"
+#include "EventListener.hpp"
 
 #include <iostream>
 #include <vector>
@@ -134,4 +134,4 @@ class HydrogenApp : public QObject, public Object
 };
 
 
-#endif // COMPOSITE_HYDROGENAPP_H
+#endif // COMPOSITE_HYDROGENAPP_HPP

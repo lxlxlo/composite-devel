@@ -19,9 +19,9 @@
  *
  */
 
-#include <Tritium/hydrogen.h>
-#include <Tritium/Transport.h>
-#include "FakeDriver.h"
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Transport.hpp>
+#include "FakeDriver.hpp"
 
 namespace Tritium
 {

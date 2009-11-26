@@ -19,11 +19,11 @@
  *
  */
 
-#include "PixmapWidget.h"
-#include "../Skin.h"
+#include "PixmapWidget.hpp"
+#include "../Skin.hpp"
 #include <QPainter>
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 PixmapWidget::PixmapWidget( QWidget *pParent, const QString& sClassName )
  : Object( sClassName )

@@ -21,7 +21,7 @@
 #ifdef WIN32
 
 #include <time.h>
-#include <Tritium/timehelper.h>
+#include <Tritium/timehelper.hpp>
 
 
 int gettimeofday(struct timeval *tv, struct timezone *tz)

@@ -20,9 +20,9 @@
  */
 
 #include <stdlib.h>
-#include <Tritium/Preferences.h>
+#include <Tritium/Preferences.hpp>
 
-#include <Tritium/LocalFileMng.h>
+#include <Tritium/LocalFileMng.hpp>
 
 #ifndef WIN32
 #include <pwd.h>
@@ -35,9 +35,9 @@
 #include <iostream>
 #include <cstdio>
 #include <list>
-#include <Tritium/midiMap.h>
+#include <Tritium/MidiMap.hpp>
 
-#include <Tritium/data_path.h>
+#include <Tritium/DataPath.hpp>
 #include "config.h"
 #include "version.h"
 

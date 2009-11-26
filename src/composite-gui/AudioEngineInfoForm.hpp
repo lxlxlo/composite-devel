@@ -20,13 +20,13 @@
  */
 
 
-#ifndef COMPOSITE_AUDIOENGINEINFOFORM_H
-#define COMPOSITE_AUDIOENGINEINFOFORM_H
+#ifndef COMPOSITE_AUDIOENGINEINFOFORM_HPP
+#define COMPOSITE_AUDIOENGINEINFOFORM_HPP
 
 #include "config.h"
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
-#include "EventListener.h"
+#include "EventListener.hpp"
 #include "ui_AudioEngineInfoForm_UI.h"
 
 #include <QtGui>
@@ -58,4 +58,4 @@ class AudioEngineInfoForm : public QWidget, public Ui_AudioEngineInfoForm_UI, pu
 		void updateInfo();
 };
 
-#endif // COMPOSITE_AUDIOENGINEINFOFORM_H
+#endif // COMPOSITE_AUDIOENGINEINFOFORM_HPP

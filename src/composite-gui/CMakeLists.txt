@@ -1,7 +1,7 @@
 
 FILE(GLOB_RECURSE composite_UIS *.ui)
 FILE(GLOB_RECURSE composite_SRCS *.cpp)
-FILE(GLOB_RECURSE composite_H *.h)
+FILE(GLOB_RECURSE composite_H *.hpp)
 
 QT4_WRAP_UI(composite_UIS_H ${composite_UIS})
 QT4_WRAP_CPP(composite_MOC ${composite_H} OPTIONS -nw) 

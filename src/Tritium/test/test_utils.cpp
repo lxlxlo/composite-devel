@@ -19,10 +19,10 @@
  *
  */
 
-#include "test_utils.h"
-#include <Tritium/TransportPosition.h>
-#include <Tritium/Song.h>
-#include "../src/transport/songhelpers.h"
+#include "test_utils.hpp"
+#include <Tritium/TransportPosition.hpp>
+#include <Tritium/Song.hpp>
+#include "../src/transport/songhelpers.hpp"
 #include <cmath>
 
 using namespace Tritium;

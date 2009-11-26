@@ -19,7 +19,7 @@
  *
  */
 
-#include "SoundLibraryTree.h"
+#include "SoundLibraryTree.hpp"
 #include <QMimeData>
 
 SoundLibraryTree::SoundLibraryTree( QWidget *pParent )

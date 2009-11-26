@@ -19,12 +19,12 @@
  *
  */
 
-#include "PatternPropertiesDialog.h"
-#include "Skin.h"
+#include "PatternPropertiesDialog.hpp"
+#include "Skin.hpp"
 
-#include <Tritium/hydrogen.h>
-#include <Tritium/Pattern.h>
-#include <Tritium/Preferences.h>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Pattern.hpp>
+#include <Tritium/Preferences.hpp>
 
 using namespace std;
 using namespace Tritium;

@@ -19,11 +19,11 @@
  *
  */
 
-#ifndef TRITIUM_SMFEVENT_H
-#define TRITIUM_SMFEVENT_H
+#ifndef TRITIUM_SMFEVENT_HPP
+#define TRITIUM_SMFEVENT_HPP
 
 #include <vector>
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 namespace Tritium
 {
@@ -137,4 +137,4 @@ protected:
 
 } // namespace Tritium
 
-#endif // TRITIUM_SMFEVENT_H
+#endif // TRITIUM_SMFEVENT_HPP

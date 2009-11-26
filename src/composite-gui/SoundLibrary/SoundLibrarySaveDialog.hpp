@@ -19,12 +19,12 @@
  *
  */
 
-#ifndef COMPOSITE_SOUNDLIBRARYSAVEDIALOG_H
-#define COMPOSITE_SOUNDLIBRARYSAVEDIALOG_H
+#ifndef COMPOSITE_SOUNDLIBRARYSAVEDIALOG_HPP
+#define COMPOSITE_SOUNDLIBRARYSAVEDIALOG_HPP
 
 #include "config.h"
 #include "ui_SoundLibrarySaveDialog_UI.h"
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 ///
 ///
@@ -44,4 +44,4 @@ class SoundLibrarySaveDialog : public QDialog, public Ui_SoundLibrarySaveDialog_
 };
 
 
-#endif // COMPOSITE_SOUNDLIBRARYSAVEDIALOG_H
+#endif // COMPOSITE_SOUNDLIBRARYSAVEDIALOG_HPP

@@ -19,14 +19,14 @@
  *
  */
 
-#ifndef TRITIUM_EFFECTS_H
-#define TRITIUM_EFFECTS_H
+#ifndef TRITIUM_EFFECTS_HPP
+#define TRITIUM_EFFECTS_HPP
 
 #ifdef LADSPA_SUPPORT
 
-#include <Tritium/globals.h>
-#include <Tritium/Object.h>
-#include <Tritium/fx/LadspaFX.h>
+#include <Tritium/globals.hpp>
+#include <Tritium/Object.hpp>
+#include <Tritium/fx/LadspaFX.hpp>
 
 #include <vector>
 #include <cassert>
@@ -73,4 +73,4 @@ private:
 #endif // LADSPA_SUPPORT
 
 
-#endif // TRITIUM_EFFECTS_H
+#endif // TRITIUM_EFFECTS_HPP

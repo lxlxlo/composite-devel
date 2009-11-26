@@ -19,9 +19,9 @@
  *
  */
 
-#include <Tritium/SeqScriptIterator.h>
-#include <Tritium/SeqEvent.h>
-#include "SeqScriptPrivate.h"
+#include <Tritium/SeqScriptIterator.hpp>
+#include <Tritium/SeqEvent.hpp>
+#include "SeqScriptPrivate.hpp"
 
 #include <cassert>
 

@@ -19,18 +19,18 @@
  *
  */
 
-#ifndef COMPOSITE_MAINFORM_H
-#define COMPOSITE_MAINFORM_H
+#ifndef COMPOSITE_MAINFORM_HPP
+#define COMPOSITE_MAINFORM_HPP
 
 #include <QtNetwork>
 #include <QtGui>
 
 #include <map>
 
-#include "EventListener.h"
+#include "EventListener.hpp"
 #include "config.h"
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 class HydrogenApp;
 
@@ -135,4 +135,4 @@ class MainForm : public QMainWindow, public EventListener, public Object
 
 };
 
-#endif // COMPOSITE_MAINFORM_H
+#endif // COMPOSITE_MAINFORM_HPP

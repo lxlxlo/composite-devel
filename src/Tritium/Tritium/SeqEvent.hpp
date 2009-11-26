@@ -18,11 +18,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef TRITIUM_SEQEVENT_H
-#define TRITIUM_SEQEVENT_H
+#ifndef TRITIUM_SEQEVENT_HPP
+#define TRITIUM_SEQEVENT_HPP
 
 #include <stdint.h>  // int32_t, uint32_t
-#include <Tritium/note.h>
+#include <Tritium/Note.hpp>
 
 namespace Tritium
 {
@@ -56,4 +56,4 @@ namespace Tritium
 
 } // namespace Tritium
 
-#endif // TRITIUM_SEQEVENT_H
+#endif // TRITIUM_SEQEVENT_HPP

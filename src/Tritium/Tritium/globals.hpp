@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef TRITIUM_GLOBALS_H
-#define TRITIUM_GLOBALS_H
+#ifndef TRITIUM_GLOBALS_HPP
+#define TRITIUM_GLOBALS_HPP
 
 #define MAX_INSTRUMENTS		1000
 #define MAX_NOTES		192
@@ -36,4 +36,4 @@
 #define UNUSED( v )  v = v
 
 
-#endif // TRITIUM_GLOBALS_H
+#endif // TRITIUM_GLOBALS_HPP

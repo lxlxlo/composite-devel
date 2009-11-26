@@ -18,12 +18,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef COMPOSITE_MIDISENSEWIDGET_H
-#define COMPOSITE_MIDISENSEWIDGET_H
+#ifndef COMPOSITE_MIDISENSEWIDGET_HPP
+#define COMPOSITE_MIDISENSEWIDGET_HPP
 
 #include <QtGui>
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 class MidiSenseWidget : public QDialog ,public Object
 {
@@ -43,4 +43,4 @@ private:
     QLabel* m_pURLLabel;
 };
 
-#endif // COMPOSITE_MIDISENSEWIDGET_H
+#endif // COMPOSITE_MIDISENSEWIDGET_HPP

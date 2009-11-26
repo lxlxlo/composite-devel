@@ -19,14 +19,14 @@
  *
  */
 
-#ifndef COMPOSITE_PREFERENCESDIALOG_H
-#define COMPOSITE_PREFERENCESDIALOG_H
+#ifndef COMPOSITE_PREFERENCESDIALOG_HPP
+#define COMPOSITE_PREFERENCESDIALOG_HPP
 
 #include "config.h"
 
 #include "ui_PreferencesDialog_UI.h"
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 ///
 /// Preferences Dialog
@@ -57,4 +57,4 @@ class PreferencesDialog : public QDialog, private Ui_PreferencesDialog_UI, publi
 		void updateDriverInfo();
 };
 
-#endif // COMPOSITE_PREFERENCESDIALOG_H
+#endif // COMPOSITE_PREFERENCESDIALOG_HPP

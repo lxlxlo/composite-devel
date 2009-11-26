@@ -19,15 +19,15 @@
  *
  */
 
-#ifndef COMPOSITE_CPULOADWIDGET_H
-#define COMPOSITE_CPULOADWIDGET_H
+#ifndef COMPOSITE_CPULOADWIDGET_HPP
+#define COMPOSITE_CPULOADWIDGET_HPP
 
 #include "config.h"
 
 #include <iostream>
 
-#include "../EventListener.h"
-#include <Tritium/Object.h>
+#include "../EventListener.hpp"
+#include <Tritium/Object.hpp>
 
 #include <QtGui>
 
@@ -62,4 +62,4 @@ class CpuLoadWidget : public QWidget, public EventListener, public Object
 };
 
 
-#endif // COMPOSITE_CPULOADWIDGET_H
+#endif // COMPOSITE_CPULOADWIDGET_HPP

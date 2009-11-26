@@ -21,9 +21,9 @@
 
 #include <QtCore/QMutex>
 #include <QtCore/QMutexLocker>
-#include <Tritium/IO/JackOutput.h>
-#include "../IO/JackClient.h"
-#include "JackTimeMaster.h"
+#include <Tritium/IO/JackOutput.hpp>
+#include "../IO/JackClient.hpp"
+#include "JackTimeMaster.hpp"
 
 #include <cassert>
 

@@ -19,10 +19,10 @@
  *
  */
 
-#include <Tritium/smf/SMF.h>
-#include <Tritium/Pattern.h>
-#include <Tritium/note.h>
-#include <Tritium/instrument.h>
+#include <Tritium/smf/SMF.hpp>
+#include <Tritium/Pattern.hpp>
+#include <Tritium/Note.hpp>
+#include <Tritium/Instrument.hpp>
 
 #include <fstream>
 

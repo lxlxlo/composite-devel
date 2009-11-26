@@ -19,8 +19,8 @@
  *
  */
 
-#include <Tritium/action.h>
-#include <Tritium/midiMap.h>
+#include <Tritium/Action.hpp>
+#include <Tritium/MidiMap.hpp>
 #include <map>
 #include <QMutexLocker>
 

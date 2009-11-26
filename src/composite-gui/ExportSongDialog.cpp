@@ -24,12 +24,12 @@
 #include <QLabel>
 #include <QPixmap>
 
-#include "ExportSongDialog.h"
-#include "Skin.h"
-#include "HydrogenApp.h"
-#include <Tritium/Song.h>
-#include <Tritium/hydrogen.h>
-#include <Tritium/IO/AudioOutput.h>
+#include "ExportSongDialog.hpp"
+#include "Skin.hpp"
+#include "HydrogenApp.hpp"
+#include <Tritium/Song.hpp>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/IO/AudioOutput.hpp>
 
 #include <memory>
 

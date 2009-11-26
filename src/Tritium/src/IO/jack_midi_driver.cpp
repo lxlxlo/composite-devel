@@ -22,11 +22,11 @@
  * Copyright(c) 2008 by Gabriel M. Beddingfield <gabriel@teuton.org>
  */
 
-#include "JackMidiDriver.h"
-#include "JackClient.h"
+#include "JackMidiDriver.hpp"
+#include "JackClient.hpp"
 #include <cassert>
 #include <cstdlib> // free()
-#include <Tritium/Preferences.h> // For preferred auto-connection
+#include <Tritium/Preferences.hpp> // For preferred auto-connection
 #include <cerrno> // EEXIST for jack_connect()
 
 #ifdef JACK_SUPPORT

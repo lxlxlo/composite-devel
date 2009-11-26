@@ -19,15 +19,15 @@
  *
  */
 
-#ifndef COMPOSITE_SOUNDLIBRARYEXPORTDIALOG_H
-#define COMPOSITE_SOUNDLIBRARYEXPORTDIALOG_H
+#ifndef COMPOSITE_SOUNDLIBRARYEXPORTDIALOG_HPP
+#define COMPOSITE_SOUNDLIBRARYEXPORTDIALOG_HPP
 
 #include "config.h"
 #include "ui_SoundLibraryExportDialog_UI.h"
 
-#include <Tritium/Object.h>
-#include <Tritium/Song.h>
-#include <Tritium/SoundLibrary.h>
+#include <Tritium/Object.hpp>
+#include <Tritium/Song.hpp>
+#include <Tritium/SoundLibrary.hpp>
 
 #include <vector>
 
@@ -51,4 +51,4 @@ class SoundLibraryExportDialog : public QDialog, public Ui_SoundLibraryExportDia
 };
 
 
-#endif // COMPOSITE_SOUNDLIBRARYEXPORTDIALOG_H
+#endif // COMPOSITE_SOUNDLIBRARYEXPORTDIALOG_HPP

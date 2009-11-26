@@ -19,17 +19,17 @@
  *
  */
 
-#ifndef COMPOSITE_PLAYLISTDIALOG_H
-#define COMPOSITE_PLAYLISTDIALOG_H
+#ifndef COMPOSITE_PLAYLISTDIALOG_HPP
+#define COMPOSITE_PLAYLISTDIALOG_HPP
 
 #include "config.h"
 
 #include <QDialog>
 #include "ui_PlaylistDialog_UI.h"
-#include <Tritium/Object.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/hydrogen.h>
-#include <Tritium/playlist.h>
+#include <Tritium/Object.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Playlist.hpp>
 
 
 class Button;
@@ -89,4 +89,4 @@ class PlaylistDialog : public QDialog, public Ui_PlaylistDialog_UI, public Objec
 };
 
 
-#endif // COMPOSITE_PLAYLISTDIALOG_H
+#endif // COMPOSITE_PLAYLISTDIALOG_HPP

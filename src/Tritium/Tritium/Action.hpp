@@ -18,9 +18,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef TRITIUM_ACTION_H
-#define TRITIUM_ACTION_H
-#include <Tritium/Object.h>
+#ifndef TRITIUM_ACTION_HPP
+#define TRITIUM_ACTION_HPP
+#include <Tritium/Object.hpp>
 #include <map>
 #include <string>
 #include <cassert>
@@ -88,4 +88,4 @@ class ActionManager : public Object
 		ActionManager();
 		~ActionManager();
 };
-#endif // TRITIUM_ACTION_H
+#endif // TRITIUM_ACTION_HPP

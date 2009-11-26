@@ -21,8 +21,8 @@
     - Gabriel Beddingfield 2009-04-17, 2009-11-25
 */
 
-#ifndef TRITIUM_RINGBUFFER_H
-#define TRITIUM_RINGBUFFER_H
+#ifndef TRITIUM_RINGBUFFER_HPP
+#define TRITIUM_RINGBUFFER_HPP
 
 #include <cstring>
 #include <glib.h>
@@ -286,4 +286,4 @@ RingBuffer<T>::get_write_vector (RingBuffer<T>::rw_vector *vec)
 
 } // namespace Tritium
 
-#endif // TRITIUM_RINGBUFFER_H
+#endif // TRITIUM_RINGBUFFER_HPP

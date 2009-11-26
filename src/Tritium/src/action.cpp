@@ -20,17 +20,17 @@
  */
 #include <QObject>
 
-#include <Tritium/audio_engine.h>
-#include <Tritium/event_queue.h>
-#include <Tritium/hydrogen.h>
-#include <Tritium/Transport.h>
+#include <Tritium/AudioEngine.hpp>
+#include <Tritium/EventQueue.hpp>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Transport.hpp>
 
-#include <Tritium/instrument.h>
-#include <Tritium/Song.h>
+#include <Tritium/Instrument.hpp>
+#include <Tritium/Song.hpp>
 
 
-#include <Tritium/Preferences.h>
-#include <Tritium/action.h>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/Action.hpp>
 #include <map>
 
 ActionManager* ActionManager::__instance = NULL;

@@ -23,23 +23,23 @@
 #include <cmath>
 #include <list>
 
-#include <Tritium/IO/AudioOutput.h>
-#include <Tritium/IO/JackOutput.h>
+#include <Tritium/IO/AudioOutput.hpp>
+#include <Tritium/IO/JackOutput.hpp>
 
-#include <Tritium/adsr.h>
-#include <Tritium/audio_engine.h>
-#include <Tritium/data_path.h>
-#include <Tritium/globals.h>
-#include <Tritium/hydrogen.h>
-#include <Tritium/instrument.h>
-#include <Tritium/note.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/sample.h>
-#include <Tritium/SeqScriptIterator.h>
+#include <Tritium/ADSR.hpp>
+#include <Tritium/AudioEngine.hpp>
+#include <Tritium/DataPath.hpp>
+#include <Tritium/globals.hpp>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Instrument.hpp>
+#include <Tritium/Note.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/Sample.hpp>
+#include <Tritium/SeqScriptIterator.hpp>
 
-#include <Tritium/fx/Effects.h>
-#include <Tritium/sampler/Sampler.h>
-#include <Tritium/TransportPosition.h>
+#include <Tritium/fx/Effects.hpp>
+#include <Tritium/sampler/Sampler.hpp>
+#include <Tritium/TransportPosition.hpp>
 
 using namespace Tritium;
 

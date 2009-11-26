@@ -19,32 +19,32 @@
  *
  */
 
-#include <Tritium/Preferences.h>
-#include <Tritium/hydrogen.h>
-#include <Tritium/instrument.h>
-#include <Tritium/Pattern.h>
-#include <Tritium/audio_engine.h>
-#include <Tritium/event_queue.h>
-#include <Tritium/Transport.h>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Instrument.hpp>
+#include <Tritium/Pattern.hpp>
+#include <Tritium/AudioEngine.hpp>
+#include <Tritium/EventQueue.hpp>
+#include <Tritium/Transport.hpp>
 using namespace Tritium;
 
 
-#include "HydrogenApp.h"
-#include "PatternEditorPanel.h"
-#include "PatternEditorInstrumentList.h"
-#include "PatternEditorRuler.h"
-#include "NotePropertiesRuler.h"
-#include "DrumPatternEditor.h"
-#include "PianoRollEditor.h"
+#include "HydrogenApp.hpp"
+#include "PatternEditorPanel.hpp"
+#include "PatternEditorInstrumentList.hpp"
+#include "PatternEditorRuler.hpp"
+#include "NotePropertiesRuler.hpp"
+#include "DrumPatternEditor.hpp"
+#include "PianoRollEditor.hpp"
 
-#include "../MainForm.h"
-#include "../widgets/Button.h"
-#include "../widgets/Fader.h"
-#include "../widgets/PixmapWidget.h"
-#include "../widgets/LCDCombo.h"
+#include "../MainForm.hpp"
+#include "../widgets/Button.hpp"
+#include "../widgets/Fader.hpp"
+#include "../widgets/PixmapWidget.hpp"
+#include "../widgets/LCDCombo.hpp"
 
-#include "../Skin.h"
-#include "../SongEditor/SongEditorPanel.h"
+#include "../Skin.hpp"
+#include "../SongEditor/SongEditorPanel.hpp"
 
 #include <cmath>
 

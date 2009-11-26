@@ -19,13 +19,13 @@
  *
  */
 
-#include <Tritium/SeqEvent.h>
-#include <Tritium/instrument.h>
+#include <Tritium/SeqEvent.hpp>
+#include <Tritium/Instrument.hpp>
 #include <cmath>
 #include <memory>
 
 #define THIS_NAMESPACE t_SeqEvent
-#include "test_macros.h"
+#include "test_macros.hpp"
 
 using namespace Tritium;
 

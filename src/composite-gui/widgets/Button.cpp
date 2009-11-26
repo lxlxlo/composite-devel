@@ -19,10 +19,10 @@
  *
  */
 
-#include "Button.h"
+#include "Button.hpp"
 
-#include "PixmapWidget.h"
-#include "../Skin.h"
+#include "PixmapWidget.hpp"
+#include "../Skin.hpp"
 
 #include <qglobal.h>	// for QT_VERSION
 
@@ -30,7 +30,7 @@
 	#include <QSvgRenderer>
 #endif
 
-#include <Tritium/globals.h>
+#include <Tritium/globals.hpp>
 
 
 Button::Button( QWidget * pParent, const QString& sOnImage, const QString& sOffImage, const QString& sOverImage, QSize size, bool use_skin_style )

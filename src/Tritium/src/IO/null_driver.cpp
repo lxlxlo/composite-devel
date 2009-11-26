@@ -19,8 +19,8 @@
  *
  */
 
-#include <Tritium/IO/NullDriver.h>
-#include <Tritium/globals.h>
+#include <Tritium/IO/NullDriver.hpp>
+#include <Tritium/globals.hpp>
 
 
 namespace Tritium

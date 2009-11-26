@@ -19,13 +19,13 @@
  *
  */
 
-#ifndef COMPOSITE_PIXMAPWIDGET_H
-#define COMPOSITE_PIXMAPWIDGET_H
+#ifndef COMPOSITE_PIXMAPWIDGET_HPP
+#define COMPOSITE_PIXMAPWIDGET_HPP
 
 #include "config.h"
 #include <QtGui>
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 class PixmapWidget : public Object, public QWidget
 {
@@ -45,4 +45,4 @@ class PixmapWidget : public Object, public QWidget
 		virtual void paintEvent( QPaintEvent* ev);
 };
 
-#endif // COMPOSITE_PIXMAPWIDGET_H
+#endif // COMPOSITE_PIXMAPWIDGET_HPP

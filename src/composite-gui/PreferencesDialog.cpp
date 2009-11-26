@@ -20,10 +20,10 @@
  */
 
 
-#include "Skin.h"
-#include "PreferencesDialog.h"
-#include "HydrogenApp.h"
-#include "MainForm.h"
+#include "Skin.hpp"
+#include "PreferencesDialog.hpp"
+#include "HydrogenApp.hpp"
+#include "MainForm.hpp"
 
 #include "qmessagebox.h"
 #include "qstylefactory.h"
@@ -32,12 +32,12 @@
 #include <QFontDialog>
 #include <QMessageBox>
 
-#include "widgets/midiTable.h"
+#include "widgets/midiTable.hpp"
 
-#include <Tritium/midiMap.h>
-#include <Tritium/hydrogen.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/IO/MidiInput.h>
+#include <Tritium/MidiMap.hpp>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/IO/MidiInput.hpp>
 
 using namespace Tritium;
 

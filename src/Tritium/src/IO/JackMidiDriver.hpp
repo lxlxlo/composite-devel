@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-/* JackMidiDriver.h
+/* JackMidiDriver.hpp
  * Copyright(c) 2008 by Gabriel M. Beddingfield <gabriel@teuton.org>
  *
  * Note: This class implements it's own Jack Client object and process
@@ -26,13 +26,13 @@
  * class into a superclass called something like JackDriver.
  */
 
-#ifndef TRITIUM_JACKMIDIDRIVER_H
-#define TRITIUM_JACKMIDIDRIVER_H
+#ifndef TRITIUM_JACKMIDIDRIVER_HPP
+#define TRITIUM_JACKMIDIDRIVER_HPP
 
 #ifdef JACK_SUPPORT
 
-#include <Tritium/IO/MidiInput.h>
-#include <Tritium/h2_exception.h>
+#include <Tritium/IO/MidiInput.hpp>
+#include <Tritium/H2Exception.hpp>
 #include <jack/jack.h>
 #include <jack/midiport.h>
 #include <vector>
@@ -67,4 +67,4 @@ private:
 
 #endif // JACK_SUPPORT
 
-#endif // TRITIUM_JACKMIDIDRIVER_H
+#endif // TRITIUM_JACKMIDIDRIVER_HPP

@@ -19,12 +19,12 @@
  *
  */
 
-#include <Tritium/LocalFileMng.h>
-#include <Tritium/h2_exception.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/hydrogen.h>
-#include <Tritium/Transport.h>
-#include <Tritium/playlist.h>
+#include <Tritium/LocalFileMng.hpp>
+#include <Tritium/H2Exception.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Transport.hpp>
+#include <Tritium/Playlist.hpp>
 
 #include <vector>
 #include <cstdlib>

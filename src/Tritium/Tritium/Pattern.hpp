@@ -19,11 +19,11 @@
  *
  */
 
-#ifndef TRITIUM_PATTERN_H
-#define TRITIUM_PATTERN_H
+#ifndef TRITIUM_PATTERN_HPP
+#define TRITIUM_PATTERN_HPP
 
-#include <Tritium/globals.h>
-#include <Tritium/Object.h>
+#include <Tritium/globals.hpp>
+#include <Tritium/Object.hpp>
 
 namespace Tritium
 {
@@ -115,4 +115,4 @@ private:
 
 };
 
-#endif // TRITIUM_PATTERN_H
+#endif // TRITIUM_PATTERN_HPP

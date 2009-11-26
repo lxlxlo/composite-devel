@@ -18,15 +18,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef COMPOSITE_MIXERLINE_H
-#define COMPOSITE_MIXERLINE_H
+#ifndef COMPOSITE_MIXERLINE_HPP
+#define COMPOSITE_MIXERLINE_HPP
 
 #include "config.h"
 
 #include <QtGui>
 
-#include <Tritium/Object.h>
-#include <Tritium/globals.h>
+#include <Tritium/Object.hpp>
+#include <Tritium/globals.hpp>
 
 class Fader;
 class MasterFader;
@@ -39,7 +39,7 @@ class InstrumentNameWidget;
 class LCDDisplay;
 class Rotary;
 
-#include "../widgets/PixmapWidget.h"
+#include "../widgets/PixmapWidget.hpp"
 
 
 class InstrumentNameWidget : public PixmapWidget
@@ -291,4 +291,4 @@ class LadspaFXMixerLine : public PixmapWidget
 };
 
 
-#endif // COMPOSITE_MIXERLINE_H
+#endif // COMPOSITE_MIXERLINE_HPP

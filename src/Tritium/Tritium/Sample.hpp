@@ -19,13 +19,13 @@
  *
  */
 
-#ifndef TRITIUM_SAMPLE_H
-#define TRITIUM_SAMPLE_H
+#ifndef TRITIUM_SAMPLE_HPP
+#define TRITIUM_SAMPLE_HPP
 
 #include <string>
 
-#include <Tritium/globals.h>
-#include <Tritium/Object.h>
+#include <Tritium/globals.hpp>
+#include <Tritium/Object.hpp>
 
 namespace Tritium
 {
@@ -86,4 +86,4 @@ private:
 
 };
 
-#endif // TRITIUM_SAMPLE_H
+#endif // TRITIUM_SAMPLE_HPP

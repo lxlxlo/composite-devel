@@ -27,13 +27,13 @@
 
 #include <cstdlib>
 #include <time.h>
-#include <Tritium/SeqScript.h>
-#include <Tritium/instrument.h>
+#include <Tritium/SeqScript.hpp>
+#include <Tritium/Instrument.hpp>
 #include <memory>
 
 // CHANGE THIS TO MATCH YOUR FILE:
 #define THIS_NAMESPACE t_SeqScript
-#include "test_macros.h"
+#include "test_macros.hpp"
 
 using namespace Tritium;
 

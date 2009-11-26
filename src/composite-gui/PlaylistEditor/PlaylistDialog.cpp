@@ -20,20 +20,20 @@
  */
 
 
-#include "PlaylistDialog.h"
-#include "../HydrogenApp.h"
-#include "../InstrumentRack.h"
-#include "SoundLibrary/SoundLibraryPanel.h"
-#include "widgets/PixmapWidget.h"
+#include "PlaylistDialog.hpp"
+#include "../HydrogenApp.hpp"
+#include "../InstrumentRack.hpp"
+#include "SoundLibrary/SoundLibraryPanel.hpp"
+#include "widgets/PixmapWidget.hpp"
 
-#include <Tritium/LocalFileMng.h>
-#include <Tritium/h2_exception.h>
-#include <Tritium/Preferences.h>
-#include <Tritium/hydrogen.h>
-#include <Tritium/Transport.h>
-#include <Tritium/playlist.h>
+#include <Tritium/LocalFileMng.hpp>
+#include <Tritium/H2Exception.hpp>
+#include <Tritium/Preferences.hpp>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Transport.hpp>
+#include <Tritium/Playlist.hpp>
 
-#include "../widgets/Button.h"
+#include "../widgets/Button.hpp"
 
 #include <QTreeWidget>
 #include <QDomDocument>

@@ -19,12 +19,12 @@
  *
  */
 
-#ifndef TRITIUM_INSTRUMENT_H
-#define TRITIUM_INSTRUMENT_H
+#ifndef TRITIUM_INSTRUMENT_HPP
+#define TRITIUM_INSTRUMENT_HPP
 
 #include <QtCore/QString>
-#include <Tritium/globals.h>
-#include <Tritium/Object.h>
+#include <Tritium/globals.hpp>
+#include <Tritium/Object.hpp>
 #include <cassert>
 
 namespace Tritium
@@ -350,4 +350,4 @@ private:
 
 } // namespace Tritium
 
-#endif // TRITIUM_INSTRUMENT_H
+#endif // TRITIUM_INSTRUMENT_HPP

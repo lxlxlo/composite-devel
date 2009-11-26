@@ -19,12 +19,12 @@
  *
  */
 
-#ifndef COMPOSITE_SOUNDLIBRARYPROPERTIESDIALOG_H
-#define COMPOSITE_SOUNDLIBRARYPROPERTIESDIALOG_H
+#ifndef COMPOSITE_SOUNDLIBRARYPROPERTIESDIALOG_HPP
+#define COMPOSITE_SOUNDLIBRARYPROPERTIESDIALOG_HPP
 
 #include "config.h"
 #include "ui_SoundLibraryPropertiesDialog_UI.h"
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 ///
 ///
@@ -47,4 +47,4 @@ class SoundLibraryPropertiesDialog : public QDialog, public Ui_SoundLibraryPrope
 };
 
 }
-#endif // COMPOSITE_SOUNDLIBRARYPROPERTIESDIALOG_H
+#endif // COMPOSITE_SOUNDLIBRARYPROPERTIESDIALOG_HPP

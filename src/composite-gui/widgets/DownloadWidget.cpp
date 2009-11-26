@@ -19,7 +19,7 @@
  *
  */
 
-#include "DownloadWidget.h"
+#include "DownloadWidget.hpp"
 
 #include <cmath>
 

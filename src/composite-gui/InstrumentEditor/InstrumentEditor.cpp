@@ -25,27 +25,27 @@
 #include <math.h>
 #include <assert.h>
 
-#include <Tritium/Song.h>
-#include <Tritium/hydrogen.h>
-#include <Tritium/globals.h>
-#include <Tritium/adsr.h>
-#include <Tritium/sample.h>
-#include <Tritium/instrument.h>
-#include <Tritium/audio_engine.h>
-#include <Tritium/event_queue.h>
+#include <Tritium/Song.hpp>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/globals.hpp>
+#include <Tritium/ADSR.hpp>
+#include <Tritium/Sample.hpp>
+#include <Tritium/Instrument.hpp>
+#include <Tritium/AudioEngine.hpp>
+#include <Tritium/EventQueue.hpp>
 using namespace Tritium;
 
-#include "../HydrogenApp.h"
-#include "../Skin.h"
-#include "../widgets/Rotary.h"
-#include "../widgets/ClickableLabel.h"
-#include "../widgets/Button.h"
-#include "../widgets/LCD.h"
-#include "../widgets/Fader.h"
-#include "InstrumentEditor.h"
-#include "WaveDisplay.h"
-#include "LayerPreview.h"
-#include "AudioFileBrowser/AudioFileBrowser.h"
+#include "../HydrogenApp.hpp"
+#include "../Skin.hpp"
+#include "../widgets/Rotary.hpp"
+#include "../widgets/ClickableLabel.hpp"
+#include "../widgets/Button.hpp"
+#include "../widgets/LCD.hpp"
+#include "../widgets/Fader.hpp"
+#include "InstrumentEditor.hpp"
+#include "WaveDisplay.hpp"
+#include "LayerPreview.hpp"
+#include "AudioFileBrowser/AudioFileBrowser.hpp"
 
 InstrumentEditor::InstrumentEditor( QWidget* pParent )
  : QWidget( pParent )

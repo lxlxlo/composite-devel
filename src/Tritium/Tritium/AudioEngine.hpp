@@ -19,11 +19,11 @@
  *
  */
 
-#ifndef TRITIUM_AUDIO_ENGINE_H
-#define TRITIUM_AUDIO_ENGINE_H
+#ifndef TRITIUM_AUDIO_ENGINE_HPP
+#define TRITIUM_AUDIO_ENGINE_HPP
 
-#include <Tritium/Object.h>
-#include <Tritium/sampler/Sampler.h>
+#include <Tritium/Object.hpp>
+#include <Tritium/sampler/Sampler.hpp>
 
 #include <QMutex>
 #include <string>
@@ -92,4 +92,4 @@ private:
 } // namespace Tritium
 
 
-#endif // TRITIUM_AUDIO_ENGINE_H
+#endif // TRITIUM_AUDIO_ENGINE_HPP

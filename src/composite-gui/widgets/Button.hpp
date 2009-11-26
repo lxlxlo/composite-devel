@@ -20,12 +20,12 @@
  */
 
 
-#ifndef COMPOSITE_BUTTON_H
-#define COMPOSITE_BUTTON_H
+#ifndef COMPOSITE_BUTTON_HPP
+#define COMPOSITE_BUTTON_HPP
 
 #include "config.h"
 
-#include <Tritium/Object.h>
+#include <Tritium/Object.hpp>
 
 #include <QtGui>
 
@@ -103,4 +103,4 @@ class ToggleButton : public Button
 };
 
 
-#endif // COMPOSITE_BUTTON_H
+#endif // COMPOSITE_BUTTON_HPP
