@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef H2_OBJECT_H
-#define H2_OBJECT_H
+#ifndef TRITIUM_OBJECT_H
+#define TRITIUM_OBJECT_H
 
 #ifdef check
 #undef check
@@ -170,4 +170,4 @@ private:
 
 
 
-#endif // H2_OBJECT_H
+#endif // TRITIUM_OBJECT_H

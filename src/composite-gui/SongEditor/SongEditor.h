@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef SONG_EDITOR_H
-#define SONG_EDITOR_H
+#ifndef COMPOSITE_SONGEDITOR_H
+#define COMPOSITE_SONGEDITOR_H
 
 #include <vector>
 
@@ -185,4 +185,4 @@ class SongEditorPositionRuler : public QWidget, public Object
 };
 
 
-#endif
+#endif // COMPOSITE_SONGEDITOR_H

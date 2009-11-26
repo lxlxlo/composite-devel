@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef SOUNDLIBRARY_H
-#define SOUNDLIBRARY_H
+#ifndef TRITIUM_SOUNDLIBRARY_H
+#define TRITIUM_SOUNDLIBRARY_H
 
 #include <string>
 #include <Tritium/Object.h>
@@ -120,6 +120,6 @@ private:
 	QString m_sLicense;
 };
 
-};
+} // namespace Tritium
 
-#endif
+#endif // TRITIUM_SOUNDLIBRARY_H

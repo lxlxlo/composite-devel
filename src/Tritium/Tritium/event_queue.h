@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef EVENT_QUEUE_H
-#define EVENT_QUEUE_H
+#ifndef TRITIUM_EVENT_QUEUE_H
+#define TRITIUM_EVENT_QUEUE_H
 
 #include <Tritium/Object.h>
 #include <cassert>
@@ -77,6 +77,6 @@ private:
 	Event __events_buffer[ MAX_EVENTS ];
 };
 
-};
+} // namespace Tritium
 
-#endif
+#endif // TRITIUM_EVENT_QUEUE_H

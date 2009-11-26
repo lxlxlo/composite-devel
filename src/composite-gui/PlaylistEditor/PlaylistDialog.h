@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef PLAYLIST_DIALOG_H
-#define PLAYLIST_DIALOG_H
+#ifndef COMPOSITE_PLAYLISTDIALOG_H
+#define COMPOSITE_PLAYLISTDIALOG_H
 
 #include "config.h"
 
@@ -89,4 +89,4 @@ class PlaylistDialog : public QDialog, public Ui_PlaylistDialog_UI, public Objec
 };
 
 
-#endif
+#endif // COMPOSITE_PLAYLISTDIALOG_H

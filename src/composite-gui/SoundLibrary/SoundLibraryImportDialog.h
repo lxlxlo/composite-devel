@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef SOUND_LIBRARY_IMPORT_DIALOG_H
-#define SOUND_LIBRARY_IMPORT_DIALOG_H
+#ifndef COMPOSITE_SOUNDLIBRARYIMPORTDIALOG_H
+#define COMPOSITE_SOUNDLIBRARYIMPORTDIALOG_H
 
 #include "config.h"
 
@@ -77,4 +77,4 @@ class SoundLibraryImportDialog : public QDialog, public Ui_SoundLibraryImportDia
 };
 
 
-#endif
+#endif // COMPOSITE_SOUNDLIBRARYIMPORTDIALOG_H

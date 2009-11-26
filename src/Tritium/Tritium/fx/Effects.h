@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef EFFECTS_H
-#define EFFECTS_H
+#ifndef TRITIUM_EFFECTS_H
+#define TRITIUM_EFFECTS_H
 
 #ifdef LADSPA_SUPPORT
 
@@ -70,7 +70,7 @@ private:
 
 };
 
-#endif
+#endif // LADSPA_SUPPORT
 
 
-#endif
+#endif // TRITIUM_EFFECTS_H

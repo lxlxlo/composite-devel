@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef H2CORE_SEQEVENT_H
-#define H2CORE_SEQEVENT_H
+#ifndef TRITIUM_SEQEVENT_H
+#define TRITIUM_SEQEVENT_H
 
 #include <stdint.h>  // int32_t, uint32_t
 #include <Tritium/note.h>
@@ -56,4 +56,4 @@ namespace Tritium
 
 } // namespace Tritium
 
-#endif // H2CORE_SEQEVENT_H
+#endif // TRITIUM_SEQEVENT_H

@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef MIXERLINE_H
-#define MIXERLINE_H
+#ifndef COMPOSITE_MIXERLINE_H
+#define COMPOSITE_MIXERLINE_H
 
 #include "config.h"
 
@@ -291,4 +291,4 @@ class LadspaFXMixerLine : public PixmapWidget
 };
 
 
-#endif
+#endif // COMPOSITE_MIXERLINE_H

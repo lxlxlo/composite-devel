@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef MAINFORM_H
-#define MAINFORM_H
+#ifndef COMPOSITE_MAINFORM_H
+#define COMPOSITE_MAINFORM_H
 
 #include <QtNetwork>
 #include <QtGui>
@@ -135,4 +135,4 @@ class MainForm : public QMainWindow, public EventListener, public Object
 
 };
 
-#endif
+#endif // COMPOSITE_MAINFORM_H

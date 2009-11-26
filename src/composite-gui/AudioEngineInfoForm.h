@@ -20,8 +20,8 @@
  */
 
 
-#ifndef AUDIO_ENGINE_INFO_FORM_H
-#define AUDIO_ENGINE_INFO_FORM_H
+#ifndef COMPOSITE_AUDIOENGINEINFOFORM_H
+#define COMPOSITE_AUDIOENGINEINFOFORM_H
 
 #include "config.h"
 #include <Tritium/Object.h>
@@ -58,5 +58,4 @@ class AudioEngineInfoForm : public QWidget, public Ui_AudioEngineInfoForm_UI, pu
 		void updateInfo();
 };
 
-#endif
-
+#endif // COMPOSITE_AUDIOENGINEINFOFORM_H

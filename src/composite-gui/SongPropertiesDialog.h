@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef SONG_PROPERTIES_DIALOG_H
-#define SONG_PROPERTIES_DIALOG_H
+#ifndef COMPOSITE_SONGPROPERTIESDIALOG_H
+#define COMPOSITE_SONGPROPERTIESDIALOG_H
 
 #include "config.h"
 
@@ -44,6 +44,4 @@ class SongPropertiesDialog : public QDialog, private Ui_SongPropertiesDialog_UI
 
 };
 
-#endif
-
-
+#endif // COMPOSITE_SONGPROPERTIESDIALOG_H

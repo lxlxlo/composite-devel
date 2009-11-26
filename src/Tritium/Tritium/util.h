@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef H2CORE_UTIL_H
-#define H2CORE_UTIL_H
+#ifndef TRITIUM_UTIL_H
+#define TRITIUM_UTIL_H
 
 namespace Tritium
 {
@@ -39,7 +39,7 @@ namespace Tritium
      */
     int hextoi(const char* str, long len);
 
-}; // namepace Tritium
+} // namepace Tritium
 
 
-#endif // H2CORE_UTIL_H
+#endif // TRITIUM_UTIL_H

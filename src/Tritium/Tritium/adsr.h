@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef ADSR_H
-#define ADSR_H
+#ifndef TRITIUM_ADSR_H
+#define TRITIUM_ADSR_H
 
 #include <Tritium/Object.h>
 
@@ -67,7 +67,7 @@ private:
 	float __release_value;
 };
 
-};
+} // namespace Tritium
 
 
-#endif
+#endif // TRITIUM_ADSR_H

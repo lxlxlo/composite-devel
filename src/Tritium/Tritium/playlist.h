@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef PLAYLIST_H
-#define PLAYLIST_H
+#ifndef TRITIUM_PLAYLIST_H
+#define TRITIUM_PLAYLIST_H
 
 #include <QDialog>
 #include <QMutex>
@@ -109,4 +109,4 @@ private:
 
 } // namespace Tritium
 
-#endif // PLAYLIST_H
+#endif // TRITIUM_PLAYLIST_H

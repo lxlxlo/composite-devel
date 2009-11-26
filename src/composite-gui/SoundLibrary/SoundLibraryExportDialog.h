@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef SOUND_LIBRARY_EXPORT_DIALOG_H
-#define SOUND_LIBRARY_EXPORT_DIALOG_H
+#ifndef COMPOSITE_SOUNDLIBRARYEXPORTDIALOG_H
+#define COMPOSITE_SOUNDLIBRARYEXPORTDIALOG_H
 
 #include "config.h"
 #include "ui_SoundLibraryExportDialog_UI.h"
@@ -51,5 +51,4 @@ class SoundLibraryExportDialog : public QDialog, public Ui_SoundLibraryExportDia
 };
 
 
-#endif
-
+#endif // COMPOSITE_SOUNDLIBRARYEXPORTDIALOG_H

@@ -20,8 +20,8 @@
  */
 
 
-#ifndef SAMPLER_H
-#define SAMPLER_H
+#ifndef TRITIUM_SAMPLER_H
+#define TRITIUM_SAMPLER_H
 
 #include <Tritium/Object.h>
 #include <Tritium/globals.h>
@@ -76,5 +76,4 @@ private:
 
 } // namespace Tritium
 
-#endif
-
+#endif // TRITIUM_SAMPLER_H

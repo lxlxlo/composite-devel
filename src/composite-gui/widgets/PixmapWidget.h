@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef PIXMAP_WIDGET_H
-#define PIXMAP_WIDGET_H
+#ifndef COMPOSITE_PIXMAPWIDGET_H
+#define COMPOSITE_PIXMAPWIDGET_H
 
 #include "config.h"
 #include <QtGui>
@@ -45,4 +45,4 @@ class PixmapWidget : public Object, public QWidget
 		virtual void paintEvent( QPaintEvent* ev);
 };
 
-#endif
+#endif // COMPOSITE_PIXMAPWIDGET_H

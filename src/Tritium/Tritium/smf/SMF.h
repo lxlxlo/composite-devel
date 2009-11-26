@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef SMF_H
-#define SMF_H
+#ifndef TRITIUM_SMF_H
+#define TRITIUM_SMF_H
 
 #include <Tritium/Object.h>
 #include <Tritium/Song.h>
@@ -96,7 +96,6 @@ private:
 
 };
 
-};
+} // namespace Tritium
 
-#endif
-
+#endif // TRITIUM_SMF_H

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef DOWNLOAD_WIDGET_H
-#define DOWNLOAD_WIDGET_H
+#ifndef COMPOSITE_DOWNLOADWIDGET_H
+#define COMPOSITE_DOWNLOADWIDGET_H
 
 #include "config.h"
 
@@ -84,5 +84,4 @@ private:
 	QProgressBar* __progress_bar;
 };
 
-#endif
-
+#endif // COMPOSITE_DOWNLOADWIDGET_H

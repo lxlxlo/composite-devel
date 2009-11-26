@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef WAVE_DISPLAY
-#define WAVE_DISPLAY
+#ifndef COMPOSITE_WAVEDISPLAY_H
+#define COMPOSITE_WAVEDISPLAY_H
 
 #include <QtGui>
 #include <Tritium/Object.h>
@@ -49,4 +49,4 @@ class WaveDisplay : public QWidget, public Object
 };
 
 
-#endif
+#endif // COMPOSITE_WAVEDISPLAY_H

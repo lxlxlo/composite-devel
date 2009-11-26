@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef FLAC_FILE_H
-#define FLAC_FILE_H
+#ifndef TRITIUM_FLAC_FILE_H
+#define TRITIUM_FLAC_FILE_H
 
 #include <Tritium/Object.h>
 #include <string>
@@ -41,7 +41,6 @@ public:
 	Sample* load( const QString& sFilename );
 };
 
-};
+} // namespace Tritium
 
-#endif
-
+#endif // TRITIUM_FLAC_FILE_H

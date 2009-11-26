@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef PREFERENCES_H
-#define PREFERENCES_H
+#ifndef TRITIUM_PREFERENCES_H
+#define TRITIUM_PREFERENCES_H
 
 #include <list>
 //#include <string>
@@ -507,7 +507,7 @@ private:
 	void readUIStyle( QDomNode parent );
 };
 
-};
+} // namespace Tritium
 
-#endif
+#endif // TRITIUM_PREFERENCES_H
 

@@ -20,8 +20,8 @@
  */
 
 
-#ifndef EXPORT_SONG_DIALOG_H
-#define EXPORT_SONG_DIALOG_H
+#ifndef COMPOSITE_EXPORTSONGDIALOG_H
+#define COMPOSITE_EXPORTSONGDIALOG_H
 
 #include "config.h"
 
@@ -54,5 +54,4 @@ class ExportSongDialog : public QDialog, public Ui_ExportSongDialog_UI, public E
 };
 
 
-#endif
-
+#endif // COMPOSITE_EXPORTSONGDIALOG_H

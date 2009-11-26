@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef HYDROGEN_H
-#define HYDROGEN_H
+#ifndef TRITIUM_HYDROGEN_H
+#define TRITIUM_HYDROGEN_H
 
 #include <stdint.h> // for uint32_t et al
 #include <Tritium/action.h>
@@ -219,7 +219,7 @@ private:
 
 };
 
-};
+} // namespace Tritium
 
-#endif
+#endif  // TRITIUM_HYDROGEN_H
 

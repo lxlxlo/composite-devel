@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef JACKTRANSPORTMASTER_H
-#define JACKTRANSPORTMASTER_H
+#ifndef TRITIUM_JACKTRANSPORTMASTER_H
+#define TRITIUM_JACKTRANSPORTMASTER_H
 
 #include <Tritium/Transport.h>
 
@@ -71,6 +71,6 @@ namespace Tritium
     };
 
 
-}
+} // namespace Tritium
 
-#endif // JACKTRANSPORTMASTER_H
+#endif // TRITIUM_JACKTRANSPORTMASTER_H

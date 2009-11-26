@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef ROTARY_H
-#define ROTARY_H
+#ifndef COMPOSITE_ROTARY_H
+#define COMPOSITE_ROTARY_H
 
 #include "config.h"
 #include <QtGui>
@@ -100,4 +100,4 @@ class Rotary : public QWidget, public Object
 };
 
 
-#endif
+#endif // COMPOSITE_ROTARY_H

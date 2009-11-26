@@ -20,8 +20,8 @@
  */
 
 
-#ifndef NULL_AUDIO_DRIVER_H
-#define NULL_AUDIO_DRIVER_H
+#ifndef TRITIUM_NULLDRIVER_H
+#define TRITIUM_NULLDRIVER_H
 
 #include <Tritium/IO/AudioOutput.h>
 
@@ -48,7 +48,7 @@ public:
 	float* getOut_R();
 };
 
-};
+} // namespace Tritium
 
-#endif
+#endif // TRITIUM_NULLDRIVER_H
 

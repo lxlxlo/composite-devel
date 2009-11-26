@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef SONGHELPERS_H
-#define SONGHELPERS_H
+#ifndef TRITIUM_SONGHELPERS_H
+#define TRITIUM_SONGHELPERS_H
 
 /**
  * This declares several functions that are useful in translating Song
@@ -67,6 +67,6 @@ namespace Tritium
      */
     uint32_t ticks_in_bar(Song* s, uint32_t bar);
 
-}
+} // namespace Tritium
 
-#endif // SIMPLETRANSPORTMASTER_H
+#endif // TRITIUM_SONGHELPERS_H

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef PREFERENCES_DIALOG_H
-#define PREFERENCES_DIALOG_H
+#ifndef COMPOSITE_PREFERENCESDIALOG_H
+#define COMPOSITE_PREFERENCESDIALOG_H
 
 #include "config.h"
 
@@ -57,5 +57,4 @@ class PreferencesDialog : public QDialog, private Ui_PreferencesDialog_UI, publi
 		void updateDriverInfo();
 };
 
-#endif
-
+#endif // COMPOSITE_PREFERENCESDIALOG_H

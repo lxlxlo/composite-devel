@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef SOUND_LIBRARY_PROPERTIES_DIALOG_H
-#define SOUND_LIBRARY_PROPERTIES_DIALOG_H
+#ifndef COMPOSITE_SOUNDLIBRARYPROPERTIESDIALOG_H
+#define COMPOSITE_SOUNDLIBRARYPROPERTIESDIALOG_H
 
 #include "config.h"
 #include "ui_SoundLibraryPropertiesDialog_UI.h"
@@ -47,4 +47,4 @@ class SoundLibraryPropertiesDialog : public QDialog, public Ui_SoundLibraryPrope
 };
 
 }
-#endif
+#endif // COMPOSITE_SOUNDLIBRARYPROPERTIESDIALOG_H

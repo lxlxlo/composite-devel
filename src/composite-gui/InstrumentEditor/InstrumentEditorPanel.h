@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef INSTRUMENT_EDITOR_PANEL_H
-#define INSTRUMENT_EDITOR_PANEL_H
+#ifndef COMPOSITE_INSTRUMENTEDITORPANEL_H
+#define COMPOSITE_INSTRUMENTEDITORPANEL_H
 
 #include <QtGui>
 #include <Tritium/Object.h>
@@ -45,5 +45,4 @@ class InstrumentEditorPanel : public QWidget, private Object
 		InstrumentEditorPanel( QWidget *pParent );
 };
 
-#endif
-
+#endif // COMPOSITE_INSTRUMENTEDITORPANEL_H

@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef H2CORE_BEATCOUNTER_H
-#define H2CORE_BEATCOUNTER_H
+#ifndef TRITIUM_BEATCOUNTER_H
+#define TRITIUM_BEATCOUNTER_H
 
 #include <stdint.h>  // int32_t, uint32_t
 #include <sys/time.h>
@@ -84,4 +84,4 @@ namespace Tritium
 
 } // namespace Tritium
 
-#endif // H2CORE_BEATCOUNTER_H
+#endif // TRITIUM_BEATCOUNTER_H

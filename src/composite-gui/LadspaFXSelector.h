@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef LADSPA_FX_SELECTOR_H
-#define LADSPA_FX_SELECTOR_H
+#ifndef COMPOSITE_LADSPAFXSELECTOR_H
+#define COMPOSITE_LADSPAFXSELECTOR_H
 
 #include "config.h"
 
@@ -67,5 +67,4 @@ class LadspaFXSelector : public QDialog, public Ui_LadspaFXSelector_UI, public O
 };
 
 
-#endif
-
+#endif // COMPOSITE_LADSPAFXSELECTOR_H

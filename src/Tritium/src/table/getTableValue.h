@@ -8,6 +8,9 @@ and calculates an interpolated return value.
 
 */
 
+#ifndef TRITIUM_GETTABLEVALUE_H
+#define TRITIUM_GETTABLEVALUE_H
+
 float getTableValue( float fInputValue, float* pLookupTable, int nLookupTableSize )
 {
 
@@ -37,3 +40,4 @@ float getTableValue( float fInputValue, float* pLookupTable, int nLookupTableSiz
 	return fOutputValue;
 }
 
+#endif // TRITIUM_GETTABLEVALUE_H

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef INSTRUMENT_H
-#define INSTRUMENT_H
+#ifndef TRITIUM_INSTRUMENT_H
+#define TRITIUM_INSTRUMENT_H
 
 #include <QtCore/QString>
 #include <Tritium/globals.h>
@@ -348,8 +348,6 @@ private:
 	std::map<Instrument*, unsigned> m_posmap;
 };
 
-};
+} // namespace Tritium
 
-#endif
-
-
+#endif // TRITIUM_INSTRUMENT_H

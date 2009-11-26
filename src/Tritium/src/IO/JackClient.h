@@ -24,8 +24,8 @@
  * This class manages the Jack client handle (returned by jack_client_open()).
  */
 
-#ifndef JACK_CLIENT_H
-#define JACK_CLIENT_H
+#ifndef TRITIUM_JACKCLIENT_H
+#define TRITIUM_JACKCLIENT_H
 
 #ifdef JACK_SUPPORT
 
@@ -82,4 +82,4 @@ private:
 
 #endif // JACK_SUPPORT
 
-#endif // JACK_CLIENT_H
+#endif // TRITIUM_JACKCLIENT_H

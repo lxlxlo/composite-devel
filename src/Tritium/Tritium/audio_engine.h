@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef AUDIO_ENGINE_H
-#define AUDIO_ENGINE_H
+#ifndef TRITIUM_AUDIO_ENGINE_H
+#define TRITIUM_AUDIO_ENGINE_H
 
 #include <Tritium/Object.h>
 #include <Tritium/sampler/Sampler.h>
@@ -89,7 +89,7 @@ private:
 	AudioEngine();
 };
 
-};
+} // namespace Tritium
 
 
-#endif
+#endif // TRITIUM_AUDIO_ENGINE_H

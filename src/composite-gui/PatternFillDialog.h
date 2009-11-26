@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef PATTERN_FILL_DIALOG_H
-#define PATTERN_FILL_DIALOG_H
+#ifndef COMPOSITE_PATTERNFILLDIALOG_H
+#define COMPOSITE_PATTERNFILLDIALOG_H
 
 #include "config.h"
 
@@ -69,6 +69,4 @@ class PatternFillDialog : public QDialog, public Ui_PatternFillDialog_UI, public
 };
 
 
-#endif
-
-
+#endif // COMPOSITE_PATTERNFILLDIALOG_H

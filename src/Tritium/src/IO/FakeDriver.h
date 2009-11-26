@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef FAKE_DRIVER_H
-#define FAKE_DRIVER_H
+#ifndef TRITIUM_FAKEDRIVER_H
+#define TRITIUM_FAKEDRIVER_H
 
 #include <Tritium/IO/AudioOutput.h>
 #include <inttypes.h>
@@ -59,6 +59,6 @@ private:
 };
 
 
-};
+} // namespace Tritium
 
-#endif
+#endif // TRITIUM_FAKEDRIVER_H

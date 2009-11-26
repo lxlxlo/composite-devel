@@ -20,8 +20,8 @@
  */
 
 
-#ifndef DRUM_PATTERN_EDITOR_H
-#define DRUM_PATTERN_EDITOR_H
+#ifndef COMPOSITE_DRUMPATTERNEDITOR_H
+#define COMPOSITE_DRUMPATTERNEDITOR_H
 
 #include "config.h"
 #include "../EventListener.h"
@@ -106,4 +106,4 @@ class DrumPatternEditor : public QWidget, public EventListener, public Object
 };
 
 
-#endif
+#endif // COMPOSITE_DRUMPATTERNEDITOR_H

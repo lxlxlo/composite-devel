@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef H2CORE_H2TRANSPORT_H
-#define H2CORE_H2TRANSPORT_H
+#ifndef TRITIUM_H2TRANSPORT_H
+#define TRITIUM_H2TRANSPORT_H
 
 #include <Tritium/Transport.h>
 
@@ -84,6 +84,6 @@ namespace Tritium
     };
 
 
-}
+} // namespace Tritium
 
-#endif // H2CORE_H2TRANSPORT_H
+#endif // TRITIUM_H2TRANSPORT_H

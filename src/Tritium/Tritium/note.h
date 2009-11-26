@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef H2_NOTE_H
-#define H2_NOTE_H
+#ifndef TRITIUM_NOTE_H
+#define TRITIUM_NOTE_H
 
 #include <cassert>
 #include <Tritium/adsr.h>
@@ -203,4 +203,4 @@ private:
 
 } // namespace Tritium
 
-#endif
+#endif // TRITIUM_NOTE_H

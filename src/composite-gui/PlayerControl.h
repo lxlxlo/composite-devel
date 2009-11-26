@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef PLAYER_CONTROL_H
-#define PLAYER_CONTROL_H
+#ifndef COMPOSITE_PLAYERCONTROL_H
+#define COMPOSITE_PLAYERCONTROL_H
 
 #include <QtGui>
 
@@ -187,4 +187,4 @@ class PlayerControl : public QLabel, public Object, public EventListener
 };
 
 
-#endif
+#endif // COMPOSITE_PLAYERCONTROL_H

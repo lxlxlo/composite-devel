@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef NOTE_PROPERTIES_RULER_H
-#define NOTE_PROPERTIES_RULER_H
+#ifndef COMPOSITE_NOTEPROPERTIESRULER_H
+#define COMPOSITE_NOTEPROPERTIESRULER_H
 
 #include "../EventListener.h"
 
@@ -84,4 +84,4 @@ class NotePropertiesRuler : public QWidget, public Object, public EventListener
 };
 
 
-#endif
+#endif // COMPOSITE_NOTEPROPERTIESRULER_H

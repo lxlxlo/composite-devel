@@ -20,8 +20,8 @@
  */
 
 
-#ifndef MIDI_ACTIVITY_WIDGET_H
-#define MIDI_ACTIVITY_WIDGET_H
+#ifndef COMPOSITE_MIDIACTIVITYWIDGET_H
+#define COMPOSITE_MIDIACTIVITYWIDGET_H
 
 #include "config.h"
 
@@ -55,4 +55,4 @@ class MidiActivityWidget : public QWidget, public EventListener, public Object
 		virtual void midiActivityEvent();
 };
 
-#endif
+#endif // COMPOSITE_MIDIACTIVITYWIDGET_H

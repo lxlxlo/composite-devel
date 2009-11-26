@@ -20,8 +20,8 @@
  */
 
 
-#ifndef PATTERN_EDITOR_INSTRUMENT_LIST_H
-#define PATTERN_EDITOR_INSTRUMENT_LIST_H
+#ifndef COMPOSITE_PATTERNEDITORINSTRUMENTLIST_H
+#define COMPOSITE_PATTERNEDITORINSTRUMENTLIST_H
 
 #include "config.h"
 
@@ -111,4 +111,4 @@ class PatternEditorInstrumentList : public QWidget, public Object {
 };
 
 
-#endif
+#endif // COMPOSITE_PATTERNEDITORINSTRUMENTLIST_H

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef DISK_WRITER_DRIVER_H
-#define DISK_WRITER_DRIVER_H
+#ifndef TRITIUM_DISKWRITERDRIVER_H
+#define TRITIUM_DISKWRITERDRIVER_H
 
 #include <sndfile.h>
 
@@ -73,6 +73,6 @@ private:
 
 };
 
-};
+} // namespace Tritium
 
-#endif
+#endif // TRITIUM_DISKWRITERDRIVER_H

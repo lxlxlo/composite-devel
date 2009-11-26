@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef HYDROGEN_APP_H
-#define HYDROGEN_APP_H
+#ifndef COMPOSITE_HYDROGENAPP_H
+#define COMPOSITE_HYDROGENAPP_H
 
 #include "config.h"
 
@@ -134,4 +134,4 @@ class HydrogenApp : public QObject, public Object
 };
 
 
-#endif
+#endif // COMPOSITE_HYDROGENAPP_H

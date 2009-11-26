@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef SOUND_LIBRARY_REPOSITORY_DIALOG_H
-#define SOUND_LIBRARY_REPOSITORY_DIALOG_H
+#ifndef COMPOSITE_SOUNDLIBRARYREPOSITORYDIALOG_H
+#define COMPOSITE_SOUNDLIBRARYREPOSITORYDIALOG_H
 
 #include "config.h"
 #include "ui_SoundLibraryRepositoryDialog_UI.h"
@@ -45,4 +45,4 @@ class SoundLibraryRepositoryDialog : public QDialog, public Ui_SoundLibraryRepos
 };
 
 
-#endif
+#endif // COMPOSITE_SOUNDLIBRARYREPOSITORYDIALOG_H

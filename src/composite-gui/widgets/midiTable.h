@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef MIDI_TABLE_H
-#define MIDI_TABLE_H
+#ifndef COMPOSITE_MIDITABLE_H
+#define COMPOSITE_MIDITABLE_H
 
 #include "config.h"
 #include <Tritium/Object.h>
@@ -50,4 +50,4 @@ class MidiTable : public QTableWidget, public Object
 
 };
 
-#endif
+#endif // COMPOSITE_MIDITABLE_H

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef PATTERN_PROPERTIES_DIALOG_H
-#define PATTERN_PROPERTIES_DIALOG_H
+#ifndef COMPOSITE_PATTERNPROPERTIESDIALOG_H
+#define COMPOSITE_PATTERNPROPERTIESDIALOG_H
 
 #include "config.h"
 
@@ -59,6 +59,4 @@ class PatternPropertiesDialog : public QDialog, public Ui_PatternPropertiesDialo
 };
 
 
-#endif
-
-
+#endif // COMPOSITE_PATTERNPROPERTIESDIALOG_H

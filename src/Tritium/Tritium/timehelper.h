@@ -23,8 +23,8 @@
 #include <time.h>
 #include <windows.h>
 
-#ifndef TIMEHELPER_H
-#define TIMEHELPER_H
+#ifndef TRITIUM_TIMEHELPER_H
+#define TRITIUM_TIMEHELPER_H
 
 #if defined(_MSC_VER) || defined(_MSC_EXTENSIONS)
   #define DELTA_EPOCH_IN_MICROSECS  11644473600000000Ui64
@@ -56,4 +56,4 @@ struct timezone
 int gettimeofday(struct timeval *tv, struct timezone *tz);
 #endif
 
-#endif
+#endif // TRITIUM_TIMEHELPER_H

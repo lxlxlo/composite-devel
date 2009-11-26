@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef INSTRUMENT_EDITOR_DIALOG_H
-#define INSTRUMENT_EDITOR_DIALOG_H
+#ifndef COMPOSITE_INSTRUMENTEDITOR_H
+#define COMPOSITE_INSTRUMENTEDITOR_H
 
 #include "config.h"
 
@@ -145,4 +145,4 @@ class InstrumentEditor : public QWidget, public Object, public EventListener
 };
 
 
-#endif
+#endif // COMPOSITE_INSTRUMENTEDITOR_H

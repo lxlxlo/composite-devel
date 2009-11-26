@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef EVENT_LISTENER
-#define EVENT_LISTENER
+#ifndef COMPOSITE_EVENTLISTENER_H
+#define COMPOSITE_EVENTLISTENER_H
 
 #include <Tritium/globals.h>
 #include <Tritium/TransportPosition.h>
@@ -45,5 +45,4 @@ class EventListener
 };
 
 
-#endif
-
+#endif // COMPOSITE_EVENTLISTENER_H

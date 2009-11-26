@@ -20,8 +20,8 @@
  */
 
 
-#ifndef MIXER_H
-#define MIXER_H
+#ifndef COMPOSITE_MIXER_H
+#define COMPOSITE_MIXER_H
 
 #include "config.h"
 
@@ -99,4 +99,4 @@ class Mixer : public QWidget, public EventListener, public Object
 
 
 
-#endif
+#endif // COMPOSITE_MIXER_H

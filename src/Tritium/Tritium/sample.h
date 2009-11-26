@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef SAMPLE_BUFFER_H
-#define SAMPLE_BUFFER_H
+#ifndef TRITIUM_SAMPLE_H
+#define TRITIUM_SAMPLE_H
 
 #include <string>
 
@@ -86,4 +86,4 @@ private:
 
 };
 
-#endif
+#endif // TRITIUM_SAMPLE_H

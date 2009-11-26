@@ -26,8 +26,8 @@
  * class into a superclass called something like JackDriver.
  */
 
-#ifndef JACK_MIDI_DRIVER_H
-#define JACK_MIDI_DRIVER_H
+#ifndef TRITIUM_JACKMIDIDRIVER_H
+#define TRITIUM_JACKMIDIDRIVER_H
 
 #ifdef JACK_SUPPORT
 
@@ -67,4 +67,4 @@ private:
 
 #endif // JACK_SUPPORT
 
-#endif // JACK_MIDI_DRIVER_H
+#endif // TRITIUM_JACKMIDIDRIVER_H

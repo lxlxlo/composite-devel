@@ -17,12 +17,12 @@
 
 */
 /*  This file came from the Ardour sources, SVN Rev 3435 2008-06-02.
-    Changed file name and added Hydrogen namespaces and include guards.
-    - Gabriel Beddingfield 2009-04-17
+    Changed file name and added Tritium namespaces and include guards.
+    - Gabriel Beddingfield 2009-04-17, 2009-11-25
 */
 
-#ifndef H2CORE_RINGBUFFER_H
-#define H2CORE_RINGBUFFER_H
+#ifndef TRITIUM_RINGBUFFER_H
+#define TRITIUM_RINGBUFFER_H
 
 #include <cstring>
 #include <glib.h>
@@ -286,4 +286,4 @@ RingBuffer<T>::get_write_vector (RingBuffer<T>::rw_vector *vec)
 
 } // namespace Tritium
 
-#endif // H2CORE_RINGBUFFER_H
+#endif // TRITIUM_RINGBUFFER_H

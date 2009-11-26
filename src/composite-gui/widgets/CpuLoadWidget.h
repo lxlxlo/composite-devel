@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef CPU_LOAD_WIDGET_H
-#define CPU_LOAD_WIDGET_H
+#ifndef COMPOSITE_CPULOADWIDGET_H
+#define COMPOSITE_CPULOADWIDGET_H
 
 #include "config.h"
 
@@ -62,4 +62,4 @@ class CpuLoadWidget : public QWidget, public EventListener, public Object
 };
 
 
-#endif
+#endif // COMPOSITE_CPULOADWIDGET_H

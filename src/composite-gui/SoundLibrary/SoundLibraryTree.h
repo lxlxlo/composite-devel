@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef SOUND_LIBRARY_TREE_H
-#define SOUND_LIBRARY_TREE_H
+#ifndef COMPOSITE_SOUNDLIBRARYTREE_H
+#define COMPOSITE_SOUNDLIBRARYTREE_H
 
 #include "config.h"
 
@@ -53,5 +53,4 @@ class SoundLibraryTree : public QTreeWidget, private Object
 
 
 
-#endif
-
+#endif // COMPOSITE_SOUNDLIBRARYTREE_H

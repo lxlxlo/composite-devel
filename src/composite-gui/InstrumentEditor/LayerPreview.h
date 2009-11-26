@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef LAYER_PREVIEW_H
-#define LAYER_PREVIEW_H
+#ifndef COMPOSITE_LAYERPREVIEW_H
+#define COMPOSITE_LAYERPREVIEW_H
 
 #include "config.h"
 #include <QtGui>
@@ -56,4 +56,4 @@ class LayerPreview : public QWidget, public Object, public EventListener
 };
 
 
-#endif
+#endif // COMPOSITE_LAYERPREVIEW_H

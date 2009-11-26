@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef H2CORE_SONGSEQUENCER_H
-#define H2CORE_SONGSEQUENCER_H
+#ifndef TRITIUM_SONGSEQUENCER_H
+#define TRITIUM_SONGSEQUENCER_H
 
 #include <stdint.h>
 #include <QtCore/QMutex>
@@ -48,4 +48,4 @@ private:
 
 } // namespace Tritium
 
-#endif // H2CORE_H2TRANSPORT_H
+#endif // TRITIUM_H2TRANSPORT_H

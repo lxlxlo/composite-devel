@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef LFILEMNG_H
-#define LFILEMNG_H
+#ifndef TRITIUM_LOCALFILEMNG_H
+#define TRITIUM_LOCALFILEMNG_H
 
 #include <iostream>
 #include <fstream>
@@ -117,8 +117,8 @@ public:
 /// *Will* return a valid pointer and never a NULL one.
 QTextCodec* getCodecForDoc(TiXmlNode* node);
 
-};
+} // namespace Tritium
 
 
-#endif //LFILEMNG_H
+#endif // TRITIUM_LOCALFILEMNG_H
 

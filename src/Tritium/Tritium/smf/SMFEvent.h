@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef SMF_EVENT_H
-#define SMF_EVENT_H
+#ifndef TRITIUM_SMFEVENT_H
+#define TRITIUM_SMFEVENT_H
 
 #include <vector>
 #include <Tritium/Object.h>
@@ -135,7 +135,6 @@ protected:
 
 };
 
-};
+} // namespace Tritium
 
-#endif
-
+#endif // TRITIUM_SMFEVENT_H

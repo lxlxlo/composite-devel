@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef H2CORE_SEQSCRIPTPRIVATE_H
-#define H2CORE_SEQSCRIPTPRIVATE_H
+#ifndef TRITIUM_SEQSCRIPTPRIVATE_H
+#define TRITIUM_SEQSCRIPTPRIVATE_H
 
 #include <Tritium/SeqEvent.h>
 #include <vector>
@@ -137,6 +137,6 @@ namespace Tritium
 	void insert(internal_iterator pos); // Inserts an allocated location into the list.
     };
 
-}
+} // namespace Tritium
 
-#endif // H2CORE_SEQSCRIPTPRIVATE_H
+#endif // TRITIUM_SEQSCRIPTPRIVATE_H

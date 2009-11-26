@@ -20,8 +20,8 @@
  */
 
 
-#ifndef FADER_H
-#define FADER_H
+#ifndef COMPOSITE_FADER_H
+#define COMPOSITE_FADER_H
 
 #include "config.h"
 
@@ -166,4 +166,4 @@ class Knob : public QWidget, public Object
 };
 
 
-#endif
+#endif // COMPOSITE_FADER_H

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef SOUND_LIBRARY_PANEL_H
-#define SOUND_LIBRARY_PANEL_H
+#ifndef COMPOSITE_SOUNDLIBRARYPANEL_H
+#define COMPOSITE_SOUNDLIBRARYPANEL_H
 
 #include "config.h"
 
@@ -93,4 +93,4 @@ private:
 
 };
 
-#endif
+#endif // COMPOSITE_SOUNDLIBRARYPANEL_H

@@ -20,8 +20,8 @@
  */
 
 
-#ifndef SPLASH_SCREEN_H
-#define SPLASH_SCREEN_H
+#ifndef COMPOSITE_SPLASHSCREEN_H
+#define COMPOSITE_SPLASHSCREEN_H
 
 #include <QLabel>
 #include <QSplashScreen>
@@ -55,4 +55,4 @@ class SplashScreen : public QSplashScreen, public Object
 };
 
 
-#endif
+#endif // COMPOSITE_SPLASHSCREEN_H

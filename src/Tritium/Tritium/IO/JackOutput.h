@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef H2_JACK_OUTPUT_H
-#define H2_JACK_OUTPUT_H
+#ifndef TRITIUM_JACKOUTPUT_H
+#define TRITIUM_JACKOUTPUT_H
 
 #include <Tritium/IO/AudioOutput.h>
 #include <Tritium/IO/NullDriver.h>
@@ -104,7 +104,7 @@ public:
 
 #endif // JACK_SUPPORT
 
-};
+} // namespace Tritium
 
-#endif
+#endif // TRITIUM_JACKOUTPUT_H
 

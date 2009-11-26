@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef AUDIOFILEBROWSER_H
-#define AUDIOFILEBROWSER_H
+#ifndef COMPOSITE_AUDIOFILEBROWSER_H
+#define COMPOSITE_AUDIOFILEBROWSER_H
 
 #include "config.h"
 #include "ui_AudioFileBrowser_UI.h"
@@ -90,4 +90,4 @@ class AudioFileBrowser : public QDialog, public Ui_AudioFileBrowser_UI, public O
 };
 
 
-#endif
+#endif // COMPOSITE_AUDIOFILEBROWSER_H

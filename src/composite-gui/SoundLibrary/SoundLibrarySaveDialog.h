@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef SOUND_LIBRARY_SAVE_DIALOG_H
-#define SOUND_LIBRARY_SAVE_DIALOG_H
+#ifndef COMPOSITE_SOUNDLIBRARYSAVEDIALOG_H
+#define COMPOSITE_SOUNDLIBRARYSAVEDIALOG_H
 
 #include "config.h"
 #include "ui_SoundLibrarySaveDialog_UI.h"
@@ -44,5 +44,4 @@ class SoundLibrarySaveDialog : public QDialog, public Ui_SoundLibrarySaveDialog_
 };
 
 
-#endif
-
+#endif // COMPOSITE_SOUNDLIBRARYSAVEDIALOG_H

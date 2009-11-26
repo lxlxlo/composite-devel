@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef SONG_H
-#define SONG_H
+#ifndef TRITIUM_SONG_H
+#define TRITIUM_SONG_H
 
 
 #include <QString>
@@ -258,10 +258,6 @@ private:
 };
 
 
-};
+} // namespace Tritium
 
-
-
-#endif
-
-
+#endif // TRITIUM_SONG_H

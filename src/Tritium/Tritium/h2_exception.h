@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef H2EXCEPTION_H
-#define H2EXCEPTION_H
+#ifndef TRITIUM_H2EXCEPTION_H
+#define TRITIUM_H2EXCEPTION_H
 
 #include <string>
 #include <stdexcept>
@@ -38,6 +38,6 @@ public:
 
 };
 
-};
+} // namespace Tritium
 
-#endif
+#endif // TRITIUM_H2EXCEPTION_H

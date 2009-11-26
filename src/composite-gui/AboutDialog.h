@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef ABOUT__DIALOG_H
-#define ABOUT__DIALOG_H
+#ifndef COMPOSITE_ABOUTDIALOG_H
+#define COMPOSITE_ABOUTDIALOG_H
 
 #include "config.h"
 
@@ -49,4 +49,4 @@ private:
 	};
 };
 
-#endif
+#endif // COMPOSITE_ABOUTDIALOG_H

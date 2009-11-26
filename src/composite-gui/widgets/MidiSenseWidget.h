@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef MIDISENSE_WIDGET_H
-#define MIDISENSE_WIDGET_H
+#ifndef COMPOSITE_MIDISENSEWIDGET_H
+#define COMPOSITE_MIDISENSEWIDGET_H
 
 #include <QtGui>
 
@@ -43,4 +43,4 @@ private:
     QLabel* m_pURLLabel;
 };
 
-#endif
+#endif // COMPOSITE_MIDISENSEWIDGET_H

@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef H2CORE_SEQSCRIPT_H
-#define H2CORE_SEQSCRIPT_H
+#ifndef TRITIUM_SEQSCRIPT_H
+#define TRITIUM_SEQSCRIPT_H
 
 #include "SeqEvent.h"
 #include "SeqScriptIterator.h"
@@ -152,6 +152,6 @@ namespace Tritium
         SeqScriptPrivate* d;
     };
 
-}
+} // namespace Tritium
 
-#endif // H2CORE_SEQSCRIPT_H
+#endif // TRITIUM_SEQSCRIPT_H

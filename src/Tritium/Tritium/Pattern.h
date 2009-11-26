@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef PATTERN_H
-#define PATTERN_H
+#ifndef TRITIUM_PATTERN_H
+#define TRITIUM_PATTERN_H
 
 #include <Tritium/globals.h>
 #include <Tritium/Object.h>
@@ -115,5 +115,4 @@ private:
 
 };
 
-#endif
-
+#endif // TRITIUM_PATTERN_H

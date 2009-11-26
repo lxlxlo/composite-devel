@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef LCDCOMBO_H
-#define LCDCOMBO_H
+#ifndef COMPOSITE_LCDCOMBO_H
+#define COMPOSITE_LCDCOMBO_H
 
 #include "config.h"
 
@@ -70,4 +70,4 @@ class LCDCombo : public QWidget, public Object
 };
 
 
-#endif
+#endif // COMPOSITE_LCDCOMBO_H

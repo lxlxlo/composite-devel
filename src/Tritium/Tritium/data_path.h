@@ -27,8 +27,8 @@
  *
  */
 
-#ifndef DATA_PATH_H
-#define DATA_PATH_H
+#ifndef TRITIUM_DATA_PATH_H
+#define TRITIUM_DATA_PATH_H
 
 #include <QtCore>
 
@@ -44,7 +44,7 @@ private:
 	static QString __data_path;
 };
 
-};
+} // namespace Tritium
 
-#endif
+#endif // TRITIUM_DATA_PATH_H
 

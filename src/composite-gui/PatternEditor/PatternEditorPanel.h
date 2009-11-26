@@ -20,8 +20,8 @@
  */
 
 
-#ifndef PATTERN_EDITOR_PANEL_H
-#define PATTERN_EDITOR_PANEL_H
+#ifndef COMPOSITE_PATTERNEDITORPANEL_H
+#define COMPOSITE_PATTERNEDITORPANEL_H
 
 #include <QtGui>
 
@@ -170,4 +170,4 @@ class PatternEditorPanel : public QWidget, public EventListener, public Object
 
 
 
-#endif
+#endif // COMPOSITE_PATTERNEDITORPANEL_H

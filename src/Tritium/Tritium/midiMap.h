@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef MIDIMAP_H
-#define MIDIMAP_H
+#ifndef TRITIUM_MIDIMAP_H
+#define TRITIUM_MIDIMAP_H
 
 
 #include <map>
@@ -62,4 +62,4 @@ class MidiMap : public Object
 		map_t mmcMap;
 		QMutex __mutex;
 };
-#endif
+#endif // TRITIUM_MIDIMAP_H

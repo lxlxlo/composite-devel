@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef SONG_EDITOR_PANEL_H
-#define SONG_EDITOR_PANEL_H
+#ifndef COMPOSITE_SONGEDITORPANEL_H
+#define COMPOSITE_SONGEDITORPANEL_H
 
 
 #include "../EventListener.h"
@@ -111,4 +111,4 @@ class SongEditorPanel : public QWidget, public EventListener, public Object
 		void resyncExternalScrollBar();
 };
 
-#endif
+#endif // COMPOSITE_SONGEDITORPANEL_H

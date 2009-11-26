@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef H2_MIDI_INPUT_H
-#define H2_MIDI_INPUT_H
+#ifndef TRITIUM_MIDIINPUT_H
+#define TRITIUM_MIDIINPUT_H
 
 #include <Tritium/Object.h>
 #include <vector>
@@ -115,7 +115,7 @@ protected:
 
 };
 
-};
+} // namespace Tritium
 
-#endif
+#endif // TRITIUM_MIDIINPUT_H
 

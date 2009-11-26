@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef PATTERN_EDITOR_RULER_H
-#define PATTERN_EDITOR_RULER_H
+#ifndef COMPOSITE_PATTERNEDITORRULER_H
+#define COMPOSITE_PATTERNEDITORRULER_H
 
 #include "../EventListener.h"
 
@@ -76,4 +76,4 @@ class PatternEditorRuler : public QWidget, public Object, public EventListener
 };
 
 
-#endif
+#endif // COMPOSITE_PATTERNEDITORRULER_H

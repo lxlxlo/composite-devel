@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef LADSPA_FX_PROPERTIES_H
-#define LADSPA_FX_PROPERTIES_H
+#ifndef COMPOSITE_LADSPAFXPROPERTIES_H
+#define COMPOSITE_LADSPAFXPROPERTIES_H
 
 #include <vector>
 #include <QtGui>
@@ -70,5 +70,4 @@ class LadspaFXProperties : public QWidget, public Object {
 		QTimer* m_pTimer;
 };
 
-#endif
-
+#endif // COMPOSITE_LADSPAFXPROPERTIES_H

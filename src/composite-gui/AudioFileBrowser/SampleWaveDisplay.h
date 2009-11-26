@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef SAMPLE_WAVE_DISPLAY
-#define SAMPLE_WAVE_DISPLAY
+#ifndef COMPOSITE_SAMPLEWAVEDISPLAY_H
+#define COMPOSITE_SAMPLEWAVEDISPLAY_H
 
 #include <QtGui>
 #include <Tritium/Object.h>
@@ -46,5 +46,4 @@ class SampleWaveDisplay : public QWidget, public Object
 };
 
 
-#endif
-
+#endif // COMPOSITE_SAMPLEWAVEDISPLAY_H

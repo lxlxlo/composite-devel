@@ -20,8 +20,8 @@
  */
 
 
-#ifndef BUTTON_H
-#define BUTTON_H
+#ifndef COMPOSITE_BUTTON_H
+#define COMPOSITE_BUTTON_H
 
 #include "config.h"
 
@@ -103,4 +103,4 @@ class ToggleButton : public Button
 };
 
 
-#endif
+#endif // COMPOSITE_BUTTON_H

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef LCD_H
-#define LCD_H
+#ifndef COMPOSITE_LCD_H
+#define COMPOSITE_LCD_H
 
 #include "config.h"
 
@@ -131,4 +131,4 @@ class LCDSpinBox : public QWidget, public Object
 };
 
 
-#endif
+#endif // COMPOSITE_LCD_H

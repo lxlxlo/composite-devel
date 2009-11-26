@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef FILE_BROWSER_H
-#define FILE_BROWSER_H
+#ifndef COMPOSITE_FILEBROWSER_H
+#define COMPOSITE_FILEBROWSER_H
 
 #include "config.h"
 
@@ -58,4 +58,4 @@ class FileBrowser : public QWidget, private Object
 };
 
 
-#endif
+#endif // COMPOSITE_FILEBROWSER_H

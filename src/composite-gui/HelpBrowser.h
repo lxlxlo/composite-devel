@@ -20,8 +20,8 @@
  */
 
 
-#ifndef HELPBROWSER_H
-#define HELPBROWSER_H
+#ifndef COMPOSITE_HELPBROWSER_H
+#define COMPOSITE_HELPBROWSER_H
 
 #include "config.h"
 
@@ -63,4 +63,4 @@ class SimpleHTMLBrowser : public QDialog, public Object
 };
 
 
-#endif
+#endif // COMPOSITE_HELPBROWSER_H
