@@ -137,6 +137,7 @@ namespace THIS_NAMESPACE
 
 	~Fixture() {
 	    delete[] x_pat;
+	    delete Logger::get_instance();
 	}
 
     };
