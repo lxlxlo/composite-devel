@@ -23,7 +23,7 @@
 #ifndef TRITIUM_SAMPLER_HPP
 #define TRITIUM_SAMPLER_HPP
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 #include <Tritium/globals.hpp>
 #include <Tritium/SeqScriptIterator.hpp>
 

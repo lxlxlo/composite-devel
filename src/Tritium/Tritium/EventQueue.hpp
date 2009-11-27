@@ -22,7 +22,7 @@
 #ifndef TRITIUM_EVENT_QUEUE_HPP
 #define TRITIUM_EVENT_QUEUE_HPP
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 #include <cassert>
 
 #define MAX_EVENTS 1024

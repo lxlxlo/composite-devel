@@ -31,7 +31,7 @@
 
 #include <jack/types.h>
 #include <Tritium/H2Exception.hpp>
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 #include <QtCore/QString>
 #include <vector>
 #include <set>

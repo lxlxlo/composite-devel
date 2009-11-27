@@ -23,7 +23,7 @@
 #define COMPOSITE_INSTRUMENTEDITORPANEL_HPP
 
 #include <QtGui>
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 #include "InstrumentEditor.hpp"
 
 ///

@@ -27,7 +27,7 @@
 #include <inttypes.h>
 
 #include <Tritium/IO/AudioOutput.hpp>
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 namespace Tritium
 {

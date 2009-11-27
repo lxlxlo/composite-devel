@@ -24,7 +24,7 @@
 #include "config.h"
 #include <QtGui>
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 #include <Tritium/Instrument.hpp>
 #include "../EventListener.hpp"
 

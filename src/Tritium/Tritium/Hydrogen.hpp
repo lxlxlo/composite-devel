@@ -24,7 +24,7 @@
 #include <stdint.h> // for uint32_t et al
 #include <Tritium/Action.hpp>
 #include <Tritium/Song.hpp>
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 #include <Tritium/IO/AudioOutput.hpp>
 #include <Tritium/IO/MidiInput.hpp>
 #include <Tritium/SoundLibrary.hpp>

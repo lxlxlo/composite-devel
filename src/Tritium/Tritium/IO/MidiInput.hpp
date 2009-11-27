@@ -22,7 +22,7 @@
 #ifndef TRITIUM_MIDIINPUT_HPP
 #define TRITIUM_MIDIINPUT_HPP
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 #include <vector>
 #include <stdint.h>
 

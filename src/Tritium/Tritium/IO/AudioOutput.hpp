@@ -21,7 +21,7 @@
 #ifndef TRITIUM_AUDIOOUTPUT_HPP
 #define TRITIUM_AUDIOOUTPUT_HPP
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 namespace Tritium
 {

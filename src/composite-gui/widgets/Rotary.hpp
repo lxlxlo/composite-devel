@@ -27,7 +27,7 @@
 
 class LCDDisplay;
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 class RotaryTooltip : public QWidget
 {

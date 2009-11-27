@@ -20,7 +20,7 @@
  */
 #ifndef TRITIUM_ACTION_HPP
 #define TRITIUM_ACTION_HPP
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 #include <map>
 #include <string>
 #include <cassert>

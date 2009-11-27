@@ -23,7 +23,7 @@
 #define TRITIUM_PATTERN_HPP
 
 #include <Tritium/globals.hpp>
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 namespace Tritium
 {

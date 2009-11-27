@@ -28,7 +28,7 @@
 #include <vector>
 #include <map>
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 class TiXmlNode;
 

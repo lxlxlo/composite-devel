@@ -26,7 +26,7 @@
 
 #include "ui_LadspaFXSelector_UI.h"
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 #include <QtGui>
 #include <string>

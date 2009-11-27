@@ -23,7 +23,7 @@
 #define COMPOSITE_SAMPLEWAVEDISPLAY_HPP
 
 #include <QtGui>
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 
 

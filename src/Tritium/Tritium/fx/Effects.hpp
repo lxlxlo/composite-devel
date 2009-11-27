@@ -25,7 +25,7 @@
 #ifdef LADSPA_SUPPORT
 
 #include <Tritium/globals.hpp>
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 #include <Tritium/fx/LadspaFX.hpp>
 
 #include <vector>

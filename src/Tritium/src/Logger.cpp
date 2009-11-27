@@ -19,7 +19,7 @@
  *
  */
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 #include <Tritium/util.hpp>
 
 #include <QDir>
@@ -255,7 +255,7 @@ void LoggerThread::run()
 				fflush( pLogFile );
 			}
 		}
-		// See Object.hpp for documentation on __mutex and when
+		// See Logger.hpp for documentation on __mutex and when
 		// it should be locked.
 		queue.erase( queue.begin(), last );
 		logger_mutex.relock();

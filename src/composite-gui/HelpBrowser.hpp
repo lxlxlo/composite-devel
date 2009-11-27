@@ -29,7 +29,7 @@
 #include <string>
 #include <QtGui>
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 class SimpleHTMLBrowser : public QDialog, public Object
 {

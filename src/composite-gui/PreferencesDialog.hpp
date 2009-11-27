@@ -26,7 +26,7 @@
 
 #include "ui_PreferencesDialog_UI.h"
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 ///
 /// Preferences Dialog

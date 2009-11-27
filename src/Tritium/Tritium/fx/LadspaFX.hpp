@@ -28,7 +28,7 @@
 #include <vector>
 #include <list>
 #include "ladspa.h"
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 namespace Tritium
 {

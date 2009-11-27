@@ -27,7 +27,7 @@
 #include <QtGui>
 #include <QtNetwork>
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 class Download : public QDialog, public Object
 {

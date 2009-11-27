@@ -23,7 +23,7 @@
 #define COMPOSITE_WAVEDISPLAY_HPP
 
 #include <QtGui>
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 namespace Tritium
 {

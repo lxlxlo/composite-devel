@@ -24,7 +24,7 @@
 
 #include <QtCore/QString>
 #include <Tritium/globals.hpp>
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 #include <cassert>
 
 namespace Tritium

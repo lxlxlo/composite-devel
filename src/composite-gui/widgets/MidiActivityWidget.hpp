@@ -28,7 +28,7 @@
 #include <QtGui>
 
 #include "../EventListener.hpp"
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 class MidiActivityWidget : public QWidget, public EventListener, public Object
 {

@@ -24,7 +24,7 @@
 
 #include "config.h"
 #include "ui_SoundLibraryRepositoryDialog_UI.h"
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 ///
 ///

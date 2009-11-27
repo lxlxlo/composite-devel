@@ -26,7 +26,7 @@
 
 #include <QtGui>
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 class SoundLibraryTree : public QTreeWidget, private Object
 {

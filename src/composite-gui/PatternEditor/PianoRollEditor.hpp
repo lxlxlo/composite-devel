@@ -22,7 +22,7 @@
 #ifndef COMPOSITE_PIANOROLLEDITOR_HPP
 #define COMPOSITE_PIANOROLLEDITOR_HPP
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 #include "../EventListener.hpp"
 
 #include <QtGui>

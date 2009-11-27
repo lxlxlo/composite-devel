@@ -27,7 +27,7 @@
 #include <QtGui>
 #include "ui_PatternFillDialog_UI.h"
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 namespace Tritium
 {

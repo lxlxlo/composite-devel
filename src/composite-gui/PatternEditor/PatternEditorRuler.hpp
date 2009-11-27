@@ -25,7 +25,7 @@
 #include "../EventListener.hpp"
 
 #include <QtGui>
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 class PatternEditorPanel;
 

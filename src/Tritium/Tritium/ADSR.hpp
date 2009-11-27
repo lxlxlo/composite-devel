@@ -22,7 +22,7 @@
 #ifndef TRITIUM_ADSR_HPP
 #define TRITIUM_ADSR_HPP
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 namespace Tritium
 {

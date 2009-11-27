@@ -26,7 +26,7 @@
 
 #include <QDialog>
 #include "ui_PlaylistDialog_UI.h"
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Playlist.hpp>

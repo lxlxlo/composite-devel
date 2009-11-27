@@ -23,7 +23,7 @@
 #define TRITIUM_SOUNDLIBRARY_HPP
 
 #include <string>
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 namespace Tritium
 {

@@ -30,7 +30,7 @@
 
 #include "HydrogenApp.hpp"
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 /**
  * Fader and VuMeter widget

@@ -24,7 +24,7 @@
 
 #include <QDialog>
 #include <QMutex>
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 #include <Tritium/globals.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Hydrogen.hpp>

@@ -27,7 +27,7 @@
 
 #include "ui_ExportSongDialog_UI.h"
 #include "EventListener.hpp"
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 ///
 /// Dialog for exporting song

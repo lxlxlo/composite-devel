@@ -24,7 +24,7 @@
 #define COMPOSITE_AUDIOENGINEINFOFORM_HPP
 
 #include "config.h"
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 #include "EventListener.hpp"
 #include "ui_AudioEngineInfoForm_UI.h"

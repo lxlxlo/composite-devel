@@ -23,7 +23,7 @@
 #include "../Skin.hpp"
 #include <QPainter>
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 PixmapWidget::PixmapWidget( QWidget *pParent, const QString& sClassName )
  : Object( sClassName )

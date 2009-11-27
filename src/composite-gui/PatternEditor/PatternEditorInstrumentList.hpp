@@ -29,7 +29,7 @@
 
 #include <QtGui>
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 #include "../widgets/PixmapWidget.hpp"
 
 namespace Tritium

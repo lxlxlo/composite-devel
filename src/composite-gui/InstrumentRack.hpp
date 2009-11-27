@@ -23,7 +23,7 @@
 #ifndef COMPOSITE_INSTRUMENTRACK_HPP
 #define COMPOSITE_INSTRUMENTRACK_HPP
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 #include <QtGui>
 

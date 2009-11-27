@@ -24,7 +24,7 @@
 
 #include "JackClient.hpp"
 #include <jack/jack.h>
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 #include <cassert>
 
 #ifdef JACK_SUPPORT

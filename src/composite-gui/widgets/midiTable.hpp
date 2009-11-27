@@ -23,7 +23,7 @@
 #define COMPOSITE_MIDITABLE_HPP
 
 #include "config.h"
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 #include <QtGui>
 

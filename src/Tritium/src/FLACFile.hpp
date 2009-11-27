@@ -22,7 +22,7 @@
 #ifndef TRITIUM_FLAC_FILE_HPP
 #define TRITIUM_FLAC_FILE_HPP
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 #include <string>
 
 namespace Tritium

@@ -27,7 +27,7 @@
 #include <QtGui>
 
 #include <Tritium/Instrument.hpp>
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 #include "../EventListener.hpp"
 #include "../widgets/PixmapWidget.hpp"

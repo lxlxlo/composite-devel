@@ -25,7 +25,7 @@
 #include <QtGui>
 
 #include "EventListener.hpp"
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 namespace Tritium
 {

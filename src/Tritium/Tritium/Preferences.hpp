@@ -29,7 +29,7 @@
 
 #include <Tritium/Action.hpp>
 #include <Tritium/globals.hpp>
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 #include <QDomDocument>
 

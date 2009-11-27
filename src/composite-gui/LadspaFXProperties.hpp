@@ -25,7 +25,7 @@
 #include <vector>
 #include <QtGui>
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 class Fader;
 class LCDDisplay;

@@ -22,7 +22,7 @@
 #ifndef TRITIUM_SMF_HPP
 #define TRITIUM_SMF_HPP
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 #include <Tritium/Song.hpp>
 
 #include <string>

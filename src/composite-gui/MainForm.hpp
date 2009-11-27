@@ -30,7 +30,7 @@
 #include "EventListener.hpp"
 #include "config.h"
 
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 class HydrogenApp;
 

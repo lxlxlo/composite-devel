@@ -23,7 +23,7 @@
 #define TRITIUM_SMFEVENT_HPP
 
 #include <vector>
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 
 namespace Tritium
 {

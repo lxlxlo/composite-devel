@@ -27,7 +27,7 @@
 #include "InstrumentEditor/InstrumentEditor.hpp"
 
 #include <QDialog>
-#include <Tritium/Object.hpp>
+#include <Tritium/Logger.hpp>
 #include <Tritium/Preferences.hpp>
 
 
