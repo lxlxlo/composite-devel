@@ -21,6 +21,7 @@
 
 #include "../src/SeqScriptPrivate.hpp"
 #include <Tritium/Instrument.hpp>
+#include <Tritium/Logger.hpp>
 #include <vector>
 #include <memory>
 #include <map>

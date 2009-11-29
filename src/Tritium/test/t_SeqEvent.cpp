@@ -21,6 +21,7 @@
 
 #include <Tritium/SeqEvent.hpp>
 #include <Tritium/Instrument.hpp>
+#include <Tritium/Logger.hpp>
 #include <cmath>
 #include <memory>
 

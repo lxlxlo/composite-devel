@@ -30,6 +30,7 @@
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Sample.hpp>
 #include <Tritium/AudioEngine.hpp>
+#include <Tritium/Logger.hpp>
 
 #include <QModelIndex>
 #include <QTreeWidget>

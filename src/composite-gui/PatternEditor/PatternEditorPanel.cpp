@@ -27,6 +27,7 @@
 #include <Tritium/AudioEngine.hpp>
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/Transport.hpp>
+#include <Tritium/Logger.hpp>
 using namespace Tritium;
 
 

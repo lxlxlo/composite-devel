@@ -29,6 +29,7 @@
 #include <time.h>
 #include <Tritium/SeqScript.hpp>
 #include <Tritium/Instrument.hpp>
+#include <Tritium/Logger.hpp>
 #include <memory>
 
 // CHANGE THIS TO MATCH YOUR FILE:

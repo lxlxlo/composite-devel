@@ -949,7 +949,7 @@ void PlaylistDialog::updateActiveSongNumber()
 }
 
 
-bool PlaylistDialog::eventFilter ( QObject * /*o*/, QEvent * /*e*/ )
+bool PlaylistDialog::eventFilter ( QObject * /*o*/, QEvent * e )
 {
 	if ( e->type() == QEvent::KeyPress )
 	{	

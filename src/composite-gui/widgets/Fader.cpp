@@ -196,7 +196,7 @@ void Fader::setPeak_R( float fPeak )
 
 
 
-void Fader::paintEvent( QPaintEvent * /*ev*/)
+void Fader::paintEvent( QPaintEvent * ev)
 {
 	QPainter painter(this);
 
