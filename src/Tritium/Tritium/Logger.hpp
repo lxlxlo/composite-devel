@@ -34,7 +34,9 @@
 #include <cassert>
 #include <QMutex>
 
-class Object;
+namespace Tritium
+{
+
 class LoggerThread;
 
 /**
@@ -43,104 +45,76 @@ class LoggerThread;
 class Logger
 {
 public:
-	/* The log level setting is internally a bit-masked integer.
-	 * These are the bits.  It is valid for the log level to *not*
-	 * be one of these explicitly... however, you won't get proper
-	 * syntax highlighting.  E.g. ~0 will log, but won't get any
-	 * syntax highlighting.  Same with Error|Warning.
-	 *
-	 * This also allows for (future) debugging profiles.  For
-	 * example, if you only want to turn on log messages in a
-	 * specific section of code, you might do Logger::log( 0x80,
-	 * ... ), and set the logging level to 0x80 or 0x81 (to
-	 * include Error logs) with your debugger.
-	 */
-	typedef enum _log_level {
-		None = 0,
-		Error = 1,
-		Warning = 2,
-		Info = 4,
-		Debug = 8,
-                AELockTracing = 0x10
-	} log_level_t;
-	typedef std::list<QString> queue_t;
+    /* The log level setting is internally a bit-masked integer.
+     * These are the bits.  It is valid for the log level to *not*
+     * be one of these explicitly... however, you won't get proper
+     * syntax highlighting.  E.g. ~0 will log, but won't get any
+     * syntax highlighting.  Same with Error|Warning.
+     *
+     * This also allows for (future) debugging profiles.  For
+     * example, if you only want to turn on log messages in a
+     * specific section of code, you might do Logger::log( 0x80,
+     * ... ), and set the logging level to 0x80 or 0x81 (to
+     * include Error logs) with your debugger.
+     */
+    typedef enum _log_level {
+	None = 0,
+	Error = 1,
+	Warning = 2,
+	Info = 4,
+	Debug = 8,
+	AELockTracing = 0x10
+    } log_level_t;
+    typedef std::list<QString> queue_t;
 
-	bool __use_file;
+    static void create_instance();
+    static Logger* get_instance() { assert(__instance); return __instance; }
 
-	static void create_instance();
-	static Logger* get_instance() { assert(__instance); return __instance; }
+    /** Destructor */
+    ~Logger();
 
-	/** Destructor */
-	~Logger();
+    static void set_logging_level( const char* level ); // May be None, Error, Warning, Info, or Debug
+    static void set_log_level(unsigned lev) { __log_level = lev; }
+    static unsigned get_log_level() { return __log_level; }
 
-	static void set_log_level(unsigned lev) { __log_level = lev; }
-	static unsigned get_log_level() { return __log_level; }
+    void log( unsigned lev,
+	      const char* funcname,
+	      const QString& msg );
 
-	void log( unsigned lev, const char* funcname, const QString& class_name, const QString& msg );
-
-	friend class LoggerThread;
+    friend class LoggerThread;
 
 private:
-	static Logger *__instance;
+    static Logger *__instance;
 
-	/* __msg_queue needs to be a list type (e.g. std::list<>)
-	 * because of the following properties:
-	 *
-	 * - Constant time insertion/removal of elements
-	 * - Changing the list does not invalidate its iterators.
-	 *
-	 * However, the __mutex class member is here for safe access
-	 * to __msg_queue.  It should only be locked when you are
-	 * adding or removing elements to the END of the list.  This
-	 * works because:
-	 *
-	 * - Only one thread is referencing and removing elements
-	 *   from the beginning (the Logger thread).
-	 *
-	 * - While many threads are adding elements, they are only
-	 *   adding elements to the END of the list.
-	 *
-	 */
-	QMutex __mutex;  // Lock for adding or removing elements only
-	queue_t __msg_queue;
-	static unsigned __log_level; // A bitmask of log_level_t
+    /* __msg_queue needs to be a list type (e.g. std::list<>)
+     * because of the following properties:
+     *
+     * - Constant time insertion/removal of elements
+     * - Changing the list does not invalidate its iterators.
+     *
+     * However, the __mutex class member is here for safe access
+     * to __msg_queue.  It should only be locked when you are
+     * adding or removing elements to the END of the list.  This
+     * works because:
+     *
+     * - Only one thread is referencing and removing elements
+     *   from the beginning (the Logger thread).
+     *
+     * - While many threads are adding elements, they are only
+     *   adding elements to the END of the list.
+     *
+     */
+    QMutex __mutex;  // Lock for adding or removing elements only
+    queue_t __msg_queue;
+    static unsigned __log_level; // A bitmask of log_level_t
+    bool __use_file;
 
-	/** Constructor */
-	Logger();
-
+    /** Constructor */
+    Logger();
 };
 
 
-/**
- * Base class.
- */
-class Object
-{
-public:
-	static bool __use_log;
-
-	/** Constructor */
-	Object( const QString& className );
-	Object( const Object& obj );
-
-	/** Destructor */
-	virtual ~Object();
-
-	const QString& get_class_name() const {
-		return __class_name;
-	}
-
-	static int get_objects_number();
-	static void print_object_map();
-	static void set_logging_level( const char* level ); // May be None, Error, Warning, Info, or Debug
-	static bool is_using_verbose_log();
-
-private:
-	static unsigned __objects;
-	static std::map<QString, int> __object_map;
-	Logger *__logger;
-	QString __class_name;
-};
+} // namespace Tritium
 
 // LOG MACROS
 
@@ -148,26 +122,18 @@ private:
  * function call.  This is good, because it avoids QString
  * constructors for temporaries.
  */
-#define __LOG_WRAPPER(lev, funct, class_n, msg) {			\
-		if( Logger::get_log_level() & (lev) ){			\
-			Logger::get_instance()->log(			\
-				(lev),					\
-				(funct),				\
-				(class_n),				\
-				(msg)					\
-				);					\
-		}							\
-	}
+#define __LOG_WRAPPER(lev, funct, msg) {				\
+	if( Tritium::Logger::get_log_level() & (lev) ){			\
+	    Tritium::Logger::get_instance()->log(			\
+		(lev),							\
+		(funct),						\
+		(msg)							\
+		);							\
+	}								\
+    }
 
-#define _INFOLOG(x) __LOG_WRAPPER( Logger::Info, __PRETTY_FUNCTION__, "", (x) );
-#define _WARNINGLOG(x) __LOG_WRAPPER( Logger::Warning, __PRETTY_FUNCTION__, "", (x) );
-#define _ERRORLOG(x) __LOG_WRAPPER( Logger::Error, __PRETTY_FUNCTION__, "", (x) );
-
-#define INFOLOG(x) __LOG_WRAPPER( Logger::Info, __FUNCTION__, get_class_name(), (x) );
-#define WARNINGLOG(x) __LOG_WRAPPER( Logger::Warning, __FUNCTION__, get_class_name(), (x) );
-#define ERRORLOG(x) __LOG_WRAPPER( Logger::Error, __FUNCTION__, get_class_name(), (x) );
-
-
-
+#define INFOLOG(x) __LOG_WRAPPER( Tritium::Logger::Info, __PRETTY_FUNCTION__, (x) );
+#define WARNINGLOG(x) __LOG_WRAPPER( Tritium::Logger::Warning, __PRETTY_FUNCTION__, (x) );
+#define ERRORLOG(x) __LOG_WRAPPER( Tritium::Logger::Error, __PRETTY_FUNCTION__, (x) );
 
 #endif // TRITIUM_OBJECT_HPP

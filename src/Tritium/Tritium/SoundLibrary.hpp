@@ -22,8 +22,7 @@
 #ifndef TRITIUM_SOUNDLIBRARY_HPP
 #define TRITIUM_SOUNDLIBRARY_HPP
 
-#include <string>
-#include <Tritium/Logger.hpp>
+#include <vector>
 
 namespace Tritium
 {
@@ -35,7 +34,7 @@ class InstrumentList;
 \ingroup H2CORE
 \brief	SoundLibrary class.
 */
-class SoundLibrary : public Object
+class SoundLibrary
 {
 public:
 	SoundLibrary();
@@ -50,7 +49,7 @@ private:
 \ingroup H2CORE
 \brief	Drumkit info
 */
-class Drumkit : public Object
+class Drumkit
 {
 public:
 	Drumkit();

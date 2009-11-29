@@ -25,7 +25,6 @@
 
 #include <QtGui>
 
-#include <Tritium/Logger.hpp>
 #include <Tritium/TransportPosition.hpp>
 
 #include "../EventListener.hpp"
@@ -50,7 +49,7 @@ namespace Tritium
 ///
 /// Pattern Editor Panel
 ///
-class PatternEditorPanel : public QWidget, public EventListener, public Object
+class PatternEditorPanel : public QWidget, public EventListener
 {
 	Q_OBJECT
 

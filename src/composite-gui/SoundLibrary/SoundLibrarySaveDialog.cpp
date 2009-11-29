@@ -23,10 +23,10 @@
 #include "SoundLibrarySaveDialog.hpp"
 
 #include <Tritium/SoundLibrary.hpp>
+#include <Tritium/Logger.hpp>
 
 SoundLibrarySaveDialog::SoundLibrarySaveDialog( QWidget* pParent )
  : QDialog( pParent )
- , Object( "SoundLibrarySaveDialog" )
 {
 	setupUi( this );
 	INFOLOG( "INIT" );

@@ -21,9 +21,10 @@
 
 #include "MidiSenseWidget.hpp"
 #include <Tritium/Hydrogen.hpp>
+#include <Tritium/Logger.hpp>
 
 
-MidiSenseWidget::MidiSenseWidget(QWidget* pParent) : QDialog( pParent ) , Object("MidiSenseWidget")
+MidiSenseWidget::MidiSenseWidget(QWidget* pParent) : QDialog( pParent )
 {
 	setWindowTitle( "Waiting.." );
 	setFixedSize( 200, 100 );	

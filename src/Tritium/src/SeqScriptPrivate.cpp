@@ -19,12 +19,13 @@
  *
  */
 
+#include "SeqScriptPrivate.hpp"
+
 #include <Tritium/SeqEvent.hpp>
 
 #include <vector>
 #include <cassert>
-
-#include "SeqScriptPrivate.hpp"
+#include <QMutexLocker>
 
 using namespace Tritium;
 

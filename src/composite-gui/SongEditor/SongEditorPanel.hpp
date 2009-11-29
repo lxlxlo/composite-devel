@@ -24,7 +24,6 @@
 
 
 #include "../EventListener.hpp"
-#include <Tritium/Logger.hpp>
 
 #include <QtGui>
 
@@ -42,7 +41,7 @@ enum SongEditorActionMode
 };
 
 
-class SongEditorPanel : public QWidget, public EventListener, public Object
+class SongEditorPanel : public QWidget, public EventListener
 {
 	Q_OBJECT
 

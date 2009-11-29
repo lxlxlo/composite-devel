@@ -19,6 +19,7 @@
  *
  */
 
+#include <Tritium/Logger.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/ADSR.hpp>
 #include <Tritium/Sample.hpp>
@@ -34,8 +35,7 @@ namespace Tritium
 
 
 Instrument::Instrument( const QString& id, const QString& name, ADSR* adsr )
-		: Object( "Instrument" )
-		, __queued( 0 )
+		: __queued( 0 )
 		, __adsr( adsr )
 		, __muted( false )
 		, __name( name )
@@ -109,7 +109,7 @@ void Instrument::load_from_placeholder( Instrument* placeholder, bool is_live )
 			InstrumentLayer *pOldLayer = this->get_layer( nLayer );
 
 			if ( pSample == NULL ) {
-				_ERRORLOG( "Error loading sample. Creating a new empty layer." );
+				ERRORLOG( "Error loading sample. Creating a new empty layer." );
 				if ( is_live )
 					AudioEngine::get_instance()->lock( RIGHT_HERE );
 				
@@ -225,7 +225,6 @@ void Instrument::load_from_name(
 
 
 InstrumentList::InstrumentList()
-		: Object( "InstrumentList" )
 {
 //	infoLog("INIT");
 }
@@ -304,8 +303,7 @@ void InstrumentList::del( int pos )
 
 
 InstrumentLayer::InstrumentLayer( Sample *sample )
-		: Object( "InstrumentLayer" )
-		, __start_velocity( 0.0 )
+		: __start_velocity( 0.0 )
 		, __end_velocity( 1.0 )
 		, __pitch( 0.0 )
 		, __gain( 1.0 )

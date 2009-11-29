@@ -20,7 +20,7 @@
  */
 
 #include <Tritium/Sample.hpp>
-
+#include <Tritium/Logger.hpp>
 #include <Tritium/Preferences.hpp>
 #include "FLACFile.hpp"
 #include <sndfile.h>
@@ -33,8 +33,7 @@ namespace Tritium
 {
 
 Sample::Sample( unsigned frames, const QString& filename, float* data_l, float* data_r )
-		: Object( "Sample" )
-		, __data_l( data_l )
+		: __data_l( data_l )
 		, __data_r( data_r )
 		, __sample_rate( 44100 )
 		, __filename( filename )
@@ -74,7 +73,7 @@ Sample* Sample::load_flac( const QString& filename )
 	FLACFile file;
 	return file.load( filename );
 #else
-	_ERRORLOG("[loadFLAC] FLAC support was disabled during compilation");
+	ERRORLOG("[loadFLAC] FLAC support was disabled during compilation");
 	return NULL;
 #endif
 }
@@ -85,7 +84,7 @@ Sample* Sample::load_wave( const QString& filename )
 {
 	// file exists?
 	if ( QFile( filename ).exists() == false ) {
-		_ERRORLOG( QString( "[Sample::load] Load sample: File %1 not found" ).arg( filename ) );
+		ERRORLOG( QString( "[Sample::load] Load sample: File %1 not found" ).arg( filename ) );
 		return NULL;
 	}
 
@@ -93,7 +92,7 @@ Sample* Sample::load_wave( const QString& filename )
 	SF_INFO soundInfo;
 	SNDFILE* file = sf_open( filename.toLocal8Bit(), SFM_READ, &soundInfo );
 	if ( !file ) {
-		_ERRORLOG( QString( "[Sample::load] Error loading file %1" ).arg( filename ) );
+		ERRORLOG( QString( "[Sample::load] Error loading file %1" ).arg( filename ) );
 	}
 
 

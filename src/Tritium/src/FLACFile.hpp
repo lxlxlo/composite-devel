@@ -22,8 +22,7 @@
 #ifndef TRITIUM_FLAC_FILE_HPP
 #define TRITIUM_FLAC_FILE_HPP
 
-#include <Tritium/Logger.hpp>
-#include <string>
+class QString;
 
 namespace Tritium
 {
@@ -32,7 +31,7 @@ class Sample;
 
 /// \todo: impostare il samplerate in load()
 /// Class for FLAC file handling
-class FLACFile : public Object
+class FLACFile
 {
 public:
 	FLACFile();

@@ -25,7 +25,6 @@
 #include "config.h"
 
 #include "ui_SoundLibraryImportDialog_UI.h"
-#include <Tritium/Logger.hpp>
 #include <Tritium/Preferences.hpp>
 
 #include <vector>
@@ -45,7 +44,7 @@ struct SoundLibraryInfo
 ///
 /// This dialog is used to import a SoundLibrary file from a local file or via HTTP.
 ///
-class SoundLibraryImportDialog : public QDialog, public Ui_SoundLibraryImportDialog_UI, public Object
+class SoundLibraryImportDialog : public QDialog, public Ui_SoundLibraryImportDialog_UI
 {
 	Q_OBJECT
 	public:

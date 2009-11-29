@@ -69,6 +69,7 @@
 #include <QtCore/QMutex>
 #include <QtCore/QMutexLocker>
 
+#include <Tritium/Logger.hpp>
 #include <Tritium/LocalFileMng.hpp>
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/ADSR.hpp>
@@ -357,11 +358,11 @@ void updateTickSize()
 
 void audioEngine_init()
 {
-	_INFOLOG( "*** Hydrogen audio engine init ***" );
+	INFOLOG( "*** Hydrogen audio engine init ***" );
 
 	// check current state
 	if ( m_audioEngineState != STATE_UNINITIALIZED ) {
-		_ERRORLOG( "Error the audio engine is not in UNINITIALIZED state" );
+		ERRORLOG( "Error the audio engine is not in UNINITIALIZED state" );
 		AudioEngine::get_instance()->unlock();
 		return;
 	}
@@ -410,13 +411,13 @@ void audioEngine_destroy()
 {
 	// check current state
 	if ( m_audioEngineState != STATE_INITIALIZED ) {
-		_ERRORLOG( "Error the audio engine is not in INITIALIZED state" );
+		ERRORLOG( "Error the audio engine is not in INITIALIZED state" );
 		return;
 	}
 	AudioEngine::get_instance()->get_sampler()->panic();
 
 	AudioEngine::get_instance()->lock( RIGHT_HERE );
-	_INFOLOG( "*** Hydrogen audio engine shutdown ***" );
+	INFOLOG( "*** Hydrogen audio engine shutdown ***" );
 
 	audioEngine_clearNoteQueue();
 
@@ -444,11 +445,11 @@ int audioEngine_start( bool bLockEngine, unsigned nTotalFrames )
 		AudioEngine::get_instance()->lock( RIGHT_HERE );
 	}
 
-	_INFOLOG( "[audioEngine_start]" );
+	INFOLOG( "[audioEngine_start]" );
 
 	// check current state
 	if ( m_audioEngineState != STATE_READY ) {
-		_ERRORLOG( "Error the audio engine is not in READY state" );
+		ERRORLOG( "Error the audio engine is not in READY state" );
 		if ( bLockEngine ) {
 			AudioEngine::get_instance()->unlock();
 		}
@@ -483,11 +484,11 @@ void audioEngine_stop( bool bLockEngine )
 	if ( bLockEngine ) {
 		AudioEngine::get_instance()->lock( RIGHT_HERE );
 	}
-	_INFOLOG( "[audioEngine_stop]" );
+	INFOLOG( "[audioEngine_stop]" );
 
 	// check current state
 	if ( m_audioEngineState != STATE_READY ) {
-		_ERRORLOG( "Error the audio engine is not in READY state, can't stop." );
+		ERRORLOG( "Error the audio engine is not in READY state, can't stop." );
 		if ( bLockEngine ) {
 			AudioEngine::get_instance()->unlock();
 		}
@@ -796,14 +797,14 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 
 void audioEngine_setupLadspaFX( unsigned nBufferSize )
 {
-	//_INFOLOG( "buffersize=" + to_string(nBufferSize) );
+	//INFOLOG( "buffersize=" + to_string(nBufferSize) );
 
 	if ( m_pSong == NULL ) {
-		//_INFOLOG( "m_pSong=NULL" );
+		//INFOLOG( "m_pSong=NULL" );
 		return;
 	}
 	if ( nBufferSize == 0 ) {
-		_ERRORLOG( "nBufferSize=0" );
+		ERRORLOG( "nBufferSize=0" );
 		return;
 	}
 
@@ -846,8 +847,10 @@ void audioEngine_renameJackPorts()
 	if ( m_pSong == NULL ) {
 		return;
 	}
-	if ( m_pAudioDriver->get_class_name() == "JackOutput" ) {
-		static_cast< JackOutput* >( m_pAudioDriver )->makeTrackOutputs( m_pSong );
+	JackOutput *jao;
+	jao = dynamic_cast<JackOutput*>(m_pAudioDriver);
+	if ( jao ) {
+		jao->makeTrackOutputs( m_pSong );
 	}
 #endif
 }
@@ -856,7 +859,7 @@ void audioEngine_renameJackPorts()
 
 void audioEngine_setSong( Song *newSong )
 {
-	_WARNINGLOG( QString( "Set song: %1" ).arg( newSong->__name ) );
+	WARNINGLOG( QString( "Set song: %1" ).arg( newSong->__name ) );
 
 	while( m_pSong != 0 ) {
 		audioEngine_removeSong();
@@ -869,7 +872,7 @@ void audioEngine_setSong( Song *newSong )
 
 	// check current state
 	if ( m_audioEngineState != STATE_PREPARED ) {
-		_ERRORLOG( "Error the audio engine is not in PREPARED state" );
+		ERRORLOG( "Error the audio engine is not in PREPARED state" );
 	}
 
 	EventQueue::get_instance()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );
@@ -911,7 +914,7 @@ void audioEngine_removeSong()
 
 	// check current state
 	if ( m_audioEngineState != STATE_READY ) {
-		_ERRORLOG( "Error the audio engine is not in READY state" );
+		ERRORLOG( "Error the audio engine is not in READY state" );
 		AudioEngine::get_instance()->unlock();
 		return;
 	}
@@ -972,7 +975,7 @@ inline void audioEngine_updateNoteQueue( unsigned nFrames, const TransportPositi
 
 	int tick = tickNumber_start;
 
-// 	_WARNINGLOG( "Lookahead: " + to_string( lookahead
+// 	WARNINGLOG( "Lookahead: " + to_string( lookahead
 //	                                        / m_pAudioDriver->m_transport.m_nTickSize ) );
 	// get initial timestamp for first tick
 	gettimeofday( &m_currentTickTime, NULL );
@@ -1008,7 +1011,7 @@ inline void audioEngine_updateNoteQueue( unsigned nFrames, const TransportPositi
 		}
 
 // 		if ( m_nPatternStartTick == -1 ) { // for debugging pattern mode :s
-// 			_WARNINGLOG( "m_nPatternStartTick == -1; tick = "
+// 			WARNINGLOG( "m_nPatternStartTick == -1; tick = "
 //			             + to_string( tick ) );
 // 		}
 
@@ -1017,7 +1020,7 @@ inline void audioEngine_updateNoteQueue( unsigned nFrames, const TransportPositi
 		if ( m_pSong->get_mode() == Song::SONG_MODE ) {
 			if ( m_pSong->get_pattern_group_vector()->size() == 0 ) {
 				// there's no song!!
-				_ERRORLOG( "no patterns in song." );
+				ERRORLOG( "no patterns in song." );
 				m_pAudioDriver->stop();
 				return -1;
 			}
@@ -1039,13 +1042,13 @@ inline void audioEngine_updateNoteQueue( unsigned nFrames, const TransportPositi
 //			PatternList *pPatternList =
 //				 (*(m_pSong->getPatternGroupVector()))[m_nSongPos];
 			if ( m_nSongPos == -1 ) {
-				_INFOLOG( "song pos = -1" );
+				INFOLOG( "song pos = -1" );
 				if ( m_pSong->is_loop_enabled() == true ) {
 					m_nSongPos = findPatternInTick( 0,
 									true,
 									&m_nPatternStartTick );
 				} else {
-					_INFOLOG( "End of Song" );
+					INFOLOG( "End of Song" );
 					return -1;
 				}
 			}
@@ -1086,7 +1089,7 @@ inline void audioEngine_updateNoteQueue( unsigned nFrames, const TransportPositi
 			}
 
 			if ( nPatternSize == 0 ) {
-				_ERRORLOG( "nPatternSize == 0" );
+				ERRORLOG( "nPatternSize == 0" );
 			}
 
 			if ( ( tick == m_nPatternStartTick + nPatternSize )
@@ -1097,7 +1100,7 @@ inline void audioEngine_updateNoteQueue( unsigned nFrames, const TransportPositi
 					      i < m_pNextPatterns->get_size();
 					      i++ ) {
 						p = m_pNextPatterns->get( i );
-// 						_WARNINGLOG( QString( "Got pattern # %1" )
+// 						WARNINGLOG( QString( "Got pattern # %1" )
 //							     .arg( i + 1 ) );
 						// if the pattern isn't playing
 						// already, start it now.
@@ -1110,7 +1113,7 @@ inline void audioEngine_updateNoteQueue( unsigned nFrames, const TransportPositi
 				}
 				if ( m_nPatternStartTick == -1 ) {
 					m_nPatternStartTick = tick - (tick % nPatternSize);
-// 					_WARNINGLOG( "set Pattern Start Tick to "
+// 					WARNINGLOG( "set Pattern Start Tick to "
 //						     + to_string( m_nPatternStartTick ) );
 				} else {
 					m_nPatternStartTick = tick;
@@ -1128,7 +1131,7 @@ inline void audioEngine_updateNoteQueue( unsigned nFrames, const TransportPositi
 		if ( m_nPatternTickPosition % 48 == 0 ) {
 			float fPitch;
 			float fVelocity;
-// 			_INFOLOG( "Beat: " + to_string(m_nPatternTickPosition / 48 + 1)
+// 			INFOLOG( "Beat: " + to_string(m_nPatternTickPosition / 48 + 1)
 //				   + "@ " + to_string( tick ) );
 			if ( m_nPatternTickPosition == 0 ) {
 				fPitch = 3;
@@ -1286,7 +1289,7 @@ inline int findPatternInTick( int nTick, bool bLoopMode, int *pPatternStartTick 
 	}
 
 	QString err = QString( "[findPatternInTick] tick = %1. No pattern found" ).arg( QString::number(nTick) );
-	_ERRORLOG( err );
+	ERRORLOG( err );
 	return -1;
 }
 #endif
@@ -1317,28 +1320,30 @@ void audioEngine_noteOff( Note *note )
 
 AudioOutput* createDriver( const QString& sDriver )
 {
-	_INFOLOG( QString( "Driver: '%1'" ).arg( sDriver ) );
+	INFOLOG( QString( "Driver: '%1'" ).arg( sDriver ) );
 	Preferences *pPref = Preferences::get_instance();
 	AudioOutput *pDriver = NULL;
 
 	if ( sDriver == "Jack" ) {
-		JackClient::get_instance()->open();
-		pDriver = new JackOutput( audioEngine_process );
-		if ( pDriver->get_class_name() == "NullDriver" ) {
-			delete pDriver;
-			pDriver = NULL;
-		} else {
 #ifdef JACK_SUPPORT
-			static_cast<JackOutput*>(pDriver)->setConnectDefaults(
+		JackClient::get_instance()->open();
+		#warning "Could `new JackOutput` really return NullDriver?"
+		pDriver = new JackOutput( audioEngine_process );
+		JackOutput *jao = dynamic_cast<JackOutput*>(pDriver);
+		if ( jao == 0 ) {
+			delete pDriver;
+			pDriver = 0;
+		} else {
+			jao->setConnectDefaults(
 				Preferences::get_instance()->m_bJackConnectDefaults
 				);
-#endif
 		}
+#endif
 	} else if ( sDriver == "Fake" ) {
-		_WARNINGLOG( "*** Using FAKE audio driver ***" );
+		WARNINGLOG( "*** Using FAKE audio driver ***" );
 		pDriver = new FakeDriver( audioEngine_process );
 	} else {
-		_ERRORLOG( "Unknown driver " + sDriver );
+		ERRORLOG( "Unknown driver " + sDriver );
 		audioEngine_raiseError( Hydrogen::UNKNOWN_DRIVER );
 	}
 
@@ -1346,7 +1351,7 @@ AudioOutput* createDriver( const QString& sDriver )
 		// initialize the audio driver
 		int res = pDriver->init( pPref->m_nBufferSize );
 		if ( res != 0 ) {
-			_ERRORLOG( "Error starting audio driver [audioDriver::init()]" );
+			ERRORLOG( "Error starting audio driver [audioDriver::init()]" );
 			delete pDriver;
 			pDriver = NULL;
 		}
@@ -1364,11 +1369,11 @@ void audioEngine_startAudioDrivers()
 	AudioEngine::get_instance()->lock( RIGHT_HERE );
 	QMutexLocker mx(&mutex_OutputPointer);
 
-	_INFOLOG( "[audioEngine_startAudioDrivers]" );
+	INFOLOG( "[audioEngine_startAudioDrivers]" );
 
 	// check current state
 	if ( m_audioEngineState != STATE_INITIALIZED ) {
-		_ERRORLOG( QString( "Error the audio engine is not in INITIALIZED"
+		ERRORLOG( QString( "Error the audio engine is not in INITIALIZED"
 				    " state. state=%1" )
 			   .arg( m_audioEngineState ) );
 		AudioEngine::get_instance()->unlock();
@@ -1376,10 +1381,10 @@ void audioEngine_startAudioDrivers()
 	}
 
 	if ( m_pAudioDriver ) {	// check if the audio m_pAudioDriver is still alive
-		_ERRORLOG( "The audio driver is still alive" );
+		ERRORLOG( "The audio driver is still alive" );
 	}
 	if ( m_pMidiDriver ) {	// check if midi driver is still alive
-		_ERRORLOG( "The MIDI driver is still active" );
+		ERRORLOG( "The MIDI driver is still active" );
 	}
 
 
@@ -1388,8 +1393,8 @@ void audioEngine_startAudioDrivers()
 	if ( sAudioDriver == "Auto" ) {
 		if ( ( m_pAudioDriver = createDriver( "Jack" ) ) == NULL ) {
 			audioEngine_raiseError( Hydrogen::ERROR_STARTING_DRIVER );
-			_ERRORLOG( "Error starting audio driver" );
-			_ERRORLOG( "Using the NULL output audio driver" );
+			ERRORLOG( "Error starting audio driver" );
+			ERRORLOG( "Using the NULL output audio driver" );
 
 			// use the NULL output driver
 			m_pAudioDriver = new NullDriver( audioEngine_process );
@@ -1399,8 +1404,8 @@ void audioEngine_startAudioDrivers()
 		m_pAudioDriver = createDriver( sAudioDriver );
 		if ( m_pAudioDriver == NULL ) {
 			audioEngine_raiseError( Hydrogen::ERROR_STARTING_DRIVER );
-			_ERRORLOG( "Error starting audio driver" );
-			_ERRORLOG( "Using the NULL output audio driver" );
+			ERRORLOG( "Error starting audio driver" );
+			ERRORLOG( "Using the NULL output audio driver" );
 			
 			// use the NULL output driver
 			m_pAudioDriver = new NullDriver( audioEngine_process );
@@ -1446,8 +1451,8 @@ void audioEngine_startAudioDrivers()
 		int res = m_pAudioDriver->connect();
 		if ( res != 0 ) {
 			audioEngine_raiseError( Hydrogen::ERROR_STARTING_DRIVER );
-			_ERRORLOG( "Error starting audio driver [audioDriver::connect()]" );
-			_ERRORLOG( "Using the NULL output audio driver" );
+			ERRORLOG( "Error starting audio driver [audioDriver::connect()]" );
+			ERRORLOG( "Using the NULL output audio driver" );
 
 			mx.relock();
 			delete m_pAudioDriver;
@@ -1461,10 +1466,10 @@ void audioEngine_startAudioDrivers()
                     "JACK.  JACK 2.0 will require that output ports get a new " \
                     "buffer pointer for every process() cycle."
 		if ( ( m_pMainBuffer_L = m_pAudioDriver->getOut_L() ) == NULL ) {
-			_ERRORLOG( "m_pMainBuffer_L == NULL" );
+			ERRORLOG( "m_pMainBuffer_L == NULL" );
 		}
 		if ( ( m_pMainBuffer_R = m_pAudioDriver->getOut_R() ) == NULL ) {
-			_ERRORLOG( "m_pMainBuffer_R == NULL" );
+			ERRORLOG( "m_pMainBuffer_R == NULL" );
 		}
 
 #ifdef JACK_SUPPORT
@@ -1482,13 +1487,13 @@ void audioEngine_startAudioDrivers()
 /// Stop all audio drivers
 void audioEngine_stopAudioDrivers()
 {
-	_INFOLOG( "[audioEngine_stopAudioDrivers]" );
+	INFOLOG( "[audioEngine_stopAudioDrivers]" );
 
 	Hydrogen::get_instance()->get_transport()->stop();
 
 	if ( ( m_audioEngineState != STATE_PREPARED )
 	     && ( m_audioEngineState != STATE_READY ) ) {
-		_ERRORLOG( QString( "Error: the audio engine is not in PREPARED"
+		ERRORLOG( QString( "Error: the audio engine is not in PREPARED"
 				    " or READY state. state=%1" )
 			   .arg( m_audioEngineState ) );
 		return;
@@ -1550,9 +1555,8 @@ Hydrogen* Hydrogen::__instance = NULL;
 
 
 Hydrogen::Hydrogen()
-		: Object( "Hydrogen" )
 {
-	_INFOLOG( "[Hydrogen]" );
+	INFOLOG( "[Hydrogen]" );
 
 	__instance = this;
 	hydrogenInstance = this;
@@ -1566,7 +1570,7 @@ Hydrogen::Hydrogen()
 
 Hydrogen::~Hydrogen()
 {
-	_INFOLOG( "[~Hydrogen]" );
+	INFOLOG( "[~Hydrogen]" );
 	m_pTransport->stop();
 	removeSong();
 	audioEngine_stopAudioDrivers();
@@ -1779,7 +1783,7 @@ void Hydrogen::startExportSong( const QString& filename )
 
 	int res = m_pAudioDriver->init( pPref->m_nBufferSize );
 	if ( res != 0 ) {
-		_ERRORLOG( "Error starting disk writer driver "
+		ERRORLOG( "Error starting disk writer driver "
 			   "[DiskWriterDriver::init()]" );
 	}
 
@@ -1792,7 +1796,7 @@ void Hydrogen::startExportSong( const QString& filename )
 
 	res = m_pAudioDriver->connect();
 	if ( res != 0 ) {
-		_ERRORLOG( "Error starting disk writer driver "
+		ERRORLOG( "Error starting disk writer driver "
 			   "[DiskWriterDriver::connect()]" );
 	}
 }
@@ -1801,7 +1805,7 @@ void Hydrogen::startExportSong( const QString& filename )
 
 void Hydrogen::stopExportSong()
 {
-	if ( m_pAudioDriver->get_class_name() != "DiskWriterDriver" ) {
+	if ( ! dynamic_cast<DiskWriterDriver*>(m_pAudioDriver) ) {
 		return;
 	}
 
@@ -1934,7 +1938,7 @@ int Hydrogen::loadDrumkit( Drumkit *drumkitInfo )
 
 		Instrument *pNewInstr = pDrumkitInstrList->get( nInstr );
 		assert( pNewInstr );
-		_INFOLOG( QString( "Loading instrument (%1 of %2) [%3]" )
+		INFOLOG( QString( "Loading instrument (%1 of %2) [%3]" )
 			  .arg( nInstr )
 			  .arg( pDrumkitInstrList->get_size() )
 			  .arg( pNewInstr->get_name() ) );
@@ -2066,7 +2070,7 @@ long Hydrogen::getTickForPosition( int pos )
 		if ( m_pSong->is_loop_enabled() ) {
 			pos = pos % nPatternGroups;
 		} else {
-			_WARNINGLOG( QString( "patternPos > nPatternGroups. pos:"
+			WARNINGLOG( QString( "patternPos > nPatternGroups. pos:"
 					      " %1, nPatternGroups: %2")
 				     .arg( pos )
 				     .arg(  nPatternGroups ) );
@@ -2149,7 +2153,7 @@ void Hydrogen::restartLadspaFX()
 		audioEngine_setupLadspaFX( m_pAudioDriver->getBufferSize() );
 		AudioEngine::get_instance()->unlock();
 	} else {
-		_ERRORLOG( "m_pAudioDriver = NULL" );
+		ERRORLOG( "m_pAudioDriver = NULL" );
 	}
 }
 

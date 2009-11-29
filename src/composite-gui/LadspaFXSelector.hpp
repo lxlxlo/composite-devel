@@ -26,10 +26,7 @@
 
 #include "ui_LadspaFXSelector_UI.h"
 
-#include <Tritium/Logger.hpp>
-
 #include <QtGui>
-#include <string>
 #include <vector>
 
 namespace Tritium {
@@ -37,7 +34,7 @@ namespace Tritium {
 	class LadspaFXGroup;
 }
 
-class LadspaFXSelector : public QDialog, public Ui_LadspaFXSelector_UI, public Object
+class LadspaFXSelector : public QDialog, public Ui_LadspaFXSelector_UI
 {
 	Q_OBJECT
 

@@ -23,6 +23,7 @@
 
 #include <Tritium/fx/Effects.hpp>
 #include <Tritium/sampler/Sampler.hpp>
+#include <Tritium/Logger.hpp>
 
 #include <Tritium/Hydrogen.hpp>	// TODO: remove this line as soon as possible
 #include <cassert>
@@ -42,8 +43,7 @@ void AudioEngine::create_instance()
 }
 
 AudioEngine::AudioEngine()
-		: Object( "AudioEngine" )
-		, __sampler( NULL )
+		: __sampler( NULL )
 {
 	__instance = this;
 	INFOLOG( "INIT" );

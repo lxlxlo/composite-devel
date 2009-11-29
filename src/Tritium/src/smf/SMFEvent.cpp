@@ -19,6 +19,7 @@
  *
  */
 
+#include <Tritium/Logger.hpp>
 #include <Tritium/smf/SMFEvent.hpp>
 
 namespace Tritium
@@ -114,8 +115,7 @@ std::vector<char> SMFTrackNameMetaEvent::getBuffer()
 
 
 SMFEvent::SMFEvent( const QString& sEventName, unsigned nTicks )
-		: Object( sEventName )
-		, m_nTicks( nTicks )
+		: m_nTicks( nTicks )
 		, m_nDeltaTime( -1 )
 {
 	//infoLog( "INIT" );

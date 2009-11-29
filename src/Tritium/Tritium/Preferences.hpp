@@ -23,14 +23,14 @@
 #define TRITIUM_PREFERENCES_HPP
 
 #include <list>
-//#include <string>
 #include <vector>
 #include <cassert>
 
 #include <Tritium/Action.hpp>
 #include <Tritium/globals.hpp>
-#include <Tritium/Logger.hpp>
 
+#include <QString>
+#include <QStringList>
 #include <QDomDocument>
 
 // forward declaration
@@ -48,7 +48,7 @@ const float FALLOFF_FAST =	1.5f;
 /**
 \ingroup H2CORE
 */
-class WindowProperties : public Object
+class WindowProperties
 {
 public:
 	int x;
@@ -72,7 +72,7 @@ public:
 /**
 \ingroup H2CORE
 */
-class H2RGBColor : public Object
+class H2RGBColor
 {
 public:
 	H2RGBColor( int r = -1, int g = -1, int b = -1 );
@@ -103,7 +103,7 @@ private:
 \ingroup H2CORE
 \brief	Colors for hydrogen
 */
-class UIStyle : public Object
+class UIStyle
 {
 public:
 	UIStyle();
@@ -133,7 +133,7 @@ public:
 \ingroup H2CORE
 \brief	Manager for User Preferences File (singleton)
 */
-class Preferences : public Object
+class Preferences
 {
 public:
 	enum {

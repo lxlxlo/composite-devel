@@ -28,12 +28,11 @@
 #include <vector>
 #include <list>
 #include "ladspa.h"
-#include <Tritium/Logger.hpp>
 
 namespace Tritium
 {
 
-class LadspaFXInfo : public Object
+class LadspaFXInfo
 {
 public:
 	LadspaFXInfo( const QString& sName );
@@ -54,7 +53,7 @@ public:
 
 
 
-class LadspaFXGroup : public Object
+class LadspaFXGroup
 {
 public:
 	LadspaFXGroup( const QString& sName );
@@ -91,7 +90,7 @@ private:
 
 
 
-class LadspaControlPort : public Object
+class LadspaControlPort
 {
 public:
 	QString sName;
@@ -101,12 +100,12 @@ public:
 	LADSPA_Data fLowerBound;
 	LADSPA_Data fUpperBound;
 
-	LadspaControlPort() : Object( "LadspaControlPort" ) { }
+	LadspaControlPort() { }
 };
 
 
 
-class LadspaFX : public Object
+class LadspaFX
 {
 public:
 	enum {

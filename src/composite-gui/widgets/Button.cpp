@@ -31,11 +31,11 @@
 #endif
 
 #include <Tritium/globals.hpp>
+#include <Tritium/Logger.hpp>
 
 
 Button::Button( QWidget * pParent, const QString& sOnImage, const QString& sOffImage, const QString& sOverImage, QSize size, bool use_skin_style )
  : QWidget( pParent )
- , Object( "Button" )
  , m_bPressed( false )
  , m_onPixmap( size )
  , m_offPixmap( size )

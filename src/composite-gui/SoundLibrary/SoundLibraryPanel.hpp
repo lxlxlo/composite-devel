@@ -28,8 +28,6 @@
 
 #include <vector>
 
-#include <Tritium/Logger.hpp>
-
 namespace Tritium
 {
 	class Song;
@@ -40,7 +38,7 @@ namespace Tritium
 class SoundLibraryTree;
 class ToggleButton;
 
-class SoundLibraryPanel : public QWidget, private Object
+class SoundLibraryPanel : public QWidget
 {
 Q_OBJECT
 public:

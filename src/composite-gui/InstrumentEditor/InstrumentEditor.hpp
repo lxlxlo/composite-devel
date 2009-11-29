@@ -27,7 +27,6 @@
 #include <QtGui>
 
 #include <Tritium/Instrument.hpp>
-#include <Tritium/Logger.hpp>
 
 #include "../EventListener.hpp"
 #include "../widgets/PixmapWidget.hpp"
@@ -45,7 +44,7 @@ class LayerPreview;
 ///
 /// Instrument Editor
 ///
-class InstrumentEditor : public QWidget, public Object, public EventListener
+class InstrumentEditor : public QWidget, public EventListener
 {
 	Q_OBJECT
 

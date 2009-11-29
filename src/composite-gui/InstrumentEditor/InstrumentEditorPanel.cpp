@@ -24,6 +24,7 @@
 #include <QGridLayout>
 
 
+#include <Tritium/Logger.hpp>
 #include "InstrumentEditorPanel.hpp"
 #include "../Skin.hpp"
 
@@ -41,7 +42,6 @@ InstrumentEditorPanel* InstrumentEditorPanel::get_instance()
 
 
 InstrumentEditorPanel::InstrumentEditorPanel( QWidget *pParent )
- : Object( "InstrumentEditorPanel" )
 {
 	UNUSED( pParent );
 

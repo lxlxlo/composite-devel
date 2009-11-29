@@ -34,6 +34,7 @@
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/AudioEngine.hpp>
+#include <Tritium/Logger.hpp>
 using namespace Tritium;
 
 #include "MixerLine.hpp"

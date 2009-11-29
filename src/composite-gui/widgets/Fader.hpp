@@ -27,12 +27,10 @@
 
 #include <QtGui>
 
-#include <Tritium/Logger.hpp>
-
 ///
 /// Fader and VuMeter widget
 ///
-class Fader : public QWidget, public Object
+class Fader : public QWidget
 {
 	Q_OBJECT
 
@@ -87,7 +85,7 @@ class Fader : public QWidget, public Object
 
 
 
-class MasterFader : public QWidget, public Object
+class MasterFader : public QWidget
 {
 	Q_OBJECT
 
@@ -135,7 +133,7 @@ class MasterFader : public QWidget, public Object
 
 
 
-class Knob : public QWidget, public Object
+class Knob : public QWidget
 {
 	Q_OBJECT
 	public:

@@ -37,7 +37,6 @@ using namespace Tritium;
 
 ExportSongDialog::ExportSongDialog(QWidget* parent)
  : QDialog(parent)
- , Object( "ExportSongDialog" )
  , m_bExporting( false )
 {
 	setupUi( this );

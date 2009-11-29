@@ -26,7 +26,6 @@
 
 #include <QDialog>
 #include "ui_PlaylistDialog_UI.h"
-#include <Tritium/Logger.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Playlist.hpp>
@@ -39,7 +38,7 @@ class PixmapWidget;
 ///
 /// This dialog is used to use the H2PlayList
 ///
-class PlaylistDialog : public QDialog, public Ui_PlaylistDialog_UI, public Object
+class PlaylistDialog : public QDialog, public Ui_PlaylistDialog_UI
 
 {
 	Q_OBJECT

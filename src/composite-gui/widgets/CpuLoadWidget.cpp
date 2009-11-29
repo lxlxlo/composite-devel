@@ -22,6 +22,7 @@
 
 #include "CpuLoadWidget.hpp"
 #include <Tritium/Hydrogen.hpp>
+#include <Tritium/Logger.hpp>
 
 #include "../Skin.hpp"
 #include "../HydrogenApp.hpp"
@@ -34,7 +35,6 @@
 
 CpuLoadWidget::CpuLoadWidget( QWidget *pParent )
  : QWidget( pParent )
- , Object( "CPULoadQWidget" )
  , m_fValue( 0 )
 {
 	setAttribute(Qt::WA_NoBackground);

@@ -39,7 +39,6 @@ using namespace Tritium;
 
 AudioEngineInfoForm::AudioEngineInfoForm(QWidget* parent)
  : QWidget( parent )
- , Object( "AudioEngineInfoForm" )
 {
 	setupUi( this );
 
@@ -139,7 +138,7 @@ void AudioEngineInfoForm::updateInfo()
 	// Audio driver info
 	AudioOutput *driver = pEngine->getAudioOutput();
 	if (driver) {
-		QString audioDriverName = driver->get_class_name();
+		QString audioDriverName = "Jack";
 		driverLbl->setText(audioDriverName);
 
 		// Audio driver buffer size
@@ -169,7 +168,7 @@ void AudioEngineInfoForm::updateInfo()
 	// Midi driver info
 	MidiInput *pMidiDriver = pEngine->getMidiInput();
 	if (pMidiDriver) {
-		midiDriverName->setText( pMidiDriver->get_class_name() );
+		midiDriverName->setText( "Jack" );
 	}
 	else {
 		midiDriverName->setText("No MIDI driver support");

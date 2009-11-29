@@ -27,7 +27,6 @@
 #include "InstrumentEditor/InstrumentEditor.hpp"
 
 #include <QDialog>
-#include <Tritium/Logger.hpp>
 #include <Tritium/Preferences.hpp>
 
 
@@ -37,8 +36,7 @@ class SampleWaveDisplay;
 ///
 /// This dialog is used to preview audiofiles
 ///
-class AudioFileBrowser : public QDialog, public Ui_AudioFileBrowser_UI, public Object
-
+class AudioFileBrowser : public QDialog, public Ui_AudioFileBrowser_UI
 {
 	Q_OBJECT
 	public:

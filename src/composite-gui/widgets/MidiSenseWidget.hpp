@@ -23,9 +23,7 @@
 
 #include <QtGui>
 
-#include <Tritium/Logger.hpp>
-
-class MidiSenseWidget : public QDialog ,public Object
+class MidiSenseWidget : public QDialog
 {
     Q_OBJECT
 public:

@@ -21,6 +21,7 @@
 
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Song.hpp>
+#include <Tritium/Logger.hpp>
 #include "../src/transport/songhelpers.hpp"
 
 #define THIS_NAMESPACE t_songhelpers

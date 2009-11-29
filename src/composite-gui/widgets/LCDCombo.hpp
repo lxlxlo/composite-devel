@@ -26,12 +26,10 @@
 
 #include <QtGui>
 
-#include <Tritium/Logger.hpp>
-
 class Button;
 class LCDDisplay;
 
-class LCDCombo : public QWidget, public Object
+class LCDCombo : public QWidget
 {
 	Q_OBJECT
 	public:

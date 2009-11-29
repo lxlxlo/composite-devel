@@ -21,6 +21,7 @@
 
 #include "FLACFile.hpp"
 #include <Tritium/Sample.hpp>
+#include <Tritium/Logger.hpp>
 
 #include <vector>
 #include <fstream>
@@ -44,7 +45,7 @@ namespace Tritium
 
 
 /// Reads a FLAC file...not optimized yet
-class FLACFile_real : public FLAC::Decoder::File, public Object
+class FLACFile_real : public FLAC::Decoder::File
 {
 public:
 	FLACFile_real();
@@ -67,7 +68,6 @@ private:
 
 
 FLACFile_real::FLACFile_real()
-		: Object( "FLACFile_real" )
 {
 //	infoLog( "INIT" );
 }
@@ -219,12 +219,13 @@ Sample* FLACFile_real::getSample() {
 
 
 FLACFile::FLACFile()
-		: Object( "FLACFile" ) {
+{
 	//infoLog( "INIT" );
 }
 
 
-FLACFile::~FLACFile() {
+FLACFile::~FLACFile()
+{
 	//infoLog( "DESTROY" );
 }
 

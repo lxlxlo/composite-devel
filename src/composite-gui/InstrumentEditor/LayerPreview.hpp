@@ -24,12 +24,11 @@
 #include "config.h"
 #include <QtGui>
 
-#include <Tritium/Logger.hpp>
 #include <Tritium/Instrument.hpp>
 #include "../EventListener.hpp"
 
 
-class LayerPreview : public QWidget, public Object, public EventListener
+class LayerPreview : public QWidget, public EventListener
 {
 	Q_OBJECT
 

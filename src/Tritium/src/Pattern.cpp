@@ -19,6 +19,7 @@
  *
  */
 
+#include <Tritium/Logger.hpp>
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/Note.hpp>
@@ -30,7 +31,6 @@ namespace Tritium
 {
 
 Pattern::Pattern( const QString& name, const QString& category, unsigned length )
-		: Object( "Pattern" )
 {
 //	INFOLOG( "INIT: " + m_sName );
 	set_name( name );
@@ -143,7 +143,6 @@ void Pattern::debug_dump()
 
 
 PatternList::PatternList()
-		: Object( "PatternList" )
 {
 //	infoLog("Init");
 }

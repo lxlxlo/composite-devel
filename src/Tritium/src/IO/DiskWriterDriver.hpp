@@ -27,7 +27,7 @@
 #include <inttypes.h>
 
 #include <Tritium/IO/AudioOutput.hpp>
-#include <Tritium/Logger.hpp>
+#include <QString>
 
 namespace Tritium
 {

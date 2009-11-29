@@ -26,12 +26,12 @@
 #include "Button.hpp"
 
 #include <Tritium/globals.hpp>
+#include <Tritium/Logger.hpp>
 
 const QString LCDCombo::SEPARATOR("--sep--");
 
 LCDCombo::LCDCombo(QWidget *pParent, int digits)
  : QWidget(pParent)
- , Object( "LCDCombo") //, SEPARATOR("--sep--")
 {
 	INFOLOG( "INIT" );
 
@@ -55,7 +55,7 @@ LCDCombo::LCDCombo(QWidget *pParent, int digits)
 	update();
 
 	connect( pop, SIGNAL( triggered(QAction*) ), this, SLOT( changeText(QAction*) ) );
-	//_WARNINGLOG("items:"+items[0]);
+	//WARNINGLOG("items:"+items[0]);
 }
 
 
@@ -74,7 +74,7 @@ QString LCDCombo::getText()
 
 void LCDCombo::changeText(QAction* pAction)
 {
-	//_WARNINGLOG("triggered");
+	//WARNINGLOG("triggered");
 // 	display->setText(pAction->text());
 // 	emit valueChanged( pAction->text() );
 	set_text( pAction->text() );

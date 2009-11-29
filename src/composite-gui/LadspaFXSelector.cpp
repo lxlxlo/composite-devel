@@ -34,7 +34,6 @@ using namespace Tritium;
 
 LadspaFXSelector::LadspaFXSelector(int nLadspaFX)
  : QDialog( NULL )
- , Object( "LadspaFXSelector" )
  , m_pCurrentItem( NULL )
 {
 	//INFOLOG( "INIT" );

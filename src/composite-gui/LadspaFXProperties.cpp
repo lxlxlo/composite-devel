@@ -25,7 +25,7 @@
 #include <Tritium/fx/Effects.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/IO/AudioOutput.hpp>
-
+#include <Tritium/Logger.hpp>
 
 #include "LadspaFXProperties.hpp"
 #include "HydrogenApp.hpp"
@@ -42,7 +42,6 @@ using namespace Tritium;
 
 LadspaFXProperties::LadspaFXProperties(QWidget* parent, uint nLadspaFX)
  : QWidget( parent )
- , Object( "LadspaFXProperties" )
 {
 //	INFOLOG( "INIT" );
 

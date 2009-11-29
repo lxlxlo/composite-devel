@@ -30,6 +30,7 @@
 #include <Tritium/LocalFileMng.hpp>
 #include <Tritium/Pattern.hpp>
 #include <Tritium/EventQueue.hpp>
+#include <Tritium/Logger.hpp>
 using namespace Tritium;
 
 #include "AboutDialog.hpp"
@@ -68,7 +69,6 @@ using namespace Tritium;
 
 MainForm::MainForm( QApplication *app, const QString& songFilename )
  : QMainWindow( 0, 0 )
- , Object( "MainForm" )
 {
 	setMinimumSize( QSize( 1000, 600 ) );
 	setWindowIcon( QPixmap( Skin::getImagePath() + "/icon16.png" ) );
@@ -452,7 +452,7 @@ void MainForm::action_file_export_pattern_as()
 		if ( err != 0 )
 		{
 			QMessageBox::warning( this, "Composite", trUtf8("Could not export pattern.") );
-			_ERRORLOG ( "Error saving the pattern" );
+			ERRORLOG ( "Error saving the pattern" );
 		}
 	}
 	h2app->setStatusBarMessage ( trUtf8 ( "Pattern saved." ), 10000 );
@@ -536,8 +536,8 @@ void MainForm::action_file_openPattern()
 	Pattern* err = fileMng.loadPattern ( patternname );
 	if ( err == 0 )
 	{
-		_ERRORLOG( "Error loading the pattern" );
-		_ERRORLOG( patternname );
+		ERRORLOG( "Error loading the pattern" );
+		ERRORLOG( patternname );
 	}
 	else
 	{
@@ -1227,22 +1227,6 @@ bool MainForm::eventFilter( QObject *o, QEvent *e )
 		return FALSE; // standard event processing
         }
 }
-
-
-
-
-
-/// print the object map
-void MainForm::action_debug_printObjects()
-{
-	INFOLOG( "[action_debug_printObjects]" );
-	Object::print_object_map();
-}
-
-
-
-
-
 
 void MainForm::action_file_export_midi()
 {

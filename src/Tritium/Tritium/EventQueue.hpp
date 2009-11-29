@@ -22,7 +22,6 @@
 #ifndef TRITIUM_EVENT_QUEUE_HPP
 #define TRITIUM_EVENT_QUEUE_HPP
 
-#include <Tritium/Logger.hpp>
 #include <cassert>
 
 #define MAX_EVENTS 1024
@@ -58,7 +57,7 @@ public:
 ///
 /// Event queue: is the way the engine talks to the GUI
 ///
-class EventQueue : public Object
+class EventQueue
 {
 public:
 	static void create_instance();

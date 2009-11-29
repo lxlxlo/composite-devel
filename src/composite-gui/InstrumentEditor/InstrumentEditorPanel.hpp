@@ -23,13 +23,12 @@
 #define COMPOSITE_INSTRUMENTEDITORPANEL_HPP
 
 #include <QtGui>
-#include <Tritium/Logger.hpp>
 #include "InstrumentEditor.hpp"
 
 ///
 /// Container for the Instrument Editor (Singleton).
 ///
-class InstrumentEditorPanel : public QWidget, private Object
+class InstrumentEditorPanel : public QWidget
 {
 	Q_OBJECT
 	public:

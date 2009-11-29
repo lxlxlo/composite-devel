@@ -32,6 +32,7 @@
 #include <Tritium/H2Exception.hpp>
 #include <Tritium/SoundLibrary.hpp>
 #include <Tritium/DataPath.hpp>
+#include <Tritium/Logger.hpp>
 
 #include <memory>
 #include <QtGui>
@@ -40,7 +41,6 @@ using namespace Tritium;
 
 SoundLibraryExportDialog::SoundLibraryExportDialog( QWidget* pParent )
  : QDialog( pParent )
- , Object( "SoundLibraryExportDialog" )
 {
 	setupUi( this );
 	INFOLOG( "INIT" );

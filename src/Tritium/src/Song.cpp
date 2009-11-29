@@ -30,6 +30,7 @@
 #include <Tritium/ADSR.hpp>
 #include <Tritium/DataPath.hpp>
 #include <Tritium/LocalFileMng.hpp>
+#include <Tritium/Logger.hpp>
 
 #include <Tritium/fx/Effects.hpp>
 #include <Tritium/globals.hpp>
@@ -122,8 +123,7 @@ private:
 };
 
 Song::Song( const QString& name, const QString& author, float bpm, float volume )
-		: Object( "Song" )
-		, __is_muted( false )
+		: __is_muted( false )
 		, __resolution( 48 )
 		, __bpm( bpm )
 		, __is_modified( false )
@@ -253,7 +253,7 @@ Song* Song::get_empty_song()
 	QString filename = dataDir + "/DefaultSong.h2song";
 
 	if( ! QFile::exists( filename ) ){
-		_ERRORLOG("File " + filename + " exists not. Failed to load default song.");
+		ERRORLOG("File " + filename + " exists not. Failed to load default song.");
 		filename = dataDir + "/DefaultSong.h2song";
 	}
 	
@@ -382,7 +382,6 @@ void Song::go_to_next_patterns()
 
 
 SongReader::SongReader()
-		: Object( "SongReader" )
 {
 //	infoLog("init");
 }

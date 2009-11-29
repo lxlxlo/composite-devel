@@ -30,6 +30,7 @@
 #include <QtCore/QMutexLocker>
 
 #include "songhelpers.hpp"
+#include <cmath>
 #include <cassert>
 
 using namespace Tritium;

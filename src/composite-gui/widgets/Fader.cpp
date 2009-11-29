@@ -26,10 +26,10 @@
 
 #include <QtGui>
 #include <Tritium/globals.hpp>
+#include <Tritium/Logger.hpp>
 
 Fader::Fader( QWidget *pParent, bool bUseIntSteps, bool bWithoutKnob )
  : QWidget( pParent )
- , Object( "Fader" )
  , m_bWithoutKnob( bWithoutKnob )
  , m_bUseIntSteps( bUseIntSteps )
  , m_fPeakValue_L( 0.0 )
@@ -283,7 +283,6 @@ void Fader::setMinPeak( float fMin )
 
 MasterFader::MasterFader(QWidget *pParent, bool bWithoutKnob)
  : QWidget( pParent )
- , Object( "MasterFader" )
  , m_bWithoutKnob( bWithoutKnob )
  , m_fPeakValue_L( 0.0 )
  , m_fPeakValue_R( 0.0 )
@@ -497,7 +496,6 @@ QPixmap* Knob::m_background = NULL;
 ///
 Knob::Knob( QWidget* pParent )
  : QWidget( pParent )
- , Object( "Knob" )
 {
 	setAttribute(Qt::WA_NoBackground);
 

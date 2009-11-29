@@ -54,6 +54,7 @@
 #include <Tritium/Sample.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/SoundLibrary.hpp>
+#include <Tritium/Logger.hpp>
 
 using namespace Tritium;
 
@@ -61,7 +62,6 @@ using namespace Tritium;
 
 SoundLibraryPanel::SoundLibraryPanel( QWidget *pParent )
  : QWidget( pParent )
- , Object( "SoundLibraryPanel" )
  , __sound_library_tree( NULL )
  , __drumkit_menu( NULL )
  , __instrument_menu( NULL )

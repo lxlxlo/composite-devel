@@ -23,6 +23,7 @@
 
 #include <Tritium/SoundLibrary.hpp>
 #include <Tritium/Preferences.hpp>
+#include <Tritium/Logger.hpp>
 
 #include <QList>
 #include <QInputDialog>
@@ -30,7 +31,6 @@
 
 SoundLibraryRepositoryDialog::SoundLibraryRepositoryDialog( QWidget* pParent )
  : QDialog( pParent )
- , Object( "SoundLibraryRepositoryDialog" )
 {
 	setupUi( this );
 	INFOLOG( "INIT" );

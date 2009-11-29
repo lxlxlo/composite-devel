@@ -23,12 +23,11 @@
 #define TRITIUM_SMFEVENT_HPP
 
 #include <vector>
-#include <Tritium/Logger.hpp>
 
 namespace Tritium
 {
 
-class SMFBuffer : public Object
+class SMFBuffer
 {
 public:
 	std::vector<char> getBuffer() {
@@ -43,7 +42,7 @@ public:
 
 	std::vector<char> m_buffer;
 
-	SMFBuffer() : Object( "SMFBuffer" ) { }
+	SMFBuffer() { }
 };
 
 
@@ -80,7 +79,7 @@ public:
 
 
 
-class SMFEvent : public SMFBase, public Object
+class SMFEvent : public SMFBase
 {
 public:
 	SMFEvent( const QString& sEventName, unsigned nTicks );

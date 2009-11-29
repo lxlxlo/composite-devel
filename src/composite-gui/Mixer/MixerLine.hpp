@@ -25,7 +25,6 @@
 
 #include <QtGui>
 
-#include <Tritium/Logger.hpp>
 #include <Tritium/globals.hpp>
 
 class Fader;

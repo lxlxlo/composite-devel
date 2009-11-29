@@ -25,9 +25,6 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <string>
-
-#include <Tritium/Logger.hpp>
 
 #include <QDomDocument>
 
@@ -47,7 +44,7 @@ class Drumkit;
 /**
  *
  */
-class LocalFileMng : public Object
+class LocalFileMng
 {
 public:
 	LocalFileMng();
@@ -103,7 +100,7 @@ private:
 /**
  * Write XML file of a song
  */
-class SongWriter : public Object
+class SongWriter
 {
 public:
 	SongWriter();

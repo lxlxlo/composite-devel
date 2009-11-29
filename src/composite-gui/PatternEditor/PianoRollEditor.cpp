@@ -29,13 +29,13 @@
 #include <Tritium/Note.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Pattern.hpp>
+#include <Tritium/Logger.hpp>
 using namespace Tritium;
 
 #include "../HydrogenApp.hpp"
 
 PianoRollEditor::PianoRollEditor( QWidget *pParent )
  : QWidget( pParent )
- , Object( "PianoRollEditor" )
  , m_pPattern( NULL )
 {
 	INFOLOG( "INIT" );

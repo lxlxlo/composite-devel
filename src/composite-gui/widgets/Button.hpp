@@ -25,8 +25,6 @@
 
 #include "config.h"
 
-#include <Tritium/Logger.hpp>
-
 #include <QtGui>
 
 class PixmapWidget;
@@ -34,7 +32,7 @@ class PixmapWidget;
 /**
  * Generic Button with pixmaps and text.
  */
-class Button : public QWidget, public Object
+class Button : public QWidget
 {
 	Q_OBJECT
 

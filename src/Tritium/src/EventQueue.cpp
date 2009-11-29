@@ -24,7 +24,7 @@
 namespace Tritium
 {
 
-EventQueue* EventQueue::__instance = NULL;
+EventQueue* EventQueue::__instance = 0;
 
 void EventQueue::create_instance()
 {
@@ -35,8 +35,7 @@ void EventQueue::create_instance()
 
 
 EventQueue::EventQueue()
-		: Object( "EventQueue" )
-		, __read_index( 0 )
+		: __read_index( 0 )
 		, __write_index( 0 )
 {
 	__instance = this;

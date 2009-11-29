@@ -24,7 +24,6 @@
 
 #include "config.h"
 #include "ui_SoundLibraryPropertiesDialog_UI.h"
-#include <Tritium/Logger.hpp>
 
 ///
 ///
@@ -33,7 +32,7 @@ namespace Tritium
 
 class Drumkit;
 
-class SoundLibraryPropertiesDialog : public QDialog, public Ui_SoundLibraryPropertiesDialog_UI, public Object
+class SoundLibraryPropertiesDialog : public QDialog, public Ui_SoundLibraryPropertiesDialog_UI
 {
 	Q_OBJECT
 	public:

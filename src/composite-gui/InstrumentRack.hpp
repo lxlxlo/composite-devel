@@ -23,14 +23,12 @@
 #ifndef COMPOSITE_INSTRUMENTRACK_HPP
 #define COMPOSITE_INSTRUMENTRACK_HPP
 
-#include <Tritium/Logger.hpp>
-
 #include <QtGui>
 
 class ToggleButton;
 class SoundLibraryPanel;
 
-class InstrumentRack : public QWidget, private Object
+class InstrumentRack : public QWidget
 {
 	Q_OBJECT
 	public:

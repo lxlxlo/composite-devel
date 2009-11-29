@@ -23,6 +23,7 @@
 #include "../Skin.hpp"
 
 #include <Tritium/globals.hpp>
+#include <Tritium/Logger.hpp>
 
 RotaryTooltip::RotaryTooltip( QPoint pos )
 //  : QWidget( 0, "RotaryTooltip", Qt::WStyle_Customize| Qt::WStyle_NoBorder | Qt::WStyle_StaysOnTop| Qt::WX11BypassWM )
@@ -65,7 +66,6 @@ QPixmap* Rotary::m_background_center = NULL;
 
 Rotary::Rotary( QWidget* parent, RotaryType type, QString sToolTip, bool bUseIntSteps, bool bUseValueTip )
  : QWidget( parent )
- , Object( "Rotary" )
  , m_bUseIntSteps( bUseIntSteps )
  , m_type( type )
  , m_fMin( 0.0 )

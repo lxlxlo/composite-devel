@@ -40,7 +40,6 @@ using namespace std;
 
 SongEditorPanel::SongEditorPanel(QWidget *pParent)
  : QWidget( pParent )
- , Object( "SongEditorPanel" )
  , m_actionMode( DRAW_ACTION )
 {
 	m_nInitialWidth = 600;

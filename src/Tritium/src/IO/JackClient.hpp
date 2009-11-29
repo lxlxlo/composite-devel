@@ -31,17 +31,17 @@
 
 #include <jack/types.h>
 #include <Tritium/H2Exception.hpp>
-#include <Tritium/Logger.hpp>
 #include <QtCore/QString>
 #include <vector>
 #include <set>
+#include <cassert>
 
 namespace Tritium
 {
 
 class Hydrogen;
 
-class JackClient : public Object
+class JackClient
 {
 public:
     static JackClient* get_instance() { assert(__instance); return __instance; }

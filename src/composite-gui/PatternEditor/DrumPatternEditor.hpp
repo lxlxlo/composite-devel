@@ -26,8 +26,6 @@
 #include "config.h"
 #include "../EventListener.hpp"
 
-#include <Tritium/Logger.hpp>
-
 #include <QtGui>
 
 namespace Tritium
@@ -42,7 +40,7 @@ class PatternEditorPanel;
 ///
 /// Drum pattern editor
 ///
-class DrumPatternEditor : public QWidget, public EventListener, public Object
+class DrumPatternEditor : public QWidget, public EventListener
 {
 	Q_OBJECT
 

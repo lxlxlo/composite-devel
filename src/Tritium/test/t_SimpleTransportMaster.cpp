@@ -24,8 +24,10 @@
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/TransportPosition.hpp>
+#include <Tritium/Logger.hpp>
 
 #include <stdint.h>  // uint32_t, etc.
+#include <cmath>
 
 // CHANGE THIS TO MATCH YOUR FILE:
 #define THIS_NAMESPACE t_SimpleTransportMaster

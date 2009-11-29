@@ -28,7 +28,7 @@
 
 class Action;
 
-class MidiMap : public Object
+class MidiMap
 {
 	public:
 		typedef std::map< QString, Action* > map_t;

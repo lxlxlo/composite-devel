@@ -19,6 +19,7 @@
  *
  */
 
+#include <Tritium/Logger.hpp>
 #include <Tritium/smf/SMF.hpp>
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Note.hpp>
@@ -32,8 +33,7 @@ namespace Tritium
 {
 
 SMFHeader::SMFHeader( int nFormat, int nTracks, int nTPQN )
-		: Object( "SMFHeader" )
-		, m_nFormat( nFormat )
+		: m_nFormat( nFormat )
 		, m_nTracks( nTracks )
 		, m_nTPQN( nTPQN )
 {
@@ -69,7 +69,6 @@ vector<char> SMFHeader::getBuffer()
 
 
 SMFTrack::SMFTrack( const QString& sTrackName )
-		: Object( "SMFTrack" )
 {
 	INFOLOG( "INIT" );
 
@@ -143,7 +142,6 @@ void SMFTrack::addEvent( SMFEvent *pEvent )
 
 
 SMF::SMF()
-		: Object( "SMF" )
 {
 	INFOLOG( "INIT" );
 
@@ -203,8 +201,7 @@ vector<char> SMF::getBuffer()
 
 
 SMFWriter::SMFWriter()
-		: Object( "SMFWriter" )
-		, m_file( NULL )
+		: m_file( NULL )
 {
 	INFOLOG( "INIT" );
 }

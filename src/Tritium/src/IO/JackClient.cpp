@@ -23,8 +23,8 @@
  */
 
 #include "JackClient.hpp"
-#include <jack/jack.h>
 #include <Tritium/Logger.hpp>
+#include <jack/jack.h>
 #include <cassert>
 
 #ifdef JACK_SUPPORT
@@ -51,8 +51,7 @@ jack_client_t* JackClient::ref(void)
 }
 
 JackClient::JackClient()
-	: Object( "JackClient" ),
-	  m_client(0),
+	: m_client(0),
 	  m_audio_process(0),
 	  m_nonaudio_process(0)
 {

@@ -20,13 +20,13 @@
  */
 
 #include "DownloadWidget.hpp"
+#include <Tritium/Logger.hpp>
 
 #include <cmath>
 
 
 Download::Download( QWidget* pParent, const QString& download_url, const QString& local_file )
 		: QDialog( pParent )
-		, Object( "Download" )
 		, __download_percent( 0 )
 		, __eta( 0 )
 		, __bytes_current( 0 )

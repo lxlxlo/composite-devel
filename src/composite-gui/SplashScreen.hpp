@@ -30,12 +30,10 @@
 
 #include "HydrogenApp.hpp"
 
-#include <Tritium/Logger.hpp>
-
 /**
  * Fader and VuMeter widget
  */
-class SplashScreen : public QSplashScreen, public Object
+class SplashScreen : public QSplashScreen
 {
 	Q_OBJECT
 	public:

@@ -23,6 +23,7 @@
 
 #include <Tritium/fx/LadspaFX.hpp>
 #include <Tritium/Preferences.hpp>
+#include <Tritium/Logger.hpp>
 
 #include <QDir>
 
@@ -41,7 +42,6 @@ namespace Tritium
 {
 
 LadspaFXGroup::LadspaFXGroup( const QString& sName )
-		: Object( "LadspaFXGroup" )
 {
 //	infoLog( "INIT - " + sName );
 	m_sName = sName;
@@ -87,7 +87,6 @@ void LadspaFXGroup::sort()
 
 
 LadspaFXInfo::LadspaFXInfo( const QString& sName )
-		: Object( "LadspaFXInfo" )
 {
 //	infoLog( "INIT - " + sName );
 	m_sFilename = "";
@@ -117,9 +116,7 @@ bool LadspaFXInfo::alphabeticOrder( LadspaFXInfo* a, LadspaFXInfo* b )
 
 // ctor
 LadspaFX::LadspaFX( const QString& sLibraryPath, const QString& sPluginLabel )
-		: Object( "LadspaFX" )
-//, m_nBufferSize( 0 )
-		, m_pBuffer_L( NULL )
+		: m_pBuffer_L( NULL )
 		, m_pBuffer_R( NULL )
 		, m_pluginType( UNDEFINED )
 		, m_bEnabled( false )
@@ -195,12 +192,12 @@ LadspaFX* LadspaFX::load( const QString& sLibraryPath, const QString& sPluginLab
 {
 	LadspaFX* pFX = new LadspaFX( sLibraryPath, sPluginLabel );
 
-	_INFOLOG( "INIT - " + sLibraryPath + " - " + sPluginLabel );
+	INFOLOG( "INIT - " + sLibraryPath + " - " + sPluginLabel );
 
 	pFX->m_pLibrary = new QLibrary( sLibraryPath );
 	LADSPA_Descriptor_Function desc_func = ( LADSPA_Descriptor_Function )pFX->m_pLibrary->resolve( "ladspa_descriptor" );
 	if ( desc_func == NULL ) {
-		_ERRORLOG( "Error loading the library. (" + sLibraryPath + ")" );
+		ERRORLOG( "Error loading the library. (" + sLibraryPath + ")" );
 		delete pFX;
 		return NULL;
 	}
@@ -225,13 +222,13 @@ LadspaFX* LadspaFX::load( const QString& sLibraryPath, const QString& sPluginLab
 				} else if ( LADSPA_IS_PORT_OUTPUT( pd ) && LADSPA_IS_PORT_AUDIO( pd ) ) {
 					pFX->m_nOAPorts++;
 				} else {
-					_ERRORLOG( "Unknown port type" );
+					ERRORLOG( "Unknown port type" );
 				}
 			}
 			break;
 		}
 	} else {
-		_ERRORLOG( "Error in dlsym" );
+		ERRORLOG( "Error in dlsym" );
 		delete pFX;
 		return NULL;
 	}
@@ -241,9 +238,9 @@ LadspaFX* LadspaFX::load( const QString& sLibraryPath, const QString& sPluginLab
 	} else if ( ( pFX->m_nIAPorts == 1 ) && ( pFX->m_nOAPorts == 1 ) ) {	// Mono plugin
 		pFX->m_pluginType = MONO_FX;
 	} else {
-		_ERRORLOG( "Wrong number of ports" );
-		_ERRORLOG( QString( "in audio = %1" ).arg( pFX->m_nIAPorts ) );
-		_ERRORLOG( QString( "out audio = %1" ).arg( pFX->m_nOAPorts ) );
+		ERRORLOG( "Wrong number of ports" );
+		ERRORLOG( QString( "in audio = %1" ).arg( pFX->m_nIAPorts ) );
+		ERRORLOG( QString( "out audio = %1" ).arg( pFX->m_nOAPorts ) );
 	}
 
 	//pFX->infoLog( "[LadspaFX::load] instantiate " + pFX->getPluginName() );
@@ -276,10 +273,10 @@ LadspaFX* LadspaFX::load( const QString& sLibraryPath, const QString& sPluginLab
 				fMax = 1.0;
 			}
 			if ( LADSPA_IS_HINT_SAMPLE_RATE( rangeHints.HintDescriptor ) ) {
-				_WARNINGLOG( "samplerate hint not implemented yet" );
+				WARNINGLOG( "samplerate hint not implemented yet" );
 			}
 			if ( LADSPA_IS_HINT_LOGARITHMIC( rangeHints.HintDescriptor ) ) {
-				_WARNINGLOG( "logarithmic hint not implemented yet" );
+				WARNINGLOG( "logarithmic hint not implemented yet" );
 			}
 			if ( LADSPA_IS_HINT_INTEGER( rangeHints.HintDescriptor ) ) {
 				isInteger = true;
@@ -324,7 +321,7 @@ LadspaFX* LadspaFX::load( const QString& sLibraryPath, const QString& sPluginLab
 			pControl->isToggle = isToggle;
 			pControl->m_bIsInteger = isInteger;
 
-			_INFOLOG( QString( "Input control port\t[%1]\tmin=%2,\tmax=%3,\tcontrolValue=%4" ).arg( sName ).arg( fMin ).arg( fMax ).arg( pControl->fControlValue ) );
+			INFOLOG( QString( "Input control port\t[%1]\tmin=%2,\tmax=%3,\tcontrolValue=%4" ).arg( sName ).arg( fMin ).arg( fMax ).arg( pControl->fControlValue ) );
 
 			pFX->inputControlPorts.push_back( pControl );
 			pFX->m_d->connect_port( pFX->m_handle, nPort, &( pControl->fControlValue ) );
@@ -363,7 +360,7 @@ LadspaFX* LadspaFX::load( const QString& sLibraryPath, const QString& sPluginLab
 		} else if ( LADSPA_IS_AUDIO_INPUT( pd ) ) {
 		} else if ( LADSPA_IS_AUDIO_OUTPUT( pd ) ) {
 		} else {
-			_ERRORLOG( "unknown port" );
+			ERRORLOG( "unknown port" );
 		}
 	}
 

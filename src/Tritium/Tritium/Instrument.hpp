@@ -38,7 +38,7 @@ class Sample;
 \brief A layer...
 
 */
-class InstrumentLayer : public Object
+class InstrumentLayer
 {
 public:
 	InstrumentLayer( Sample *sample );
@@ -94,7 +94,7 @@ private:
 \brief Instrument class
 
 */
-class Instrument : public Object
+class Instrument
 {
 public:
 	Instrument(
@@ -328,7 +328,7 @@ inline InstrumentLayer* Instrument::get_layer( int nLayer )
 \brief Instrument List
 
 */
-class InstrumentList : public Object
+class InstrumentList
 {
 public:
 	InstrumentList();

@@ -25,13 +25,11 @@
 #include <vector>
 #include <QtGui>
 
-#include <Tritium/Logger.hpp>
-
 class Fader;
 class LCDDisplay;
 class InstrumentNameWidget;
 
-class LadspaFXProperties : public QWidget, public Object {
+class LadspaFXProperties : public QWidget {
 	Q_OBJECT
 
 	public:

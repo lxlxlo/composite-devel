@@ -38,6 +38,7 @@
 #include <Tritium/DataPath.hpp>
 #include <Tritium/H2Exception.hpp>
 #include <Tritium/Playlist.hpp>
+#include <Tritium/Logger.hpp>
 
 #include <iostream>
 using namespace std;
@@ -194,15 +195,15 @@ int main(int argc, char *argv[])
 		}
 
 		// Man your battle stations... this is not a drill.
-		Logger::create_instance();
+		Tritium::Logger::create_instance();
 		MidiMap::create_instance();
 		Tritium::Preferences::create_instance();
-		Object::set_logging_level( logLevelOpt );
+		Tritium::Logger::get_instance()->set_logging_level( logLevelOpt );
 		// See below for Tritium::Hydrogen.
 
 
-		_INFOLOG( QString("Using QT version ") + QString( qVersion() ) );
-		_INFOLOG( "Using data path: " + Tritium::DataPath::get_data_path() );
+		INFOLOG( QString("Using QT version ") + QString( qVersion() ) );
+		INFOLOG( "Using data path: " + Tritium::DataPath::get_data_path() );
 
 		Tritium::Preferences *pPref = Tritium::Preferences::get_instance();
 
@@ -225,7 +226,7 @@ int main(int argc, char *argv[])
 				QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
 				pQApp->installTranslator( &qttor );
                         else
-				_INFOLOG( QString("Warning: No Qt translation for locale %1 found.").arg(QLocale::system().name()));
+				INFOLOG( QString("Warning: No Qt translation for locale %1 found.").arg(QLocale::system().name()));
 
 
 			QString sTranslationPath = "data/i18n";
@@ -233,21 +234,21 @@ int main(int argc, char *argv[])
 
 			bool bTransOk = tor.load( total, "." );
 			if ( bTransOk ) {
-				_INFOLOG( QString( "Using locale: %1/%2" ).arg( sTranslationPath ).arg( sTranslationFile ) );
+				INFOLOG( QString( "Using locale: %1/%2" ).arg( sTranslationPath ).arg( sTranslationFile ) );
 			}
 			else {
 				sTranslationPath = Tritium::DataPath::get_data_path() + "/i18n";
 				total = sTranslationPath + "/" + sTranslationFile + ".qm";
 				bTransOk = tor.load( total, "." );
 				if (bTransOk) {
-					_INFOLOG( "Using locale: " + sTranslationPath + "/" + sTranslationFile );
+					INFOLOG( "Using locale: " + sTranslationPath + "/" + sTranslationFile );
 				}
 				else {
-					_INFOLOG( "Warning: no locale found: " + sTranslationPath + "/" + sTranslationFile );
+					INFOLOG( "Warning: no locale found: " + sTranslationPath + "/" + sTranslationFile );
 				}
 			}
 			if (tor.isEmpty()) {
-				_INFOLOG( "Warning: error loading locale: " +  total );
+				INFOLOG( "Warning: error loading locale: " +  total );
 			}
 		}
 		pQApp->installTranslator( &tor );
@@ -289,15 +290,9 @@ int main(int argc, char *argv[])
 		delete Tritium::Playlist::get_instance();
 		// delete Tritium::Hydrogen::get_instance();
 
-		_INFOLOG( "Quitting..." );
+		INFOLOG( "Quitting..." );
 		cout << "\nBye..." << endl;
-		delete Logger::get_instance();
-
-		int nObj = Object::get_objects_number();
-		if (nObj != 0) {
-			std::cerr << "\n\n\n " << nObj << " alive objects\n\n" << std::endl << std::endl;
-			Object::print_object_map();
-		}
+		delete Tritium::Logger::get_instance();
 
 		//	pQApp->dumpObjectTree();
 
@@ -322,11 +317,7 @@ void showInfo()
 	cout << "\nComposite " + get_version() + " [" + __DATE__ + "]  [http://gabe.is-a-geek.org/composite/]" << endl;
 	cout << "Copyright 2002-2008 Alessandro Cominu" << endl;
 	cout << "Copyright 2009 Gabriel Beddingfield" << endl;
-//	_INFOLOG( "Compiled modules: " + QString(COMPILED_FEATURES) << endl;
-
-	if ( Object::is_using_verbose_log() ) {
-		cout << "\nVerbose log mode = active" << endl;
-	}
+//	INFOLOG( "Compiled modules: " + QString(COMPILED_FEATURES) << endl;
 
 	cout << "\nComposite comes with ABSOLUTELY NO WARRANTY" << endl;
 	cout << "This is free software, and you are welcome to redistribute it" << endl;

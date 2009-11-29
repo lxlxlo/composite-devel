@@ -49,6 +49,7 @@
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/Playlist.hpp>
+#include <Tritium/Logger.hpp>
 
 #include <QtGui>
 
@@ -83,8 +84,7 @@ public:
 };
 
 HydrogenApp::HydrogenApp( MainForm *pMainForm, Song *pFirstSong )
- : Object( "HydrogenApp" )
- , m_pMainForm( pMainForm )
+ : m_pMainForm( pMainForm )
  , m_pMixer( NULL )
  , m_pPatternEditorPanel( NULL )
  , m_pAudioEngineInfoForm( NULL )

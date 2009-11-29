@@ -22,7 +22,6 @@
 #ifndef TRITIUM_H2EXCEPTION_HPP
 #define TRITIUM_H2EXCEPTION_HPP
 
-#include <string>
 #include <stdexcept>
 #include <QString>
 

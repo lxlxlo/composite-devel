@@ -22,10 +22,8 @@
 #ifndef TRITIUM_SMF_HPP
 #define TRITIUM_SMF_HPP
 
-#include <Tritium/Logger.hpp>
 #include <Tritium/Song.hpp>
 
-#include <string>
 #include <cstdio>
 #include <vector>
 
@@ -34,7 +32,7 @@
 namespace Tritium
 {
 
-class SMFHeader : public SMFBase, public Object
+class SMFHeader : public SMFBase
 {
 public:
 	SMFHeader( int nFormat, int nTracks, int nTPQN );
@@ -49,7 +47,7 @@ public:
 
 
 
-class SMFTrack : public SMFBase, public Object
+class SMFTrack : public SMFBase
 {
 public:
 	SMFTrack( const QString& sTrackName );
@@ -65,7 +63,7 @@ private:
 
 
 
-class SMF : public SMFBase, public Object
+class SMF : public SMFBase
 {
 public:
 	SMF();
@@ -83,7 +81,7 @@ private:
 
 
 
-class SMFWriter : Object
+class SMFWriter
 {
 public:
 	SMFWriter();

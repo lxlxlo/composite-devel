@@ -25,7 +25,6 @@
 #include "../EventListener.hpp"
 
 #include <QtGui>
-#include <Tritium/Logger.hpp>
 
 class PatternEditorPanel;
 
@@ -34,7 +33,7 @@ namespace Tritium
 	class Pattern;
 }
 
-class PatternEditorRuler : public QWidget, public Object, public EventListener
+class PatternEditorRuler : public QWidget, public EventListener
 {
 	Q_OBJECT
 

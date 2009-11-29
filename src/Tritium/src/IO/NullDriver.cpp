@@ -21,13 +21,14 @@
 
 #include <Tritium/IO/NullDriver.hpp>
 #include <Tritium/globals.hpp>
+#include <Tritium/Logger.hpp>
 
 
 namespace Tritium
 {
 
 NullDriver::NullDriver( audioProcessCallback processCallback )
-		: AudioOutput( "NullDriver" )
+		: AudioOutput()
 {
 	UNUSED( processCallback );
 //	INFOLOG( "INIT" );

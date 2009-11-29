@@ -19,6 +19,7 @@
  *
  */
 
+#include <Tritium/Logger.hpp>
 #include <Tritium/IO/MidiInput.hpp>
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/Preferences.hpp>
@@ -33,8 +34,7 @@ namespace Tritium
 {
 
 MidiInput::MidiInput( const QString class_name )
-		: Object( class_name )
-		, m_bActive( false )
+		: m_bActive( false )
 {
 	//INFOLOG( "INIT" );
 	

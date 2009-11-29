@@ -24,13 +24,13 @@
 #include "widgets/Button.hpp"
 #include "InstrumentEditor/InstrumentEditorPanel.hpp"
 #include "SoundLibrary/SoundLibraryPanel.hpp"
+#include <Tritium/Logger.hpp>
 
 #include <QGridLayout>
 
 
 InstrumentRack::InstrumentRack( QWidget *pParent )
  : QWidget( pParent )
- , Object( "InstrumentRack" )
 {
 	INFOLOG( "INIT" );
 

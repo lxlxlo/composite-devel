@@ -30,6 +30,7 @@
 #include <Tritium/AudioEngine.hpp>
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/Instrument.hpp>
+#include <Tritium/Logger.hpp>
 using namespace Tritium;
 
 
@@ -51,7 +52,6 @@ using namespace std;
 
 SongEditor::SongEditor( QWidget *parent )
  : QWidget( parent )
- , Object( "SongEditor" )
  , m_bSequenceChanged( true )
  , m_bIsMoving( false )
  , m_bShowLasso( false )
@@ -131,7 +131,6 @@ void SongEditor::mousePressEvent( QMouseEvent *ev )
 	if ( ev->x() < 10 ) {
 		return;
 	}
-	//WARNINGLOG( "editor-pressed" );
 
 	int nRow = ev->y() / m_nGridHeight;
 	int nColumn = ( (int)ev->x() - 10 ) / (int)m_nGridWidth;
@@ -633,7 +632,6 @@ void SongEditor::drawPattern( int pos, int number )
 
 SongEditorPatternList::SongEditorPatternList( QWidget *parent )
  : QWidget( parent )
- , Object( "SongEditorPatternList" )
  , EventListener()
  , m_pBackgroundPixmap( NULL )
 {
@@ -955,7 +953,7 @@ void SongEditorPatternList::patternPopup_load()
 	LocalFileMng fileMng;
 	Pattern* err = fileMng.loadPattern( filename );
 	if ( err == 0 ) {
-		_ERRORLOG( "Error loading the pattern" );
+		ERRORLOG( "Error loading the pattern" );
 	}else{
 		Tritium::Pattern *pNewPattern = err;
 		pPatternList->add( pNewPattern );
@@ -995,7 +993,7 @@ void SongEditorPatternList::patternPopup_save()
 		if ( res == 0 ) {
 			int err2 = fileMng.savePattern( song , nSelectedPattern, patternname, patternname, 3 );
 			if( err2 == 1){
-				_ERRORLOG( "Error saving the pattern" );
+				ERRORLOG( "Error saving the pattern" );
 				return;
 			} //if err2
 		}else{ // res cancel 
@@ -1309,7 +1307,7 @@ void SongEditorPatternList::dropEvent(QDropEvent *event)
 		LocalFileMng mng;
 		Pattern* err = mng.loadPattern( sPatternName );
 		if ( err == 0 ) {
-			_ERRORLOG( "Error loading the pattern" );
+			ERRORLOG( "Error loading the pattern" );
 		}else{
 			Tritium::Pattern *pNewPattern = err;
 			pPatternList->add( pNewPattern );
@@ -1393,7 +1391,6 @@ void SongEditorPatternList::mouseMoveEvent(QMouseEvent *event)
 
 SongEditorPositionRuler::SongEditorPositionRuler( QWidget *parent )
  : QWidget( parent )
- , Object( "SongEditorPositionRuler" )
 {
 	setAttribute(Qt::WA_NoBackground);
 

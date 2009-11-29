@@ -21,20 +21,16 @@
 #ifndef TRITIUM_AUDIOOUTPUT_HPP
 #define TRITIUM_AUDIOOUTPUT_HPP
 
-#include <Tritium/Logger.hpp>
-
 namespace Tritium
 {
 
 ///
 /// Base abstract class for audio output classes.
 ///
-class AudioOutput : public Object
+class AudioOutput
 {
 public:
-	AudioOutput( const QString& sClassName )
-			: Object( sClassName )
-			, __track_out_enabled( false ) { }
+	AudioOutput() : __track_out_enabled( false ) { }
 
 	virtual ~AudioOutput() { }
 

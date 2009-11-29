@@ -23,11 +23,8 @@
 #define COMPOSITE_SAMPLEWAVEDISPLAY_HPP
 
 #include <QtGui>
-#include <Tritium/Logger.hpp>
 
-
-
-class SampleWaveDisplay : public QWidget, public Object
+class SampleWaveDisplay : public QWidget
 {
 	Q_OBJECT
 

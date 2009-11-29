@@ -26,11 +26,9 @@
 
 #include <QtGui>
 
-#include <Tritium/Logger.hpp>
-
 #include <vector>
 
-class LCDDigit : public QWidget, public Object
+class LCDDigit : public QWidget
 {
 	Q_OBJECT
 	public:
@@ -93,7 +91,7 @@ class LCDDisplay : public QWidget{
 };
 
 
-class LCDSpinBox : public QWidget, public Object
+class LCDSpinBox : public QWidget
 {
 	Q_OBJECT
 	public:

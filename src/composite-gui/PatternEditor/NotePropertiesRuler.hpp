@@ -26,8 +26,6 @@
 
 #include <QtGui>
 
-#include <Tritium/Logger.hpp>
-
 namespace Tritium
 {
 	class Pattern;
@@ -35,7 +33,7 @@ namespace Tritium
 
 class PatternEditorPanel;
 
-class NotePropertiesRuler : public QWidget, public Object, public EventListener
+class NotePropertiesRuler : public QWidget, public EventListener
 {
 	Q_OBJECT
 	public:

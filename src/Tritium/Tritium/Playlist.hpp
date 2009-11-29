@@ -24,7 +24,6 @@
 
 #include <QDialog>
 #include <QMutex>
-#include <Tritium/Logger.hpp>
 #include <Tritium/globals.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Hydrogen.hpp>
@@ -62,7 +61,7 @@ public:
 	virtual void set_song(Song* pSong) = 0;
 };
 
-class Playlist :  public Object
+class Playlist
 {
 	
 public:

@@ -26,6 +26,7 @@
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Transport.hpp>
 #include <Tritium/Pattern.hpp>
+#include <Tritium/Logger.hpp>
 using namespace Tritium;
 
 #include "PatternEditorRuler.hpp"
@@ -36,7 +37,6 @@ using namespace Tritium;
 
 PatternEditorRuler::PatternEditorRuler( QWidget* parent )
  : QWidget( parent )
- , Object( "PatternEditorRuler" )
 {
 	setAttribute(Qt::WA_NoBackground);
 

@@ -21,8 +21,9 @@
 #ifndef TRITIUM_SEQSCRIPTPRIVATE_HPP
 #define TRITIUM_SEQSCRIPTPRIVATE_HPP
 
-#include <Tritium/SeqEvent.hpp>
 #include <vector>
+#include <Tritium/SeqEvent.hpp>
+#include <QMutex>
 
 namespace Tritium
 {

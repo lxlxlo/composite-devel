@@ -27,8 +27,6 @@
 #include <QtGui>
 #include "ui_PatternFillDialog_UI.h"
 
-#include <Tritium/Logger.hpp>
-
 namespace Tritium
 {
 	class Pattern;
@@ -45,7 +43,7 @@ struct FillRange {
 ///
 /// Pattern Fill Dialog
 ///
-class PatternFillDialog : public QDialog, public Ui_PatternFillDialog_UI, public Object
+class PatternFillDialog : public QDialog, public Ui_PatternFillDialog_UI
 {
 	Q_OBJECT
 	public:

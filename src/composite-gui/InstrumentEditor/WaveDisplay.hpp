@@ -23,14 +23,13 @@
 #define COMPOSITE_WAVEDISPLAY_HPP
 
 #include <QtGui>
-#include <Tritium/Logger.hpp>
 
 namespace Tritium
 {
 	class InstrumentLayer;
 }
 
-class WaveDisplay : public QWidget, public Object
+class WaveDisplay : public QWidget
 {
 	Q_OBJECT
 

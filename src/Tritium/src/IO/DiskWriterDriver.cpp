@@ -20,6 +20,7 @@
  */
 #include "DiskWriterDriver.hpp"
 
+#include <Tritium/Logger.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/Hydrogen.hpp>
@@ -49,7 +50,7 @@ DiskWriterDriverThread * diskWriterDriverThread;
 
 void DiskWriterDriverThread::run()
 {
-	_INFOLOG( "DiskWriterDriver thread start" );
+	INFOLOG( "DiskWriterDriver thread start" );
         Transport* xport = Hydrogen::get_instance()->get_transport();
         TransportPosition xpos;
 
@@ -64,7 +65,7 @@ void DiskWriterDriverThread::run()
 	soundInfo.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
 
 	if ( !sf_format_check( &soundInfo ) ) {
-		_ERRORLOG( "Error in soundInfo" );
+		ERRORLOG( "Error in soundInfo" );
 	}
 
 	SNDFILE* m_file = sf_open( pDriver->m_sFilename.toLocal8Bit(), SFM_WRITE, &soundInfo );
@@ -102,7 +103,7 @@ void DiskWriterDriverThread::run()
 		}
 		int res = sf_writef_float( m_file, pData, pDriver->m_nBufferSize );
 		if ( res != ( int )pDriver->m_nBufferSize ) {
-			_ERRORLOG( "Error during sf_write_float" );
+			ERRORLOG( "Error during sf_write_float" );
 		}
 
                 // Since we're calling the position AFTER the process cycle, this
@@ -115,7 +116,7 @@ void DiskWriterDriverThread::run()
 
 			float fPercent = ( float ) nCurrentPatternPos / ( float )nPatterns * 100.0;
 			EventQueue::get_instance()->push_event( EVENT_PROGRESS, ( int )fPercent );
-			_INFOLOG( QString( "DiskWriterDriver: %1%, transport frames:%2" ).arg( fPercent ).arg( xpos.frame ) );
+			INFOLOG( QString( "DiskWriterDriver: %1%, transport frames:%2" ).arg( fPercent ).arg( xpos.frame ) );
 		}
 	}
 	EventQueue::get_instance()->push_event( EVENT_PROGRESS, 100 );
@@ -125,7 +126,7 @@ void DiskWriterDriverThread::run()
 
 	sf_close( m_file );
 
-	_INFOLOG( "DiskWriterDriver thread end" );
+	INFOLOG( "DiskWriterDriver thread end" );
 
 }
 
@@ -133,7 +134,7 @@ void DiskWriterDriverThread::run()
 
 
 DiskWriterDriver::DiskWriterDriver( audioProcessCallback processCallback, unsigned nSamplerate, const QString& sFilename )
-		: AudioOutput( "DiskWriterDriver" )
+		: AudioOutput()
 		, m_nSampleRate( nSamplerate )
 		, m_sFilename( sFilename )
 		, m_processCallback( processCallback )

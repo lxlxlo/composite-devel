@@ -48,7 +48,6 @@ Mixer::Mixer( QWidget* pParent )
  : QWidget( pParent )
 // : QWidget( pParent, Qt::WindowStaysOnTopHint )
 // : QWidget( pParent, Qt::Tool )
- , Object( "Mixer" )
 {
 	setWindowTitle( trUtf8( "Mixer" ) );
 	setMaximumHeight( 284 );

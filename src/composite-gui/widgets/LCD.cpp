@@ -26,6 +26,7 @@
 #include <QtGui>
 
 #include <Tritium/globals.hpp>
+#include <Tritium/Logger.hpp>
 
 QPixmap* LCDDigit::m_pSmallBlueFontSet = NULL;
 QPixmap* LCDDigit::m_pSmallRedFontSet = NULL;
@@ -34,7 +35,6 @@ QPixmap* LCDDigit::m_pSmallGrayFontSet = NULL;
 
 LCDDigit::LCDDigit( QWidget * pParent, LCDType type )
  : QWidget( pParent )
- , Object( "LCDDigit" )
  , m_type( type )
 {
 	setAttribute(Qt::WA_NoBackground);
@@ -318,7 +318,6 @@ void LCDDisplay::digitClicked()
 // used in PlayerControl
 LCDSpinBox::LCDSpinBox( QWidget *pParent, int nDigits, LCDSpinBoxType type, int nMin, int nMax )
  : QWidget( pParent )
- , Object( "LCDSpinBox" )
  , m_type( type )
  , m_fValue( 0 )
  , m_nMinValue( nMin )

@@ -27,12 +27,11 @@
 
 #include "ui_ExportSongDialog_UI.h"
 #include "EventListener.hpp"
-#include <Tritium/Logger.hpp>
 
 ///
 /// Dialog for exporting song
 ///
-class ExportSongDialog : public QDialog, public Ui_ExportSongDialog_UI, public EventListener, public Object
+class ExportSongDialog : public QDialog, public Ui_ExportSongDialog_UI, public EventListener
 {
 	Q_OBJECT
 

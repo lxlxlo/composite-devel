@@ -20,6 +20,7 @@
  */
 
 #include <cstring>
+#include <cmath>
 #include <sys/time.h>
 
 #include <Tritium/Hydrogen.hpp>

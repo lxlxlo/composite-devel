@@ -23,6 +23,7 @@
 #include <Tritium/Sample.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/Instrument.hpp>
+#include <Tritium/Logger.hpp>
 using namespace Tritium;
 
 #include "WaveDisplay.hpp"
@@ -31,7 +32,6 @@ using namespace Tritium;
 
 WaveDisplay::WaveDisplay(QWidget* pParent)
  : QWidget( pParent )
- , Object( "WaveDisplay" )
  , m_sSampleName( "" )
 {
 	setAttribute(Qt::WA_NoBackground);

@@ -20,15 +20,16 @@
  */
 #ifndef TRITIUM_ACTION_HPP
 #define TRITIUM_ACTION_HPP
-#include <Tritium/Logger.hpp>
 #include <map>
-#include <string>
 #include <cassert>
+#include <QString>
+#include <QStringList>
 
 using namespace std;
 
 
-class Action : public Object {
+class Action
+{
 	public:
 		Action( QString );
 			
@@ -64,7 +65,7 @@ class Action : public Object {
 bool setAbsoluteFXLevel( int nLine, int fx_channel , int fx_param);
 
 
-class ActionManager : public Object
+class ActionManager
 {
 	private:
 		static ActionManager *__instance;

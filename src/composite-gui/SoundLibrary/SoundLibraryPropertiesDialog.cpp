@@ -27,6 +27,7 @@
 #include "SoundLibraryPanel.hpp"
 #include <Tritium/SoundLibrary.hpp>
 #include <Tritium/Hydrogen.hpp>
+#include <Tritium/Logger.hpp>
 
 namespace Tritium
 {
@@ -38,7 +39,6 @@ QString oldName;
 
 SoundLibraryPropertiesDialog::SoundLibraryPropertiesDialog( QWidget* pParent, Drumkit *drumkitInfo, Drumkit *preDrumKit )
  : QDialog( pParent )
- , Object( "SoundLibraryPropertiesDialog" )
 {
 	setupUi( this );
 	INFOLOG( "INIT" );

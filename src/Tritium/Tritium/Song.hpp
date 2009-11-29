@@ -28,8 +28,6 @@
 #include <vector>
 #include <map>
 
-#include <Tritium/Logger.hpp>
-
 class TiXmlNode;
 
 namespace Tritium
@@ -49,7 +47,7 @@ class PatternModeManager;  // Private to Song.  See song.cpp
 \ingroup H2CORE
 \brief	Song class
 */
-class Song : public Object
+class Song
 {
 public:
 	enum SongMode {
@@ -243,7 +241,7 @@ private:
 \ingroup H2CORE
 \brief	Read XML file of a song
 */
-class SongReader : public Object
+class SongReader
 {
 public:
 	SongReader();

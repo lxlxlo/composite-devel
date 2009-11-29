@@ -63,7 +63,6 @@ void PatternEditorPanel::updateSLnameLabel( )
 
 PatternEditorPanel::PatternEditorPanel( QWidget *pParent )
  : QWidget( pParent )
- , Object( "PatternEditorPanel" )
  , m_pPattern( NULL )
  , m_bEnablePatternResize( true )
 {

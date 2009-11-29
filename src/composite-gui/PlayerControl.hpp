@@ -25,7 +25,6 @@
 #include <QtGui>
 
 #include "EventListener.hpp"
-#include <Tritium/Logger.hpp>
 
 namespace Tritium
 {
@@ -43,7 +42,7 @@ class PixmapWidget;
 ///
 ///
 ///
-class MetronomeWidget : public QWidget, public Object, public EventListener
+class MetronomeWidget : public QWidget, public EventListener
 {
 	Q_OBJECT
 	public:
@@ -76,7 +75,7 @@ class MetronomeWidget : public QWidget, public Object, public EventListener
 ///
 /// Player control panel
 ///
-class PlayerControl : public QLabel, public Object, public EventListener
+class PlayerControl : public QLabel, public EventListener
 {
 	Q_OBJECT
 	public:

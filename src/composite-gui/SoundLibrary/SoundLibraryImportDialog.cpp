@@ -32,6 +32,7 @@
 #include <Tritium/H2Exception.hpp>
 #include <Tritium/SoundLibrary.hpp>
 #include <Tritium/Preferences.hpp>
+#include <Tritium/Logger.hpp>
 
 
 #include <QTreeWidget>
@@ -44,7 +45,6 @@
 
 SoundLibraryImportDialog::SoundLibraryImportDialog( QWidget* pParent )
  : QDialog( pParent )
- , Object( "SoundLibraryImportDialog" )
 {
 	setupUi( this );
 	INFOLOG( "INIT" );

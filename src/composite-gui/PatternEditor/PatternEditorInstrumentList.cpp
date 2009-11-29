@@ -29,6 +29,7 @@
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Song.hpp>
+#include <Tritium/Logger.hpp>
 using namespace Tritium;
 
 #include "PatternEditorPanel.hpp"
@@ -383,7 +384,6 @@ void InstrumentLine::functionDeleteInstrument()
 
 PatternEditorInstrumentList::PatternEditorInstrumentList( QWidget *parent, PatternEditorPanel *pPatternEditorPanel )
  : QWidget( parent )
- , Object( "PatternEditorInstrumentList" )
 {
 	//setAttribute(Qt::WA_NoBackground);
 

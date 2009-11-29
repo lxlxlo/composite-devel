@@ -23,6 +23,7 @@
 #include "../HydrogenApp.hpp"
 #include "MidiActivityWidget.hpp"
 #include <Tritium/Hydrogen.hpp>
+#include <Tritium/Logger.hpp>
 
 #include <QTimer>
 #include <QPainter>
@@ -31,7 +32,6 @@
 
 MidiActivityWidget::MidiActivityWidget( QWidget * parent )
  : QWidget( parent )
- , Object( "MidiActivityWidget" )
  , m_nValue( 0 )
 {
 	setAttribute(Qt::WA_NoBackground);

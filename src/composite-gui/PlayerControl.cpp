@@ -51,7 +51,6 @@ int bcDisplaystatus = 0;
 
 PlayerControl::PlayerControl(QWidget *parent)
  : QLabel(parent)
- , Object( "PlayerControl" )
 {
 	// Background image
 	setPixmap( QPixmap( Skin::getImagePath() + "/playerControlPanel/background.png" ) );
@@ -1040,7 +1039,6 @@ void PlayerControl::onStatusTimerEvent()
 
 MetronomeWidget::MetronomeWidget(QWidget *pParent)
  : QWidget( pParent )
- , Object( "MetronomeWidget" )
  , m_nValue( 0 )
  , m_state( METRO_OFF )
 {

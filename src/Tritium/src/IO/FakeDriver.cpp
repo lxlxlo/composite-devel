@@ -19,6 +19,7 @@
  *
  */
 
+#include <Tritium/Logger.hpp>
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Transport.hpp>
 #include "FakeDriver.hpp"
@@ -27,7 +28,7 @@ namespace Tritium
 {
 
 FakeDriver::FakeDriver( audioProcessCallback processCallback )
-		: AudioOutput( "FakeDriver" )
+		: AudioOutput()
 		, m_processCallback( processCallback )
 		, m_pOut_L( NULL )
 		, m_pOut_R( NULL )

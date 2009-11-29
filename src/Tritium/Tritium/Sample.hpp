@@ -22,10 +22,8 @@
 #ifndef TRITIUM_SAMPLE_HPP
 #define TRITIUM_SAMPLE_HPP
 
-#include <string>
-
 #include <Tritium/globals.hpp>
-#include <Tritium/Logger.hpp>
+#include <QString>
 
 namespace Tritium
 {
@@ -33,7 +31,7 @@ namespace Tritium
 /**
 \ingroup H2CORE
 */
-class Sample : public Object
+class Sample
 {
 public:
 	Sample( unsigned frames, const QString& filename, float* data_L = NULL, float* data_R = NULL );

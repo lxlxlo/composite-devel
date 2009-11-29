@@ -22,11 +22,9 @@
 #ifndef TRITIUM_AUDIO_ENGINE_HPP
 #define TRITIUM_AUDIO_ENGINE_HPP
 
-#include <Tritium/Logger.hpp>
 #include <Tritium/sampler/Sampler.hpp>
 
 #include <QMutex>
-#include <string>
 #include <cassert>
 
 #ifndef RIGHT_HERE
@@ -39,7 +37,7 @@ namespace Tritium
 ///
 /// Audio Engine main class (Singleton).
 ///
-class AudioEngine : public Object
+class AudioEngine
 {
 public:
 	static void create_instance();

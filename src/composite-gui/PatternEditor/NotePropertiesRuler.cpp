@@ -37,7 +37,6 @@ using namespace Tritium;
 
 NotePropertiesRuler::NotePropertiesRuler( QWidget *parent, PatternEditorPanel *pPatternEditorPanel, NotePropertiesMode mode )
  : QWidget( parent )
- , Object( "NotePropertiesRuler" )
  , m_mode( mode )
  , m_pPatternEditorPanel( pPatternEditorPanel )
  , m_pPattern( NULL )

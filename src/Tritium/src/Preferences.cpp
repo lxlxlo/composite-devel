@@ -20,6 +20,7 @@
  */
 
 #include <stdlib.h>
+#include <Tritium/Logger.hpp>
 #include <Tritium/Preferences.hpp>
 
 #include <Tritium/LocalFileMng.hpp>
@@ -58,8 +59,7 @@ void Preferences::create_instance()
 
 
 Preferences::Preferences()
-		: Object( "Preferences" )
-		, demoPath( QString( DataPath::get_data_path() ) + "/demo_songs/" )
+		: demoPath( QString( DataPath::get_data_path() ) + "/demo_songs/" )
 		, m_sLastNews( "" )
 {
 	__instance = this;
@@ -1132,7 +1132,6 @@ void Preferences::readUIStyle( QDomNode parent )
 
 
 WindowProperties::WindowProperties()
-		: Object( "WindowProperties" )
 {
 //	infoLog( "INIT" );
 	x = 0;
@@ -1157,7 +1156,6 @@ WindowProperties::~WindowProperties()
 
 
 UIStyle::UIStyle()
-		: Object( "UIStyle" )
 {
 //	infoLog( "INIT" );
 }
@@ -1169,8 +1167,7 @@ UIStyle::UIStyle()
 
 
 H2RGBColor::H2RGBColor( int r, int g, int b )
-		: Object( "H2RGBColor" )
-		, m_red( r )
+		: m_red( r )
 		, m_green( g )
 		, m_blue( b )
 {
@@ -1190,7 +1187,6 @@ H2RGBColor::~H2RGBColor()
 
 
 H2RGBColor::H2RGBColor( const QString& sColor )
-		: Object( "H2RGBColor" )
 {
 //	infoLog( "INIT " + sColor );
 	QString temp = sColor;

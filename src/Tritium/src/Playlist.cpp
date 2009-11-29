@@ -41,10 +41,9 @@ Playlist* Playlist::__instance = NULL;
 
 
 Playlist::Playlist()
-	: Object( "Playlist" ),
-	  m_listener(0)
+	: m_listener(0)
 {
-	//_INFOLOG( "[Playlist]" );
+	//INFOLOG( "[Playlist]" );
 	__instance = this;
 	__playlistName = "";
 
@@ -104,7 +103,7 @@ void Playlist::setNextSongPlaylist()
 {
 	
 	int index = getSelectedSongNr();
-	//_INFOLOG( "index" + to_string( index ) );
+	//INFOLOG( "index" + to_string( index ) );
 	if (index == -1 ){
 		if ( getActiveSongNumber() != -1){
 			index = getActiveSongNumber();

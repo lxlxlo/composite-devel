@@ -24,6 +24,7 @@
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Transport.hpp>
+#include <Tritium/Logger.hpp>
 
 #include <Tritium/Instrument.hpp>
 #include <Tritium/Song.hpp>
@@ -38,7 +39,8 @@ ActionManager* ActionManager::__instance = NULL;
 using namespace Tritium;
 
 /* Class Action */
-Action::Action( QString s ) : Object( "Action" ) {
+Action::Action( QString s )
+{
 	type = s;
 	QString parameter1 = "0";
 	QString parameter2 = "0" ;
@@ -47,7 +49,7 @@ Action::Action( QString s ) : Object( "Action" ) {
 
 /* Class ActionManager */
 
-ActionManager::ActionManager() : Object( "ActionManager" )
+ActionManager::ActionManager()
 {
 	__instance = this;
 	

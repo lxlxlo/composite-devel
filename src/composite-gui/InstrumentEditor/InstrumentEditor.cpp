@@ -33,6 +33,7 @@
 #include <Tritium/Instrument.hpp>
 #include <Tritium/AudioEngine.hpp>
 #include <Tritium/EventQueue.hpp>
+#include <Tritium/Logger.hpp>
 using namespace Tritium;
 
 #include "../HydrogenApp.hpp"
@@ -49,7 +50,6 @@ using namespace Tritium;
 
 InstrumentEditor::InstrumentEditor( QWidget* pParent )
  : QWidget( pParent )
- , Object( "InstrumentEditor" )
  , m_pInstrument( NULL )
  , m_nSelectedLayer( 0 )
 {

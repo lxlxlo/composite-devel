@@ -24,7 +24,6 @@
 #define COMPOSITE_AUDIOENGINEINFOFORM_HPP
 
 #include "config.h"
-#include <Tritium/Logger.hpp>
 
 #include "EventListener.hpp"
 #include "ui_AudioEngineInfoForm_UI.h"
@@ -34,7 +33,7 @@
 /**
  * Audio Engine information form
  */
-class AudioEngineInfoForm : public QWidget, public Ui_AudioEngineInfoForm_UI, public EventListener, public Object
+class AudioEngineInfoForm : public QWidget, public Ui_AudioEngineInfoForm_UI, public EventListener
 {
 	Q_OBJECT
 	private:

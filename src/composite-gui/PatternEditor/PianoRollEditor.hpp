@@ -22,7 +22,6 @@
 #ifndef COMPOSITE_PIANOROLLEDITOR_HPP
 #define COMPOSITE_PIANOROLLEDITOR_HPP
 
-#include <Tritium/Logger.hpp>
 #include "../EventListener.hpp"
 
 #include <QtGui>
@@ -33,7 +32,7 @@ namespace Tritium
 	class Note;
 }
 
-class PianoRollEditor: public QWidget, public EventListener, public Object
+class PianoRollEditor: public QWidget, public EventListener
 {
 	public:
 		PianoRollEditor( QWidget *pParent );

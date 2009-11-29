@@ -40,7 +40,6 @@ using namespace std;
 
 AudioFileBrowser::AudioFileBrowser ( QWidget* pParent )
 		: QDialog ( pParent )
-		, Object ( "AudioFileBrowser" )
 {
 	setupUi ( this );
 	INFOLOG ( "INIT" );

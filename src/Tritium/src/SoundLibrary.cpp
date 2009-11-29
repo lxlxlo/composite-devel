@@ -29,6 +29,7 @@
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/ADSR.hpp>
 #include <Tritium/Preferences.hpp>
+#include <Tritium/Logger.hpp>
 
 #include <cstdlib>
 
@@ -50,7 +51,6 @@ namespace Tritium
 {
 
 SoundLibrary::SoundLibrary()
-		: Object( "SoundLibrary" )
 {
 }
 
@@ -66,9 +66,7 @@ SoundLibrary::~SoundLibrary()
 
 
 
-Drumkit::Drumkit()
-		: Object( "Drumkit" )
-		, m_pInstrumentList( NULL )
+Drumkit::Drumkit() : m_pInstrumentList( NULL )
 {
 }
 
@@ -143,7 +141,7 @@ void Drumkit::dump()
 #ifdef LIBARCHIVE_SUPPORT
 void Drumkit::install( const QString& filename )
 {
-	_INFOLOG( "[Drumkit::install] drumkit = " + filename );
+	INFOLOG( "[Drumkit::install] drumkit = " + filename );
 	QString dataDir = Preferences::get_instance()->getDataDirectory() + "drumkits/";
 
 	int r;
@@ -155,7 +153,7 @@ void Drumkit::install( const QString& filename )
 	archive_read_support_compression_all(drumkitFile);
 	archive_read_support_format_all(drumkitFile);
 	if (( r = archive_read_open_file(drumkitFile, filename.toLocal8Bit(), 10240) )) {
-		_ERRORLOG( QString( "Error: %2, Could not open drumkit: %1" )
+		ERRORLOG( QString( "Error: %2, Could not open drumkit: %1" )
 			.arg( archive_errno(drumkitFile))
 			.arg( archive_error_string(drumkitFile)) );
 		archive_read_close(drumkitFile);
@@ -164,7 +162,7 @@ void Drumkit::install( const QString& filename )
 	}
 	while ( (r = archive_read_next_header(drumkitFile, &entry)) != ARCHIVE_EOF) {
 		if (r != ARCHIVE_OK) {
-			_ERRORLOG( QString( "Error reading drumkit file: %1")
+			ERRORLOG( QString( "Error reading drumkit file: %1")
 				.arg(archive_error_string(drumkitFile)));
 			break;
 		}
@@ -177,9 +175,9 @@ void Drumkit::install( const QString& filename )
 		// extract tarball
 		r = archive_read_extract(drumkitFile, entry, 0);
 		if (r == ARCHIVE_WARN) {
-			_WARNINGLOG( QString( "warning while extracting %1 (%2)").arg(filename).arg(archive_error_string(drumkitFile)));
+			WARNINGLOG( QString( "warning while extracting %1 (%2)").arg(filename).arg(archive_error_string(drumkitFile)));
 		} else if (r != ARCHIVE_OK) {
-			_ERRORLOG( QString( "error while extracting %1 (%2)").arg(filename).arg(archive_error_string(drumkitFile)));
+			ERRORLOG( QString( "error while extracting %1 (%2)").arg(filename).arg(archive_error_string(drumkitFile)));
 			break;
 		}
 	}
@@ -191,7 +189,7 @@ void Drumkit::install( const QString& filename )
 #ifndef WIN32
 void Drumkit::install( const QString& filename )
 {
-        _INFOLOG( "[Drumkit::install] drumkit = " + filename );
+        INFOLOG( "[Drumkit::install] drumkit = " + filename );
         QString dataDir = Preferences::get_instance()->getDataDirectory() + "drumkits/";
 
         // GUNZIP !!!
@@ -218,18 +216,18 @@ void Drumkit::install( const QString& filename )
         strcpy( tarfilename, gunzippedName.toLocal8Bit() );
 
         if ( tar_open( &tarFile, tarfilename, NULL, O_RDONLY, 0, TAR_VERBOSE | TAR_GNU ) == -1 ) { 
-		_ERRORLOG( QString( "[Drumkit::install] tar_open(): %1" ).arg( QString::fromLocal8Bit(strerror(errno)) ) );
+		ERRORLOG( QString( "[Drumkit::install] tar_open(): %1" ).arg( QString::fromLocal8Bit(strerror(errno)) ) );
 		return;
         }
 
         char destDir[1024];
         strcpy( destDir, dataDir.toLocal8Bit() );
         if ( tar_extract_all( tarFile, destDir ) != 0 ) {
-                _ERRORLOG( QString( "[Drumkit::install] tar_extract_all(): %1" ).arg( QString::fromLocal8Bit(strerror(errno)) ) );
+                ERRORLOG( QString( "[Drumkit::install] tar_extract_all(): %1" ).arg( QString::fromLocal8Bit(strerror(errno)) ) );
         }
 
         if ( tar_close( tarFile ) != 0 ) {
-                _ERRORLOG( QString( "[Drumkit::install] tar_close(): %1" ).arg( QString::fromLocal8Bit(strerror(errno)) ) );
+                ERRORLOG( QString( "[Drumkit::install] tar_close(): %1" ).arg( QString::fromLocal8Bit(strerror(errno)) ) );
         }
 }
 #endif
@@ -238,7 +236,7 @@ void Drumkit::install( const QString& filename )
 
 void Drumkit::save( const QString& sName, const QString& sAuthor, const QString& sInfo, const QString& sLicense )
 {
-	_INFOLOG( "Saving drumkit" );
+	INFOLOG( "Saving drumkit" );
 
 	Drumkit *pDrumkitInfo = new Drumkit();
 	pDrumkitInfo->setName( sName );
@@ -293,7 +291,7 @@ void Drumkit::save( const QString& sName, const QString& sAuthor, const QString&
 	LocalFileMng fileMng;
 	int err = fileMng.saveDrumkit( pDrumkitInfo );
 	if ( err != 0 ) {
-		_ERRORLOG( "Error saving the drumkit" );
+		ERRORLOG( "Error saving the drumkit" );
 		throw H2Exception( "Error saving the drumkit" );
 	}
 
@@ -308,14 +306,14 @@ void Drumkit::save( const QString& sName, const QString& sAuthor, const QString&
 
 void Drumkit::removeDrumkit( const QString& sDrumkitName )
 {
-	_INFOLOG( "Removing drumkit: " + sDrumkitName );
+	INFOLOG( "Removing drumkit: " + sDrumkitName );
 
 	QString dataDir = Preferences::get_instance()->getDataDirectory() + "drumkits/";
 	dataDir += sDrumkitName;
 	QString cmd = QString( "rm -rf \"" ) + dataDir + "\"";
-	_INFOLOG( cmd );
+	INFOLOG( cmd );
 	if ( system( cmd.toLocal8Bit() ) != 0 ) {
-		_ERRORLOG( "Error executing '" + cmd + "'" );
+		ERRORLOG( "Error executing '" + cmd + "'" );
 		throw H2Exception( QString( "Error executing '%1'" ).arg( cmd ) );
 	}
 }

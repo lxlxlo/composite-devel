@@ -25,10 +25,10 @@
 
 #include <QtGui>
 #include <Tritium/globals.hpp>
+#include <Tritium/Logger.hpp>
 
 SimpleHTMLBrowser::SimpleHTMLBrowser( QWidget *pParent, const QString& sDataPath, const QString& sFilename, SimpleHTMLBrowserType type )
  : QDialog( pParent )
- , Object( "SimpleHTMLBrowser" )
  , m_type( type )
  , m_sDataPath( sDataPath )
  , m_sFilename( sFilename )

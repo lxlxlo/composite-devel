@@ -25,7 +25,6 @@
 #include "config.h"
 #include "ui_SoundLibraryExportDialog_UI.h"
 
-#include <Tritium/Logger.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/SoundLibrary.hpp>
 
@@ -34,7 +33,7 @@
 ///
 ///
 ///
-class SoundLibraryExportDialog : public QDialog, public Ui_SoundLibraryExportDialog_UI, public Object
+class SoundLibraryExportDialog : public QDialog, public Ui_SoundLibraryExportDialog_UI
 {
 	Q_OBJECT
 	public:

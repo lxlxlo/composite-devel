@@ -29,7 +29,6 @@
 
 #include <QtGui>
 
-#include <Tritium/Logger.hpp>
 #include "../widgets/PixmapWidget.hpp"
 
 namespace Tritium
@@ -75,7 +74,7 @@ class InstrumentLine : public PixmapWidget
 };
 
 
-class PatternEditorInstrumentList : public QWidget, public Object {
+class PatternEditorInstrumentList : public QWidget {
 	Q_OBJECT
 
 	public:

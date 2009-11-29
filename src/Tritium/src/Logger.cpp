@@ -37,77 +37,12 @@
 #endif
 
 using namespace std;
+using namespace Tritium;
 
-unsigned int Object::__objects = 0;
-bool Object::__use_log = false;
-std::map<QString, int> Object::__object_map;
+Logger* Logger::__instance = 0;
 unsigned Logger::__log_level = 0;
 
-/**
- * Constructor
- */
-Object::Object( const QString& class_name )
-		: __class_name( class_name )
-{
-	++__objects;
-	__logger = Logger::get_instance();
-
-	if ( __use_log ) {
-		int nInstances = __object_map[ __class_name ];
-		++nInstances;
-		__object_map[ __class_name ] = nInstances;
-	}
-}
-
-
-/**
- * Copy constructor
- */
-Object::Object( const Object& obj )
-{
-
-	__class_name = obj.get_class_name();
-
-	++__objects;
-//	__class_name = obj.getClassName;
-	__logger = Logger::get_instance();
-
-	if ( __use_log ) {
-		int nInstances = __object_map[ __class_name ];
-		++nInstances;
-		__object_map[ __class_name ] = nInstances;
-	}
-}
-
-
-/**
- * Destructor
- */
-Object::~Object()
-{
-	--__objects;
-
-	if ( __use_log ) {
-		int nInstances = __object_map[ __class_name ];
-		--nInstances;
-		__object_map[ __class_name ] = nInstances;
-	}
-}
-
-
-
-
-
-/**
- * Return the number of Objects not deleted
- */
-int Object::get_objects_number()
-{
-	return __objects;
-}
-
-
-void Object::set_logging_level(const char* level)
+void Logger::set_logging_level(const char* level)
 {
 	const char none[] = "None";
 	const char error[] = "Error";
@@ -150,65 +85,29 @@ void Object::set_logging_level(const char* level)
 	}
 
 	Logger::set_log_level( log_level );
-	__use_log = use;
-	Logger::get_instance()->__use_file = use;
+	// __use_log = use;
+	// Logger::get_instance()->__use_file = use;
 }
 
-
-
-bool Object::is_using_verbose_log()
+namespace Tritium
 {
-	return __use_log;
-}
 
-
-
-void Object::print_object_map()
-{
-	if (!__use_log) {
-		std::cout << "[Object::print_object_map -- "
-			"object map disabled.]" << std::endl;
-		return;
-	}
-
-	std::cout << "[Object::print_object_map]" << std::endl;
-
-	map<QString, int>::iterator iter = __object_map.begin();
-	int nTotal = 0;
-	do {
-		int nInstances = ( *iter ).second;
-		QString sObject = ( *iter ).first;
-		if ( nInstances != 0 ) {
-			std::cout << nInstances << "\t" << sObject.toLocal8Bit().constData() << std::endl;
-		}
-		nTotal += nInstances;
-		iter++;
-	} while ( iter != __object_map.end() );
-
-	std::cout << "Total : " << nTotal << " objects." << std::endl;
-}
-
-
-
-////////////////////////
-
-
-Logger* Logger::__instance = NULL;
-
-class LoggerThread : public QThread
-{
+    class LoggerThread : public QThread
+    {
 	bool m_done;
 	Logger *pLogger;
-public:
+    public:
 	LoggerThread(Logger* d) :
-		m_done(false),
-		pLogger(d)
-		{}
+	    m_done(false),
+	    pLogger(d)
+	    {}
 	void shutdown() { m_done = true; }
 	void run();
-};
+    };
 
-LoggerThread *loggerThread;
+    LoggerThread *loggerThread;
+
+} // namespace Tritium
 
 void LoggerThread::run()
 {
@@ -311,7 +210,6 @@ Logger::~Logger()
 
 void Logger::log( unsigned level,
 		  const char* funcname,
-		  const QString& class_name,
 		  const QString& msg )
 {
 	if( level == None ) return;
@@ -346,10 +244,9 @@ void Logger::log( unsigned level,
 		break;
 	}
 
-	QString tmp = QString("%1%2%3\t%4 %5 \033[0m\n")
+	QString tmp = QString("%1%2%3\t%4 \033[0m\n")
 		.arg(color[i])
 		.arg(prefix[i])
-		.arg(class_name)
 		.arg(funcname)
 		.arg(msg);
 

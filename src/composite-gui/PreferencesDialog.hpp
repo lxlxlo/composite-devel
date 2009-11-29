@@ -26,12 +26,10 @@
 
 #include "ui_PreferencesDialog_UI.h"
 
-#include <Tritium/Logger.hpp>
-
 ///
 /// Preferences Dialog
 ///
-class PreferencesDialog : public QDialog, private Ui_PreferencesDialog_UI, public Object
+class PreferencesDialog : public QDialog, private Ui_PreferencesDialog_UI
 {
 	Q_OBJECT
 	public:

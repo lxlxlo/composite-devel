@@ -26,12 +26,9 @@
 #include "config.h"
 
 #include <iostream>
-#include <string>
 #include <QtGui>
 
-#include <Tritium/Logger.hpp>
-
-class SimpleHTMLBrowser : public QDialog, public Object
+class SimpleHTMLBrowser : public QDialog
 {
 	Q_OBJECT
 	public:

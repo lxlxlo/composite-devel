@@ -28,6 +28,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 
+#include <Tritium/Logger.hpp>
 #include "Skin.hpp"
 
 
@@ -35,7 +36,6 @@
 SplashScreen::SplashScreen()
 // : QWidget( NULL, Qt::SplashScreen )
  : QSplashScreen( NULL )
- , Object( "SplashScreen" )
 {
 	//INFOLOG( "SplashScreen" );
 

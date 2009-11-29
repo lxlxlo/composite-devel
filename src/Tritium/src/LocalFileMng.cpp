@@ -23,6 +23,7 @@
 #include "version.h"
 
 
+#include <Tritium/Logger.hpp>
 #include <Tritium/ADSR.hpp>
 #include <Tritium/DataPath.hpp>
 #include <Tritium/Hydrogen.hpp>
@@ -59,7 +60,6 @@ namespace Tritium
 {
 
 LocalFileMng::LocalFileMng()
-		: Object( "LocalFileMng" )
 {
 //	infoLog("INIT");
 }
@@ -1009,13 +1009,13 @@ QString LocalFileMng::readXmlString( QDomNode node , const QString& nodeName, co
 			return element.text();
 		} else {
 			if ( !bCanBeEmpty ) {
-				_WARNINGLOG( "Using default value in " + nodeName );
+				WARNINGLOG( "Using default value in " + nodeName );
 			}
 			return defaultValue;
 		}
 	} else {	
 		if(  bShouldExists ){
-			_WARNINGLOG( "'" + nodeName + "' node not found" );
+			WARNINGLOG( "'" + nodeName + "' node not found" );
 			
 		}
 		return defaultValue;
@@ -1032,13 +1032,13 @@ float LocalFileMng::readXmlFloat( QDomNode node , const QString& nodeName, float
 			return c_locale.toFloat(element.text());
 		} else {
 			if ( !bCanBeEmpty ) {
-				_WARNINGLOG( "Using default value in " + nodeName );
+				WARNINGLOG( "Using default value in " + nodeName );
 			}
 			return defaultValue;
 		}
 	} else {	
 		if(  bShouldExists ){
-			_WARNINGLOG( "'" + nodeName + "' node not found" );
+			WARNINGLOG( "'" + nodeName + "' node not found" );
 		}
 		return defaultValue;
 	}
@@ -1054,13 +1054,13 @@ int LocalFileMng::readXmlInt( QDomNode node , const QString& nodeName, int defau
 			return c_locale.toInt( element.text() );
 		} else {
 			if ( !bCanBeEmpty ) {
-				_WARNINGLOG( "Using default value in " + nodeName );
+				WARNINGLOG( "Using default value in " + nodeName );
 			}
 			return defaultValue;
 		}
 	} else {	
 		if(  bShouldExists ){
-			_WARNINGLOG( "'" + nodeName + "' node not found" );
+			WARNINGLOG( "'" + nodeName + "' node not found" );
 		}
 		return defaultValue;
 	}
@@ -1078,12 +1078,12 @@ bool LocalFileMng::readXmlBool( QDomNode node , const QString& nodeName, bool de
 				return false;
 			}
 		} else {
-			_WARNINGLOG( "Using default value in " + nodeName );
+			WARNINGLOG( "Using default value in " + nodeName );
 			return defaultValue;
 		}
 	} else {	
 		if(  bShouldExists ){
-			_WARNINGLOG( "'" + nodeName + "' node not found" );
+			WARNINGLOG( "'" + nodeName + "' node not found" );
 		}
 		return defaultValue;
 	}
@@ -1187,7 +1187,7 @@ bool LocalFileMng::checkTinyXMLCompatMode( const QString& filename )
 	if ( line.startsWith( "<?xml" )){
 		return false;
 	} else  {
-		_WARNINGLOG( QString("File '%1' is being read in "
+		WARNINGLOG( QString("File '%1' is being read in "
 				    "TinyXML compatability mode")
 			    .arg(filename) );
 		return true;
@@ -1217,7 +1217,7 @@ QDomDocument LocalFileMng::openXmlDocument( const QString& filename )
 		.arg( enc )
 		.toLocal8Bit();
 
-	    //_INFOLOG( QString("Using '%1' encoding for TinyXML file").arg(enc) );
+	    //INFOLOG( QString("Using '%1' encoding for TinyXML file").arg(enc) );
 
 	    while( !file.atEnd() ) {
 			line = file.readLine();
@@ -1250,7 +1250,6 @@ QDomDocument LocalFileMng::openXmlDocument( const QString& filename )
 
 
 SongWriter::SongWriter()
-		: Object( "SongWriter" )
 {
 //	infoLog("init");
 }

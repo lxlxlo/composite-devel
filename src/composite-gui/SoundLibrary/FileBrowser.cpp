@@ -30,11 +30,11 @@
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Sample.hpp>
 #include <Tritium/AudioEngine.hpp>
+#include <Tritium/Logger.hpp>
 using namespace Tritium;
 
 FileBrowser::FileBrowser( QWidget* pParent )
  : QWidget( pParent )
- , Object( "FileBrowser" )
 {
 	INFOLOG( "[FileBrowser]" );
 

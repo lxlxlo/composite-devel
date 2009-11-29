@@ -24,11 +24,9 @@
 
 #include "config.h"
 
-#include <Tritium/Logger.hpp>
-
 #include <QtGui>
 
-class FileBrowser : public QWidget, private Object
+class FileBrowser : public QWidget
 {
 	Q_OBJECT
 	public:

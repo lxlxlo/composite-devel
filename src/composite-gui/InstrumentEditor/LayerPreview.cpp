@@ -37,7 +37,6 @@ using namespace Tritium;
 
 LayerPreview::LayerPreview( QWidget* pParent )
  : QWidget( pParent )
- , Object( "LayerPreview" )
  , m_pInstrument( NULL )
  , m_nSelectedLayer( 0 )
  , m_bMouseGrab( false )

@@ -22,9 +22,9 @@
 #ifndef TRITIUM_MIDIINPUT_HPP
 #define TRITIUM_MIDIINPUT_HPP
 
-#include <Tritium/Logger.hpp>
 #include <vector>
 #include <stdint.h>
+#include <QString>
 
 namespace Tritium
 {
@@ -82,7 +82,7 @@ public:
 /**
  * MIDI input base class
  */
-class MidiInput : public Object
+class MidiInput
 {
 public:
 	MidiInput( const QString class_name );

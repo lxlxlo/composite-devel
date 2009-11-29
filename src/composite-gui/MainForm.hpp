@@ -30,14 +30,12 @@
 #include "EventListener.hpp"
 #include "config.h"
 
-#include <Tritium/Logger.hpp>
-
 class HydrogenApp;
 
 ///
 /// Main window
 ///
-class MainForm : public QMainWindow, public EventListener, public Object
+class MainForm : public QMainWindow, public EventListener
 {
 	Q_OBJECT
 
@@ -83,7 +81,6 @@ class MainForm : public QMainWindow, public EventListener, public Object
 		void action_window_showPatternEditor();
 		void action_window_showDrumkitManagerPanel();
 
-		void action_debug_printObjects();
 		void action_debug_showAudioEngineInfo();
 
 		void closeEvent( QCloseEvent* ev );

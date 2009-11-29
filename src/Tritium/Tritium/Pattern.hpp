@@ -23,7 +23,6 @@
 #define TRITIUM_PATTERN_HPP
 
 #include <Tritium/globals.hpp>
-#include <Tritium/Logger.hpp>
 
 namespace Tritium
 {
@@ -34,7 +33,7 @@ class Instrument;
 ///
 /// The Pattern is a Note container.
 ///
-class Pattern : public Object
+class Pattern
 {
 public:
 	typedef std::multimap <int, Note*> note_map_t;
@@ -88,7 +87,7 @@ private:
 
 
 /// Pattern List
-class PatternList : public Object
+class PatternList
 {
 public:
 	PatternList();

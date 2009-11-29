@@ -25,7 +25,6 @@
 #ifdef LADSPA_SUPPORT
 
 #include <Tritium/globals.hpp>
-#include <Tritium/Logger.hpp>
 #include <Tritium/fx/LadspaFX.hpp>
 
 #include <vector>
@@ -37,7 +36,7 @@ namespace Tritium
 /**
  *
  */
-class Effects : public Object
+class Effects
 {
 public:
 	static void create_instance();

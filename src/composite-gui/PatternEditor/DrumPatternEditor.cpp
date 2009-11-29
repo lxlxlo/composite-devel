@@ -32,6 +32,7 @@
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/AudioEngine.hpp>
+#include <Tritium/Logger.hpp>
 
 #include "../HydrogenApp.hpp"
 #include "../Mixer/Mixer.hpp"
@@ -47,7 +48,6 @@ using namespace Tritium;
 
 DrumPatternEditor::DrumPatternEditor(QWidget* parent, PatternEditorPanel *panel)
  : QWidget( parent )
- , Object( "DrumPatternEditor" )
  , m_nResolution( 8 )
  , m_bUseTriplets( false )
  , m_bRightBtnPressed( false )

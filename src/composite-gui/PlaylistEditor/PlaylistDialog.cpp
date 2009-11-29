@@ -32,6 +32,7 @@
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Transport.hpp>
 #include <Tritium/Playlist.hpp>
+#include <Tritium/Logger.hpp>
 
 #include "../widgets/Button.hpp"
 
@@ -51,7 +52,6 @@ using namespace std;
 
 PlaylistDialog::PlaylistDialog ( QWidget* pParent )
 		: QDialog ( pParent )
-		, Object ( "PlayListDialog" )
 {
 
 	setupUi ( this );
@@ -390,7 +390,7 @@ void PlaylistDialog::loadList()
 		LocalFileMng fileMng;
 		int err = fileMng.loadPlayList( filename.toLocal8Bit().constData() );
 		if ( err != 0 ) {
-			_ERRORLOG( "Error saving the playlist" );
+			ERRORLOG( "Error saving the playlist" );
 		}
 
 	
@@ -533,7 +533,7 @@ void PlaylistDialog::saveListAs()
 	LocalFileMng fileMng;
 	int err = fileMng.savePlayList( filename.toLocal8Bit().constData() );
 	if ( err != 0 ) {
-		_ERRORLOG( "Error saving the playlist" );
+		ERRORLOG( "Error saving the playlist" );
 	}else
 	{
 		Playlist::get_instance()->__playlistName = filename;
@@ -553,7 +553,7 @@ void PlaylistDialog::saveList()
 	LocalFileMng fileMng;
 	int err = fileMng.savePlayList( Playlist::get_instance()->__playlistName.toStdString() );
 	if ( err != 0 ) {
-		_ERRORLOG( "Error saving the playlist" );
+		ERRORLOG( "Error saving the playlist" );
 	}
 
 }

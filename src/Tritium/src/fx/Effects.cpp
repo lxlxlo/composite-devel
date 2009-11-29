@@ -25,6 +25,7 @@
 #include <Tritium/Preferences.hpp>
 #include <Tritium/fx/LadspaFX.hpp>
 #include <Tritium/AudioEngine.hpp>
+#include <Tritium/Logger.hpp>
 
 #include <algorithm>
 #include <QDir>
@@ -46,8 +47,7 @@ Effects* Effects::__instance = NULL;
 
 
 Effects::Effects()
-		: Object( "Effects" )
-		, m_pRootGroup( NULL )
+		: m_pRootGroup( NULL )
 		, m_pRecentGroup( NULL )
 {
 	__instance = this;

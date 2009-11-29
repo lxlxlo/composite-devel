@@ -38,12 +38,12 @@
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/IO/MidiInput.hpp>
+#include <Tritium/Logger.hpp>
 
 using namespace Tritium;
 
 PreferencesDialog::PreferencesDialog(QWidget* parent)
  : QDialog( parent )
- , Object( "PreferencesDialog" )
 {
 	setupUi( this );
 

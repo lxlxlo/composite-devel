@@ -24,6 +24,7 @@
 
 #include <cassert>
 #include <Tritium/ADSR.hpp>
+#include <QString>
 #include <stdint.h>
 
 namespace Tritium

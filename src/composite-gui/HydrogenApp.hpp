@@ -24,7 +24,6 @@
 
 #include "config.h"
 
-#include <Tritium/Logger.hpp>
 #include <Tritium/globals.hpp>
 
 #include "EventListener.hpp"
@@ -55,7 +54,7 @@ class PlaylistDialog;
 class AppPlaylistListener;
 //class AudioFileBrowser;
 
-class HydrogenApp : public QObject, public Object
+class HydrogenApp : public QObject
 {
 	Q_OBJECT
 	public:

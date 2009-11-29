@@ -24,12 +24,11 @@
 
 #include "config.h"
 #include "ui_SoundLibraryRepositoryDialog_UI.h"
-#include <Tritium/Logger.hpp>
 
 ///
 ///
 ///
-class SoundLibraryRepositoryDialog : public QDialog, public Ui_SoundLibraryRepositoryDialog_UI, public Object
+class SoundLibraryRepositoryDialog : public QDialog, public Ui_SoundLibraryRepositoryDialog_UI
 {
 	Q_OBJECT
 	public:

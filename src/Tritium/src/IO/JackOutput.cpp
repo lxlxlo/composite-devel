@@ -20,6 +20,7 @@
  */
 
 #include "JackClient.hpp"
+#include <Tritium/Logger.hpp>
 #include <Tritium/IO/JackOutput.hpp>
 #ifdef JACK_SUPPORT
 
@@ -44,7 +45,7 @@ int jackDriverSampleRate( jack_nframes_t nframes, void *arg )
 {
 	UNUSED( arg );
 	QString msg = QString("Jack SampleRate changed: the sample rate is now %1/sec").arg( QString::number( (int) nframes ) );
-	_INFOLOG( msg );
+	INFOLOG( msg );
 	jack_server_sampleRate = nframes;
 	return 0;
 }
@@ -70,7 +71,7 @@ void jackDriverShutdown( void *arg )
 
 
 JackOutput::JackOutput( JackProcessCallback processCallback )
-		: AudioOutput( "JackOutput" )
+	: AudioOutput()
 {
 	INFOLOG( "INIT" );
 	__track_out_enabled = Preferences::get_instance()->m_bJackTrackOuts;	// allow per-track output

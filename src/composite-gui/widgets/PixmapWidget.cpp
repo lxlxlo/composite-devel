@@ -22,12 +22,10 @@
 #include "PixmapWidget.hpp"
 #include "../Skin.hpp"
 #include <QPainter>
-
 #include <Tritium/Logger.hpp>
 
 PixmapWidget::PixmapWidget( QWidget *pParent, const QString& sClassName )
- : Object( sClassName )
- , QWidget( pParent )
+ : QWidget( pParent )
  , m_sPixmapPath( "" )
  , __expand_horiz(false)
 {
@@ -66,7 +64,7 @@ void PixmapWidget::setPixmap( QString sPixmapPath, bool expand_horiz )
 
 	bool ok = m_pixmap.load( Skin::getImagePath() + sPixmapPath );
 	if ( !ok ) {
-		_INFOLOG( QString( "Error loading: %1%2").arg( Skin::getImagePath() ).arg( sPixmapPath ) );
+		INFOLOG( QString( "Error loading: %1%2").arg( Skin::getImagePath() ).arg( sPixmapPath ) );
 	}
 
 	resize( m_pixmap.width(), m_pixmap.height() );

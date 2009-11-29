@@ -21,6 +21,7 @@
 
 #include <Tritium/Note.hpp>
 #include <Tritium/Instrument.hpp>
+#include <Tritium/Logger.hpp>
 
 #include <cassert>
 #include <cstdlib>
@@ -127,7 +128,7 @@ void Note::set_instrument( Instrument* instrument )
 
 void Note::dumpInfo() const
 {
-    _INFOLOG( QString("humanize offset%2\t instr: %3\t key: %4\t pitch: %5")
+    INFOLOG( QString("humanize offset%2\t instr: %3\t key: %4\t pitch: %5")
 	      .arg( m_nHumanizeDelay )
 	      .arg( __instrument->get_name() )
 	      .arg( keyToString( m_noteKey ) )
@@ -145,9 +146,9 @@ NoteKey Note::stringToKey( const QString& str )
 	QString sOct = str.mid( str.length() - 1, str.length() );
 	int nOctave = sOct.toInt();
 
-//	_INFOLOG( "skey: " + sKey );
-//	_INFOLOG( "sOct: " + sOct );
-//	_INFOLOG( "nOctave: " + to_string( nOctave ) );
+//	INFOLOG( "skey: " + sKey );
+//	INFOLOG( "sOct: " + sOct );
+//	INFOLOG( "nOctave: " + to_string( nOctave ) );
 
 	if ( sKey == "C" ) {
 		key.m_key = NoteKey::C;
@@ -174,7 +175,7 @@ NoteKey Note::stringToKey( const QString& str )
 	} else if ( sKey == "B" ) {
 		key.m_key = NoteKey::B;
 	} else {
-		_ERRORLOG( "Unhandled key: " + sKey );
+		ERRORLOG( "Unhandled key: " + sKey );
 	}
 	key.m_nOctave = nOctave;
 

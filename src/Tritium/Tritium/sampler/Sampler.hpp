@@ -23,7 +23,6 @@
 #ifndef TRITIUM_SAMPLER_HPP
 #define TRITIUM_SAMPLER_HPP
 
-#include <Tritium/Logger.hpp>
 #include <Tritium/globals.hpp>
 #include <Tritium/SeqScriptIterator.hpp>
 
@@ -46,7 +45,7 @@ struct TransportPosition;
 ///
 /// Waveform based sampler.
 ///
-class Sampler : public Object
+class Sampler
 {
 public:
 	float *__main_out_L;	///< sampler main out (left channel)

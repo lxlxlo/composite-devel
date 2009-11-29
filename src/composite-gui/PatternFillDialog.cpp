@@ -31,7 +31,6 @@
 
 PatternFillDialog::PatternFillDialog(QWidget* parent, FillRange* pRange)
  : QDialog(parent)
- , Object( "PatternFillDialog" )
 {
 	setupUi( this );
 

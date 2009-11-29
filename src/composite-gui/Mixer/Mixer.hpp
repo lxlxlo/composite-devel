@@ -27,7 +27,6 @@
 
 #include <QtGui>
 
-#include <Tritium/Logger.hpp>
 #include <Tritium/globals.hpp>
 #include "../EventListener.hpp"
 
@@ -39,7 +38,7 @@ class MasterMixerLine;
 class LadspaFXMixerLine;
 class PixmapWidget;
 
-class Mixer : public QWidget, public EventListener, public Object
+class Mixer : public QWidget, public EventListener
 {
 	Q_OBJECT
 	public:

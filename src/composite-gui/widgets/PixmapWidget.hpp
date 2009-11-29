@@ -25,9 +25,7 @@
 #include "config.h"
 #include <QtGui>
 
-#include <Tritium/Logger.hpp>
-
-class PixmapWidget : public Object, public QWidget
+class PixmapWidget : public QWidget
 {
 	public:
 		PixmapWidget( QWidget *pParent, const QString& sClassName = "PixmapWidget" );

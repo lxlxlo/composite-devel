@@ -27,14 +27,13 @@
 #include <iostream>
 
 #include "../EventListener.hpp"
-#include <Tritium/Logger.hpp>
 
 #include <QtGui>
 
 ///
 /// Shows CPU load
 ///
-class CpuLoadWidget : public QWidget, public EventListener, public Object
+class CpuLoadWidget : public QWidget, public EventListener
 {
 	Q_OBJECT
 

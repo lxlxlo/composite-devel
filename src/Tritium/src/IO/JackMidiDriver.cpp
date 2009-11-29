@@ -24,6 +24,7 @@
 
 #include "JackMidiDriver.hpp"
 #include "JackClient.hpp"
+#include <Tritium/Logger.hpp>
 #include <cassert>
 #include <cstdlib> // free()
 #include <Tritium/Preferences.hpp> // For preferred auto-connection
