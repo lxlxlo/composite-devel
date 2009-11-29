@@ -297,25 +297,36 @@ void SoundLibraryPanel::updateDrumkitList()
 
 
 
-void SoundLibraryPanel::on_DrumkitList_ItemChanged( QTreeWidgetItem * current, QTreeWidgetItem * previous )
+void SoundLibraryPanel::on_DrumkitList_ItemChanged(
+    QTreeWidgetItem * /*current*/,
+    QTreeWidgetItem * /*previous*/ )
 {
-	UNUSED( current );
-	UNUSED( previous );
 	test_expandedItems();
 }
 
 
 
-void SoundLibraryPanel::on_DrumkitList_itemActivated( QTreeWidgetItem * item, int column )
+void SoundLibraryPanel::on_DrumkitList_itemActivated(
+	QTreeWidgetItem * item,
+	int /*column*/
+	)
 {
-	UNUSED( column );
-
-//	INFOLOG( "[on_DrumkitList_itemActivated]" );
-	if ( item == __system_drumkits_item || item == __user_drumkits_item || item == __system_drumkits_item->parent() || item->parent() == __song_item || item == __song_item || item == __pattern_item || item->parent() == __pattern_item || item->parent()->parent() == __pattern_item || item == __pattern_item_list || item->parent() == __pattern_item_list || item->parent()->parent() == __pattern_item_list ) {
+	if ( item == __system_drumkits_item
+	     || item == __user_drumkits_item
+	     || item == __system_drumkits_item->parent()
+	     || item->parent() == __song_item
+	     || item == __song_item
+	     || item == __pattern_item
+	     || item->parent() == __pattern_item
+	     || item->parent()->parent() == __pattern_item
+	     || item == __pattern_item_list
+	     || item->parent() == __pattern_item_list
+	     || item->parent()->parent() == __pattern_item_list ) {
 		return;
 	}
 
-	if ( item->parent() == __system_drumkits_item || item->parent() == __user_drumkits_item  ) {
+	if ( item->parent() == __system_drumkits_item
+	     || item->parent() == __user_drumkits_item  ) {
 		// e' stato selezionato un drumkit
 	}
 	else {

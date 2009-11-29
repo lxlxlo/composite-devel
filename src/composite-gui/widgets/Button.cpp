@@ -151,18 +151,16 @@ void Button::setPressed(bool pressed)
 
 
 
-void Button::enterEvent(QEvent *ev)
+void Button::enterEvent(QEvent * /*ev*/)
 {
-	UNUSED( ev );
 	m_bMouseOver = true;
 	update();
 }
 
 
 
-void Button::leaveEvent(QEvent *ev)
+void Button::leaveEvent(QEvent * /*ev*/)
 {
-	UNUSED( ev );
 	m_bMouseOver = false;
 	update();
 }

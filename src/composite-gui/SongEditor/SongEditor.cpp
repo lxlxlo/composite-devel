@@ -339,11 +339,8 @@ void SongEditor::mouseMoveEvent(QMouseEvent *ev)
 
 
 
-void SongEditor::mouseReleaseEvent( QMouseEvent *ev )
+void SongEditor::mouseReleaseEvent( QMouseEvent * /*ev*/ )
 {
-	UNUSED( ev );
-//	INFOLOG( "[mouseReleaseEvent]" );
-
 	Hydrogen *pEngine = Hydrogen::get_instance();
 
 	PatternList *pPatternList = pEngine->getSong()->get_pattern_list();

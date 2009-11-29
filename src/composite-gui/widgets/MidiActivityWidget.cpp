@@ -73,9 +73,8 @@ MidiActivityWidget::~MidiActivityWidget()
 }
 
 
-void MidiActivityWidget::mousePressEvent(QMouseEvent *ev)
+void MidiActivityWidget::mousePressEvent(QMouseEvent * /*ev*/)
 {
-	UNUSED( ev );
 }
 
 

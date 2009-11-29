@@ -196,9 +196,11 @@ void FileBrowser::updateFileInfo( QString sFilename, unsigned nSampleRate, unsig
 
 
 
-void FileBrowser::on_fileList_ItemChanged( QListWidgetItem * current, QListWidgetItem * previous )
+void FileBrowser::on_fileList_ItemChanged(
+    QListWidgetItem * current,
+    QListWidgetItem * /*previous*/
+    )
 {
-	UNUSED( previous );
 	INFOLOG( "[on_fileList_ItemChanged]" );
 	if ( current ) {
 		QString sFileName = current->text();

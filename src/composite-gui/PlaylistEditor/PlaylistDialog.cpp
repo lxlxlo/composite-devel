@@ -800,26 +800,23 @@ void PlaylistDialog::nodePlayBTN( Button* ref )
 }
 
 
-void PlaylistDialog::nodeStopBTN( Button* ref )
+void PlaylistDialog::nodeStopBTN( Button* /*ref*/ )
 {
-	UNUSED( ref );
 	m_pPlayBtn->setPressed(false);
 	Hydrogen::get_instance()->sequencer_stop();
 	Hydrogen::get_instance()->setPatternPos ( 0 );
 }
 
 
-void PlaylistDialog::ffWDBtnClicked( Button* ref)
+void PlaylistDialog::ffWDBtnClicked( Button* /*ref*/)
 {
-	UNUSED( ref );
 	Hydrogen *pEngine = Hydrogen::get_instance();
 	pEngine->setPatternPos( pEngine->getPatternPos() + 1 );
 }
 
 
-void PlaylistDialog::rewindBtnClicked( Button* ref )
+void PlaylistDialog::rewindBtnClicked( Button* /*ref*/ )
 {
-	UNUSED( ref );
 	Hydrogen *pEngine = Hydrogen::get_instance();
 	pEngine->setPatternPos( pEngine->getPatternPos() - 1 );
 }
@@ -952,10 +949,8 @@ void PlaylistDialog::updateActiveSongNumber()
 }
 
 
-bool PlaylistDialog::eventFilter ( QObject *o, QEvent *e )
+bool PlaylistDialog::eventFilter ( QObject * /*o*/, QEvent * /*e*/ )
 {
-	
-	UNUSED ( o );
 	if ( e->type() == QEvent::KeyPress )
 	{	
 		QKeyEvent *k = ( QKeyEvent * ) e;

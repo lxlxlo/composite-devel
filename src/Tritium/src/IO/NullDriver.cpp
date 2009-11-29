@@ -27,23 +27,19 @@
 namespace Tritium
 {
 
-NullDriver::NullDriver( audioProcessCallback processCallback )
+NullDriver::NullDriver( audioProcessCallback /*processCallback*/ )
 		: AudioOutput()
 {
-	UNUSED( processCallback );
-//	INFOLOG( "INIT" );
 }
 
 
 NullDriver::~NullDriver()
 {
-//	INFOLOG( "DESTROY" );
 }
 
 
-int NullDriver::init( unsigned nBufferSize )
+int NullDriver::init( unsigned /*nBufferSize*/ )
 {
-	UNUSED( nBufferSize );
 	return 0;
 }
 

@@ -332,9 +332,8 @@ void SongEditorPanel::updateAll()
 ///
 /// Create a new pattern
 ///
-void SongEditorPanel::newPatBtnClicked( Button* btn)
+void SongEditorPanel::newPatBtnClicked( Button* /*btn*/)
 {
-	UNUSED( btn );
 	Hydrogen *engine = Hydrogen::get_instance();
 	Song *song = engine->getSong();
 	PatternList *patternList = song->get_pattern_list();
@@ -364,9 +363,8 @@ void SongEditorPanel::newPatBtnClicked( Button* btn)
 ///
 /// Move up a pattern in the patternList
 ///
-void SongEditorPanel::upBtnClicked( Button* btn )
+void SongEditorPanel::upBtnClicked( Button* /*btn*/ )
 {
-	UNUSED( btn );
 	Hydrogen *pEngine = Hydrogen::get_instance();
 	int nSelectedPatternPos = pEngine->getSelectedPatternNumber();
 
@@ -394,9 +392,8 @@ void SongEditorPanel::upBtnClicked( Button* btn )
 ///
 /// Move down a pattern in the patternList
 ///
-void SongEditorPanel::downBtnClicked( Button* btn )
+void SongEditorPanel::downBtnClicked( Button* /*btn*/ )
 {
-	UNUSED( btn );
 	Hydrogen *pEngine = Hydrogen::get_instance();
 	int nSelectedPatternPos = pEngine->getSelectedPatternNumber();
 
@@ -423,10 +420,8 @@ void SongEditorPanel::downBtnClicked( Button* btn )
 
 
 
-void SongEditorPanel::clearSequence( Button* btn)
+void SongEditorPanel::clearSequence( Button* /*btn*/)
 {
-	UNUSED( btn );
-
 	int res = QMessageBox::information( this, "Hydrogen", tr( "Warning, this will erase your pattern sequence.\nAre you sure?"), tr("&Ok"), tr("&Cancel"), 0, 1 );
 	if ( res == 1 ) {
 		return;
@@ -469,9 +464,8 @@ void SongEditorPanel::resyncExternalScrollBar()
 }
 
 
-void SongEditorPanel::resizeEvent( QResizeEvent *ev )
+void SongEditorPanel::resizeEvent( QResizeEvent * /*ev*/ )
 {
-	UNUSED( ev );
 	resyncExternalScrollBar();
 }
 
@@ -516,9 +510,8 @@ void SongEditorPanel::setModeActionBtn( bool mode )
 	}
 }
 
-void SongEditorPanel::zoomInBtnPressed( Button* pBtn )
+void SongEditorPanel::zoomInBtnPressed( Button* /*pBtn*/ )
 {
-	UNUSED( pBtn );
 	unsigned width = m_pSongEditor->getGridWidth ();
 	--width;
 	m_pSongEditor->setGridWidth (width);
@@ -528,9 +521,8 @@ void SongEditorPanel::zoomInBtnPressed( Button* pBtn )
 }
 
 
-void SongEditorPanel::zoomOutBtnPressed( Button* pBtn )
+void SongEditorPanel::zoomOutBtnPressed( Button* /*pBtn*/ )
 {
-	UNUSED( pBtn );
 	unsigned width = m_pSongEditor->getGridWidth ();
 	++width;
 	m_pSongEditor->setGridWidth (width);

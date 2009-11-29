@@ -111,18 +111,14 @@ LCDDigit::~LCDDigit()
 }
 
 
-//void LCDDigit::mousePressEvent(QMouseEvent *ev)
-void LCDDigit::mouseReleaseEvent(QMouseEvent* ev)
+void LCDDigit::mouseReleaseEvent(QMouseEvent* /*ev*/)
 {
-	UNUSED( ev );
 	emit digitClicked();
 }
 
 
-void LCDDigit::paintEvent(QPaintEvent *ev)
+void LCDDigit::paintEvent(QPaintEvent * /*ev*/)
 {
-	UNUSED( ev );
-
 	int x = m_nCol * width();
 	int y = m_nRow * height();
 
@@ -400,9 +396,8 @@ void LCDSpinBox::setValue( float nValue )
 	}
 }
 
-void LCDSpinBox::displayClicked( LCDDisplay *pRef )
+void LCDSpinBox::displayClicked( LCDDisplay * /*pRef*/ )
 {
-	UNUSED( pRef );
 	emit spinboxClicked();
 }
 

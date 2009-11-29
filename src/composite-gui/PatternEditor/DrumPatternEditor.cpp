@@ -268,9 +268,8 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 
 
 
-void DrumPatternEditor::mouseReleaseEvent(QMouseEvent *ev)
+void DrumPatternEditor::mouseReleaseEvent(QMouseEvent * /*ev*/)
 {
-	UNUSED( ev );
 	setCursor( QCursor( Qt::ArrowCursor ) );
 
 	if (m_pPattern == NULL) {
@@ -618,17 +617,15 @@ void DrumPatternEditor::paintEvent( QPaintEvent* /*ev*/ )
 
 
 
-void DrumPatternEditor::showEvent ( QShowEvent *ev )
+void DrumPatternEditor::showEvent ( QShowEvent * /*ev*/ )
 {
-	UNUSED( ev );
 	updateEditor();
 }
 
 
 
-void DrumPatternEditor::hideEvent ( QHideEvent *ev )
+void DrumPatternEditor::hideEvent ( QHideEvent * /*ev*/ )
 {
-	UNUSED( ev );
 }
 
 

@@ -32,8 +32,4 @@
 
 #define TWOPI 	6.28318530717958647692
 
-// useful to suppress gcc warning on unused variables
-#define UNUSED( v )  v = v
-
-
 #endif // TRITIUM_GLOBALS_HPP

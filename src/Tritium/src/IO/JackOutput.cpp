@@ -42,9 +42,8 @@ unsigned long jack_server_sampleRate = 0;
 jack_nframes_t jack_server_bufferSize = 0;
 JackOutput *jackDriverInstance = NULL;
 
-int jackDriverSampleRate( jack_nframes_t nframes, void *arg )
+int jackDriverSampleRate( jack_nframes_t nframes, void * /*arg*/ )
 {
-	UNUSED( arg );
 	QString msg = QString("Jack SampleRate changed: the sample rate is now %1/sec").arg( QString::number( (int) nframes ) );
 	INFOLOG( msg );
 	jack_server_sampleRate = nframes;
@@ -60,9 +59,8 @@ int jackDriverBufferSize( jack_nframes_t nframes, void * /*arg*/ )
 	return 0;
 }
 
-void jackDriverShutdown( void *arg )
+void jackDriverShutdown( void * /*arg*/ )
 {
-	UNUSED( arg );
 //	jackDriverInstance->deactivate();
 	JackClient::get_instance()->clearAudioProcessCallback();
 	Hydrogen::get_instance()->raiseError( Hydrogen::JACK_SERVER_SHUTDOWN );

@@ -628,9 +628,8 @@ void PlayerControl::playBtnClicked(Button* ref) {
 
 
 /// Stop audio engine
-void PlayerControl::stopBtnClicked(Button* ref)
+void PlayerControl::stopBtnClicked(Button* /*ref*/)
 {
-	UNUSED( ref );
 	m_pPlayBtn->setPressed(false);
 	m_pEngine->sequencer_stop();
 	m_pEngine->setPatternPos( 0 );
@@ -641,10 +640,8 @@ void PlayerControl::stopBtnClicked(Button* ref)
 
 
 /// Switch mode
-void PlayerControl::switchModeBtnClicked(Button* ref)
+void PlayerControl::switchModeBtnClicked(Button* /*ref*/)
 {
-	UNUSED( ref );
-
 	Song *song = m_pEngine->getSong();
 
 	m_pEngine->sequencer_stop();
@@ -667,10 +664,8 @@ void PlayerControl::switchModeBtnClicked(Button* ref)
 
 
 /// Set Song mode
-void PlayerControl::songModeBtnClicked(Button* ref)
+void PlayerControl::songModeBtnClicked(Button* /*ref*/)
 {
-	UNUSED( ref );
-
 	m_pEngine->sequencer_stop();
 	m_pEngine->setPatternPos( 0 );	// from start
 	m_pEngine->getSong()->set_mode( Song::SONG_MODE );
@@ -683,10 +678,8 @@ void PlayerControl::songModeBtnClicked(Button* ref)
 
 
 ///Set Live mode
-void PlayerControl::liveModeBtnClicked(Button* ref)
+void PlayerControl::liveModeBtnClicked(Button* /*ref*/)
 {
-	UNUSED( ref );
-
 	m_pEngine->sequencer_stop();
 	m_pEngine->getSong()->set_mode( Song::PATTERN_MODE );
 	//m_pEngine->sequencer_setNextPattern( m_pEngine->getSelectedPatternNumber() );	// imposto il pattern correntemente selezionato come il prossimo da suonare

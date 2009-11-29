@@ -288,9 +288,11 @@ bool SoundLibraryImportDialog::isSoundLibraryItemAlreadyInstalled( SoundLibraryI
 
 
 
-void SoundLibraryImportDialog::soundLibraryItemChanged( QTreeWidgetItem* current, QTreeWidgetItem* previous  )
+void SoundLibraryImportDialog::soundLibraryItemChanged(
+    QTreeWidgetItem* current,
+    QTreeWidgetItem* /*previous*/
+    )
 {
-	UNUSED( previous );
 	if ( current ) {
 
 		QString selected = current->text(0);

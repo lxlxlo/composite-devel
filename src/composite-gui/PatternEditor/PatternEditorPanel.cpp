@@ -696,9 +696,8 @@ void PatternEditorPanel::transportEvent(TransportPosition::State state)
 
 }
 
-void PatternEditorPanel::resizeEvent( QResizeEvent *ev )
+void PatternEditorPanel::resizeEvent( QResizeEvent * /*ev*/ )
 {
-	UNUSED( ev );
 	QScrollArea *pScrollArea = m_pEditorScrollView;
 
 /*
@@ -724,17 +723,15 @@ void PatternEditorPanel::resizeEvent( QResizeEvent *ev )
 
 
 
-void PatternEditorPanel::showEvent ( QShowEvent *ev )
+void PatternEditorPanel::showEvent ( QShowEvent * /*ev*/ )
 {
-	UNUSED( ev );
 //	m_pPatternEditorVScrollBar->setValue( m_pPatternEditorVScrollBar->maximum() );
 }
 
 
 /// richiamato dall'uso dello scroll del mouse
-void PatternEditorPanel::contentsMoving(int dummy)
+void PatternEditorPanel::contentsMoving(int /*dummy*/)
 {
-	UNUSED( dummy );
 	//INFOLOG( "contentsMoving" );
 	syncToExternalHorizontalScrollbar(0);
 }
@@ -752,9 +749,8 @@ void PatternEditorPanel::selectedInstrumentChangedEvent()
 
 
 
-void PatternEditorPanel::showDrumEditorBtnClick(Button *ref)
+void PatternEditorPanel::showDrumEditorBtnClick(Button * /*ref*/)
 {
-	UNUSED( ref );
 	__show_drum_btn->setPressed( true );
 	__show_piano_btn->setPressed( false );
 
@@ -771,9 +767,8 @@ void PatternEditorPanel::showDrumEditorBtnClick(Button *ref)
 
 
 
-void PatternEditorPanel::showPianoEditorBtnClick(Button *ref)
+void PatternEditorPanel::showPianoEditorBtnClick(Button * /*ref*/)
 {
-	UNUSED( ref );
 	__show_piano_btn->setPressed( true );
 	__show_drum_btn->setPressed( false );
 
@@ -791,12 +786,11 @@ void PatternEditorPanel::showPianoEditorBtnClick(Button *ref)
 
 
 
-void PatternEditorPanel::zoomInBtnClicked(Button *ref)
+void PatternEditorPanel::zoomInBtnClicked(Button * /*ref*/)
 {
 	if(m_pPatternEditorRuler->getGridWidth() >=24){
 		return;
 	}
-	UNUSED( ref );
 	m_pPatternEditorRuler->zoomIn();
 	m_pDrumPatternEditor->zoom_in();
 	m_pNoteVelocityEditor->zoomIn();
@@ -808,9 +802,8 @@ void PatternEditorPanel::zoomInBtnClicked(Button *ref)
 
 
 
-void PatternEditorPanel::zoomOutBtnClicked(Button *ref)
+void PatternEditorPanel::zoomOutBtnClicked(Button * /*ref*/)
 {
-	UNUSED( ref );
 	m_pPatternEditorRuler->zoomOut();
 	m_pDrumPatternEditor->zoom_out();
 	m_pNoteVelocityEditor->zoomOut();

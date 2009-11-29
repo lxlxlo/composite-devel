@@ -570,25 +570,22 @@ void Mixer::updateMixer()
 
 
 /// show event
-void Mixer::showEvent ( QShowEvent *ev )
+void Mixer::showEvent ( QShowEvent * /*ev*/ )
 {
-	UNUSED( ev );
 	updateMixer();
 }
 
 
 
 /// hide event
-void Mixer::hideEvent ( QHideEvent *ev )
+void Mixer::hideEvent ( QHideEvent * /*ev*/ )
 {
-	UNUSED( ev );
 }
 
 
 
-void Mixer::nameClicked(MixerLine* ref)
+void Mixer::nameClicked(MixerLine* /*ref*/)
 {
-	UNUSED( ref );
 	InstrumentEditorPanel::get_instance()->show();
 }
 
@@ -662,9 +659,8 @@ void Mixer::noteOnEvent( int nInstrument )
 
 
 
-void Mixer::resizeEvent ( QResizeEvent *ev )
+void Mixer::resizeEvent ( QResizeEvent * /*ev*/ )
 {
-	UNUSED( ev );
 /*
 	uint nMaster_X = width() - MASTERMIXER_STRIP_WIDTH;
 	int nFXFrameWidth = 213;

@@ -1108,10 +1108,8 @@ void MainForm::initKeyInstMap()
 
 
 
-bool MainForm::eventFilter( QObject *o, QEvent *e )
+bool MainForm::eventFilter( QObject * /*o*/, QEvent *e )
 {
-	UNUSED( o );
-
 	if ( e->type() == QEvent::KeyPress) {
 		// special processing for key press
 		QKeyEvent *k = (QKeyEvent *)e;

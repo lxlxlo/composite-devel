@@ -41,10 +41,8 @@ InstrumentEditorPanel* InstrumentEditorPanel::get_instance()
 
 
 
-InstrumentEditorPanel::InstrumentEditorPanel( QWidget *pParent )
+InstrumentEditorPanel::InstrumentEditorPanel( QWidget * /*pParent*/ )
 {
-	UNUSED( pParent );
-
 	INFOLOG( "INIT" );
 
 	m_pInstance = this;

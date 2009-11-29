@@ -27,19 +27,19 @@
 class EventListener
 {
 	public:
-		virtual void stateChangedEvent(int nState) { UNUSED( nState ); }
+		virtual void stateChangedEvent(int /*nState*/) {}
 		virtual void patternChangedEvent() {}
 		virtual void patternModifiedEvent() {}
 		virtual void selectedPatternChangedEvent() {}
 		virtual void selectedInstrumentChangedEvent() {}
 		virtual void midiActivityEvent() {}
-		virtual void noteOnEvent( int nInstrument ) { UNUSED( nInstrument ); }
+		virtual void noteOnEvent( int /*nInstrument*/ ) {}
 		virtual void XRunEvent() {}
-		virtual void errorEvent( int nErrorCode ) { UNUSED( nErrorCode ); }
-		virtual void metronomeEvent( int nValue ) { UNUSED( nValue ); }
-		virtual void progressEvent( int nValue ) { UNUSED( nValue ); }
-		virtual void transportEvent( Tritium::TransportPosition::State state ) { UNUSED( state ); }
-		virtual void jackTimeMasterEvent( int nValue ) { UNUSED( nValue ); }
+		virtual void errorEvent( int /*nErrorCode*/ ) {}
+		virtual void metronomeEvent( int /*nValue*/ ) {}
+		virtual void progressEvent( int /*nValue*/ ) {}
+		virtual void transportEvent( Tritium::TransportPosition::State /*state*/ ) {}
+		virtual void jackTimeMasterEvent( int /*nValue*/ ) {}
 
 		virtual ~EventListener() {}
 };

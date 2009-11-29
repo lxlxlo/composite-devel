@@ -151,9 +151,8 @@ inline void LCDCombo::insertItem( int index, const QString &text )
 
 
 
-void LCDCombo::mousePressEvent(QMouseEvent *ev)
+void LCDCombo::mousePressEvent(QMouseEvent * /*ev*/)
 {
-	UNUSED( ev );
 	pop->popup( display->mapToGlobal( QPoint( 1, display->height() + 2 ) ) );
 }
 

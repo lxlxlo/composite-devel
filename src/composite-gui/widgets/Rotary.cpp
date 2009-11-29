@@ -25,12 +25,10 @@
 #include <Tritium/globals.hpp>
 #include <Tritium/Logger.hpp>
 
-RotaryTooltip::RotaryTooltip( QPoint pos )
+RotaryTooltip::RotaryTooltip( QPoint /*pos*/ )
 //  : QWidget( 0, "RotaryTooltip", Qt::WStyle_Customize| Qt::WStyle_NoBorder | Qt::WStyle_StaysOnTop| Qt::WX11BypassWM )
   : QWidget( 0, Qt::ToolTip )
 {
-	UNUSED( pos );
-
 	m_pDisplay = new LCDDisplay( this, LCDDigit::SMALL_BLUE, 4);
 	m_pDisplay->move( 0, 0 );
 	resize( m_pDisplay->size() );
@@ -107,9 +105,8 @@ Rotary::~ Rotary()
 
 
 
-void Rotary::paintEvent( QPaintEvent* ev )
+void Rotary::paintEvent( QPaintEvent* /*ev*/ )
 {
-	UNUSED( ev );
 	QPainter painter(this);
 
 	float fRange = abs( m_fMax ) + abs( m_fMin );
@@ -183,10 +180,8 @@ void Rotary::mousePressEvent(QMouseEvent *ev)
 
 
 
-void Rotary::mouseReleaseEvent( QMouseEvent *ev )
+void Rotary::mouseReleaseEvent( QMouseEvent * /*ev*/ )
 {
-	UNUSED( ev );
-
 	setCursor( QCursor( Qt::ArrowCursor ) );
 	m_pValueToolTip->hide();
 }

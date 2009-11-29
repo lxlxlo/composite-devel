@@ -100,18 +100,14 @@ SimpleHTMLBrowser::~SimpleHTMLBrowser()
 
 
 
-void SimpleHTMLBrowser::showEvent ( QShowEvent *ev )
+void SimpleHTMLBrowser::showEvent ( QShowEvent * /*ev*/ )
 {
-	UNUSED( ev );
-//	INFOLOG( "[showEvent]" );
 }
 
 
 
-void SimpleHTMLBrowser::resizeEvent( QResizeEvent *ev )
+void SimpleHTMLBrowser::resizeEvent( QResizeEvent * /*ev*/ )
 {
-	UNUSED( ev );
-
 	if ( m_type == MANUAL ) {
 		m_pBrowser->move( 0, 29 );
 		m_pBrowser->resize( width(), height() - 29 );

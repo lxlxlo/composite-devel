@@ -180,9 +180,8 @@ void LayerPreview::selectedInstrumentChangedEvent()
 
 
 
-void LayerPreview::mouseReleaseEvent(QMouseEvent *ev)
+void LayerPreview::mouseReleaseEvent(QMouseEvent * /*ev*/)
 {
-	UNUSED( ev );
 	m_bMouseGrab = false;
 	setCursor( QCursor( Qt::ArrowCursor ) );
 }

@@ -687,10 +687,8 @@ void InstrumentEditor::setAutoVelocity()
 }
 
 
-void InstrumentEditor::labelClicked( ClickableLabel* pRef )
+void InstrumentEditor::labelClicked( ClickableLabel* /*pRef*/ )
 {
-	UNUSED( pRef );
-
 	if (m_pInstrument) {
 		QString sOldName = m_pInstrument->get_name();
 		bool bIsOkPressed;

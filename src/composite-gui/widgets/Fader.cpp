@@ -196,10 +196,8 @@ void Fader::setPeak_R( float fPeak )
 
 
 
-void Fader::paintEvent( QPaintEvent *ev)
+void Fader::paintEvent( QPaintEvent * /*ev*/)
 {
-	UNUSED( ev );
-
 	QPainter painter(this);
 
 	// background
@@ -525,10 +523,8 @@ Knob::~ Knob()
 
 
 
-void Knob::paintEvent( QPaintEvent* ev )
+void Knob::paintEvent( QPaintEvent* /*ev*/ )
 {
-	UNUSED( ev );
-
 	QPainter painter(this);
 
 	int nFrame = (int)(31.0 * m_fValue);
@@ -572,9 +568,8 @@ void Knob::mousePressEvent(QMouseEvent *ev)
 
 
 
-void Knob::mouseReleaseEvent( QMouseEvent *ev )
+void Knob::mouseReleaseEvent( QMouseEvent * /*ev*/ )
 {
-	UNUSED( ev );
 	setCursor( QCursor( Qt::ArrowCursor ) );
 }
 

@@ -801,10 +801,8 @@ void FxMixerLine::click(Button *ref) {
 
 
 
-void FxMixerLine::faderChanged(Fader *ref)
+void FxMixerLine::faderChanged(Fader * /*ref*/)
 {
-	UNUSED( ref );
-
 	m_fMaxPeak = 0.0;
 	char tmp[20];
 	sprintf( tmp, "%#.2f", m_fMaxPeak );
@@ -985,17 +983,15 @@ QString InstrumentNameWidget::text()
 
 
 
-void InstrumentNameWidget::mousePressEvent( QMouseEvent * e )
+void InstrumentNameWidget::mousePressEvent( QMouseEvent * /*e*/ )
 {
-	UNUSED( e );
 	emit clicked();
 }
 
 
 
-void InstrumentNameWidget::mouseDoubleClickEvent( QMouseEvent * e )
+void InstrumentNameWidget::mouseDoubleClickEvent( QMouseEvent * /*e*/ )
 {
-	UNUSED( e );
 	emit doubleClicked();
 }
 
@@ -1091,9 +1087,8 @@ void LadspaFXMixerLine::setFxActive( bool active )
 
 
 
-void LadspaFXMixerLine::rotaryChanged(Rotary *ref)
+void LadspaFXMixerLine::rotaryChanged(Rotary * /*ref*/)
 {
-	UNUSED( ref );
 	m_fMaxPeak = 0.0;
 //	char tmp[20];
 //	sprintf(tmp, "%#.1f", fMaxPeak);
@@ -1106,10 +1101,8 @@ void LadspaFXMixerLine::rotaryChanged(Rotary *ref)
 
 
 
-void LadspaFXMixerLine::setPeaks( float fPeak_L, float fPeak_R )
+void LadspaFXMixerLine::setPeaks( float /*fPeak_L*/, float /*fPeak_R*/ )
 {
-	UNUSED( fPeak_L );
-	UNUSED( fPeak_R );
 /*
 	m_pPeakmeter->setPeak_L( fPeak_L );
 	m_pPeakmeter->setPeak_R( fPeak_R );
@@ -1119,10 +1112,8 @@ void LadspaFXMixerLine::setPeaks( float fPeak_L, float fPeak_R )
 
 
 
-void LadspaFXMixerLine::getPeaks( float *fPeak_L, float *fPeak_R )
+void LadspaFXMixerLine::getPeaks( float * /*fPeak_L*/, float * /*fPeak_R*/ )
 {
-	UNUSED( fPeak_L );
-	UNUSED( fPeak_R );
 /*
 	(*fPeak_L) = m_pFader->getPeak_L();
 	(*fPeak_R) = m_pFader->getPeak_R();

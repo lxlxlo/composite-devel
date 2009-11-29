@@ -209,9 +209,11 @@ void LadspaFXSelector::pluginSelected()
 
 
 
-void LadspaFXSelector::on_m_pGroupsListView_currentItemChanged( QTreeWidgetItem * currentItem, QTreeWidgetItem * previous )
+void LadspaFXSelector::on_m_pGroupsListView_currentItemChanged(
+    QTreeWidgetItem * currentItem,
+    QTreeWidgetItem * /*previous*/
+    )
 {
-	UNUSED( previous );
 #ifdef LADSPA_SUPPORT
 	//INFOLOG( "new selection: " + currentItem->text(0).toLocal8Bit().constData() );
 

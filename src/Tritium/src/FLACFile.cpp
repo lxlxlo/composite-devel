@@ -137,16 +137,14 @@ FLACFile_real::~FLACFile_real()
 
 
 
-void FLACFile_real::metadata_callback( const ::FLAC__StreamMetadata *metadata )
+void FLACFile_real::metadata_callback( const ::FLAC__StreamMetadata * /*metadata*/ )
 {
-	UNUSED( metadata );
 }
 
 
 
-void FLACFile_real::error_callback( ::FLAC__StreamDecoderErrorStatus status )
+void FLACFile_real::error_callback( ::FLAC__StreamDecoderErrorStatus /*status*/ )
 {
-	UNUSED( status );
 	ERRORLOG( "[error_callback]" );
 }
 

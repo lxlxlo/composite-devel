@@ -91,18 +91,16 @@ void PatternEditorRuler::updateStart(bool start) {
 
 
 
-void PatternEditorRuler::showEvent ( QShowEvent *ev )
+void PatternEditorRuler::showEvent ( QShowEvent * /*ev*/ )
 {
-	UNUSED( ev );
 	updateEditor();
 	updateStart(true);
 }
 
 
 
-void PatternEditorRuler::hideEvent ( QHideEvent *ev )
+void PatternEditorRuler::hideEvent ( QHideEvent * /*ev*/ )
 {
-	UNUSED( ev );
 	updateStart(false);
 }
 

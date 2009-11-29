@@ -77,9 +77,8 @@ CpuLoadWidget::~CpuLoadWidget()
 
 
 
-void CpuLoadWidget::mousePressEvent(QMouseEvent *ev)
+void CpuLoadWidget::mousePressEvent(QMouseEvent * /*ev*/)
 {
-	UNUSED( ev );
 }
 
 

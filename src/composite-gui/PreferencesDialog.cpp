@@ -332,9 +332,8 @@ void PreferencesDialog::on_okBtn_clicked()
 
 
 
-void PreferencesDialog::on_driverComboBox_activated( int index )
+void PreferencesDialog::on_driverComboBox_activated( int /*index*/ )
 {
-	UNUSED( index );
 	QString selectedDriver = driverComboBox->currentText();
 #ifdef JACK_SUPPORT
 	if (m_pMidiDriverComboBox->currentText() == "JackMidi"
@@ -439,9 +438,8 @@ void PreferencesDialog::on_selectApplicationFontBtn_clicked()
 
 
 
-void PreferencesDialog::on_bufferSizeSpinBox_valueChanged( int i )
+void PreferencesDialog::on_bufferSizeSpinBox_valueChanged( int /*i*/ )
 {
-	UNUSED( i );
 	m_bNeedDriverRestart = true;
 }
 
@@ -511,17 +509,15 @@ void PreferencesDialog::on_m_pMidiDriverComboBox_currentIndexChanged( const QStr
 	m_bNeedDriverRestart = true;
 }
 
-void PreferencesDialog::on_midiPortComboBox_activated( int index )
+void PreferencesDialog::on_midiPortComboBox_activated( int /*index*/ )
 {
-	UNUSED( index );
 	m_bNeedDriverRestart = true;
 }
 
 
 
-void PreferencesDialog::on_styleComboBox_activated( int index )
+void PreferencesDialog::on_styleComboBox_activated( int /*index*/ )
 {
-	UNUSED( index );
 	QApplication *pQApp = (HydrogenApp::get_instance())->getMainForm()->m_pQApp;
 	QString sStyle = styleComboBox->currentText();
 	pQApp->setStyle( sStyle );
