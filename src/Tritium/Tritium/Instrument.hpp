@@ -1,5 +1,6 @@
 /*
  * Copyright(c) 2002-2008 by Alex >Comix< Cominu [comix@users.sourceforge.net]
+ * Copyright (c) 2009 by Gabriel M. Beddingfield <gabriel@teuton.org>
  *
  * This file is part of Tritium
  *
@@ -22,12 +23,7 @@
 #ifndef TRITIUM_INSTRUMENT_HPP
 #define TRITIUM_INSTRUMENT_HPP
 
-#include <QtCore/QString>
-#include <Tritium/globals.hpp>
-#include <Tritium/Logger.hpp>
-#include <deque>
-#include <utility> // std::pair
-#include <cassert>
+class QString;
 
 namespace Tritium
 {
@@ -44,27 +40,25 @@ namespace Tritium
     class Instrument
     {
     public:
+	class InstrumentPrivate;
+
 	Instrument(
 	    const QString& id,
 	    const QString& name,
 	    ADSR* adsr
 	    );
 	
-	/// create a new object without anything in it.
 	static Instrument * create_empty();
 	~Instrument();
 
-	/// creates a new object; loads samples from drumkit/instrument.
 	static Instrument* load_instrument(
 	    const QString& drumkit_name,
 	    const QString& instrument_name
 	    );
-	
-	/// loads state _and_ samples into an Instrument from a `placeholder` instrument
-	/// (i.e. an Instrument that has everything but the actal samples.)
-	void load_from_placeholder( Instrument* placeholder, bool is_live = true );
-	
-	/// loads instrument from path into a `live` Instrument object.
+	void load_from_placeholder(
+	    Instrument* placeholder,
+	    bool is_live = true
+	    );
 	void load_from_name(
 	    const QString& drumkit_name,
 	    const QString& instrument_name,
@@ -73,7 +67,6 @@ namespace Tritium
 
 	InstrumentLayer* get_layer( int index );
 	void set_layer( InstrumentLayer* layer, unsigned index );
-
 
 	void set_name( const QString& name );
 	const QString& get_name();
@@ -139,29 +132,7 @@ namespace Tritium
 	void set_stop_note( bool stopnotes );
 
     private:
-	int __queued;
-	InstrumentLayer* __layer_list[MAX_LAYERS];
-	ADSR* __adsr;
-	bool __muted;
-	QString __name;			///< Instrument name
-	float __pan_l;			///< Pan of the instrument (left)
-	float __pan_r;			///< Pan of the instrument (right)
-	float __gain;
-	float __volume;			///< Volume of the instrument
-	float __filter_resonance;	///< Filter resonant frequency (0..1)
-	float __filter_cutoff;		///< Filter cutoff (0..1)
-	float __peak_l;			///< current peak value (left)
-	float __peak_r;			///< current peak value (right)
-	float __fx_level[MAX_FX];	///< Ladspa FX level
-	float __random_pitch_factor;
-	QString __id;			///< ID of the instrument
-	QString __drumkit_name;		///< Drumkit name
-	bool __filter_active;		///< Is filter active?
-	int __mute_group;		///< Mute group
-
-	bool __active;			///< is the instrument active?
-	bool __soloed;
-	bool __stop_notes;		///
+	InstrumentPrivate *d;
     };
 
 } // namespace Tritium

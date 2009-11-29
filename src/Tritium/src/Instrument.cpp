@@ -1,5 +1,6 @@
 /*
  * Copyright(c) 2002-2008 by Alex >Comix< Cominu [comix@users.sourceforge.net]
+ * Copyright (c) 2009 by Gabriel M. Beddingfield <gabriel@teuton.org>
  *
  * This file is part of Tritium
  *
@@ -34,47 +35,104 @@
 
 using namespace Tritium;
 
-Instrument::Instrument( const QString& id, const QString& name, ADSR* adsr )
-    : __queued( 0 )
-    , __adsr( adsr )
-    , __muted( false )
-    , __name( name )
-    , __pan_l( 1.0 )
-    , __pan_r( 1.0 )
-    , __gain( 1.0 )
-    , __volume( 1.0 )
-    , __filter_resonance( 0.0 )
-    , __filter_cutoff( 1.0 )
-    , __peak_l( 0.0 )
-    , __peak_r( 0.0 )
-    , __random_pitch_factor( 0.0 )
-    , __id( id )
-    , __drumkit_name( "" )
-    , __filter_active( false )
-    , __mute_group( -1 )
-    , __active( true )
-    , __soloed( false )
-    , __stop_notes( false )
+/*********************************************************************
+ * class InstrumentPrivate Definition.
+ *********************************************************************
+ */
+class Instrument::InstrumentPrivate
+{
+public:
+    int queued;
+    InstrumentLayer* layer_list[MAX_LAYERS];
+    ADSR* adsr;
+    bool muted;
+    QString name;               ///< Instrument name
+    float pan_l;                ///< Pan of the instrument (left)
+    float pan_r;                ///< Pan of the instrument (right)
+    float gain;
+    float volume;               ///< Volume of the instrument
+    float filter_resonance;     ///< Filter resonant frequency (0..1)
+    float filter_cutoff;        ///< Filter cutoff (0..1)
+    float peak_l;               ///< current peak value (left)
+    float peak_r;               ///< current peak value (right)
+    float fx_level[MAX_FX];     ///< Ladspa FX level
+    float random_pitch_factor;
+    QString id;                 ///< ID of the instrument
+    QString drumkit_name;       ///< Drumkit name
+    bool filter_active;         ///< Is filter active?
+    int mute_group;             ///< Mute group
+
+    bool active;			///< is the instrument active?
+    bool soloed;
+    bool stop_notes;		///
+
+    InstrumentPrivate(const QString& id, const QString& name, ADSR* adsr );
+    ~InstrumentPrivate();
+    
+};
+
+Instrument::InstrumentPrivate::InstrumentPrivate(
+    const QString& id,
+    const QString& name,
+    ADSR* adsr
+    )
+    : queued( 0 )
+    , adsr( adsr )
+    , muted( false )
+    , name( name )
+    , pan_l( 1.0 )
+    , pan_r( 1.0 )
+    , gain( 1.0 )
+    , volume( 1.0 )
+    , filter_resonance( 0.0 )
+    , filter_cutoff( 1.0 )
+    , peak_l( 0.0 )
+    , peak_r( 0.0 )
+    , random_pitch_factor( 0.0 )
+    , id( id )
+    , drumkit_name( "" )
+    , filter_active( false )
+    , mute_group( -1 )
+    , active( true )
+    , soloed( false )
+    , stop_notes( false )
 {
     for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
-	__fx_level[ nFX ] = 0.0;
+	fx_level[ nFX ] = 0.0;
     }
 
     for ( unsigned nLayer = 0; nLayer < MAX_LAYERS; ++nLayer ) {
-	__layer_list[ nLayer ] = NULL;
+	layer_list[ nLayer ] = NULL;
     }
 }
 
+Instrument::InstrumentPrivate::~InstrumentPrivate()
+{
+    for ( unsigned nLayer = 0; nLayer < MAX_LAYERS; ++nLayer ) {
+	delete layer_list[ nLayer ];
+	layer_list[ nLayer ] = NULL;
+    }
+    delete adsr;
+    adsr = NULL;
+}
 
+/*********************************************************************
+ * class Instrument Definition.
+ *********************************************************************
+ */
+
+Instrument::Instrument(
+    const QString& id,
+    const QString& name,
+    ADSR* adsr
+    ) : d(0)
+{
+    d = new InstrumentPrivate(id, name, adsr);
+}
 
 Instrument::~Instrument()
 {
-    for ( unsigned nLayer = 0; nLayer < MAX_LAYERS; ++nLayer ) {
-	delete __layer_list[ nLayer ];
-	__layer_list[ nLayer ] = NULL;
-    }
-    delete __adsr;
-    __adsr = NULL;
+    delete d;
 }
 
 InstrumentLayer* Instrument::get_layer( int nLayer )
@@ -88,13 +146,13 @@ InstrumentLayer* Instrument::get_layer( int nLayer )
 	return NULL;
     }
 
-    return __layer_list[ nLayer ];
+    return d->layer_list[ nLayer ];
 }
 
 void Instrument::set_layer( InstrumentLayer* pLayer, unsigned nLayer )
 {
     if ( nLayer < MAX_LAYERS ) {
-	__layer_list[ nLayer ] = pLayer;
+	d->layer_list[ nLayer ] = pLayer;
     } else {
 	ERRORLOG( "nLayer > MAX_LAYER" );
     }
@@ -102,14 +160,24 @@ void Instrument::set_layer( InstrumentLayer* pLayer, unsigned nLayer )
 
 void Instrument::set_adsr( ADSR* adsr )
 {
-    delete __adsr;
-    __adsr = adsr;
+    delete d->adsr;
+    d->adsr = adsr;
 }
 
+/**
+ * \brief Load stand and samples from a `placeholder` instrument.
+ *
+ * Loads the stand and samples into an Instrument object from a
+ * `placeholder` instrument (an Instrument that has everything but the
+ * actual samples).
+ */
 void Instrument::load_from_placeholder( Instrument* placeholder, bool is_live )
 {
     LocalFileMng mgr;
-    QString path = mgr.getDrumkitDirectory( placeholder->get_drumkit_name() ) + placeholder->get_drumkit_name() + "/";
+    QString path =
+	mgr.getDrumkitDirectory( placeholder->get_drumkit_name() )
+	+ placeholder->get_drumkit_name()
+	+ "/";
     for ( unsigned nLayer = 0; nLayer < MAX_LAYERS; ++nLayer ) {
 	InstrumentLayer *pNewLayer = placeholder->get_layer( nLayer );
 	if ( pNewLayer != NULL ) {
@@ -182,11 +250,17 @@ void Instrument::load_from_placeholder( Instrument* placeholder, bool is_live )
 	AudioEngine::get_instance()->unlock();
 }
 
+/**
+ * \brief Create a new Instrument without anything in it.
+ */
 Instrument * Instrument::create_empty()
 {
     return new Instrument( "", "Empty Instrument", new ADSR() );
 }
 
+/**
+ * \brief Create a new Instrument and load samples from the drumkit/instrument.
+ */
 Instrument * Instrument::load_instrument(
     const QString& drumkit_name,
     const QString& instrument_name
@@ -197,6 +271,9 @@ Instrument * Instrument::load_instrument(
     return I;
 }
 
+/**
+ * \brief Loads instrument from path into a `live` Instrument object.
+ */
 void Instrument::load_from_name(
     const QString& drumkit_name,
     const QString& instrument_name,
@@ -232,211 +309,211 @@ void Instrument::load_from_name(
 
 void Instrument::set_name( const QString& name )
 {
-    __name = name;
+    d->name = name;
 }
 
 const QString& Instrument::get_name()
 {
-    return __name;
+    return d->name;
 }
 
 void Instrument::set_id( const QString& id )
 {
-    __id = id;
+    d->id = id;
 }
 
 const QString& Instrument::get_id()
 {
-    return __id;
+    return d->id;
 }
 
 ADSR* Instrument::get_adsr()
 {
-    return __adsr;
+    return d->adsr;
 }
 
 void Instrument::set_mute_group( int group )
 {
-    __mute_group = group;
+    d->mute_group = group;
 }
 
 int Instrument::get_mute_group()
 {
-    return __mute_group;
+    return d->mute_group;
 }
 
 void Instrument::set_muted( bool muted )
 {
-    __muted = muted;
+    d->muted = muted;
 }
 
 bool Instrument::is_muted()
 {
-    return __muted;
+    return d->muted;
 }
 
 float Instrument::get_pan_l()
 {
-    return __pan_l;
+    return d->pan_l;
 }
 
 void Instrument::set_pan_l( float val )
 {
-    __pan_l = val;
+    d->pan_l = val;
 }
 
 float Instrument::get_pan_r()
 {
-    return __pan_r;
+    return d->pan_r;
 }
 
 void Instrument::set_pan_r( float val )
 {
-    __pan_r = val;
+    d->pan_r = val;
 }
 
 float Instrument::get_gain()
 {
-    return __gain;
+    return d->gain;
 }
 
 void Instrument::set_gain( float gain )
 {
-    __gain = gain;
+    d->gain = gain;
 }
 
 float Instrument::get_volume()
 {
-    return __volume;
+    return d->volume;
 }
 
 void Instrument::set_volume( float volume )
 {
-    __volume = volume;
+    d->volume = volume;
 }
 
 bool Instrument::is_filter_active()
 {
-    return __filter_active;
+    return d->filter_active;
 }
 
 void Instrument::set_filter_active( bool active )
 {
-    __filter_active = active;
+    d->filter_active = active;
 }
 
 float Instrument::get_filter_resonance()
 {
-    return __filter_resonance;
+    return d->filter_resonance;
 }
 
 void Instrument::set_filter_resonance( float val )
 {
-    __filter_resonance = val;
+    d->filter_resonance = val;
 }
 
 float Instrument::get_filter_cutoff()
 {
-    return __filter_cutoff;
+    return d->filter_cutoff;
 }
 
 void Instrument::set_filter_cutoff( float val )
 {
-    __filter_cutoff = val;
+    d->filter_cutoff = val;
 }
 
 float Instrument::get_peak_l()
 {
-    return __peak_l;
+    return d->peak_l;
 }
 
 void Instrument::set_peak_l( float val )
 {
-    __peak_l = val;
+    d->peak_l = val;
 }
 
 float Instrument::get_peak_r()
 {
-    return __peak_r;
+    return d->peak_r;
 }
 
 void Instrument::set_peak_r( float val )
 {
-    __peak_r = val;
+    d->peak_r = val;
 }
 
 float Instrument::get_fx_level( int index )
 {
-    return __fx_level[index];
+    return d->fx_level[index];
 }
 
 void Instrument::set_fx_level( float level, int index )
 {
-    __fx_level[index] = level;
+    d->fx_level[index] = level;
 }
 
 float Instrument::get_random_pitch_factor()
 {
-    return __random_pitch_factor;
+    return d->random_pitch_factor;
 }
 
 void Instrument::set_random_pitch_factor( float val )
 {
-    __random_pitch_factor = val;
+    d->random_pitch_factor = val;
 }
 
 void Instrument::set_drumkit_name( const QString& name )
 {
-    __drumkit_name = name;
+    d->drumkit_name = name;
 }
 
 const QString& Instrument::get_drumkit_name()
 {
-    return __drumkit_name;
+    return d->drumkit_name;
 }
 
 bool Instrument::is_active()
 {
-    return __active;
+    return d->active;
 }
 
 void Instrument::set_active( bool active )
 {
-    __active = active;
+    d->active = active;
 }
 
 bool Instrument::is_soloed()
 {
-    return __soloed;
+    return d->soloed;
 }
 
 void Instrument::set_soloed( bool soloed )
 {
-    __soloed = soloed;
+    d->soloed = soloed;
 }
 
 void Instrument::enqueue()
 {
-    __queued++;
+    d->queued++;
 }
 
 void Instrument::dequeue()
 {
-    assert( __queued > 0 );
-    __queued--;
+    assert( d->queued > 0 );
+    d->queued--;
 }
 
 int Instrument::is_queued()
 {
-    return __queued;
+    return d->queued;
 }
 
 bool Instrument::is_stop_notes()
 {
-    return __stop_notes;
+    return d->stop_notes;
 }
 
 void Instrument::set_stop_note( bool stopnotes )
 {
-    __stop_notes = stopnotes;
+    d->stop_notes = stopnotes;
 }
