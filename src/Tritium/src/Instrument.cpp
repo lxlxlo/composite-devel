@@ -77,7 +77,19 @@ Instrument::~Instrument()
     __adsr = NULL;
 }
 
+InstrumentLayer* Instrument::get_layer( int nLayer )
+{
+    if ( nLayer < 0 ) {
+	ERRORLOG( QString( "nLayer < 0 (nLayer=%1)" ).arg( nLayer ) );
+	return NULL;
+    }
+    if ( nLayer >= MAX_LAYERS ) {
+	ERRORLOG( QString( "nLayer > MAX_LAYERS (nLayer=%1)" ).arg( nLayer ) );
+	return NULL;
+    }
 
+    return __layer_list[ nLayer ];
+}
 
 void Instrument::set_layer( InstrumentLayer* pLayer, unsigned nLayer )
 {
@@ -218,3 +230,213 @@ void Instrument::load_from_name(
     delete pDrumkitInfo;
 }
 
+void Instrument::set_name( const QString& name )
+{
+    __name = name;
+}
+
+const QString& Instrument::get_name()
+{
+    return __name;
+}
+
+void Instrument::set_id( const QString& id )
+{
+    __id = id;
+}
+
+const QString& Instrument::get_id()
+{
+    return __id;
+}
+
+ADSR* Instrument::get_adsr()
+{
+    return __adsr;
+}
+
+void Instrument::set_mute_group( int group )
+{
+    __mute_group = group;
+}
+
+int Instrument::get_mute_group()
+{
+    return __mute_group;
+}
+
+void Instrument::set_muted( bool muted )
+{
+    __muted = muted;
+}
+
+bool Instrument::is_muted()
+{
+    return __muted;
+}
+
+float Instrument::get_pan_l()
+{
+    return __pan_l;
+}
+
+void Instrument::set_pan_l( float val )
+{
+    __pan_l = val;
+}
+
+float Instrument::get_pan_r()
+{
+    return __pan_r;
+}
+
+void Instrument::set_pan_r( float val )
+{
+    __pan_r = val;
+}
+
+float Instrument::get_gain()
+{
+    return __gain;
+}
+
+void Instrument::set_gain( float gain )
+{
+    __gain = gain;
+}
+
+float Instrument::get_volume()
+{
+    return __volume;
+}
+
+void Instrument::set_volume( float volume )
+{
+    __volume = volume;
+}
+
+bool Instrument::is_filter_active()
+{
+    return __filter_active;
+}
+
+void Instrument::set_filter_active( bool active )
+{
+    __filter_active = active;
+}
+
+float Instrument::get_filter_resonance()
+{
+    return __filter_resonance;
+}
+
+void Instrument::set_filter_resonance( float val )
+{
+    __filter_resonance = val;
+}
+
+float Instrument::get_filter_cutoff()
+{
+    return __filter_cutoff;
+}
+
+void Instrument::set_filter_cutoff( float val )
+{
+    __filter_cutoff = val;
+}
+
+float Instrument::get_peak_l()
+{
+    return __peak_l;
+}
+
+void Instrument::set_peak_l( float val )
+{
+    __peak_l = val;
+}
+
+float Instrument::get_peak_r()
+{
+    return __peak_r;
+}
+
+void Instrument::set_peak_r( float val )
+{
+    __peak_r = val;
+}
+
+float Instrument::get_fx_level( int index )
+{
+    return __fx_level[index];
+}
+
+void Instrument::set_fx_level( float level, int index )
+{
+    __fx_level[index] = level;
+}
+
+float Instrument::get_random_pitch_factor()
+{
+    return __random_pitch_factor;
+}
+
+void Instrument::set_random_pitch_factor( float val )
+{
+    __random_pitch_factor = val;
+}
+
+void Instrument::set_drumkit_name( const QString& name )
+{
+    __drumkit_name = name;
+}
+
+const QString& Instrument::get_drumkit_name()
+{
+    return __drumkit_name;
+}
+
+bool Instrument::is_active()
+{
+    return __active;
+}
+
+void Instrument::set_active( bool active )
+{
+    __active = active;
+}
+
+bool Instrument::is_soloed()
+{
+    return __soloed;
+}
+
+void Instrument::set_soloed( bool soloed )
+{
+    __soloed = soloed;
+}
+
+void Instrument::enqueue()
+{
+    __queued++;
+}
+
+void Instrument::dequeue()
+{
+    assert( __queued > 0 );
+    __queued--;
+}
+
+int Instrument::is_queued()
+{
+    return __queued;
+}
+
+bool Instrument::is_stop_notes()
+{
+    return __stop_notes;
+}
+
+void Instrument::set_stop_note( bool stopnotes )
+{
+    __stop_notes = stopnotes;
+}

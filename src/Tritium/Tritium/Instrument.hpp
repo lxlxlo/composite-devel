@@ -37,10 +37,10 @@ namespace Tritium
     class InstrumentLayer;
 
     /**
-
-       \brief Instrument class
-
-    */
+     * Class for managing a single voice inside the sampler.  The
+     * instrument may be made up of several layered samples (chosen by
+     * the input velocity).
+     */
     class Instrument
     {
     public:
@@ -71,163 +71,72 @@ namespace Tritium
 	    bool is_live = true
 	    );
 
-	/// Returns a layer in the list
-	/// See below for definition.
-	inline InstrumentLayer* get_layer( int index );
-
-	/// Sets a layer in the list
+	InstrumentLayer* get_layer( int index );
 	void set_layer( InstrumentLayer* layer, unsigned index );
 
 
-	void set_name( const QString& name ) {
-	    __name = name;
-	}
-	const QString& get_name() {
-	    return __name;
-	}
+	void set_name( const QString& name );
+	const QString& get_name();
 
-	void set_id( const QString& id ) {
-	    __id = id;
-	}
-	inline const QString& get_id() {
-	    return __id;
-	}
+	void set_id( const QString& id );
+	const QString& get_id();
 
 	void set_adsr( ADSR* adsr );
-	ADSR* get_adsr() {
-	    return __adsr;
-	}
+	ADSR* get_adsr();
 
-	void set_mute_group( int group ) {
-	    __mute_group = group;
-	}
-	inline int get_mute_group() {
-	    return __mute_group;
-	}
+	void set_mute_group( int group );
+	int get_mute_group();
 
-	void set_muted( bool muted ) {
-	    __muted = muted;
-	}
-	inline bool is_muted() {
-	    return __muted;
-	}
+	void set_muted( bool muted );
+	bool is_muted();
 
-	inline float get_pan_l() {
-	    return __pan_l;
-	}
-	void set_pan_l( float val ) {
-	    __pan_l = val;
-	}
+	float get_pan_l();
+	void set_pan_l( float val );
 
-	inline float get_pan_r() {
-	    return __pan_r;
-	}
-	void set_pan_r( float val ) {
-	    __pan_r = val;
-	}
+	float get_pan_r();
+	void set_pan_r( float val );
 
-	inline float get_gain() {
-	    return __gain;
-	}
-	void set_gain( float gain ) {
-	    __gain = gain;
-	}
+	float get_gain();
+	void set_gain( float gain );
 
-	inline float get_volume() {
-	    return __volume;
-	}
-	void set_volume( float volume ) {
-	    __volume = volume;
-	}
+	float get_volume();
+	void set_volume( float volume );
 
-	inline bool is_filter_active() {
-	    return __filter_active;
-	}
-	void set_filter_active( bool active ) {
-	    __filter_active = active;
-	}
+	bool is_filter_active();
+	void set_filter_active( bool active );
 
-	inline float get_filter_resonance() {
-	    return __filter_resonance;
-	}
-	void set_filter_resonance( float val ) {
-	    __filter_resonance = val;
-	}
+	float get_filter_resonance();
+	void set_filter_resonance( float val );
 
-	inline float get_filter_cutoff() {
-	    return __filter_cutoff;
-	}
-	void set_filter_cutoff( float val ) {
-	    __filter_cutoff = val;
-	}
+	float get_filter_cutoff();
+	void set_filter_cutoff( float val );
 
-	inline float get_peak_l() {
-	    return __peak_l;
-	}
-	void set_peak_l( float val ) {
-	    __peak_l = val;
-	}
+	float get_peak_l();
+	void set_peak_l( float val );
 
-	inline float get_peak_r() {
-	    return __peak_r;
-	}
-	void set_peak_r( float val ) {
-	    __peak_r = val;
-	}
+	float get_peak_r();
+	void set_peak_r( float val );
 
-	inline float get_fx_level( int index ) {
-	    return __fx_level[index];
-	}
-	void set_fx_level( float level, int index ) {
-	    __fx_level[index] = level;
-	}
+	float get_fx_level( int index );
+	void set_fx_level( float level, int index );
 
-	inline float get_random_pitch_factor() {
-	    return __random_pitch_factor;
-	}
-	void set_random_pitch_factor( float val ) {
-	    __random_pitch_factor = val;
-	}
+	float get_random_pitch_factor();
+	void set_random_pitch_factor( float val );
 
-	void set_drumkit_name( const QString& name ) {
-	    __drumkit_name = name;
-	}
-	const QString& get_drumkit_name() {
-	    return __drumkit_name;
-	}
+	void set_drumkit_name( const QString& name );
+	const QString& get_drumkit_name();
 
-	inline bool is_active() {
-	    return __active;
-	}
-	void set_active( bool active ) {
-	    __active = active;
-	}
+	bool is_active();
+	void set_active( bool active );
 
-	inline bool is_soloed() {
-	    return __soloed;
-	}
-	void set_soloed( bool soloed ) {
-	    __soloed = soloed;
-	}
-	inline void enqueue() {
-	    __queued++;
-	}
-	inline void dequeue() {
-	    assert( __queued > 0 );
-	    __queued--;
-	}
-	inline int is_queued() {
-	    return __queued;
-	}
+	bool is_soloed();
+	void set_soloed( bool soloed );
+	void enqueue();
+	void dequeue();
+	int is_queued();
 
-	inline bool is_stop_notes() {
-	    return __stop_notes;
-	}
-	void set_stop_note( bool stopnotes ) {
-	    __stop_notes = stopnotes;
-	}
-
-
+	bool is_stop_notes();
+	void set_stop_note( bool stopnotes );
 
     private:
 	int __queued;
@@ -254,21 +163,6 @@ namespace Tritium
 	bool __soloed;
 	bool __stop_notes;		///
     };
-
-    inline InstrumentLayer* Instrument::get_layer( int nLayer )
-    {
-	if ( nLayer < 0 ) {
-	    ERRORLOG( QString( "nLayer < 0 (nLayer=%1)" ).arg( nLayer ) );
-	    return NULL;
-	}
-	if ( nLayer >= MAX_LAYERS ) {
-	    ERRORLOG( QString( "nLayer > MAX_LAYERS (nLayer=%1)" ).arg( nLayer ) );
-	    return NULL;
-	}
-
-	return __layer_list[ nLayer ];
-    }
-
 
 } // namespace Tritium
 
