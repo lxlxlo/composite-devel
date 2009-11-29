@@ -24,6 +24,8 @@
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/Instrument.hpp>
+#include <Tritium/InstrumentLayer.hpp>
+#include <Tritium/InstrumentList.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/AudioEngine.hpp>
 #include <Tritium/sampler/Sampler.hpp>

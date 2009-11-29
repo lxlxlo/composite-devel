@@ -25,6 +25,7 @@
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Instrument.hpp>
+#include <Tritium/InstrumentList.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Preferences.hpp>

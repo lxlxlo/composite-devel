@@ -30,6 +30,7 @@
 #include <Tritium/AudioEngine.hpp>
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/Instrument.hpp>
+#include <Tritium/InstrumentList.hpp>
 #include <Tritium/Logger.hpp>
 using namespace Tritium;
 

@@ -26,6 +26,7 @@
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Transport.hpp>
 #include <Tritium/Instrument.hpp>
+#include <Tritium/InstrumentList.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/Action.hpp>
 #include <Tritium/MidiMap.hpp>

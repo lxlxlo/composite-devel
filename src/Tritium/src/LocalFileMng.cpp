@@ -29,6 +29,8 @@
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/H2Exception.hpp>
 #include <Tritium/Instrument.hpp>
+#include <Tritium/InstrumentLayer.hpp>
+#include <Tritium/InstrumentList.hpp>
 #include <Tritium/LocalFileMng.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/Pattern.hpp>

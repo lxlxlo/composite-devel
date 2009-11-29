@@ -30,6 +30,7 @@
 #include <cassert>
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Instrument.hpp>
+#include <Tritium/InstrumentList.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/globals.hpp>

@@ -24,6 +24,7 @@
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/Instrument.hpp>
+#include <Tritium/InstrumentList.hpp>
 
 #include <fstream>
 

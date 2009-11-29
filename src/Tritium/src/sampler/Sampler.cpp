@@ -32,6 +32,7 @@
 #include <Tritium/globals.hpp>
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Instrument.hpp>
+#include <Tritium/InstrumentLayer.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Sample.hpp>

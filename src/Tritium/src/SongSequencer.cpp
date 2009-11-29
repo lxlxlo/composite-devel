@@ -28,6 +28,7 @@
 #include <Tritium/SeqScript.hpp>
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Instrument.hpp>
+#include <Tritium/InstrumentList.hpp>
 
 #include "SongSequencer.hpp"
 #include "transport/songhelpers.hpp"

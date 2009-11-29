@@ -48,6 +48,7 @@
 #include <Tritium/H2Exception.hpp>
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Instrument.hpp>
+#include <Tritium/InstrumentList.hpp>
 #include <Tritium/LocalFileMng.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Pattern.hpp>

@@ -29,6 +29,7 @@
 #include <Tritium/Preferences.hpp>
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/Instrument.hpp>
+#include <Tritium/InstrumentList.hpp>
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/AudioEngine.hpp>

@@ -27,6 +27,7 @@
 #include <Tritium/Logger.hpp>
 
 #include <Tritium/Instrument.hpp>
+#include <Tritium/InstrumentList.hpp>
 #include <Tritium/Song.hpp>
 
 

@@ -37,6 +37,8 @@
 #include <Tritium/Song.hpp>
 #include <Tritium/Sample.hpp>
 #include <Tritium/Instrument.hpp>
+#include <Tritium/InstrumentLayer.hpp>
+#include <Tritium/InstrumentList.hpp>
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/Hydrogen.hpp>

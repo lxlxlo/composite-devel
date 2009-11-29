@@ -23,6 +23,8 @@
 
 #include <Tritium/SoundLibrary.hpp>
 #include <Tritium/Instrument.hpp>
+#include <Tritium/InstrumentLayer.hpp>
+#include <Tritium/InstrumentList.hpp>
 #include <Tritium/Sample.hpp>
 #include <Tritium/LocalFileMng.hpp>
 #include <Tritium/H2Exception.hpp>

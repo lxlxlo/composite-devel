@@ -31,6 +31,8 @@
 #include <Tritium/Pattern.hpp>
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/Logger.hpp>
+#include <Tritium/InstrumentLayer.hpp>
+#include <Tritium/InstrumentList.hpp>
 using namespace Tritium;
 
 #include "AboutDialog.hpp"

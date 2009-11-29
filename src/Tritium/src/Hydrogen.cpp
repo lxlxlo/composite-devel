@@ -77,6 +77,8 @@
 #include <Tritium/H2Exception.hpp>
 #include <Tritium/AudioEngine.hpp>
 #include <Tritium/Instrument.hpp>
+#include <Tritium/InstrumentLayer.hpp>
+#include <Tritium/InstrumentList.hpp>
 #include <Tritium/Sample.hpp>
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Pattern.hpp>

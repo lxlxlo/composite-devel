@@ -31,6 +31,8 @@
 #include <Tritium/ADSR.hpp>
 #include <Tritium/Sample.hpp>
 #include <Tritium/Instrument.hpp>
+#include <Tritium/InstrumentLayer.hpp>
+#include <Tritium/InstrumentList.hpp>
 #include <Tritium/AudioEngine.hpp>
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/Logger.hpp>

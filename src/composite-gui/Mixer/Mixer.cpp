@@ -32,6 +32,7 @@
 #include <Tritium/AudioEngine.hpp>
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Instrument.hpp>
+#include <Tritium/InstrumentList.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Note.hpp>

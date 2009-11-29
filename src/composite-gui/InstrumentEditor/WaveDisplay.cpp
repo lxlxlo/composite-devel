@@ -23,6 +23,7 @@
 #include <Tritium/Sample.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/Instrument.hpp>
+#include <Tritium/InstrumentLayer.hpp>
 #include <Tritium/Logger.hpp>
 using namespace Tritium;
 

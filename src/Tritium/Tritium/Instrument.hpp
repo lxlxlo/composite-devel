@@ -34,46 +34,7 @@ namespace Tritium
 
     class ADSR;
     class Sample;
-
-    /**
-     * A single sample inside an instrument, with its gain and
-     * velocity settings.  See documentation for Instrument for a
-     * description for 'Layer'.  This class is largely for the
-     * convenience of class Instrument.
-     *
-     */
-    class InstrumentLayer
-    {
-    public:
-	typedef std::pair<float, float> velocity_range_t;
-
-	InstrumentLayer( Sample *sample );
-	~InstrumentLayer();
-
-	void set_velocity_range(float min, float max);
-	void set_velocity_range(velocity_range_t range);
-        velocity_range_t get_velocity_range();
-	bool in_velocity_range(float vel);
-	float get_min_velocity();
-	float get_max_velocity();
-
-	void set_pitch( float pitch );
-	float get_pitch();
-
-	void set_gain( float gain );
-	float get_gain();
-
-	void set_sample( Sample* sample );
-	Sample* get_sample();
-
-    private:
-	velocity_range_t m_velocity_range; // Range: [min, max]
-	float m_pitch;
-	float m_gain;
-	Sample *m_sample;
-    };
-
-
+    class InstrumentLayer;
 
     /**
 
@@ -308,34 +269,6 @@ namespace Tritium
 	return __layer_list[ nLayer ];
     }
 
-
-    /**
-
-       \brief Instrument List
-
-    */
-    class InstrumentList
-    {
-    public:
-	typedef std::deque<Instrument*> sequence_t;
-	typedef std::map<Instrument*, unsigned> map_t;
-
-	InstrumentList();
-	~InstrumentList();
-
-	void add( Instrument* pInstrument );
-	Instrument* get( unsigned int pos );
-	int get_pos( Instrument* inst );
-	unsigned get_size();
-
-	void del( int pos );
-
-	void replace( Instrument* pNewInstr, unsigned nPos );
-
-    private:
-	sequence_t m_list;
-	map_t m_posmap;
-    };
 
 } // namespace Tritium
 
