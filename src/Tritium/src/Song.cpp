@@ -594,8 +594,7 @@ Song* SongReader::readSong( const QString& filename )
 						pInstrument->set_muted( true );
 					}
 					InstrumentLayer *pLayer = new InstrumentLayer( pSample );
-					pLayer->set_start_velocity( fMin );
-					pLayer->set_end_velocity( fMax );
+					pLayer->set_velocity_range( fMin, fMax );
 					pLayer->set_gain( fGain );
 					pLayer->set_pitch( fPitch );
 					pInstrument->set_layer( pLayer, nLayer );

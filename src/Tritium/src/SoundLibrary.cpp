@@ -275,8 +275,7 @@ void Drumkit::save( const QString& sName, const QString& sAuthor, const QString&
 				InstrumentLayer *pLayer = new InstrumentLayer( pNewSample );
 				pLayer->set_gain( pOldLayer->get_gain() );
 				pLayer->set_pitch( pOldLayer->get_pitch() );
-				pLayer->set_start_velocity( pOldLayer->get_start_velocity() );
-				pLayer->set_end_velocity( pOldLayer->get_end_velocity() );
+				pLayer->set_velocity_range( pOldLayer->get_velocity_range() );
 
 				pNewInstr->set_layer( pLayer, nLayer );
 			} else {

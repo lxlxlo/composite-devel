@@ -743,8 +743,7 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 
 					Sample *pSample = new Sample( 0, sFilename );
 					InstrumentLayer *pLayer = new InstrumentLayer( pSample );
-					pLayer->set_start_velocity( fMin );
-					pLayer->set_end_velocity( fMax );
+					pLayer->set_velocity_range( fMin, fMax );
 					pLayer->set_gain( fGain );
 					pLayer->set_pitch( fPitch );
 					pInstrument->set_layer( pLayer, nLayer );
@@ -884,8 +883,8 @@ int LocalFileMng::saveDrumkit( Drumkit *info )
 
 			QDomNode layerNode = doc.createElement( "layer" );
 			LocalFileMng::writeXmlString( layerNode, "filename", tempVector[ nLayer ] );
-			LocalFileMng::writeXmlString( layerNode, "min", QString("%1").arg( pLayer->get_start_velocity() ) );
-			LocalFileMng::writeXmlString( layerNode, "max", QString("%1").arg( pLayer->get_end_velocity() ) );
+			LocalFileMng::writeXmlString( layerNode, "min", QString("%1").arg( pLayer->get_min_velocity() ) );
+			LocalFileMng::writeXmlString( layerNode, "max", QString("%1").arg( pLayer->get_max_velocity() ) );
 			LocalFileMng::writeXmlString( layerNode, "gain", QString("%1").arg( pLayer->get_gain() ) );
 			LocalFileMng::writeXmlString( layerNode, "pitch", QString("%1").arg( pLayer->get_pitch() ) );
 
@@ -1358,8 +1357,8 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 			}
 			QDomNode layerNode = doc.createElement( "layer" );
 			LocalFileMng::writeXmlString( layerNode, "filename", sFilename );
-			LocalFileMng::writeXmlString( layerNode, "min", QString("%1").arg( pLayer->get_start_velocity() ) );
-			LocalFileMng::writeXmlString( layerNode, "max", QString("%1").arg( pLayer->get_end_velocity() ) );
+			LocalFileMng::writeXmlString( layerNode, "min", QString("%1").arg( pLayer->get_min_velocity() ) );
+			LocalFileMng::writeXmlString( layerNode, "max", QString("%1").arg( pLayer->get_max_velocity() ) );
 			LocalFileMng::writeXmlString( layerNode, "gain", QString("%1").arg( pLayer->get_gain() ) );
 			LocalFileMng::writeXmlString( layerNode, "pitch", QString("%1").arg( pLayer->get_pitch() ) );
 

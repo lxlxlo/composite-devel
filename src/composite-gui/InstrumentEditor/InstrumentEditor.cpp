@@ -675,8 +675,10 @@ void InstrumentEditor::setAutoVelocity()
 			layers--;
 			InstrumentLayer *pLayer = m_pInstrument->get_layer( i );
 			if ( pLayer ) {
-				pLayer->set_start_velocity( layers * velocityrange);
-				pLayer->set_end_velocity( layers * velocityrange + velocityrange );
+				pLayer->set_velocity_range(
+				    layers * velocityrange,
+				    layers * velocityrange + velocityrange
+				    );
 			}
 		}
 	}

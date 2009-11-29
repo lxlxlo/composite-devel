@@ -266,8 +266,7 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
 		InstrumentLayer *pLayer = pInstr->get_layer( nLayer );
 		if ( pLayer == NULL ) continue;
 
-		if ( ( note.get_velocity() >= pLayer->get_start_velocity() )
-		     && ( note.get_velocity() <= pLayer->get_end_velocity() ) ) {
+		if ( pLayer->in_velocity_range(note.get_velocity()) ) {
 			pSample = pLayer->get_sample();
 			fLayerGain = pLayer->get_gain();
 			fLayerPitch = pLayer->get_pitch();

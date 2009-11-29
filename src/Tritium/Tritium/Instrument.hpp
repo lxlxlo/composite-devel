@@ -25,83 +25,69 @@
 #include <QtCore/QString>
 #include <Tritium/globals.hpp>
 #include <Tritium/Logger.hpp>
+#include <deque>
+#include <utility> // std::pair
 #include <cassert>
 
 namespace Tritium
 {
 
-class ADSR;
-class Sample;
+    class ADSR;
+    class Sample;
 
-/**
+    /**
+     * A single sample inside an instrument, with its gain and
+     * velocity settings.  See documentation for Instrument for a
+     * description for 'Layer'.  This class is largely for the
+     * convenience of class Instrument.
+     *
+     */
+    class InstrumentLayer
+    {
+    public:
+	typedef std::pair<float, float> velocity_range_t;
 
-\brief A layer...
-
-*/
-class InstrumentLayer
-{
-public:
 	InstrumentLayer( Sample *sample );
 	~InstrumentLayer();
 
-	void set_start_velocity( float vel ) {
-		__start_velocity = vel;
-	}
-	float get_start_velocity() {
-		return __start_velocity;
-	}
+	void set_velocity_range(float min, float max);
+	void set_velocity_range(velocity_range_t range);
+        velocity_range_t get_velocity_range();
+	bool in_velocity_range(float vel);
+	float get_min_velocity();
+	float get_max_velocity();
 
-	void set_end_velocity( float vel ) {
-		__end_velocity = vel;
-	}
-	float get_end_velocity() {
-		return __end_velocity;
-	}
+	void set_pitch( float pitch );
+	float get_pitch();
 
-	void set_pitch( float pitch ) {
-		__pitch = pitch;
-	}
-	float get_pitch() {
-		return __pitch;
-	}
+	void set_gain( float gain );
+	float get_gain();
 
-	void set_gain( float gain ) {
-		__gain = gain;
-	}
-	float get_gain() {
-		return __gain;
-	}
+	void set_sample( Sample* sample );
+	Sample* get_sample();
 
-	void set_sample( Sample* sample ) {
-		__sample = sample;
-	}
-	Sample* get_sample() {
-		return __sample;
-	}
-
-private:
-	float __start_velocity;		///< Start velocity
-	float __end_velocity;		///< End velocity
-	float __pitch;
-	float __gain;
-	Sample *__sample;
-};
+    private:
+	velocity_range_t m_velocity_range; // Range: [min, max]
+	float m_pitch;
+	float m_gain;
+	Sample *m_sample;
+    };
 
 
 
-/**
+    /**
 
-\brief Instrument class
+       \brief Instrument class
 
-*/
-class Instrument
-{
-public:
+    */
+    class Instrument
+    {
+    public:
 	Instrument(
 	    const QString& id,
 	    const QString& name,
 	    ADSR* adsr
-	);
+	    );
 	
 	/// create a new object without anything in it.
 	static Instrument * create_empty();
@@ -111,7 +97,7 @@ public:
 	static Instrument* load_instrument(
 	    const QString& drumkit_name,
 	    const QString& instrument_name
-	);
+	    );
 	
 	/// loads state _and_ samples into an Instrument from a `placeholder` instrument
 	/// (i.e. an Instrument that has everything but the actal samples.)
@@ -122,7 +108,7 @@ public:
 	    const QString& drumkit_name,
 	    const QString& instrument_name,
 	    bool is_live = true
-	);
+	    );
 
 	/// Returns a layer in the list
 	/// See below for definition.
@@ -133,156 +119,156 @@ public:
 
 
 	void set_name( const QString& name ) {
-		__name = name;
+	    __name = name;
 	}
 	const QString& get_name() {
-		return __name;
+	    return __name;
 	}
 
 	void set_id( const QString& id ) {
-		__id = id;
+	    __id = id;
 	}
 	inline const QString& get_id() {
-		return __id;
+	    return __id;
 	}
 
 	void set_adsr( ADSR* adsr );
 	ADSR* get_adsr() {
-		return __adsr;
+	    return __adsr;
 	}
 
 	void set_mute_group( int group ) {
-		__mute_group = group;
+	    __mute_group = group;
 	}
 	inline int get_mute_group() {
-		return __mute_group;
+	    return __mute_group;
 	}
 
 	void set_muted( bool muted ) {
-		__muted = muted;
+	    __muted = muted;
 	}
 	inline bool is_muted() {
-		return __muted;
+	    return __muted;
 	}
 
 	inline float get_pan_l() {
-		return __pan_l;
+	    return __pan_l;
 	}
 	void set_pan_l( float val ) {
-		__pan_l = val;
+	    __pan_l = val;
 	}
 
 	inline float get_pan_r() {
-		return __pan_r;
+	    return __pan_r;
 	}
 	void set_pan_r( float val ) {
-		__pan_r = val;
+	    __pan_r = val;
 	}
 
 	inline float get_gain() {
-		return __gain;
+	    return __gain;
 	}
 	void set_gain( float gain ) {
-		__gain = gain;
+	    __gain = gain;
 	}
 
 	inline float get_volume() {
-		return __volume;
+	    return __volume;
 	}
 	void set_volume( float volume ) {
-		__volume = volume;
+	    __volume = volume;
 	}
 
 	inline bool is_filter_active() {
-		return __filter_active;
+	    return __filter_active;
 	}
 	void set_filter_active( bool active ) {
-		__filter_active = active;
+	    __filter_active = active;
 	}
 
 	inline float get_filter_resonance() {
-		return __filter_resonance;
+	    return __filter_resonance;
 	}
 	void set_filter_resonance( float val ) {
-		__filter_resonance = val;
+	    __filter_resonance = val;
 	}
 
 	inline float get_filter_cutoff() {
-		return __filter_cutoff;
+	    return __filter_cutoff;
 	}
 	void set_filter_cutoff( float val ) {
-		__filter_cutoff = val;
+	    __filter_cutoff = val;
 	}
 
 	inline float get_peak_l() {
-		return __peak_l;
+	    return __peak_l;
 	}
 	void set_peak_l( float val ) {
-		__peak_l = val;
+	    __peak_l = val;
 	}
 
 	inline float get_peak_r() {
-		return __peak_r;
+	    return __peak_r;
 	}
 	void set_peak_r( float val ) {
-		__peak_r = val;
+	    __peak_r = val;
 	}
 
 	inline float get_fx_level( int index ) {
-		return __fx_level[index];
+	    return __fx_level[index];
 	}
 	void set_fx_level( float level, int index ) {
-		__fx_level[index] = level;
+	    __fx_level[index] = level;
 	}
 
 	inline float get_random_pitch_factor() {
-		return __random_pitch_factor;
+	    return __random_pitch_factor;
 	}
 	void set_random_pitch_factor( float val ) {
-		__random_pitch_factor = val;
+	    __random_pitch_factor = val;
 	}
 
 	void set_drumkit_name( const QString& name ) {
-		__drumkit_name = name;
+	    __drumkit_name = name;
 	}
 	const QString& get_drumkit_name() {
-		return __drumkit_name;
+	    return __drumkit_name;
 	}
 
 	inline bool is_active() {
-		return __active;
+	    return __active;
 	}
 	void set_active( bool active ) {
-		__active = active;
+	    __active = active;
 	}
 
 	inline bool is_soloed() {
-		return __soloed;
+	    return __soloed;
 	}
 	void set_soloed( bool soloed ) {
-		__soloed = soloed;
+	    __soloed = soloed;
 	}
 	inline void enqueue() {
-		__queued++;
+	    __queued++;
 	}
 	inline void dequeue() {
-		assert( __queued > 0 );
-		__queued--;
+	    assert( __queued > 0 );
+	    __queued--;
 	}
 	inline int is_queued() {
-		return __queued;
+	    return __queued;
 	}
 
 	inline bool is_stop_notes() {
-		return __stop_notes;
+	    return __stop_notes;
 	}
 	void set_stop_note( bool stopnotes ) {
-		__stop_notes = stopnotes;
+	    __stop_notes = stopnotes;
 	}
 
 
 
-private:
+    private:
 	int __queued;
 	InstrumentLayer* __layer_list[MAX_LAYERS];
 	ADSR* __adsr;
@@ -306,31 +292,34 @@ private:
 	bool __active;			///< is the instrument active?
 	bool __soloed;
 	bool __stop_notes;		///
-};
+    };
 
-inline InstrumentLayer* Instrument::get_layer( int nLayer )
-{
+    inline InstrumentLayer* Instrument::get_layer( int nLayer )
+    {
 	if ( nLayer < 0 ) {
-		ERRORLOG( QString( "nLayer < 0 (nLayer=%1)" ).arg( nLayer ) );
-		return NULL;
+	    ERRORLOG( QString( "nLayer < 0 (nLayer=%1)" ).arg( nLayer ) );
+	    return NULL;
 	}
 	if ( nLayer >= MAX_LAYERS ) {
-		ERRORLOG( QString( "nLayer > MAX_LAYERS (nLayer=%1)" ).arg( nLayer ) );
-		return NULL;
+	    ERRORLOG( QString( "nLayer > MAX_LAYERS (nLayer=%1)" ).arg( nLayer ) );
+	    return NULL;
 	}
 
 	return __layer_list[ nLayer ];
-}
+    }
 
 
-/**
+    /**
 
-\brief Instrument List
+       \brief Instrument List
 
-*/
-class InstrumentList
-{
-public:
+    */
+    class InstrumentList
+    {
+    public:
+	typedef std::deque<Instrument*> sequence_t;
+	typedef std::map<Instrument*, unsigned> map_t;
+
 	InstrumentList();
 	~InstrumentList();
 
@@ -343,10 +332,10 @@ public:
 
 	void replace( Instrument* pNewInstr, unsigned nPos );
 
-private:
-	std::vector<Instrument*> m_list;
-	std::map<Instrument*, unsigned> m_posmap;
-};
+    private:
+	sequence_t m_list;
+	map_t m_posmap;
+    };
 
 } // namespace Tritium
 
