@@ -471,7 +471,7 @@ void PlayerControl::updatePlayerControl()
 
 	m_pSongLoopBtn->setPressed( song->is_loop_enabled() );
 
-	m_pLCDBPMSpinbox->setValue( song->__bpm );
+	m_pLCDBPMSpinbox->setValue( song->get_bpm() );
 
 	if ( song->get_mode() == Song::PATTERN_MODE ) {
 		m_pLiveModeBtn->setPressed( true );
@@ -699,7 +699,7 @@ void PlayerControl::bpmChanged() {
 		fNewBpmValue = 400;
 	}
 
-	m_pEngine->getSong()->__is_modified = true;
+	m_pEngine->getSong()->set_modified( true );
 
 	AudioEngine::get_instance()->lock( RIGHT_HERE );
 	m_pEngine->setBPM( fNewBpmValue );
@@ -874,7 +874,7 @@ void PlayerControl::bpmClicked()
 			return;
 		}
 
-		m_pEngine->getSong()->__is_modified  = true;
+		m_pEngine->getSong()->set_modified( true );
 
 		AudioEngine::get_instance()->lock( RIGHT_HERE );
 		m_pEngine->setBPM( fNewVal );
@@ -938,7 +938,7 @@ void PlayerControl::songLoopBtnClicked( Button* )
 	Hydrogen *pEngine = Hydrogen::get_instance();
 	Song *song = pEngine->getSong();
 	song->set_loop_enabled( ! song->is_loop_enabled() );
-	song->__is_modified = true;
+	song->set_modified( true );
 
 	if ( song->is_loop_enabled() ) {
 		HydrogenApp::get_instance()->setStatusBarMessage(trUtf8("Loop song = On"), 5000);

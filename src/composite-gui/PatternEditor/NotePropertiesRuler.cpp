@@ -161,7 +161,7 @@ void NotePropertiesRuler::mousePressEvent(QMouseEvent *ev)
 
 			}
 		}
-		pSong->__is_modified = true;
+		pSong->set_modified( true );
 		updateEditor();
 		break;
 	}
@@ -267,7 +267,7 @@ void NotePropertiesRuler::wheelEvent(QWheelEvent *ev)
 			}
 		}
 
-		pSong->__is_modified = true;
+		pSong->set_modified( true );
 		updateEditor();
 		break;
 	}

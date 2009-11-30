@@ -102,7 +102,7 @@ void SongEditor::keyPressEvent ( QKeyEvent * ev )
 {
 	Hydrogen *pEngine = Hydrogen::get_instance();
 	PatternList *pPatternList = pEngine->getSong()->get_pattern_list();
-	vector<PatternList*>* pColumns = pEngine->getSong()->get_pattern_group_vector();
+	Song::pattern_group_t* pColumns = pEngine->getSong()->get_pattern_group_vector();
 
 	if ( ev->key() == Qt::Key_Delete ) {
 		if ( m_selectedCells.size() != 0 ) {
@@ -187,7 +187,7 @@ void SongEditor::mousePressEvent( QMouseEvent *ev )
 	}
 	else if ( actionMode == DRAW_ACTION ) {
 		Tritium::Pattern *pPattern = pPatternList->get( nRow );
-		vector<PatternList*> *pColumns = pSong->get_pattern_group_vector();	// E' la lista di "colonne" di pattern
+		Song::pattern_group_t *pColumns = pSong->get_pattern_group_vector();	// E' la lista di "colonne" di pattern
 		if ( nColumn < (int)pColumns->size() ) {
 			PatternList *pColumn = ( *pColumns )[ nColumn ];
 
@@ -241,7 +241,7 @@ void SongEditor::mousePressEvent( QMouseEvent *ev )
 			}
 			pColumn->add( pPattern );
 		}
-		pSong->__is_modified = true;
+		pSong->set_modified( true );
 	}
 
 	AudioEngine::get_instance()->unlock();
@@ -258,7 +258,7 @@ void SongEditor::mouseMoveEvent(QMouseEvent *ev)
 	int nRow = ev->y() / m_nGridHeight;
 	int nColumn = ( (int)ev->x() - 10 ) / (int)m_nGridWidth;
 	PatternList *pPatternList = Hydrogen::get_instance()->getSong()->get_pattern_list();
-	vector<PatternList*>* pColumns = Hydrogen::get_instance()->getSong()->get_pattern_group_vector();
+	Song::pattern_group_t* pColumns = Hydrogen::get_instance()->getSong()->get_pattern_group_vector();
 
 	if ( m_bIsMoving ) {
 //		WARNINGLOG( "[mouseMoveEvent] Move patterns not implemented yet" );
@@ -344,7 +344,7 @@ void SongEditor::mouseReleaseEvent( QMouseEvent * /*ev*/ )
 	Hydrogen *pEngine = Hydrogen::get_instance();
 
 	PatternList *pPatternList = pEngine->getSong()->get_pattern_list();
-	vector<PatternList*>* pColumns = pEngine->getSong()->get_pattern_group_vector();
+	Song::pattern_group_t* pColumns = pEngine->getSong()->get_pattern_group_vector();
 
 	if ( m_bIsMoving ) {	// fine dello spostamento dei pattern
 		AudioEngine::get_instance()->lock( RIGHT_HERE );
@@ -403,7 +403,7 @@ void SongEditor::mouseReleaseEvent( QMouseEvent * /*ev*/ )
 		}
 
 
-		pEngine->getSong()->__is_modified = true;
+		pEngine->getSong()->set_modified( true );
 		AudioEngine::get_instance()->unlock();
 
 		m_bIsMoving = false;
@@ -545,7 +545,7 @@ void SongEditor::drawSequence()
 
 	Song* song = Hydrogen::get_instance()->getSong();
 	PatternList *patList = song->get_pattern_list();
-	vector<PatternList*>* pColumns = song->get_pattern_group_vector();
+	Song::pattern_group_t* pColumns = song->get_pattern_group_vector();
 	uint listLength = patList->get_size();
 	for (uint i = 0; i < pColumns->size(); i++) {
 		PatternList* pColumn = (*pColumns)[ i ];
@@ -789,7 +789,7 @@ void SongEditorPatternList::inlineEditingEntered()
 	if ( PatternPropertiesDialog::nameCheck( line->text() ) )
 	{
 		patternBeingEdited->set_name( line->text() );
-		Hydrogen::get_instance()->getSong()->__is_modified = true;
+		Hydrogen::get_instance()->getSong()->set_modified( true );
 		EventQueue::get_instance()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );
 		createBackground();
 		update();
@@ -955,7 +955,7 @@ void SongEditorPatternList::patternPopup_load()
 	}else{
 		Tritium::Pattern *pNewPattern = err;
 		pPatternList->add( pNewPattern );
-		song->__is_modified = true;
+		song->set_modified( true );
 		createBackground();
 		update();
 	}
@@ -1032,7 +1032,7 @@ void SongEditorPatternList::patternPopup_properties()
 	if (dialog->exec() == QDialog::Accepted) {
 // 		Hydrogen *engine = Hydrogen::get_instance();
 // 		Song *song = engine->getSong();
-		song->__is_modified = true;
+		song->set_modified( true );
 		EventQueue::get_instance()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );
 		createBackground();
 		update();
@@ -1071,7 +1071,7 @@ void SongEditorPatternList::patternPopup_delete()
 	INFOLOG( QString("[patternPopup_delete] Delete pattern: %1 @%2").arg(pattern->get_name()).arg( (long)pattern ) );
 	pSongPatternList->del(pattern);
 
-	vector<PatternList*> *patternGroupVect = song->get_pattern_group_vector();
+	Song::pattern_group_t *patternGroupVect = song->get_pattern_group_vector();
 
 	uint i = 0;
 	while (i < patternGroupVect->size() ) {
@@ -1126,7 +1126,7 @@ void SongEditorPatternList::patternPopup_delete()
 
 	delete pattern;
 
-	song->__is_modified = true;
+	song->set_modified( true );
 
 // "unlock" I am not sure, but think this is unnecessarily. -wolke-
 //	AudioEngine::get_instance()->unlock();
@@ -1150,7 +1150,7 @@ void SongEditorPatternList::patternPopup_copy()
 	// rename the copied pattern
 	PatternPropertiesDialog *dialog = new PatternPropertiesDialog( this, pNewPattern, true );
 	if ( dialog->exec() == QDialog::Accepted ) {
-		pSong->__is_modified = true;
+		pSong->set_modified( true );
 		pEngine->setSelectedPatternNumber(pPatternList->get_size() - 1);	// select the last pattern (the copied one)
 		if (pSong->get_mode() == Song::PATTERN_MODE) {
 			pEngine->sequencer_setNextPattern( pPatternList->get_size() - 1, false, false );	// select the last pattern (the new copied pattern)
@@ -1194,7 +1194,7 @@ void SongEditorPatternList::fillRangeWithPattern(FillRange* pRange, int nPattern
 	Song *pSong = pEngine->getSong();
 	PatternList *pPatternList = pSong->get_pattern_list();
 	Tritium::Pattern *pPattern = pPatternList->get( nPattern );
-	vector<PatternList*> *pColumns = pSong->get_pattern_group_vector();	// E' la lista di "colonne" di pattern
+	Song::pattern_group_t *pColumns = pSong->get_pattern_group_vector();	// E' la lista di "colonne" di pattern
 	PatternList *pColumn;
 
 	int nColumn, nColumnIndex;
@@ -1256,7 +1256,7 @@ void SongEditorPatternList::fillRangeWithPattern(FillRange* pRange, int nPattern
 
 
 	// Update
-	pSong->__is_modified = true;
+	pSong->set_modified( true );
 }
 
 
@@ -1316,7 +1316,7 @@ void SongEditorPatternList::dropEvent(QDropEvent *event)
 			}
 			pPatternList->replace( pNewPattern, nTargetPattern );
 
-			Hydrogen::get_instance()->getSong()->__is_modified = true;
+			Hydrogen::get_instance()->getSong()->set_modified( true );
 			createBackground();
 			update();
 		}

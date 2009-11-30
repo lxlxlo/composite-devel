@@ -33,10 +33,6 @@
 #include <QStringList>
 #include <QDomDocument>
 
-// forward declaration
-class TiXmlNode;
-
-
 namespace Tritium
 {
 

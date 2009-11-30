@@ -1281,11 +1281,11 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 	QDomNode songNode = doc.createElement( "song" );
 
 	LocalFileMng::writeXmlString( songNode, "version", QString( get_version().c_str() ) );
-	LocalFileMng::writeXmlString( songNode, "bpm", QString("%1").arg( song->__bpm ) );
+	LocalFileMng::writeXmlString( songNode, "bpm", QString("%1").arg( song->get_bpm() ) );
 	LocalFileMng::writeXmlString( songNode, "volume", QString("%1").arg( song->get_volume() ) );
 	LocalFileMng::writeXmlString( songNode, "metronomeVolume", QString("%1").arg( song->get_metronome_volume() ) );
-	LocalFileMng::writeXmlString( songNode, "name", song->__name );
-	LocalFileMng::writeXmlString( songNode, "author", song->__author );
+	LocalFileMng::writeXmlString( songNode, "name", song->get_name() );
+	LocalFileMng::writeXmlString( songNode, "author", song->get_author() );
 	LocalFileMng::writeXmlString( songNode, "notes", song->get_notes() );
 	LocalFileMng::writeXmlString( songNode, "license", song->get_license() );
 	LocalFileMng::writeXmlBool( songNode, "loopEnabled", song->is_loop_enabled() );
@@ -1488,7 +1488,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 	if( rv ) {
 		WARNINGLOG("File save reported an error.");
 	} else {
-		song->__is_modified = false;
+		song->set_modified(false);
 		INFOLOG("Save was successful.");
 	}
 	song->set_filename( filename );

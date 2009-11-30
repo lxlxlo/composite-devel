@@ -34,78 +34,35 @@ typedef pgrp_list::iterator pgrp_list_iter;
 uint32_t Tritium::song_bar_count(Song* s)
 {
     if( s == 0 ) return -1;
-    return s->get_pattern_group_vector()->size();
+    return s->song_bar_count();
 }
 
 uint32_t Tritium::song_tick_count(Song* s)
 {
     if( s == 0 ) return -1;
-    uint32_t count = 0;
-    uint32_t bar = 1;
-    uint32_t tmp;
-
-    tmp = ticks_in_bar(s, bar);
-    while( tmp != unsigned(-1) ) {
-        count += tmp;
-        ++bar;
-        tmp = ticks_in_bar(s, bar);
-    }
-    return count;
+    return s->song_tick_count();
 }
 
 uint32_t Tritium::pattern_group_index_for_bar(Song* s, uint32_t bar)
 {
     if( s == 0 ) return -1;
-    if( bar <= song_bar_count(s) ) {
-        return bar-1;
-    }
-    return -1;
+    return s->pattern_group_index_for_bar(bar);
 }
 
 uint32_t Tritium::bar_for_absolute_tick(Song* s, uint32_t abs_tick)
 {
     if( s == 0 ) return -1;
-    uint32_t tick_count = abs_tick;
-    uint32_t bar_count = 1;
-    uint32_t tmp;
-
-    tmp = ticks_in_bar(s, bar_count);
-    while( tick_count >= tmp ) {
-	tick_count -= tmp;
-	++bar_count;
-	tmp = ticks_in_bar(s, bar_count);
-    }
-    return bar_count;
+    return s->bar_for_absolute_tick(abs_tick);
 }
 
 uint32_t Tritium::bar_start_tick(Song* s, uint32_t bar)
 {
     if( s == 0 ) return -1;
-    if( bar > song_bar_count(s) ) return -1;
-    uint32_t count = 0, k = 1;
-    while( k < bar ) {
-        count += ticks_in_bar(s, k);
-	++k;
-    }
-    return count;
+    return s->bar_start_tick(bar);
 }
 
 uint32_t Tritium::ticks_in_bar(Song* s, uint32_t bar)
 {
     if( s == 0 ) return -1;
-    if( bar < 1 ) return -1;
-    if( bar > song_bar_count(s) ) return -1;
-
-    PatternList* list = s->get_pattern_group_vector()->at(bar-1);
-    uint32_t j;
-    uint32_t max_ticks = 0;
-    uint32_t tmp;
-    for( j = 0 ; j < list->get_size() ; ++j ) {
-        tmp = list->get(j)->get_length();
-        if( tmp > max_ticks ) {
-            max_ticks = tmp;
-        }
-    }
-
-    return max_ticks;
+    return s->ticks_in_bar(bar);
 }

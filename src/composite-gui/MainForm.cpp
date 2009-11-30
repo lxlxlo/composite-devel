@@ -306,7 +306,7 @@ void MainForm::action_file_save_as()
 	QString lastFilename = song->get_filename();
 
 	if ( lastFilename.isEmpty() ) {
-		defaultFilename = Hydrogen::get_instance()->getSong()->__name;
+		defaultFilename = Hydrogen::get_instance()->getSong()->get_name();
 		defaultFilename += ".h2song";
 	}
 	else {
@@ -545,7 +545,7 @@ void MainForm::action_file_openPattern()
 	{
 		Tritium::Pattern *pNewPattern = err;
 		pPatternList->add ( pNewPattern );
-		song->__is_modified = true;
+		song->set_modified( true );
 	}
 
 	HydrogenApp::get_instance()->getSongEditorPanel()->updateAll();
@@ -871,8 +871,8 @@ void MainForm::onBPMPlusAccelEvent()
 	AudioEngine::get_instance()->lock( RIGHT_HERE );
 
 	Song* pSong = pEngine->getSong();
-	if (pSong->__bpm  < 300) {
-		pEngine->setBPM( pSong->__bpm + 0.1 );
+	if (pSong->get_bpm()  < 300) {
+		pEngine->setBPM( pSong->get_bpm() + 0.1 );
 	}
 	AudioEngine::get_instance()->unlock();
 }
@@ -885,8 +885,8 @@ void MainForm::onBPMMinusAccelEvent()
 	AudioEngine::get_instance()->lock( RIGHT_HERE );
 
 	Song* pSong = pEngine->getSong();
-	if (pSong->__bpm > 40 ) {
-		pEngine->setBPM( pSong->__bpm - 0.1 );
+	if (pSong->get_bpm() > 40 ) {
+		pEngine->setBPM( pSong->get_bpm() - 0.1 );
 	}
 	AudioEngine::get_instance()->unlock();
 }
@@ -1303,7 +1303,7 @@ void MainForm::action_file_songProperties()
 {
 	SongPropertiesDialog *pDialog = new SongPropertiesDialog( this );
 	if ( pDialog->exec() == QDialog::Accepted ) {
-		Hydrogen::get_instance()->getSong()->__is_modified = true;
+		Hydrogen::get_instance()->getSong()->set_modified( true );
 	}
 	delete pDialog;
 }
@@ -1363,13 +1363,13 @@ void MainForm::onPlaylistDisplayTimer()
 	if ( songnumber == -1 )
 			return;
 
-	if ( Hydrogen::get_instance()->getSong()->__name == "Untitled Song" ){
+	if ( Hydrogen::get_instance()->getSong()->get_name() == "Untitled Song" ){
 		songname = Hydrogen::get_instance()->getSong()->get_filename(); 
 	}else
 	{
-		songname = Hydrogen::get_instance()->getSong()->__name;
+		songname = Hydrogen::get_instance()->getSong()->get_name();
 	}
-	QString message = (trUtf8("Playlist: Song No. %1").arg( songnumber + 1)) + QString("  ---  Songname: ") + songname + QString("  ---  Author: ") + Hydrogen::get_instance()->getSong()->__author;
+	QString message = (trUtf8("Playlist: Song No. %1").arg( songnumber + 1)) + QString("  ---  Songname: ") + songname + QString("  ---  Author: ") + Hydrogen::get_instance()->getSong()->get_author();
 	HydrogenApp::get_instance()->setScrollStatusBarMessage( message, 2000 );
 }
 
@@ -1379,7 +1379,7 @@ bool MainForm::handleUnsavedChanges()
 {
 	bool done = false;
 	bool rv = true;
-	while ( !done && Hydrogen::get_instance()->getSong()->__is_modified ) {
+	while ( !done && Hydrogen::get_instance()->getSong()->get_modified() ) {
 		switch(
 				QMessageBox::information( this, "Composite",
 						trUtf8("\nThe document contains unsaved changes.\n"

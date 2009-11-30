@@ -475,7 +475,7 @@ void PatternEditorInstrumentList::moveInstrumentLine( int nSourceInstrument , in
 		AudioEngine::get_instance()->unlock();
 		engine->setSelectedInstrumentNumber( nTargetInstrument );
 
-		pSong->__is_modified = true;
+		pSong->set_modified( true );
 }
 
 ///

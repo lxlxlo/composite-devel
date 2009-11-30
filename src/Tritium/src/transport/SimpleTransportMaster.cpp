@@ -61,8 +61,8 @@ int SimpleTransportMaster::locate(uint32_t frame)
 {
     QMutexLocker lk(&d->pos_mutex);
 
-    d->pos.ticks_per_beat = d->song->__resolution;
-    d->pos.beats_per_minute = d->song->__bpm;
+    d->pos.ticks_per_beat = d->song->get_resolution();
+    d->pos.beats_per_minute = d->song->get_bpm();
     double frames_per_tick =
         double(d->pos.frame_rate)
         * 60.0
@@ -84,8 +84,8 @@ int SimpleTransportMaster::locate(uint32_t bar, uint32_t beat, uint32_t tick)
 {
     QMutexLocker lk(&d->pos_mutex);
 
-    d->pos.ticks_per_beat = d->song->__resolution;
-    d->pos.beats_per_minute = d->song->__bpm;
+    d->pos.ticks_per_beat = d->song->get_resolution();
+    d->pos.beats_per_minute = d->song->get_bpm();
 
     #warning "There needs to be input checking here."
     d->pos.bar = bar;
@@ -174,7 +174,7 @@ void SimpleTransportMaster::processed_frames(uint32_t nFrames)
     }
     // After all the calculations... *now* the new tempo
     // takes effect (for the next cycle).
-    d->pos.beats_per_minute = d->song->__bpm;
+    d->pos.beats_per_minute = d->song->get_bpm();
 }
 
 void SimpleTransportMaster::set_current_song(Song* s)
@@ -204,8 +204,8 @@ void SimpleTransportMasterPrivate::set_current_song(Song* s)
         pos.bar_start_tick = 0;
         pos.beats_per_bar = double(ticks_in_bar(s, 1)) / 48.0;
         pos.beat_type = 4; // Assumed.
-        pos.ticks_per_beat = song->__resolution;
-        pos.beats_per_minute = song->__bpm;
+        pos.ticks_per_beat = song->get_resolution();
+        pos.beats_per_minute = song->get_bpm();
     } else {
         pos.state = TransportPosition::STOPPED;
         pos.frame = 0;

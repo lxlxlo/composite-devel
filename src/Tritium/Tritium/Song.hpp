@@ -22,13 +22,11 @@
 #ifndef TRITIUM_SONG_HPP
 #define TRITIUM_SONG_HPP
 
-
 #include <QString>
 #include <QDomNode>
-#include <vector>
+#include <deque>
 #include <map>
-
-class TiXmlNode;
+#include <stdint.h>
 
 namespace Tritium
 {
@@ -41,220 +39,167 @@ class InstrumentList;
 class Pattern;
 class Song;
 class PatternList;
-class PatternModeManager;  // Private to Song.  See song.cpp
 
 /**
-\ingroup H2CORE
-\brief	Song class
-*/
+ *\brief Song (sequence) class.
+ */
 class Song
 {
 public:
-	enum SongMode {
-		PATTERN_MODE,
-		SONG_MODE
-	};
+    class SongPrivate;
 
-	bool __is_muted;
-	unsigned __resolution;		///< Resolution of the song (number of ticks per quarter)
-	float __bpm;			///< Beats per minute
-	bool __is_modified;
-	QString __name;		///< song name
-	QString __author;	///< author of the song
-	QString __license;	///< license of the song
+    typedef std::deque<PatternList*> pattern_group_t;
 
-	/*
-	// internal delay FX
-	bool m_bDelayFXEnabled;
-	float m_fDelayFXWetLevel;
-	float m_fDelayFXFeedback;
-	unsigned m_nDelayFXTime;
-	//~ internal delay fx
-	*/
+    enum SongMode {
+	PATTERN_MODE,
+	SONG_MODE
+    };
 
-	static Song* get_empty_song();
-	static Song* get_default_song();
+    static Song* get_empty_song();
+    static Song* get_default_song();
 
-	Song( const QString& name, const QString& author, float bpm, float volume );
-	~Song();
+    Song( const QString& name, const QString& author, float bpm, float volume );
+    ~Song();
 	
-	/**
-	  Remove all the notes in the song that play on instrument I.
-	  The function is real-time safe (it locks the audio data while deleting notes)
-	*/
-	void purge_instrument( Instrument* I );
+    /**
+       Remove all the notes in the song that play on instrument I.
+       The function is real-time safe (it locks the audio data while deleting notes)
+    */
+    void purge_instrument( Instrument* I );
 
-	void set_volume( float volume ) {
-		__volume = volume;
-	}
-	float get_volume() {
-		return __volume;
-	}
+    void set_volume( float volume );
+    float get_volume();
+    void set_metronome_volume( float volume );
+    float get_metronome_volume();
 
-	void set_metronome_volume( float volume ) {
-		__metronome_volume = volume;
-	}
-	float get_metronome_volume() {
-		return __metronome_volume;
-	}
+    void set_mute(bool m);
+    bool get_mute();
 
-	PatternList* get_pattern_list() {
-		return __pattern_list;
-	}
-	void set_pattern_list( PatternList *pattern_list ) {
-		__pattern_list = pattern_list;
-	}
+    void set_resolution(unsigned r);
+    unsigned get_resolution();
 
-	std::vector<PatternList*>* get_pattern_group_vector() {
-		return __pattern_group_sequence;
-	}
-	void set_pattern_group_vector( std::vector<PatternList*>* vect ) {
-		__pattern_group_sequence = vect;
-	}
+    void set_bpm(float r);
+    float get_bpm();
 
-	static Song* load( const QString& sFilename );
-	bool save( const QString& sFilename );
+    void set_modified(bool m);
+    bool get_modified();
 
-	InstrumentList* get_instrument_list() {
-		return __instrument_list;
-	}
-	void set_instrument_list( InstrumentList *list ) {
-		__instrument_list = list;
-	}
+    void set_name(const QString& name_p);
+    const QString& get_name();
 
+    void set_author(const QString& auth);
+    const QString& get_author();
 
-	void set_notes( const QString& notes ) {
-		__notes = notes;
-	}
-	const QString& get_notes() {
-		return __notes;
-	}
+    PatternList* get_pattern_list();
+    void set_pattern_list( PatternList *pattern_list );
 
-	void set_license( const QString& license ) {
-		__license = license;
-	}
-	const QString& get_license() {
-		return __license;
-	}
+    pattern_group_t* get_pattern_group_vector();
+    void set_pattern_group_vector( pattern_group_t* vect );
 
-	const QString& get_filename() {
-		return __filename;
-	}
-	void set_filename( const QString& filename ) {
-		__filename = filename;
-	}
+    static Song* load( const QString& sFilename );
+    bool save( const QString& sFilename );
 
-	bool is_loop_enabled() {
-		return __is_loop_enabled;
-	}
-	void set_loop_enabled( bool enabled ) {
-		__is_loop_enabled = enabled;
-	}
+    InstrumentList* get_instrument_list();
+    void set_instrument_list( InstrumentList *list );
 
-	float get_humanize_time_value() {
-		return __humanize_time_value;
-	}
-	void set_humanize_time_value( float value ) {
-		__humanize_time_value = value;
-	}
+    void set_notes( const QString& notes );
+    const QString& get_notes();
 
-	float get_humanize_velocity_value() {
-		return __humanize_velocity_value;
-	}
-	void set_humanize_velocity_value( float value ) {
-		__humanize_velocity_value = value;
-	}
+    void set_license( const QString& license );
+    const QString& get_license();
 
-	float get_swing_factor() {
-		return __swing_factor;
-	}
-	void set_swing_factor( float factor );
+    const QString& get_filename();
+    void set_filename( const QString& filename );
 
-	SongMode get_mode() {
-		return __song_mode;
-	}
-	void set_mode( SongMode mode ) {
-		__song_mode = mode;
-	}
+    bool is_loop_enabled();
+    void set_loop_enabled( bool enabled );
 
-	// PATTERN MODE METHODS
-	// ====================
+    float get_humanize_time_value();
+    void set_humanize_time_value( float value );
 
-	// NOTE:  Pattern Mode options (lists of patterns, pattern mode
-	// type) does not persist with the Song file.  These are set
-	// and manipulated by the session.
+    float get_humanize_velocity_value();
+    void set_humanize_velocity_value( float value );
 
-	enum PatternModeType { SINGLE, STACKED };
+    float get_swing_factor();
+    void set_swing_factor( float factor );
 
-	PatternModeType get_pattern_mode_type();
-	void set_pattern_mode_type(PatternModeType t);
-	void toggle_pattern_mode_type();
+    SongMode get_mode();
+    void set_mode( SongMode mode );
 
-	// Manipulate the pattern lists and queues.
-	// Patterns may only be added/removed once, so subsequent add/remove
-	// operations will have no affect.
-	// If 'pos' is not in the range 0 <= pos <= __pattern_list->get_size(),
-	// these will silently ignore the request.
-	void append_pattern(int pos);      // Appends pattern to the current group on next cycle.
-	void remove_pattern(int pos);      // Remove the pattern from the current group on next cycle.
-	void reset_patterns();             // Clears out the current and "next" queues.
-	void set_next_pattern(int pos);    // Sched. a pattern to replace the current group.
-	                                   // ...clears out any that are currently queued.
-	void append_next_pattern(int pos); // Adds pattern to the "next" queued patterns.
-	void remove_next_pattern(int pos); // Removes pattern from the "next" queue
-	void clear_queued_patterns();      // Clears out the "next" queued patterns.
+    /***********************************
+     * Methods useful to sequencers.
+     ***********************************
+     */
+    uint32_t song_bar_count();
+    uint32_t song_tick_count();
+    uint32_t pattern_group_index_for_bar(uint32_t bar);
+    uint32_t bar_for_absolute_tick(uint32_t abs_tick);
+    uint32_t bar_start_tick(uint32_t bar);
+    uint32_t ticks_in_bar(uint32_t bar);
 
-	// Copies the currently playing patterns into rv.
-	// This only makes sense in pattern mode.  Otherwise,
-	// this function returns nonsense.
-	void get_playing_patterns(PatternList& rv);
+    // PATTERN MODE METHODS
+    // ====================
 
-	// This method should *ONLY* be used by the sequencer.
-	// This signals to the Song class that the current pattern
-	// is done playing, and to switch to the next pattern if
-	// there are any queued.
-	void go_to_next_patterns();
+    // NOTE:  Pattern Mode options (lists of patterns, pattern mode
+    // type) does not persist with the Song file.  These are set
+    // and manipulated by the session.
 
-	//~PATTERN MODE METHODS
+    enum PatternModeType { SINGLE, STACKED };
+
+    PatternModeType get_pattern_mode_type();
+    void set_pattern_mode_type(PatternModeType t);
+    void toggle_pattern_mode_type();
+
+    // Manipulate the pattern lists and queues.
+    // Patterns may only be added/removed once, so subsequent add/remove
+    // operations will have no affect.
+    // If 'pos' is not in the range 0 <= pos <= __pattern_list->get_size(),
+    // these will silently ignore the request.
+    void append_pattern(int pos);      // Appends pattern to the current group on next cycle.
+    void remove_pattern(int pos);      // Remove the pattern from the current group on next cycle.
+    void reset_patterns();             // Clears out the current and "next" queues.
+    void set_next_pattern(int pos);    // Sched. a pattern to replace the current group.
+    // ...clears out any that are currently queued.
+    void append_next_pattern(int pos); // Adds pattern to the "next" queued patterns.
+    void remove_next_pattern(int pos); // Removes pattern from the "next" queue
+    void clear_queued_patterns();      // Clears out the "next" queued patterns.
+
+    // Copies the currently playing patterns into rv.
+    // This only makes sense in pattern mode.  Otherwise,
+    // this function returns nonsense.
+    void get_playing_patterns(PatternList& rv);
+
+    // This method should *ONLY* be used by the sequencer.
+    // This signals to the Song class that the current pattern
+    // is done playing, and to switch to the next pattern if
+    // there are any queued.
+    void go_to_next_patterns();
+
+    //~PATTERN MODE METHODS
 
 private:
-	float __volume;						///< volume of the song (0.0..1.0)
-	float __metronome_volume;				///< Metronome volume
-	QString __notes;
-	PatternList *__pattern_list;				///< Pattern list
-	std::vector<PatternList*>* __pattern_group_sequence;	///< Sequence of pattern groups
-	InstrumentList *__instrument_list;			///< Instrument list
-	QString __filename;
-	bool __is_loop_enabled;
-	float __humanize_time_value;
-	float __humanize_velocity_value;
-	float __swing_factor;
-
-	SongMode __song_mode;
-
-	PatternModeManager* __pat_mode;
+    SongPrivate *d;
 };
 
 
 
 /**
-\ingroup H2CORE
-\brief	Read XML file of a song
+   \ingroup H2CORE
+   \brief	Read XML file of a song
 */
 class SongReader
 {
 public:
-	SongReader();
-	~SongReader();
-	Song* readSong( const QString& filename );
+    SongReader();
+    ~SongReader();
+    Song* readSong( const QString& filename );
 
 private:
-	QString m_sSongVersion;
+    QString m_sSongVersion;
 
-	/// Dato un XmlNode restituisce un oggetto Pattern
-	Pattern* getPattern( QDomNode pattern, InstrumentList* instrList );
+    /// Dato un XmlNode restituisce un oggetto Pattern
+    Pattern* getPattern( QDomNode pattern, InstrumentList* instrList );
 };
-
 
 } // namespace Tritium
 

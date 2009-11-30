@@ -40,9 +40,9 @@ SongPropertiesDialog::SongPropertiesDialog(QWidget* parent)
 //	setIcon( QPixmap( Skin::getImagePath() + "/icon16.png" ) );
 
 	Song *song = Hydrogen::get_instance()->getSong();
-	songNameTxt->setText( song->__name );
+	songNameTxt->setText( song->get_name() );
 
-	authorTxt->setText( song->__author );
+	authorTxt->setText( song->get_author() );
 	notesTxt->append( song->get_notes() );
 	licenseTxt->setText( song->get_license() );
 }
@@ -63,8 +63,8 @@ void SongPropertiesDialog::on_okBtn_clicked()
 {
 	Song *song = Hydrogen::get_instance()->getSong();
 
-	song->__name = songNameTxt->text();
-	song->__author = authorTxt->text();
+	song->set_name( songNameTxt->text() );
+	song->set_author( authorTxt->text() );
 	song->set_notes( notesTxt->toPlainText() );
 	song->set_license( licenseTxt->text() );
 

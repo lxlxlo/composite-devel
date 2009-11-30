@@ -346,7 +346,7 @@ void SongEditorPanel::newPatBtnClicked( Button* /*btn*/)
 	PatternPropertiesDialog *dialog = new PatternPropertiesDialog( this, emptyPattern, true );
 	if ( dialog->exec() == QDialog::Accepted ) {
 		patternList->add( emptyPattern );
-		song->__is_modified = true;
+		song->set_modified( true );
 		updateAll();
 	}
 	else {
@@ -380,7 +380,7 @@ void SongEditorPanel::upBtnClicked( Button* /*btn*/ )
 		pEngine->setSelectedPatternNumber( nSelectedPatternPos - 1 );
 
 		updateAll();
-		pSong->__is_modified = true;
+		pSong->set_modified( true );
 	}
 	else {
 		AudioEngine::get_instance()->unlock();
@@ -410,7 +410,7 @@ void SongEditorPanel::downBtnClicked( Button* /*btn*/ )
 		pEngine->setSelectedPatternNumber( nSelectedPatternPos + 1 );
 
 		updateAll();
-		pSong->__is_modified = true;
+		pSong->set_modified( true );
 	}
 	else {
 		AudioEngine::get_instance()->unlock();
@@ -432,7 +432,7 @@ void SongEditorPanel::clearSequence( Button* /*btn*/)
 	AudioEngine::get_instance()->lock( RIGHT_HERE );
 
 	Song *song = engine->getSong();
-	vector<PatternList*> *pPatternGroupsVect = song->get_pattern_group_vector();
+	Song::pattern_group_t *pPatternGroupsVect = song->get_pattern_group_vector();
 	for (uint i = 0; i < pPatternGroupsVect->size(); i++) {
 		PatternList *pPatternList = (*pPatternGroupsVect)[i];
 		pPatternList->clear();
@@ -443,7 +443,7 @@ void SongEditorPanel::clearSequence( Button* /*btn*/)
 	AudioEngine::get_instance()->unlock();
 
 	updateAll();
-	song->__is_modified = true;
+	song->set_modified( true );
 }
 
 

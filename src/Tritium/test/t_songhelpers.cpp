@@ -58,8 +58,8 @@ TEST_BEGIN( Fixture );
 
 TEST_CASE( 010_defaults )
 {
-    BOOST_MESSAGE( s->__name.toStdString() );
-    CK( s->__name == QString("Jazzy") );
+    BOOST_MESSAGE( s->get_name().toStdString() );
+    CK( s->get_name() == QString("Jazzy") );
     CK( song_bar_count( s ) == 8 );
     CK( song_tick_count( s ) == 1536 );
     CK( bar_for_absolute_tick( s, 0 ) == 1 );

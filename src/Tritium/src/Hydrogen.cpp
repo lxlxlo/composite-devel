@@ -861,7 +861,7 @@ void audioEngine_renameJackPorts()
 
 void audioEngine_setSong( Song *newSong )
 {
-	WARNINGLOG( QString( "Set song: %1" ).arg( newSong->__name ) );
+	WARNINGLOG( QString( "Set song: %1" ).arg( newSong->get_name() ) );
 
 	while( m_pSong != 0 ) {
 		audioEngine_removeSong();
@@ -2028,7 +2028,7 @@ void Hydrogen::removeInstrument( int instrumentnumber, bool conditional )
 	// delete the instrument from the instruments list
 	AudioEngine::get_instance()->lock( RIGHT_HERE );
 	getSong()->get_instrument_list()->del( instrumentnumber );
-	getSong()->__is_modified = true;
+	getSong()->set_modified(true);
 	AudioEngine::get_instance()->unlock();
 	
 	// At this point the instrument has been removed from both the
@@ -2080,7 +2080,7 @@ long Hydrogen::getTickForPosition( int pos )
 		}
 	}
 
-	std::vector<PatternList*> *pColumns = m_pSong->get_pattern_group_vector();
+	Song::pattern_group_t *pColumns = m_pSong->get_pattern_group_vector();
 	long totalTick = 0;
 	int nPatternSize;
 	Pattern *pPattern = NULL;
@@ -2142,7 +2142,7 @@ void Hydrogen::setTapTempo( float fInterval )
 void Hydrogen::setBPM( float fBPM )
 {
 	if( (fBPM < 500.0) && (fBPM > 20.0) ) {
-		m_pSong->__bpm = fBPM;
+		m_pSong->set_bpm(fBPM);
 	}
 }
 

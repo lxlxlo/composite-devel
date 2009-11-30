@@ -108,7 +108,7 @@ HydrogenApp::HydrogenApp( MainForm *pMainForm, Song *pFirstSong )
 	Preferences::get_instance()->setLastSongFilename( pFirstSong->get_filename() );
 
 	// set initial title
-	QString qsSongName( pFirstSong->__name );
+	QString qsSongName( pFirstSong->get_name() );
 	if( qsSongName == "Untitled Song" && !pFirstSong->get_filename().isEmpty() ){
 		qsSongName = pFirstSong->get_filename();
 		qsSongName = qsSongName.section( '/', -1 );
@@ -302,7 +302,7 @@ void HydrogenApp::setSong(Song* song)
 	m_pSongEditorPanel->updateAll();
 	m_pPatternEditorPanel->updateSLnameLabel();
 
-	QString songName( song->__name );
+	QString songName( song->get_name() );
 	if( songName == "Untitled Song" && !song->get_filename().isEmpty() ){
 		songName = song->get_filename();
 		songName = songName.section( '/', -1 );

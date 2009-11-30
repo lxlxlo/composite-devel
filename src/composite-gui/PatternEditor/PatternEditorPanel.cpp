@@ -892,7 +892,7 @@ void PatternEditorPanel::moveUpBtnClicked(Button *)
 		AudioEngine::get_instance()->unlock();
 		engine->setSelectedInstrumentNumber( nSelectedInstrument - 1 );
 
-		pSong->__is_modified = true;
+		pSong->set_modified( true );
 	}
 	else {
 		AudioEngine::get_instance()->unlock();
@@ -933,7 +933,7 @@ void PatternEditorPanel::moveDownBtnClicked(Button *)
 		AudioEngine::get_instance()->unlock();
 		engine->setSelectedInstrumentNumber( nSelectedInstrument + 1 );
 
-		pSong->__is_modified = true;
+		pSong->set_modified( true );
 	}
 	else {
 		AudioEngine::get_instance()->unlock();

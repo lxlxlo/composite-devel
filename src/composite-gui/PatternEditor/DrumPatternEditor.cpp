@@ -195,7 +195,7 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 				Hydrogen::get_instance()->midi_noteOn(pNote2);
 			}
 		}
-		pSong->__is_modified = true;
+		pSong->set_modified( true );
 		AudioEngine::get_instance()->unlock(); // unlock the audio engine
 	}
 	else if (ev->button() == Qt::RightButton ) {
@@ -301,7 +301,7 @@ void DrumPatternEditor::mouseMoveEvent(QMouseEvent *ev)
 		}
 		m_pDraggedNote->set_length( nLen );
 
-		Hydrogen::get_instance()->getSong()->__is_modified = true;
+		Hydrogen::get_instance()->getSong()->set_modified( true );
 		AudioEngine::get_instance()->unlock(); // unlock the audio engine
 
 		//__draw_pattern();

@@ -535,7 +535,7 @@ void SoundLibraryPanel::on_drumkitLoadAction()
 	QApplication::setOverrideCursor(Qt::WaitCursor);
 
 	Hydrogen::get_instance()->loadDrumkit( drumkitInfo );
-	Hydrogen::get_instance()->getSong()->__is_modified = true;
+	Hydrogen::get_instance()->getSong()->set_modified( true );
 	HydrogenApp::get_instance()->onDrumkitLoad( drumkitInfo->getName() );
 	HydrogenApp::get_instance()->getPatternEditorPanel()->getDrumPatternEditor()->updateEditor();
 
@@ -785,7 +785,7 @@ void SoundLibraryPanel::on_patternLoadAction()
 	else {
 		Tritium::Pattern *pNewPattern = err;
 		pPatternList->add ( pNewPattern );
-		song->__is_modified = true;
+		song->set_modified( true );
 	}
 
 	HydrogenApp::get_instance()->getSongEditorPanel()->updateAll();
