@@ -28,7 +28,7 @@
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/AudioEngine.hpp>
-#include <Tritium/sampler/Sampler.hpp>
+#include <Tritium/Sampler.hpp>
 using namespace Tritium;
 
 #include "../Skin.hpp"

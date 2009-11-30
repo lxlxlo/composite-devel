@@ -22,7 +22,7 @@
 #include <Tritium/AudioEngine.hpp>
 
 #include <Tritium/fx/Effects.hpp>
-#include <Tritium/sampler/Sampler.hpp>
+#include <Tritium/Sampler.hpp>
 #include <Tritium/Logger.hpp>
 
 #include <Tritium/Hydrogen.hpp>	// TODO: remove this line as soon as possible

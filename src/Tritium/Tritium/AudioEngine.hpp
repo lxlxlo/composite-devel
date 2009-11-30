@@ -22,7 +22,7 @@
 #ifndef TRITIUM_AUDIO_ENGINE_HPP
 #define TRITIUM_AUDIO_ENGINE_HPP
 
-#include <Tritium/sampler/Sampler.hpp>
+#include <Tritium/Sampler.hpp>
 
 #include <QMutex>
 #include <cassert>

@@ -40,7 +40,7 @@
 #include <Tritium/Logger.hpp>
 
 #include <Tritium/fx/Effects.hpp>
-#include <Tritium/sampler/Sampler.hpp>
+#include <Tritium/Sampler.hpp>
 #include <Tritium/TransportPosition.hpp>
 
 using namespace Tritium;

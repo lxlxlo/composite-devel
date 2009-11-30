@@ -91,7 +91,7 @@
 #include <Tritium/IO/MidiInput.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/DataPath.hpp>
-#include <Tritium/sampler/Sampler.hpp>
+#include <Tritium/Sampler.hpp>
 #include <Tritium/MidiMap.hpp>
 #include <Tritium/Playlist.hpp>
 

@@ -31,7 +31,7 @@
 #include <Tritium/Transport.hpp>
 #include <Tritium/IO/MidiInput.hpp>
 #include <Tritium/IO/AudioOutput.hpp>
-#include <Tritium/sampler/Sampler.hpp>
+#include <Tritium/Sampler.hpp>
 #include <Tritium/AudioEngine.hpp>
 using namespace Tritium;
 
