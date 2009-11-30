@@ -19,10 +19,15 @@
  *
  */
 
+/*
+ * This test was originally to test the methods in the songhelpers.cpp
+ * file.  However, these have now been merged into class Song.  Since
+ * these tests are written and work, they are retained with the
+ * t_songhelpers.cpp name.
+ */
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/Logger.hpp>
-#include "../src/transport/songhelpers.hpp"
 
 #define THIS_NAMESPACE t_songhelpers
 #include "test_macros.hpp"
@@ -60,17 +65,17 @@ TEST_CASE( 010_defaults )
 {
     BOOST_MESSAGE( s->get_name().toStdString() );
     CK( s->get_name() == QString("Jazzy") );
-    CK( song_bar_count( s ) == 8 );
-    CK( song_tick_count( s ) == 1536 );
-    CK( bar_for_absolute_tick( s, 0 ) == 1 );
-    CK( bar_start_tick( s, 1 ) == 0 );
-    CK( ticks_in_bar( s, 1 ) == 192 );
+    CK( s->song_bar_count() == 8 );
+    CK( s->song_tick_count() == 1536 );
+    CK( s->bar_for_absolute_tick( 0 ) == 1 );
+    CK( s->bar_start_tick( 1 ) == 0 );
+    CK( s->ticks_in_bar( 1 ) == 192 );
 }
 
 TEST_CASE( 020_pattern_group_index_for_bar )
 {
     for( uint32_t k = 0 ; k < 8 ; ++k ) {
-	CK( pattern_group_index_for_bar(s, k+1) == k );
+	CK( s->pattern_group_index_for_bar(k+1) == k );
     }
 }
 
@@ -79,7 +84,7 @@ TEST_CASE( 030_bar_for_absolute_tick )
     uint32_t bar, real_bar;
     for( uint32_t k = 0 ; k < 1536 ; ++k ) {
 	real_bar = (k/192) + 1;
-	bar = bar_for_absolute_tick(s, k);
+	bar = s->bar_for_absolute_tick(k);
 	CK( bar == real_bar );
     }
 }
@@ -89,7 +94,7 @@ TEST_CASE( 040_bar_start_tick )
     uint32_t bst, real_bst;
     for( uint32_t k = 1 ; k <= 8 ; ++k ) {
 	real_bst = 192 * (k-1);
-	bst = bar_start_tick(s, k);
+	bst = s->bar_start_tick(k);
 	CK( bst == real_bst );
     }
 }
@@ -99,7 +104,7 @@ TEST_CASE( 050_ticks_in_bar )
     uint32_t ticks, real_ticks;
     for( uint32_t k = 1 ; k <= 8 ; ++k ) {
 	real_ticks = 192;
-	ticks = ticks_in_bar(s, k);
+	ticks = s->ticks_in_bar(k);
 	CK( ticks == real_ticks );
     }
 }

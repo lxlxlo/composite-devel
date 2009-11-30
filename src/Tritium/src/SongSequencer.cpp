@@ -31,7 +31,6 @@
 #include <Tritium/InstrumentList.hpp>
 
 #include "SongSequencer.hpp"
-#include "transport/songhelpers.hpp"
 
 using namespace Tritium;
 
@@ -90,7 +89,7 @@ int SongSequencer::process(SeqScript& seq, const TransportPosition& pos, uint32_
 		if( this_tick == 0 ) {
 			pattern_changed = true;
 		}
-		pat_grp = pattern_group_index_for_bar(pSong, pos.bar);
+		pat_grp = pSong->pattern_group_index_for_bar(pos.bar);
 		patterns = pSong->get_pattern_group_vector()->at(pat_grp);
 
 		for( k=0 ; unsigned(k) < patterns->get_size() ; ++k ) {

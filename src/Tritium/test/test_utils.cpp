@@ -22,7 +22,6 @@
 #include "test_utils.hpp"
 #include <Tritium/TransportPosition.hpp>
 #include <Tritium/Song.hpp>
-#include "../src/transport/songhelpers.hpp"
 #include <cmath>
 
 using namespace Tritium;
@@ -130,17 +129,17 @@ namespace TritiumTest
     {
 	bool rv = true;
 	XCK( p.bar > 0 );
-	XCK( p.bar <= song_bar_count(s) );
+	XCK( p.bar <= s->song_bar_count() );
 	XCK( p.ticks_per_beat == 48 );
-	XCK( p.beats_per_bar == (ticks_in_bar(s,p.bar)/48) );
+	XCK( p.beats_per_bar == (s->ticks_in_bar(p.bar)/48) );
 	XCK( p.beat_type == 4 );
 	XCK( p.beat > 0 );
 	XCK( p.beat <= p.beats_per_bar );
-	XCK( p.tick < ticks_in_bar(s, p.bar) );
+	XCK( p.tick < s->ticks_in_bar(p.bar) );
 	XCK( p.bbt_offset < p.frames_per_tick() );
-	XCK( p.bar_start_tick < song_tick_count(s) );
-	XCK( p.bar_start_tick == bar_start_tick(s, p.bar) );
-	XCK( (p.bar_start_tick + p.tick) < song_tick_count(s) );
+	XCK( p.bar_start_tick < s->song_tick_count() );
+	XCK( p.bar_start_tick == s->bar_start_tick(p.bar) );
+	XCK( (p.bar_start_tick + p.tick) < s->song_tick_count() );
 	return rv;
     }
 

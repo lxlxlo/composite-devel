@@ -29,7 +29,6 @@
 #include <QtCore/QMutex>
 #include <QtCore/QMutexLocker>
 
-#include "songhelpers.hpp"
 #include <cmath>
 #include <cassert>
 
@@ -71,8 +70,8 @@ int SimpleTransportMaster::locate(uint32_t frame)
     uint32_t abs_tick = round( double(frame) / frames_per_tick );
 
     d->pos.bbt_offset = round(fmod(frame, frames_per_tick));
-    d->pos.bar = bar_for_absolute_tick(d->song, abs_tick);
-    d->pos.bar_start_tick = bar_start_tick(d->song, d->pos.bar);
+    d->pos.bar = d->song->bar_for_absolute_tick(abs_tick);
+    d->pos.bar_start_tick = d->song->bar_start_tick(d->pos.bar);
     d->pos.beat = 1 + (abs_tick - d->pos.bar_start_tick) / d->pos.ticks_per_beat;
     d->pos.tick = (abs_tick - d->pos.bar_start_tick) % d->pos.ticks_per_beat;
     d->pos.frame = frame;
@@ -94,17 +93,17 @@ int SimpleTransportMaster::locate(uint32_t bar, uint32_t beat, uint32_t tick)
     d->pos.bbt_offset = 0;
     uint32_t abs_tick = 0;
     uint32_t t;
-    if( bar > song_bar_count(d->song) ) {
+    if( bar > d->song->song_bar_count() ) {
         d->pos.beats_per_bar = 4;
-        abs_tick = song_tick_count(d->song)
-            + (bar - song_bar_count(d->song)) * d->pos.beats_per_bar * d->pos.ticks_per_beat
+        abs_tick = d->song->song_tick_count()
+            + (bar - d->song->song_bar_count()) * d->pos.beats_per_bar * d->pos.ticks_per_beat
             + (beat - 1) * d->pos.ticks_per_beat
             + tick;
     } else {
-	t = ticks_in_bar(d->song, bar);
+	t = d->song->ticks_in_bar(bar);
         d->pos.beats_per_bar = t / d->pos.ticks_per_beat;
 	assert( (t % d->pos.ticks_per_beat) == 0 );
-        abs_tick = bar_start_tick(d->song, bar)
+        abs_tick = d->song->bar_start_tick(bar)
             + (beat - 1) * d->pos.ticks_per_beat
             + tick;
     }
@@ -164,12 +163,12 @@ void SimpleTransportMaster::processed_frames(uint32_t nFrames)
     d->pos.normalize(target);
 
     if( old_bar != d->pos.bar ) {
-	uint32_t song_bars = song_bar_count(d->song);
+	uint32_t song_bars = d->song->song_bar_count();
 	if( d->pos.bar > song_bars ) {
 	    d->pos.bar = 1 + ((d->pos.bar - 1) % song_bars);
-	    d->pos.bar_start_tick = bar_start_tick(d->song, d->pos.bar); 
+	    d->pos.bar_start_tick = d->song->bar_start_tick(d->pos.bar); 
 	}
-        d->pos.beats_per_bar = ticks_in_bar(d->song, d->pos.bar)
+        d->pos.beats_per_bar = d->song->ticks_in_bar(d->pos.bar)
             / d->pos.ticks_per_beat;
     }
     // After all the calculations... *now* the new tempo
@@ -202,7 +201,7 @@ void SimpleTransportMasterPrivate::set_current_song(Song* s)
         pos.tick = 0;
         pos.bbt_offset = 0;
         pos.bar_start_tick = 0;
-        pos.beats_per_bar = double(ticks_in_bar(s, 1)) / 48.0;
+        pos.beats_per_bar = double(s->ticks_in_bar(1)) / 48.0;
         pos.beat_type = 4; // Assumed.
         pos.ticks_per_beat = song->get_resolution();
         pos.beats_per_minute = song->get_bpm();
