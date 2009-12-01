@@ -23,6 +23,8 @@
 #include <cmath>
 #include <list>
 
+#include "SamplerPrivate.hpp"
+
 #include <Tritium/IO/AudioOutput.hpp>
 #include <Tritium/IO/JackOutput.hpp>
 
@@ -51,58 +53,6 @@ inline static float linear_interpolation( float fVal_A, float fVal_B, float fVal
 //	return fVal_A + fVal * ( fVal_B - fVal_A );
 //	return fVal_A + ((fVal_B - fVal_A) * fVal);
 }
-
-struct Tritium::SamplerPrivate
-{
-	Sampler& parent;
-	typedef std::list<Note> NoteList;
-	NoteList current_notes;                // Replaces __playing_notes_queue
-	Instrument* preview_instrument;         // Replaces __preview_instrument
-#ifdef JACK_SUPPORT
-	float* track_out_L[ MAX_INSTRUMENTS ];  // Replaces __track_out_L
-	float* track_out_R[ MAX_INSTRUMENTS ];  // Replaces __track_out_R
-#endif
-	SamplerPrivate(Sampler* par) :
-		parent( *par ),
-		preview_instrument( 0 )
-		{}
-
-	// Add/Remove notes from current_notes based on event 'ev'
-	void handle_event(const SeqEvent& ev);
-
-	// These are utils for handle_event().
-	void panic();  // Cease all sounc
-	void handle_note_on(const SeqEvent& ev);
-	void handle_note_off(const SeqEvent& ev);
-
-	// Actually render the specific note(s) to the buffers.
-	int render_note(Note& note, uint32_t nFrames, uint32_t frame_rate);
-	int render_note_no_resample(
-		Sample *pSample,
-		Note& note,
-		int nFrames,
-		float cost_L,
-		float cost_R,
-		float cost_track_L,
-		float cost_track_R,
-		float fSendFXLevel_L,
-		float fSendFXLevel_R
-		);
-	int render_note_resample(
-		Sample *pSample,
-		Note& note,
-		int nFrames,
-		uint32_t frame_rate,
-		float cost_L,
-		float cost_R,
-		float cost_track_L,
-		float cost_track_R,
-		float fLayerPitch,
-		float fSendFXLevel_L,
-		float fSendFXLevel_R
-		);
-
-}; // class SamplerPrivate
 
 void SamplerPrivate::handle_event(const SeqEvent& ev)
 {

@@ -121,6 +121,10 @@ And not like this:
 Lines should /not/ exceed 80 columns... unless you have a really good
 reason.
 
+All class declarations, even for internal (private) classes and
+structures, need to be in a header file.  The reason for this is to
+facilitate testing, profiling, and other types of diagnostics.
+
 4. DOCUMENTATION
 ----------------
 

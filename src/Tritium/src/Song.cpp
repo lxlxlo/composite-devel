@@ -22,6 +22,10 @@
 #include "config.h"
 #include "version.h"
 
+#include "SongPrivate.hpp"
+#include "PatternModeList.hpp"
+#include "PatternModeManager.hpp"
+
 #include <cassert>
 #include <QtCore/QMutex>
 #include <QtCore/QMutexLocker>
@@ -47,119 +51,6 @@
 
 namespace Tritium
 {
-
-// Container for a vector that is thread-safe and
-// contains unique values.
-    class PatternModeList
-    {
-    public:
-	typedef int value_type;
-	typedef std::vector<value_type> list_type;
-	typedef list_type::iterator iterator;
-
-	PatternModeList();
-
-	void reserve(size_t size);
-	size_t size();
-	void add(value_type d);
-	void remove(value_type d);
-	void clear();
-
-	// Iterator access is inherently not thread-safe.
-	// To work around this, lock the mutex to ensure that
-	// the vector doesn't change while using the iterator.
-	QMutex& get_mutex();  // Warning: Only use this for begin()/end().
-                              // If you call any of the other methods, with
-	                      // the mutex locked, you will get a deadlock.
-	iterator begin();
-	iterator end();
-
-    private:
-	QMutex __mutex;
-	list_type __vec;
-    };
-
-    class PatternModeManager
-    {
-    public:
-	typedef PatternModeList PatternModeList_t;
-
-	PatternModeManager();
-
-	Song::PatternModeType get_pattern_mode_type();
-	void set_pattern_mode_type(Song::PatternModeType t);
-	void toggle_pattern_mode_type();
-
-	// Manipulate the pattern lists and queues.
-	// Patterns may only be added/removed once, so subsequent add/remove
-	// operations will have no affect.
-	// If 'pos' is not in the range 0 <= pos <= __pattern_list->get_size(),
-	// these will silently ignore the request.
-	void append_pattern(int pos);      // Appends pattern to the current group on next cycle.
-	void remove_pattern(int pos);      // Remove the pattern from the current group on next cycle.
-	void reset_patterns();             // Clears out the current and "next" queues.
-	void set_next_pattern(int pos);    // Sched. a pattern to replace the current group.
-	                                   // ...clears out any that are currently queued.
-	void append_next_pattern(int pos); // Adds pattern to the "next" queued patterns.
-	void remove_next_pattern(int pos); // Removes pattern from the "next" queue
-	void clear_queued_patterns();      // Clears out the "next" queued patterns.
-
-	// Returns the current patterns that are playing in pattern
-	// mode.  Return 0 if there are none, or we are in song mode.
-	void get_playing_patterns(PatternModeList_t::list_type& pats);
-
-	// This method should *ONLY* be used by the sequencer.
-	// This signals to the Song class that the current pattern
-	// is done playing, and to switch to the next pattern if
-	// there are any queued.
-	void go_to_next_patterns();
-
-
-    private:
-	Song::PatternModeType __type;
-	QMutex __mutex;  // Locked when accessing more than one of the lists.
-	PatternModeList_t __current;
-	PatternModeList_t __append;
-	PatternModeList_t __delete;
-	PatternModeList_t __next;
-    };
-
-    /**
-     * \brief Internal data/implementation of Tritium::Song.
-     */
-    class Song::SongPrivate
-    {
-    public:
-	bool is_muted;
-	unsigned resolution;		///< Resolution of the song (number of ticks per quarter)
-	float bpm;			///< Beats per minute
-	bool is_modified;
-	QString name;		///< song name
-	QString author;	///< author of the song
-	QString license;	///< license of the song
-
-	float volume;						///< volume of the song (0.0..1.0)
-	float metronome_volume;				///< Metronome volume
-	QString notes;
-	PatternList *pattern_list;				///< Pattern list
-	Song::pattern_group_t* pattern_group_sequence;	///< Sequence of pattern groups
-	InstrumentList *instrument_list;			///< Instrument list
-	QString filename;
-	bool is_loop_enabled;
-	float humanize_time_value;
-	float humanize_velocity_value;
-	float swing_factor;
-
-	SongMode song_mode;
-
-	PatternModeManager* pat_mode;
-
-	SongPrivate(const QString& name,
-		    const QString& author,
-		    float bpm,
-		    float volumne);
-	~SongPrivate();
-    };
 
     Song::SongPrivate::SongPrivate(
 	const QString& name_p,

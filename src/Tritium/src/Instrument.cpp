@@ -20,6 +20,8 @@
  *
  */
 
+#include "InstrumentPrivate.hpp"
+
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentLayer.hpp>
 #include <Tritium/InstrumentList.hpp>
@@ -36,41 +38,9 @@
 using namespace Tritium;
 
 /*********************************************************************
- * class InstrumentPrivate Definition.
+ * InstrumentPrivate definition
  *********************************************************************
  */
-class Instrument::InstrumentPrivate
-{
-public:
-    int queued;
-    InstrumentLayer* layer_list[MAX_LAYERS];
-    ADSR* adsr;
-    bool muted;
-    QString name;               ///< Instrument name
-    float pan_l;                ///< Pan of the instrument (left)
-    float pan_r;                ///< Pan of the instrument (right)
-    float gain;
-    float volume;               ///< Volume of the instrument
-    float filter_resonance;     ///< Filter resonant frequency (0..1)
-    float filter_cutoff;        ///< Filter cutoff (0..1)
-    float peak_l;               ///< current peak value (left)
-    float peak_r;               ///< current peak value (right)
-    float fx_level[MAX_FX];     ///< Ladspa FX level
-    float random_pitch_factor;
-    QString id;                 ///< ID of the instrument
-    QString drumkit_name;       ///< Drumkit name
-    bool filter_active;         ///< Is filter active?
-    int mute_group;             ///< Mute group
-
-    bool active;			///< is the instrument active?
-    bool soloed;
-    bool stop_notes;		///
-
-    InstrumentPrivate(const QString& id, const QString& name, ADSR* adsr );
-    ~InstrumentPrivate();
-    
-};
-
 Instrument::InstrumentPrivate::InstrumentPrivate(
     const QString& id,
     const QString& name,
