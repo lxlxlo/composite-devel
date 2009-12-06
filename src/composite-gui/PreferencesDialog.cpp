@@ -172,8 +172,8 @@ PreferencesDialog::PreferencesDialog(QWidget* parent)
 	// list midi output ports
 	midiPortComboBox->clear();
 	midiPortComboBox->addItem( "None" );
-	if ( Hydrogen::get_instance()->getMidiInput() ) {
-		std::vector<QString> midiOutList = Hydrogen::get_instance()->getMidiInput()->getOutputPortList();
+	if ( Hydrogen::get_instance()->get_midi_input() ) {
+		std::vector<QString> midiOutList = Hydrogen::get_instance()->get_midi_input()->getOutputPortList();
 
 		if ( midiOutList.size() != 0 ) {
 			midiPortComboBox->setEnabled( true );

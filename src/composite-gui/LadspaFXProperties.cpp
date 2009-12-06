@@ -348,7 +348,7 @@ void LadspaFXProperties::selectFXBtnClicked()
 			for (uint i = 0; i < pluginList.size(); i++) {
 				Tritium::LadspaFXInfo *pFXInfo = pluginList[i];
 				if (pFXInfo->m_sName == sSelectedFX ) {
-					int nSampleRate = Hydrogen::get_instance()->getAudioOutput()->getSampleRate();
+					int nSampleRate = Hydrogen::get_instance()->get_audio_output()->getSampleRate();
 					pFX = LadspaFX::load( pFXInfo->m_sFilename, pFXInfo->m_sLabel, nSampleRate );
 					pFX->setEnabled( true );
 					break;

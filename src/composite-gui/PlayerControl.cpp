@@ -554,7 +554,7 @@ void PlayerControl::updatePlayerControl()
 
 	// time
 	float fFrames = Hydrogen::get_instance()->get_transport()->get_current_frame();
-	float fSampleRate = m_pEngine->getAudioOutput()->getSampleRate();
+	float fSampleRate = m_pEngine->get_audio_output()->getSampleRate();
 	if ( fSampleRate != 0 ) {
 		float fSeconds = fFrames / fSampleRate;
 

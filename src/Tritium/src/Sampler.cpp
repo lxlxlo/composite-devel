@@ -158,7 +158,7 @@ void Sampler::process( SeqScriptConstIterator beg,
 		       uint32_t nFrames )
 {
 	//infoLog( "[process]" );
-	AudioOutput* audio_output = Hydrogen::get_instance()->getAudioOutput();
+	AudioOutput* audio_output = Hydrogen::get_instance()->get_audio_output();
 	assert( audio_output );
 
 	memset( __main_out_L, 0, nFrames * sizeof( float ) );
@@ -359,7 +359,7 @@ int SamplerPrivate::render_note_no_resample(
     float fSendFXLevel_R
 )
 {
-	AudioOutput* audio_output = Hydrogen::get_instance()->getAudioOutput();
+	AudioOutput* audio_output = Hydrogen::get_instance()->get_audio_output();
 	int retValue = 1; // the note is ended
 
 	int nAvail_bytes = pSample->get_n_frames() - ( int )note.m_fSamplePosition;   // verifico 
@@ -516,7 +516,7 @@ int SamplerPrivate::render_note_resample(
     float fSendFXLevel_R
 )
 {
-	AudioOutput* audio_output = Hydrogen::get_instance()->getAudioOutput();
+	AudioOutput* audio_output = Hydrogen::get_instance()->get_audio_output();
 	float fNotePitch = note.get_pitch() + fLayerPitch;
 	fNotePitch += note.m_noteKey.m_nOctave * 12 + note.m_noteKey.m_key;
 

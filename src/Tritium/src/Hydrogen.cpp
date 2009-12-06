@@ -1846,7 +1846,7 @@ void Hydrogen::stopExportSong()
 
 
 /// Used to display audio driver info
-AudioOutput* Hydrogen::getAudioOutput()
+AudioOutput* Hydrogen::get_audio_output()
 {
 	return m_pAudioDriver;
 }
@@ -1854,7 +1854,7 @@ AudioOutput* Hydrogen::getAudioOutput()
 
 
 /// Used to display midi driver info
-MidiInput* Hydrogen::getMidiInput()
+MidiInput* Hydrogen::get_midi_input()
 {
 	return m_pMidiDriver;
 }

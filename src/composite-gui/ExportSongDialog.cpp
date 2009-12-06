@@ -46,7 +46,7 @@ ExportSongDialog::ExportSongDialog(QWidget* parent)
 
 	HydrogenApp::get_instance()->addEventListener( this );
 
-	m_pSamplerateLbl->setText( trUtf8( "Sample rate: %1" ).arg( Hydrogen::get_instance()->getAudioOutput()->getSampleRate() ) );
+	m_pSamplerateLbl->setText( trUtf8( "Sample rate: %1" ).arg( Hydrogen::get_instance()->get_audio_output()->getSampleRate() ) );
 	m_pProgressBar->setValue( 0 );
 }
 

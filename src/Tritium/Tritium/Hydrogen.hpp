@@ -124,8 +124,8 @@ public:
 	void startExportSong( const QString& filename );
 	void stopExportSong();
 
-	AudioOutput* getAudioOutput();
-	MidiInput* getMidiInput();
+	AudioOutput* get_audio_output();
+	MidiInput* get_midi_input();
 
 	int getState();
 

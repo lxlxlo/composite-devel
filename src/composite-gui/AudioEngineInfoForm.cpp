@@ -136,7 +136,7 @@ void AudioEngineInfoForm::updateInfo()
 
 
 	// Audio driver info
-	AudioOutput *driver = pEngine->getAudioOutput();
+	AudioOutput *driver = pEngine->get_audio_output();
 	if (driver) {
 		QString audioDriverName = "Jack";
 		driverLbl->setText(audioDriverName);
@@ -166,7 +166,7 @@ void AudioEngineInfoForm::updateInfo()
 
 
 	// Midi driver info
-	MidiInput *pMidiDriver = pEngine->getMidiInput();
+	MidiInput *pMidiDriver = pEngine->get_midi_input();
 	if (pMidiDriver) {
 		midiDriverName->setText( "Jack" );
 	}
