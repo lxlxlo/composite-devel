@@ -282,10 +282,8 @@ int main(int argc, char *argv[])
 		delete pQApp;
 		delete pPref;
 		delete Tritium::EventQueue::get_instance();
-		delete Tritium::AudioEngine::get_instance();
-
 		delete Tritium::Playlist::get_instance();
-		// delete Tritium::Hydrogen::get_instance();
+		delete Tritium::Hydrogen::get_instance();
 
 		INFOLOG( "Quitting..." );
 		cout << "\nBye..." << endl;

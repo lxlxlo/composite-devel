@@ -211,7 +211,7 @@ Tritium::Pattern* InstrumentLine::getCurrentPattern()
 
 void InstrumentLine::functionClearNotes()
 {
-// 	AudioEngine::get_instance()->lock( RIGHT_HERE );	// lock the audio engine
+// 	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );	// lock the audio engine
 
 	Hydrogen * H = Hydrogen::get_instance();
 	Pattern *pCurrentPattern = getCurrentPattern();
@@ -231,7 +231,7 @@ void InstrumentLine::functionClearNotes()
 // 		delete pNote;
 // 		pCurrentPattern->note_map.erase( pos );
 // 	}
-// 	AudioEngine::get_instance()->unlock();	// unlock the audio engine
+// 	Hydrogen::get_instance()->get_audio_engine()->unlock();	// unlock the audio engine
 
 	// this will force an update...
 	EventQueue::get_instance()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
@@ -262,7 +262,7 @@ void InstrumentLine::functionFillNotes()
 	int nResolution = 4 * MAX_NOTES / ( nBase * pPatternEditor->getResolution() );
 
 
-	AudioEngine::get_instance()->lock( RIGHT_HERE );	// lock the audio engine
+	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );	// lock the audio engine
 
 
 	Song *pSong = pEngine->getSong();
@@ -297,7 +297,7 @@ void InstrumentLine::functionFillNotes()
 			}
 		}
 	}
-	AudioEngine::get_instance()->unlock();	// unlock the audio engine
+	Hydrogen::get_instance()->get_audio_engine()->unlock();	// unlock the audio engine
 
 	// this will force an update...
 	EventQueue::get_instance()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
@@ -314,7 +314,7 @@ void InstrumentLine::functionRandomizeVelocity()
 	PatternEditorPanel *pPatternEditorPanel = HydrogenApp::get_instance()->getPatternEditorPanel();
 	DrumPatternEditor *pPatternEditor = pPatternEditorPanel->getDrumPatternEditor();
 
-	AudioEngine::get_instance()->lock( RIGHT_HERE );	// lock the audio engine
+	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );	// lock the audio engine
 
 	int nBase;
 	if ( pPatternEditor->isUsingTriplets() ) {
@@ -354,7 +354,7 @@ void InstrumentLine::functionRandomizeVelocity()
 			}
 		}
 	}
-	AudioEngine::get_instance()->unlock();	// unlock the audio engine
+	Hydrogen::get_instance()->get_audio_engine()->unlock();	// unlock the audio engine
 
 	// this will force an update...
 	EventQueue::get_instance()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
@@ -370,11 +370,11 @@ void InstrumentLine::functionDeleteInstrument()
 	Hydrogen *pEngine = Hydrogen::get_instance();
 	pEngine->removeInstrument( m_nInstrumentNumber, false );
 	
-	AudioEngine::get_instance()->lock( RIGHT_HERE );
+	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 #ifdef JACK_SUPPORT
 	pEngine->renameJackPorts();
 #endif
-	AudioEngine::get_instance()->unlock();
+	Hydrogen::get_instance()->get_audio_engine()->unlock();
 }
 
 
@@ -439,13 +439,13 @@ InstrumentLine* PatternEditorInstrumentList::createInstrumentLine()
 void PatternEditorInstrumentList::moveInstrumentLine( int nSourceInstrument , int nTargetInstrument )
 {
 		Hydrogen *engine = Hydrogen::get_instance();
-		AudioEngine::get_instance()->lock( RIGHT_HERE );
+		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 		Song *pSong = engine->getSong();
 		InstrumentList *pInstrumentList = pSong->get_instrument_list();
 
 		if ( ( nTargetInstrument > (int)pInstrumentList->get_size() ) || ( nTargetInstrument < 0) ) {
-			AudioEngine::get_instance()->unlock();
+			Hydrogen::get_instance()->get_audio_engine()->unlock();
 			return;
 		}
 
@@ -472,7 +472,7 @@ void PatternEditorInstrumentList::moveInstrumentLine( int nSourceInstrument , in
 		engine->renameJackPorts();
 		#endif
 
-		AudioEngine::get_instance()->unlock();
+		Hydrogen::get_instance()->get_audio_engine()->unlock();
 		engine->setSelectedInstrumentNumber( nTargetInstrument );
 
 		pSong->set_modified( true );
@@ -595,14 +595,14 @@ void PatternEditorInstrumentList::dropEvent(QDropEvent *event)
 
 		pNewInstrument->set_id( QString("%1").arg( nID ) );
 
-		AudioEngine::get_instance()->lock( RIGHT_HERE );
+		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 		pEngine->getSong()->get_instrument_list()->add( pNewInstrument );
 
 		#ifdef JACK_SUPPORT
 		pEngine->renameJackPorts();
 		#endif
 
-		AudioEngine::get_instance()->unlock();
+		Hydrogen::get_instance()->get_audio_engine()->unlock();
 
 	
 		int nTargetInstrument = event->pos().y() / m_nGridHeight;

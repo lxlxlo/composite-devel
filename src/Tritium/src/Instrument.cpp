@@ -32,6 +32,7 @@
 #include <Tritium/SoundLibrary.hpp>
 #include <Tritium/AudioEngine.hpp>
 #include <Tritium/Logger.hpp>
+#include <Tritium/Hydrogen.hpp>
 
 #include <cassert>
 
@@ -161,12 +162,12 @@ void Instrument::load_from_placeholder( Instrument* placeholder, bool is_live )
 	    if ( pSample == NULL ) {
 		ERRORLOG( "Error loading sample. Creating a new empty layer." );
 		if ( is_live )
-		    AudioEngine::get_instance()->lock( RIGHT_HERE );
+		    Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 				
 		this->set_layer( NULL, nLayer );
 				
 		if ( is_live )
-		    AudioEngine::get_instance()->unlock();
+		    Hydrogen::get_instance()->get_audio_engine()->unlock();
 		delete pOldLayer;
 		continue;
 	    }
@@ -176,29 +177,29 @@ void Instrument::load_from_placeholder( Instrument* placeholder, bool is_live )
 	    pLayer->set_pitch(pNewLayer->get_pitch()); 
 
 	    if ( is_live )
-		AudioEngine::get_instance()->lock( RIGHT_HERE );
+		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 			
 	    this->set_layer( pLayer, nLayer );	// set the new layer
 			
 	    if ( is_live )
-		AudioEngine::get_instance()->unlock();
+		Hydrogen::get_instance()->get_audio_engine()->unlock();
 	    delete pOldLayer;		// delete the old layer
 
 	} else {
 	    InstrumentLayer *pOldLayer = this->get_layer( nLayer );
 	    if ( is_live )
-		AudioEngine::get_instance()->lock( RIGHT_HERE );
+		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 			
 	    this->set_layer( NULL, nLayer );
 			
 	    if ( is_live )
-		AudioEngine::get_instance()->unlock();
+		Hydrogen::get_instance()->get_audio_engine()->unlock();
 	    delete pOldLayer;		// delete the old layer
 	}
 
     }
     if ( is_live )
-	AudioEngine::get_instance()->lock( RIGHT_HERE );
+	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 	
     // update instrument properties
     this->set_gain( placeholder->get_gain() );
@@ -217,7 +218,7 @@ void Instrument::load_from_placeholder( Instrument* placeholder, bool is_live )
     this->set_mute_group( placeholder->get_mute_group() );
 	
     if ( is_live )
-	AudioEngine::get_instance()->unlock();
+	Hydrogen::get_instance()->get_audio_engine()->unlock();
 }
 
 /**

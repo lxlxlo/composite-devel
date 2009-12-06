@@ -31,6 +31,8 @@
 #include <Tritium/Sample.hpp>
 #include <Tritium/AudioEngine.hpp>
 #include <Tritium/Logger.hpp>
+#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Sampler.hpp>
 
 #include <QModelIndex>
 #include <QTreeWidget>
@@ -100,7 +102,7 @@ AudioFileBrowser::AudioFileBrowser ( QWidget* pParent )
 AudioFileBrowser::~AudioFileBrowser()
 {
 	Sample *pNewSample = Sample::load( sEmptySampleFilename );
-	AudioEngine::get_instance()->get_sampler()->preview_sample( pNewSample, 100 );
+	Hydrogen::get_instance()->get_audio_engine()->get_sampler()->preview_sample( pNewSample, 100 );
 	INFOLOG ( "DESTROY" );
 }
 
@@ -301,7 +303,7 @@ void AudioFileBrowser::on_m_pPlayBtn_clicked()
 	Sample *pNewSample = Sample::load( m_psamplefilename );
 	if ( pNewSample ){
 		int length = ( ( pNewSample->get_n_frames() / pNewSample->get_sample_rate() + 1) * 100 );
-		AudioEngine::get_instance()->get_sampler()->preview_sample( pNewSample, length );
+		Hydrogen::get_instance()->get_audio_engine()->get_sampler()->preview_sample( pNewSample, length );
 	}
 }
 
@@ -310,7 +312,7 @@ void AudioFileBrowser::on_m_pPlayBtn_clicked()
 void AudioFileBrowser::on_m_pStopBtn_clicked()
 {
 	Sample *pNewSample = Sample::load( sEmptySampleFilename );
-	AudioEngine::get_instance()->get_sampler()->preview_sample( pNewSample, 100 );
+	Hydrogen::get_instance()->get_audio_engine()->get_sampler()->preview_sample( pNewSample, 100 );
 	m_pStopBtn->setEnabled( false );
 }
 

@@ -25,27 +25,14 @@
 #include <Tritium/Sampler.hpp>
 #include <Tritium/Logger.hpp>
 
-#include <Tritium/Hydrogen.hpp>	// TODO: remove this line as soon as possible
 #include <cassert>
 
 namespace Tritium
 {
 
-
-AudioEngine* AudioEngine::__instance = NULL;
-
-
-void AudioEngine::create_instance()
-{
-	if( __instance == 0 ) {
-		__instance = new AudioEngine;
-	}
-}
-
 AudioEngine::AudioEngine()
 		: __sampler( NULL )
 {
-	__instance = this;
 	INFOLOG( "INIT" );
 
 	__sampler = new Sampler;
@@ -66,7 +53,6 @@ AudioEngine::~AudioEngine()
 #endif
 
 	delete __sampler;
-	__instance = 0;
 }
 
 

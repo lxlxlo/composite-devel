@@ -141,7 +141,7 @@ void LayerPreview::paintEvent(QPaintEvent *ev)
 
 void LayerPreview::selectedInstrumentChangedEvent()
 {
-	AudioEngine::get_instance()->lock( RIGHT_HERE );
+	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 	Song *pSong = Hydrogen::get_instance()->getSong();
 	if (pSong != NULL) {
 		InstrumentList *pInstrList = pSong->get_instrument_list();
@@ -160,7 +160,7 @@ void LayerPreview::selectedInstrumentChangedEvent()
 	else {
 		m_pInstrument = NULL;
 	}
-	AudioEngine::get_instance()->unlock();
+	Hydrogen::get_instance()->get_audio_engine()->unlock();
 
 	// select the last valid layer
 	if ( m_pInstrument ) {

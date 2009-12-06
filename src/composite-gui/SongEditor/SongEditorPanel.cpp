@@ -368,7 +368,7 @@ void SongEditorPanel::upBtnClicked( Button* /*btn*/ )
 	Hydrogen *pEngine = Hydrogen::get_instance();
 	int nSelectedPatternPos = pEngine->getSelectedPatternNumber();
 
-	AudioEngine::get_instance()->lock( RIGHT_HERE );
+	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 	Song *pSong = pEngine->getSong();
 	PatternList *pList = pSong->get_pattern_list();
 
@@ -376,14 +376,14 @@ void SongEditorPanel::upBtnClicked( Button* /*btn*/ )
 		Pattern *pTemp = pList->get( nSelectedPatternPos - 1 );
 		pList->replace( pList->get( nSelectedPatternPos ), nSelectedPatternPos - 1 );
 		pList->replace( pTemp, nSelectedPatternPos );
-		AudioEngine::get_instance()->unlock();
+		Hydrogen::get_instance()->get_audio_engine()->unlock();
 		pEngine->setSelectedPatternNumber( nSelectedPatternPos - 1 );
 
 		updateAll();
 		pSong->set_modified( true );
 	}
 	else {
-		AudioEngine::get_instance()->unlock();
+		Hydrogen::get_instance()->get_audio_engine()->unlock();
 	}
 }
 
@@ -397,7 +397,7 @@ void SongEditorPanel::downBtnClicked( Button* /*btn*/ )
 	Hydrogen *pEngine = Hydrogen::get_instance();
 	int nSelectedPatternPos = pEngine->getSelectedPatternNumber();
 
-	AudioEngine::get_instance()->lock( RIGHT_HERE );
+	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 	Song *pSong = pEngine->getSong();
 	PatternList *pList = pSong->get_pattern_list();
 
@@ -406,14 +406,14 @@ void SongEditorPanel::downBtnClicked( Button* /*btn*/ )
 		pList->replace( pList->get( nSelectedPatternPos ), nSelectedPatternPos + 1 );
 		pList->replace( pTemp, nSelectedPatternPos );
 
-		AudioEngine::get_instance()->unlock();
+		Hydrogen::get_instance()->get_audio_engine()->unlock();
 		pEngine->setSelectedPatternNumber( nSelectedPatternPos + 1 );
 
 		updateAll();
 		pSong->set_modified( true );
 	}
 	else {
-		AudioEngine::get_instance()->unlock();
+		Hydrogen::get_instance()->get_audio_engine()->unlock();
 	}
 }
 
@@ -429,7 +429,7 @@ void SongEditorPanel::clearSequence( Button* /*btn*/)
 
 	Hydrogen *engine = Hydrogen::get_instance();
 
-	AudioEngine::get_instance()->lock( RIGHT_HERE );
+	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 	Song *song = engine->getSong();
 	Song::pattern_group_t *pPatternGroupsVect = song->get_pattern_group_vector();
@@ -440,7 +440,7 @@ void SongEditorPanel::clearSequence( Button* /*btn*/)
 	}
 	pPatternGroupsVect->clear();
 
-	AudioEngine::get_instance()->unlock();
+	Hydrogen::get_instance()->get_audio_engine()->unlock();
 
 	updateAll();
 	song->set_modified( true );

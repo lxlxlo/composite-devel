@@ -865,7 +865,7 @@ void PatternEditorPanel::moveUpBtnClicked(Button *)
 	Hydrogen *engine = Hydrogen::get_instance();
 	int nSelectedInstrument = engine->getSelectedInstrumentNumber();
 
-	AudioEngine::get_instance()->lock( RIGHT_HERE );
+	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 	Song *pSong = engine->getSong();
 	InstrumentList *pInstrumentList = pSong->get_instrument_list();
@@ -889,13 +889,13 @@ void PatternEditorPanel::moveUpBtnClicked(Button *)
 			pSeq2->m_noteList = noteList;
 		}
 */
-		AudioEngine::get_instance()->unlock();
+		Hydrogen::get_instance()->get_audio_engine()->unlock();
 		engine->setSelectedInstrumentNumber( nSelectedInstrument - 1 );
 
 		pSong->set_modified( true );
 	}
 	else {
-		AudioEngine::get_instance()->unlock();
+		Hydrogen::get_instance()->get_audio_engine()->unlock();
 	}
 }
 
@@ -906,7 +906,7 @@ void PatternEditorPanel::moveDownBtnClicked(Button *)
 	Hydrogen *engine = Hydrogen::get_instance();
 	int nSelectedInstrument = engine->getSelectedInstrumentNumber();
 
-	AudioEngine::get_instance()->lock( RIGHT_HERE );
+	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 	Song *pSong = engine->getSong();
 	InstrumentList *pInstrumentList = pSong->get_instrument_list();
@@ -930,13 +930,13 @@ void PatternEditorPanel::moveDownBtnClicked(Button *)
 			pSeq2->m_noteList = noteList;
 		}
 */
-		AudioEngine::get_instance()->unlock();
+		Hydrogen::get_instance()->get_audio_engine()->unlock();
 		engine->setSelectedInstrumentNumber( nSelectedInstrument + 1 );
 
 		pSong->set_modified( true );
 	}
 	else {
-		AudioEngine::get_instance()->unlock();
+		Hydrogen::get_instance()->get_audio_engine()->unlock();
 	}
 
 }

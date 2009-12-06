@@ -53,6 +53,7 @@
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Sample.hpp>
+#include <Tritium/Sampler.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/SoundLibrary.hpp>
 #include <Tritium/Logger.hpp>
@@ -341,7 +342,7 @@ void SoundLibraryPanel::on_DrumkitList_itemActivated(
 		Instrument *pInstrument = Instrument::load_instrument( sDrumkitName, sInstrName );
 		pInstrument->set_muted( false );
 
-		AudioEngine::get_instance()->get_sampler()->preview_instrument( pInstrument );
+		Hydrogen::get_instance()->get_audio_engine()->get_sampler()->preview_instrument( pInstrument );
 	}
 }
 

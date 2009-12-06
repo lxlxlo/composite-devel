@@ -204,7 +204,7 @@ void AudioEngineInfoForm::updateInfo()
 	}
 
 	// SAMPLER
-	Sampler *pSampler = AudioEngine::get_instance()->get_sampler();
+	Sampler *pSampler = Hydrogen::get_instance()->get_audio_engine()->get_sampler();
 	sampler_playingNotesLbl->setText(QString( "%1 / %2" ).arg(pSampler->get_playing_notes_number()).arg(Preferences::get_instance()->m_nMaxNotes));
 
 }

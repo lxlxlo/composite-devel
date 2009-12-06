@@ -337,7 +337,7 @@ InstrumentEditor::~InstrumentEditor()
 
 void InstrumentEditor::selectedInstrumentChangedEvent()
 {
-	AudioEngine::get_instance()->lock( RIGHT_HERE );
+	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 	Song *pSong = Hydrogen::get_instance()->getSong();
 	if (pSong != NULL) {
@@ -358,7 +358,7 @@ void InstrumentEditor::selectedInstrumentChangedEvent()
 	else {
 		m_pInstrument = NULL;
 	}
-	AudioEngine::get_instance()->unlock();
+	Hydrogen::get_instance()->get_audio_engine()->unlock();
 
 	// update layer list
 	if (m_pInstrument) {
@@ -548,7 +548,7 @@ void InstrumentEditor::buttonClicked( Button* pButton )
 	}
 	else if ( pButton == m_pRemoveLayerBtn ) {
 		//Hydrogen *pEngine = Hydrogen::get_instance();
-		AudioEngine::get_instance()->lock( RIGHT_HERE );
+		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 		if ( m_pInstrument ) {
 			Tritium::InstrumentLayer *pLayer = m_pInstrument->get_layer( m_nSelectedLayer );
@@ -557,7 +557,7 @@ void InstrumentEditor::buttonClicked( Button* pButton )
 				delete pLayer;
 			}
 		}
-		AudioEngine::get_instance()->unlock();
+		Hydrogen::get_instance()->get_audio_engine()->unlock();
 		selectedInstrumentChangedEvent();    // update all
 		m_pLayerPreview->updateAll();
 	}
@@ -608,7 +608,7 @@ void InstrumentEditor::loadLayer()
 	
 			Tritium::Instrument *pInstr = NULL;
 	
-			AudioEngine::get_instance()->lock( RIGHT_HERE );
+			Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 			Song *song = engine->getSong();
 			InstrumentList *instrList = song->get_instrument_list();
 			pInstr = instrList->get( engine->getSelectedInstrumentNumber() );
@@ -648,7 +648,7 @@ void InstrumentEditor::loadLayer()
 	
 			pInstr->set_drumkit_name( "" );   // external sample, no drumkit info
 	
-			AudioEngine::get_instance()->unlock();
+			Hydrogen::get_instance()->get_audio_engine()->unlock();
 
 		}
 	}

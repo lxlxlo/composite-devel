@@ -735,7 +735,7 @@ void Sampler::stop_playing_notes( Instrument* instrument )
 /// Preview, uses only the first layer
 void Sampler::preview_sample( Sample* sample, int length )
 {
-	AudioEngine::get_instance()->lock( RIGHT_HERE );
+	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 	InstrumentLayer *pLayer = d->preview_instrument->get_layer( 0 );
 
@@ -748,7 +748,7 @@ void Sampler::preview_sample( Sample* sample, int length )
 	note_on( previewNote );
 	delete pOldSample;
 
-	AudioEngine::get_instance()->unlock();
+	Hydrogen::get_instance()->get_audio_engine()->unlock();
 }
 
 
@@ -756,7 +756,7 @@ void Sampler::preview_sample( Sample* sample, int length )
 void Sampler::preview_instrument( Instrument* instr )
 {
 	Instrument * old_preview;
-	AudioEngine::get_instance()->lock( RIGHT_HERE );
+	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 	stop_playing_notes( d->preview_instrument );
 
@@ -766,6 +766,6 @@ void Sampler::preview_instrument( Instrument* instr )
 	Note *previewNote = new Note( d->preview_instrument, 0, 1.0, 0.5, 0.5, 0 );
 
 	note_on( previewNote );	// exclusive note
-	AudioEngine::get_instance()->unlock();
+	Hydrogen::get_instance()->get_audio_engine()->unlock();
 	delete old_preview;
 }

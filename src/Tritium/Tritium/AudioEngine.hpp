@@ -22,8 +22,6 @@
 #ifndef TRITIUM_AUDIO_ENGINE_HPP
 #define TRITIUM_AUDIO_ENGINE_HPP
 
-#include <Tritium/Sampler.hpp>
-
 #include <QMutex>
 #include <cassert>
 
@@ -34,20 +32,21 @@
 namespace Tritium
 {
 
+class Sampler;
+
 ///
 /// Audio Engine main class (Singleton).
 ///
 class AudioEngine
 {
 public:
-	static void create_instance();
-	static AudioEngine* get_instance() { assert(__instance); return __instance; }
+	AudioEngine();
 	~AudioEngine();
 
 	/* Mutex locking and unlocking
 	 *
 	 * Easy usage:  Use the RIGHT_HERE macro like this...
-	 *     AudioEngine::get_instance()->lock( RIGHT_HERE );
+	 *     Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 	 *
 	 * More complex usage:  The parameters file and function
 	 * need to be pointers to null-terminated strings that are
@@ -71,8 +70,6 @@ public:
 	Sampler* get_sampler();
 
 private:
-	static AudioEngine* __instance;
-
 	Sampler* __sampler;
 
 	/// Mutex for syncronized access to the Song object and the AudioEngine.
@@ -83,8 +80,6 @@ private:
 		unsigned int line;
 		const char* function;
 	} __locker;
-			
-	AudioEngine();
 };
 
 } // namespace Tritium

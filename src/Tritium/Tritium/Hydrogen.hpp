@@ -22,11 +22,8 @@
 #define TRITIUM_HYDROGEN_HPP
 
 #include <stdint.h> // for uint32_t et al
-#include <Tritium/Action.hpp>
 #include <Tritium/Song.hpp>
-#include <Tritium/IO/AudioOutput.hpp>
-#include <Tritium/IO/MidiInput.hpp>
-#include <Tritium/SoundLibrary.hpp>
+#include <vector>
 #include <list>
 #include <cassert>
 
@@ -44,8 +41,13 @@ inline int randomValue( int max );
 namespace Tritium
 {
 
+class AudioEngine;
 class Transport;
 class MidiMap;
+class ActionManager;
+class AudioOutput;
+class MidiInput;
+class Drumkit;
 
 ///
 /// Hydrogen Audio Engine.
@@ -82,6 +84,7 @@ public:
 // ***** ~SEQUENCER ********
 
 	ActionManager* get_action_manager();
+	AudioEngine* get_audio_engine();
 
 	/// Set current song
 	void setSong( Song *newSong );

@@ -30,6 +30,7 @@
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Sample.hpp>
 #include <Tritium/AudioEngine.hpp>
+#include <Tritium/Sampler.hpp>
 #include <Tritium/Logger.hpp>
 using namespace Tritium;
 
@@ -234,7 +235,7 @@ void FileBrowser::on_fileList_ItemActivated( QListWidgetItem* item )
 				Sample *pNewSample = Sample::load( fileInfo.absoluteFilePath() );
 				if (pNewSample) {
 					updateFileInfo( fileInfo.absoluteFilePath(), pNewSample->get_sample_rate(), pNewSample->get_size() );
-					AudioEngine::get_instance()->get_sampler()->preview_sample(pNewSample, 192);
+					Hydrogen::get_instance()->get_audio_engine()->get_sampler()->preview_sample(pNewSample, 192);
 				}
 			}
 		}

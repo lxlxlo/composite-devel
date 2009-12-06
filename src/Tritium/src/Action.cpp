@@ -482,7 +482,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		 * this is useful if the bpm is set by a rotary control knob
 		*/
 
-		AudioEngine::get_instance()->lock( RIGHT_HERE );
+		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 		int mult = 1;	
 
@@ -512,14 +512,14 @@ bool ActionManager::handleAction( Action * pAction ){
 		}
 
 
-		AudioEngine::get_instance()->unlock();
+		Hydrogen::get_instance()->get_audio_engine()->unlock();
 
 		return true;
 	}
 
 
 	if( sActionString == "BPM_INCR" ){
-		AudioEngine::get_instance()->lock( RIGHT_HERE );
+		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 		int mult = 1;	
 
@@ -531,7 +531,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		if (pSong->get_bpm()  < 300) {
 			pEngine->setBPM( pSong->get_bpm() + 1*mult );
 		}
-		AudioEngine::get_instance()->unlock();
+		Hydrogen::get_instance()->get_audio_engine()->unlock();
 
 		return true;
 	}
@@ -539,7 +539,7 @@ bool ActionManager::handleAction( Action * pAction ){
 
 
 	if( sActionString == "BPM_DECR" ){
-		AudioEngine::get_instance()->lock( RIGHT_HERE );
+		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 		int mult = 1;	
 
@@ -550,7 +550,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		if (pSong->get_bpm()  > 40 ) {
 			pEngine->setBPM( pSong->get_bpm() - 1*mult );
 		}
-		AudioEngine::get_instance()->unlock();
+		Hydrogen::get_instance()->get_audio_engine()->unlock();
 		
 		return true;
 	}
