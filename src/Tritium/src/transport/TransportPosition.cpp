@@ -184,6 +184,10 @@ void TransportPosition::normalize()
 	    bbt_offset += fpt;
 	    --tick;
 	}
+	if( bbt_offset >= fpt - .5 ) {
+	    bbt_offset -= fpt;
+	    ++tick;
+	}
     }
     assert( bbt_offset >= -.5 );
     assert( bbt_offset < fpt - .5 );
