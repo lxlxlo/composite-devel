@@ -22,8 +22,6 @@
 #ifndef TRITIUM_EVENT_QUEUE_HPP
 #define TRITIUM_EVENT_QUEUE_HPP
 
-#include <cassert>
-
 #define MAX_EVENTS 1024
 
 namespace Tritium
@@ -60,17 +58,13 @@ public:
 class EventQueue
 {
 public:
-	static void create_instance();
-	static EventQueue* get_instance() { assert(__instance); return __instance; }
+	EventQueue();
 	~EventQueue();
 
 	void push_event( EventType type, int nValue );
 	Event pop_event();
 
 private:
-	EventQueue();
-	static EventQueue *__instance;
-
 	int __read_index;
 	int __write_index;
 	Event __events_buffer[ MAX_EVENTS ];

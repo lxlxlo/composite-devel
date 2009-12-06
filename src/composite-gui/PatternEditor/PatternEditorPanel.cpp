@@ -855,7 +855,7 @@ void PatternEditorPanel::patternSizeChanged( QString str )
 
 	resizeEvent( NULL );
 
-	EventQueue::get_instance()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );
+	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );
 }
 
 

@@ -49,7 +49,7 @@ MidiInput::~MidiInput()
 
 void MidiInput::handleMidiMessage( const MidiMessage& msg )
 {
-	EventQueue::get_instance()->push_event( EVENT_MIDI_ACTIVITY, -1 );
+	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_MIDI_ACTIVITY, -1 );
 
 //	infoLog( "[handleMidiMessage]" );
 //	infoLog( "[handleMidiMessage] channel: " + to_string( msg.m_nChannel ) );

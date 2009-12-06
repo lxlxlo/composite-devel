@@ -659,7 +659,7 @@ void MainForm::action_instruments_addInstrument()
 	Hydrogen::get_instance()->setSelectedInstrumentNumber( pList->get_size() - 1 );
 
 	// Force an update
-	//EventQueue::get_instance()->pushEvent( EVENT_SELECTED_PATTERN_CHANGED, -1 );
+	//Hydrogen::get_instance()->get_event_queue()->pushEvent( EVENT_SELECTED_PATTERN_CHANGED, -1 );
 }
 
 
@@ -697,7 +697,7 @@ void MainForm::action_instruments_clearAll()
 		}
 	}
 	Hydrogen::get_instance()->get_audio_engine()->unlock();
-	EventQueue::get_instance()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
+	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
 }
 
 

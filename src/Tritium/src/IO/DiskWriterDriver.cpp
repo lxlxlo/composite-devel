@@ -115,11 +115,11 @@ void DiskWriterDriverThread::run()
 			assert( nCurrentPatternPos != -1 );
 
 			float fPercent = ( float ) nCurrentPatternPos / ( float )nPatterns * 100.0;
-			EventQueue::get_instance()->push_event( EVENT_PROGRESS, ( int )fPercent );
+			Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_PROGRESS, ( int )fPercent );
 			INFOLOG( QString( "DiskWriterDriver: %1%, transport frames:%2" ).arg( fPercent ).arg( xpos.frame ) );
 		}
 	}
-	EventQueue::get_instance()->push_event( EVENT_PROGRESS, 100 );
+	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_PROGRESS, 100 );
 
 	delete[] pData;
 	pData = NULL;

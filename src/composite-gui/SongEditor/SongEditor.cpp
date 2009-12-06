@@ -790,7 +790,7 @@ void SongEditorPatternList::inlineEditingEntered()
 	{
 		patternBeingEdited->set_name( line->text() );
 		Hydrogen::get_instance()->getSong()->set_modified( true );
-		EventQueue::get_instance()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );
+		Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );
 		createBackground();
 		update();
 	}
@@ -1033,7 +1033,7 @@ void SongEditorPatternList::patternPopup_properties()
 // 		Hydrogen *engine = Hydrogen::get_instance();
 // 		Song *song = engine->getSong();
 		song->set_modified( true );
-		EventQueue::get_instance()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );
+		Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );
 		createBackground();
 		update();
 	}

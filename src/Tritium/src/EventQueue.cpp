@@ -24,22 +24,10 @@
 namespace Tritium
 {
 
-EventQueue* EventQueue::__instance = 0;
-
-void EventQueue::create_instance()
-{
-	if ( __instance == 0 ) {
-		__instance = new EventQueue;
-	}
-}
-
-
 EventQueue::EventQueue()
 		: __read_index( 0 )
 		, __write_index( 0 )
 {
-	__instance = this;
-
 	for ( int i = 0; i < MAX_EVENTS; ++i ) {
 		__events_buffer[ i ].type = EVENT_NONE;
 		__events_buffer[ i ].value = 0;
@@ -49,7 +37,6 @@ EventQueue::EventQueue()
 
 EventQueue::~EventQueue()
 {
-	__instance = 0;
 }
 
 

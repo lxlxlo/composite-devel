@@ -234,7 +234,7 @@ void InstrumentLine::functionClearNotes()
 // 	Hydrogen::get_instance()->get_audio_engine()->unlock();	// unlock the audio engine
 
 	// this will force an update...
-	EventQueue::get_instance()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
+	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
 }
 
 
@@ -300,7 +300,7 @@ void InstrumentLine::functionFillNotes()
 	Hydrogen::get_instance()->get_audio_engine()->unlock();	// unlock the audio engine
 
 	// this will force an update...
-	EventQueue::get_instance()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
+	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
 }
 
 
@@ -357,7 +357,7 @@ void InstrumentLine::functionRandomizeVelocity()
 	Hydrogen::get_instance()->get_audio_engine()->unlock();	// unlock the audio engine
 
 	// this will force an update...
-	EventQueue::get_instance()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
+	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
 
 }
 

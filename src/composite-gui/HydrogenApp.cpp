@@ -409,7 +409,7 @@ void HydrogenApp::onDrumkitLoad( QString name ){
 void HydrogenApp::onEventQueueTimer()
 {
 	// use the timer to do schedule instrument slaughter;
-	EventQueue *pQueue = EventQueue::get_instance();
+	EventQueue *pQueue = Hydrogen::get_instance()->get_event_queue();
 
 	Event event;
 	while ( ( event = pQueue->pop_event() ).type != EVENT_NONE ) {

@@ -698,7 +698,7 @@ void InstrumentEditor::labelClicked( ClickableLabel* /*pRef*/ )
 			selectedInstrumentChangedEvent();
 
 			// this will force an update...
-			EventQueue::get_instance()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
+			Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
 
 		}
 		else {

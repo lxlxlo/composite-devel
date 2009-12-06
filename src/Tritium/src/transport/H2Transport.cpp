@@ -21,6 +21,7 @@
 
 #include <memory>
 #include <Tritium/EventQueue.hpp>
+#include <Tritium/Hydrogen.hpp>
 #include "H2Transport.hpp"
 #include "SimpleTransportMaster.hpp"
 #include "JackTimeMaster.hpp"
@@ -72,13 +73,13 @@ int H2Transport::locate(uint32_t bar, uint32_t beat, uint32_t tick)
 
 void H2Transport::start(void)
 {
-    EventQueue::get_instance()->push_event( EVENT_TRANSPORT, (int)TransportPosition::ROLLING );
+    Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_TRANSPORT, (int)TransportPosition::ROLLING );
     if(d->xport.get()) d->xport->start();
 }
 
 void H2Transport::stop(void)
 {
-    EventQueue::get_instance()->push_event( EVENT_TRANSPORT, (int)TransportPosition::STOPPED );
+    Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_TRANSPORT, (int)TransportPosition::STOPPED );
     if(d->xport.get()) d->xport->stop();
 }
 
@@ -90,7 +91,7 @@ void H2Transport::get_position(TransportPosition* pos)
 void H2Transport::processed_frames(uint32_t nFrames)
 {
     if( d->heartbeat_jtm == false && d->presumed_jtm == true ) {
-	EventQueue::get_instance()->push_event( EVENT_JACK_TIME_MASTER, JACK_TIME_MASTER_NO_MORE );
+	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_JACK_TIME_MASTER, JACK_TIME_MASTER_NO_MORE );
 	d->presumed_jtm = false;
     }
     d->heartbeat_jtm = false;
@@ -134,7 +135,7 @@ bool H2Transport::setJackTimeMaster(bool if_none_already)
 
     rv = d->jtm->setMaster(if_none_already);
     if( rv ) {
-	EventQueue::get_instance()->push_event( EVENT_JACK_TIME_MASTER, JACK_TIME_MASTER_NOW );
+	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_JACK_TIME_MASTER, JACK_TIME_MASTER_NOW );
     }
     return rv;
 }
@@ -143,7 +144,7 @@ void H2Transport::clearJackTimeMaster()
 {
     if( d->jtm.get() ) {
 	d->jtm->clearMaster();
-	EventQueue::get_instance()->push_event( EVENT_JACK_TIME_MASTER, JACK_TIME_MASTER_NO_MORE );
+	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_JACK_TIME_MASTER, JACK_TIME_MASTER_NO_MORE );
     }
 }
 
