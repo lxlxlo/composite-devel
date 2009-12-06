@@ -39,8 +39,7 @@ namespace Tritium
 class Effects
 {
 public:
-	static void create_instance();
-	static Effects* get_instance() { assert(__instance); return __instance; }
+	Effects();
 	~Effects();
 
 	LadspaFX* getLadspaFX( int nFX );
@@ -49,9 +48,7 @@ public:
 	std::vector<LadspaFXInfo*> getPluginList();
 	LadspaFXGroup* getLadspaFXGroup();
 
-
 private:
-	static Effects* __instance;
 	std::vector<LadspaFXInfo*> m_pluginList;
 	LadspaFXGroup* m_pRootGroup;
 	LadspaFXGroup* m_pRecentGroup;
@@ -60,11 +57,8 @@ private:
 
 	LadspaFX* m_FXList[ MAX_FX ];
 
-	Effects();
-
 	void RDFDescend( const QString& sBase, LadspaFXGroup *pGroup, std::vector<LadspaFXInfo*> pluginList );
 	void getRDF( LadspaFXGroup *pGroup, std::vector<LadspaFXInfo*> pluginList );
-	
 };
 
 };

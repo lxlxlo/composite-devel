@@ -49,6 +49,11 @@ OPTION(WANT_LIBARCHIVE
 ######################################################################
 
 ###
+### LADSPA
+###
+add_definitions(-DLADSPA_SUPPORT)
+
+###
 ### Qt 4 http://qt.nokia.com/
 ###
 

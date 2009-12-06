@@ -1437,7 +1437,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 		QDomNode fxNode = doc.createElement( "fx" );
 
 #ifdef LADSPA_SUPPORT
-		LadspaFX *pFX = Effects::get_instance()->getLadspaFX( nFX );
+		LadspaFX *pFX = Hydrogen::get_instance()->get_effects()->getLadspaFX( nFX );
 		if ( pFX ) {
 			LocalFileMng::writeXmlString( fxNode, "name", pFX->getPluginLabel() );
 			LocalFileMng::writeXmlString( fxNode, "filename", pFX->getLibraryPath() );

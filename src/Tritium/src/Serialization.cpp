@@ -32,6 +32,7 @@
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Sample.hpp>
 #include <Tritium/Note.hpp>
+#include <Tritium/fx/Effects.hpp>
 #include "version.h"
 
 #include <QFile>
@@ -411,9 +412,9 @@ Song* SongReader::readSong( const QString& filename )
 #ifdef LADSPA_SUPPORT
     // reset FX
     for ( int fx = 0; fx < MAX_FX; ++fx ) {
-	//LadspaFX* pFX = Effects::get_instance()->getLadspaFX( fx );
+	//LadspaFX* pFX = Hydrogen::get_instance()->get_effects()->getLadspaFX( fx );
 	//delete pFX;
-	Effects::get_instance()->setLadspaFX( NULL, fx );
+	Hydrogen::get_instance()->get_effects()->setLadspaFX( NULL, fx );
     }
 #endif
 	
@@ -432,7 +433,7 @@ Song* SongReader::readSong( const QString& filename )
 		// FIXME: il caricamento va fatto fare all'engine, solo lui sa il samplerate esatto
 #ifdef LADSPA_SUPPORT
 		LadspaFX* pFX = LadspaFX::load( sFilename, sName, 44100 );
-		Effects::get_instance()->setLadspaFX( pFX, nFX );
+		Hydrogen::get_instance()->get_effects()->setLadspaFX( pFX, nFX );
 		if ( pFX ) {
 		    pFX->setEnabled( bEnabled );
 		    pFX->setVolume( fVolume );

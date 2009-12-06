@@ -132,7 +132,7 @@ void LadspaFXProperties::faderChanged( Fader * ref )
 	Song *pSong = (Hydrogen::get_instance() )->getSong();
 
 #ifdef LADSPA_SUPPORT
-	LadspaFX *pFX = Effects::get_instance()->getLadspaFX( m_nLadspaFX );
+	LadspaFX *pFX = Hydrogen::get_instance()->get_effects()->getLadspaFX( m_nLadspaFX );
 
 	for ( uint i = 0; i < m_pInputControlFaders.size(); i++ ) {
 		if (ref == m_pInputControlFaders[ i ] ) {
@@ -155,7 +155,7 @@ void LadspaFXProperties::faderChanged( Fader * ref )
 			m_pInputControlLabel[ i ]->setText( sValue );
 		}
 	}
-	pSong->__is_modified = true;
+	pSong->set_modified(true);
 #endif
 }
 
@@ -167,7 +167,7 @@ void LadspaFXProperties::updateControls()
 	INFOLOG( "*** [updateControls] ***" );
 	m_pTimer->stop();
 
-	LadspaFX *pFX = Effects::get_instance()->getLadspaFX( m_nLadspaFX );
+	LadspaFX *pFX = Hydrogen::get_instance()->get_effects()->getLadspaFX( m_nLadspaFX );
 
 	// svuoto i vettori..
 	if ( m_pInputControlNames.size() != 0 ) {
@@ -344,7 +344,7 @@ void LadspaFXProperties::selectFXBtnClicked()
 		if ( !sSelectedFX.isEmpty() ) {
 			LadspaFX *pFX = NULL;
 
-			vector<Tritium::LadspaFXInfo*> pluginList = Effects::get_instance()->getPluginList();
+			vector<Tritium::LadspaFXInfo*> pluginList = Hydrogen::get_instance()->get_effects()->getPluginList();
 			for (uint i = 0; i < pluginList.size(); i++) {
 				Tritium::LadspaFXInfo *pFXInfo = pluginList[i];
 				if (pFXInfo->m_sName == sSelectedFX ) {
@@ -356,9 +356,9 @@ void LadspaFXProperties::selectFXBtnClicked()
 			}
 			//Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 			Song *pSong = (Hydrogen::get_instance() )->getSong();
-			pSong->__is_modified = true;
+			pSong->set_modified(true);
 
-			Effects::get_instance()->setLadspaFX( pFX, m_nLadspaFX );
+			Hydrogen::get_instance()->get_effects()->setLadspaFX( pFX, m_nLadspaFX );
 
 			//Hydrogen::get_instance()->get_audio_engine()->unlock();
 			Hydrogen::get_instance()->restartLadspaFX();
@@ -379,7 +379,7 @@ void LadspaFXProperties::updateOutputControls()
 
 //	INFOLOG( "[updateOutputControls]" );
 //	Song *pSong = (Hydrogen::get_instance() )->getSong();
-	LadspaFX *pFX = Effects::get_instance()->getLadspaFX(m_nLadspaFX);
+	LadspaFX *pFX = Hydrogen::get_instance()->get_effects()->getLadspaFX(m_nLadspaFX);
 
 	if (pFX) {
 		m_pActivateBtn->setEnabled(true);
@@ -425,7 +425,7 @@ void LadspaFXProperties::activateBtnClicked()
 {
 #ifdef LADSPA_SUPPORT
 //	Song *pSong = (Hydrogen::get_instance() )->getSong();
-	LadspaFX *pFX = Effects::get_instance()->getLadspaFX(m_nLadspaFX);
+	LadspaFX *pFX = Hydrogen::get_instance()->get_effects()->getLadspaFX(m_nLadspaFX);
 	if (pFX) {
 		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 		pFX->setEnabled( !pFX->isEnabled() );

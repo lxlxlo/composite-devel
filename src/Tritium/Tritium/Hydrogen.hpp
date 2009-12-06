@@ -50,6 +50,7 @@ class MidiInput;
 class Drumkit;
 class EventQueue;
 class Playlist;
+class Effects;
 
 ///
 /// Hydrogen Audio Engine.
@@ -89,6 +90,9 @@ public:
 	AudioEngine* get_audio_engine();
 	EventQueue* get_event_queue();
 	Playlist* get_playlist();
+#ifdef LADSPA_SUPPORT
+	Effects* get_effects();
+#endif
 
 	/// Set current song
 	void setSong( Song *newSong );

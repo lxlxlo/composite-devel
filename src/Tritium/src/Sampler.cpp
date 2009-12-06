@@ -470,7 +470,7 @@ int SamplerPrivate::render_note_no_resample(
 #ifdef LADSPA_SUPPORT
 	// LADSPA
 	for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
-		LadspaFX *pFX = Effects::get_instance()->getLadspaFX( nFX );
+		LadspaFX *pFX = Hydrogen::get_instance()->get_effects()->getLadspaFX( nFX );
 
 		float fLevel = note.get_instrument()->get_fx_level( nFX );
 
@@ -651,7 +651,7 @@ int SamplerPrivate::render_note_resample(
 #ifdef LADSPA_SUPPORT
 	// LADSPA
 	for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
-		LadspaFX *pFX = Effects::get_instance()->getLadspaFX( nFX );
+		LadspaFX *pFX = Hydrogen::get_instance()->get_effects()->getLadspaFX( nFX );
 		float fLevel = note.get_instrument()->get_fx_level( nFX );
 		if ( ( pFX ) && ( fLevel != 0.0 ) ) {
 			fLevel = fLevel * pFX->getVolume();

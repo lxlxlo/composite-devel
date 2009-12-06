@@ -541,7 +541,7 @@ void Mixer::updateMixer()
 #ifdef LADSPA_SUPPORT
 	// LADSPA
 	for (uint nFX = 0; nFX < MAX_FX; nFX++) {
-		LadspaFX *pFX = Effects::get_instance()->getLadspaFX( nFX );
+		LadspaFX *pFX = Hydrogen::get_instance()->get_effects()->getLadspaFX( nFX );
 		if ( pFX ) {
 			m_pLadspaFXLine[nFX]->setName( pFX->getPluginName() );
 			float fNewPeak_L = 0.0;
@@ -728,7 +728,7 @@ void Mixer::ladspaActiveBtnClicked( LadspaFXMixerLine* ref )
 
 	for (uint nFX = 0; nFX < MAX_FX; nFX++) {
 		if (ref == m_pLadspaFXLine[ nFX ] ) {
-			LadspaFX *pFX = Effects::get_instance()->getLadspaFX(nFX);
+			LadspaFX *pFX = Hydrogen::get_instance()->get_effects()->getLadspaFX(nFX);
 			if (pFX) {
 				pFX->setEnabled( bActive );
 			}
@@ -743,14 +743,13 @@ void Mixer::ladspaActiveBtnClicked( LadspaFXMixerLine* ref )
 void Mixer::ladspaEditBtnClicked( LadspaFXMixerLine *ref )
 {
 #ifdef LADSPA_SUPPORT
-
 	for (uint nFX = 0; nFX < MAX_FX; nFX++) {
 		if (ref == m_pLadspaFXLine[ nFX ] ) {
 			HydrogenApp::get_instance()->getLadspaFXProperties(nFX)->hide();
 			HydrogenApp::get_instance()->getLadspaFXProperties(nFX)->show();
 		}
 	}
-	Hydrogen::get_instance()->getSong()->__is_modified = true;
+	Hydrogen::get_instance()->getSong()->set_modified(true);
 #endif
 }
 
@@ -760,11 +759,11 @@ void Mixer::ladspaVolumeChanged( LadspaFXMixerLine* ref)
 {
 #ifdef LADSPA_SUPPORT
 	Song *pSong = (Hydrogen::get_instance() )->getSong();
-	pSong->__is_modified = true;
+	pSong->set_modified(true);
 
 	for (uint nFX = 0; nFX < MAX_FX; nFX++) {
 		if (ref == m_pLadspaFXLine[ nFX ] ) {
-			LadspaFX *pFX = Effects::get_instance()->getLadspaFX(nFX);
+			LadspaFX *pFX = Hydrogen::get_instance()->get_effects()->getLadspaFX(nFX);
 			if (pFX) {
 				pFX->setVolume( ref->getVolume() );
 				QString sInfo = trUtf8( "Set LADSPA FX ( %1 ) volume").arg( QString(pFX->getPluginName() ) );

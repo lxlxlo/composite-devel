@@ -26,6 +26,7 @@
 #include <Tritium/fx/LadspaFX.hpp>
 #include <Tritium/AudioEngine.hpp>
 #include <Tritium/Logger.hpp>
+#include <Tritium/Hydrogen.hpp>
 
 #include <algorithm>
 #include <QDir>
@@ -41,35 +42,16 @@ using namespace std;
 namespace Tritium
 {
 
-// static data
-Effects* Effects::__instance = NULL;
-
-
-
 Effects::Effects()
 		: m_pRootGroup( NULL )
 		, m_pRecentGroup( NULL )
 {
-	__instance = this;
-
 	for ( int nFX = 0; nFX < MAX_FX; ++nFX ) {
 		m_FXList[ nFX ] = NULL;
 	}
 
 	getPluginList();
 }
-
-
-
-void Effects::create_instance()
-{
-	if ( __instance == 0 ) {
-		__instance = new Effects;
-	}
-}
-
-
-
 
 Effects::~Effects()
 {
@@ -85,7 +67,6 @@ Effects::~Effects()
 	for ( int nFX = 0; nFX < MAX_FX; ++nFX ) {
 		delete m_FXList[ nFX ];
 	}
-	__instance = 0;
 }
 
 

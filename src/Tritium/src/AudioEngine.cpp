@@ -36,11 +36,6 @@ AudioEngine::AudioEngine()
 	INFOLOG( "INIT" );
 
 	__sampler = new Sampler;
-
-#ifdef LADSPA_SUPPORT
-	Effects::create_instance();
-#endif
-
 }
 
 
@@ -48,10 +43,6 @@ AudioEngine::AudioEngine()
 AudioEngine::~AudioEngine()
 {
 	INFOLOG( "DESTROY" );
-#ifdef LADSPA_SUPPORT
-	delete Effects::get_instance();
-#endif
-
 	delete __sampler;
 }
 

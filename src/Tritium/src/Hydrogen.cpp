@@ -259,6 +259,10 @@ AudioEngine* m_audio_engine = 0;
 EventQueue* m_event_queue = 0;
 H2Transport* m_pTransport = 0;
 Playlist* m_playlist = 0;
+#ifdef LADSPA_SUPPORT
+Effects* m_effects = 0;
+#endif
+
 // This is *the* priority queue for scheduling notes/events to be
 // sent to the Sampler.
 SeqScript m_queue;
@@ -399,13 +403,13 @@ void audioEngine_init()
 	// Change the current audio engine state
 	m_audioEngineState = STATE_INITIALIZED;
 
-#ifdef LADSPA_SUPPORT
-	Effects::create_instance();
-#endif
 #ifdef JACK_SUPPORT
 	JackClient::create_instance(false);
 #endif
 	m_audio_engine = new AudioEngine();
+#ifdef LADSPA_SUPPORT
+	m_effects = new Effects();
+#endif
 	m_playlist = new Playlist();
 
 	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_STATE, STATE_INITIALIZED );
@@ -436,6 +440,9 @@ void audioEngine_destroy()
 	m_pMetronomeInstrument = NULL;
 
 	Hydrogen::get_instance()->get_audio_engine()->unlock();
+#ifdef LADSPA_SUPPORT
+	delete m_effects;
+#endif
 	delete m_audio_engine;
 }
 
@@ -657,7 +664,7 @@ inline void audioEngine_process_clearAudioBuffers( uint32_t nFrames )
 
 #ifdef LADSPA_SUPPORT
 	if ( m_audioEngineState >= STATE_READY ) {
-		Effects* pEffects = Effects::get_instance();
+		Effects* pEffects = Hydrogen::get_instance()->get_effects();
 		for ( unsigned i = 0; i < MAX_FX; ++i ) {	// clear FX buffers
 			LadspaFX* pFX = pEffects->getLadspaFX( i );
 			if ( pFX ) {
@@ -735,7 +742,7 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 	// Process LADSPA FX
 	if ( m_audioEngineState >= STATE_READY ) {
 		for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
-			LadspaFX *pFX = Effects::get_instance()->getLadspaFX( nFX );
+			LadspaFX *pFX = Hydrogen::get_instance()->get_effects()->getLadspaFX( nFX );
 			if ( ( pFX ) && ( pFX->isEnabled() ) ) {
 				pFX->processFX( nframes );
 				float *buf_L = NULL;
@@ -818,7 +825,7 @@ void audioEngine_setupLadspaFX( unsigned nBufferSize )
 
 #ifdef LADSPA_SUPPORT
 	for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
-		LadspaFX *pFX = Effects::get_instance()->getLadspaFX( nFX );
+		LadspaFX *pFX = Hydrogen::get_instance()->get_effects()->getLadspaFX( nFX );
 		if ( pFX == NULL ) {
 			return;
 		}
@@ -835,7 +842,7 @@ void audioEngine_setupLadspaFX( unsigned nBufferSize )
 		//pFX->m_pBuffer_R = new float[ nBufferSize ];
 //		}
 
-		Effects::get_instance()->getLadspaFX( nFX )->connectAudioPorts(
+		Hydrogen::get_instance()->get_effects()->getLadspaFX( nFX )->connectAudioPorts(
 		    pFX->m_pBuffer_L,
 		    pFX->m_pBuffer_R,
 		    pFX->m_pBuffer_L,
@@ -1606,9 +1613,7 @@ void Hydrogen::create_instance()
 	}
 
 	// See audioEngine_init() for:
-	// m_audio_engine = new AudioEngine();
-	// Effects::create_instance();
-	// Playlist::create_instance();
+	// AudioEngine, Effects, Playlist
 }
 
 AudioEngine* Hydrogen::get_audio_engine()
@@ -1635,6 +1640,13 @@ Playlist* Hydrogen::get_playlist()
 {
 	return m_playlist;
 }
+
+#ifdef LADSPA_SUPPORT
+Effects* Hydrogen::get_effects()
+{
+	return m_effects;
+}
+#endif
 
 /// Start the internal sequencer
 void Hydrogen::sequencer_play()
