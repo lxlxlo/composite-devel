@@ -26,11 +26,8 @@
 
 using namespace Tritium;
 
-MidiMap * MidiMap::__instance = 0;
-
 MidiMap::MidiMap()
 {
-	__instance = this;
 	QMutexLocker mx(&__mutex);
 
 	//constructor
@@ -54,21 +51,6 @@ MidiMap::~MidiMap()
 		delete __note_array[ i ];
 		delete __cc_array[ i ];
 	}
-
-	__instance = 0;
-}
-
-void MidiMap::create_instance()
-{
-	if( __instance == 0 ) {
-		__instance = new MidiMap;
-	}
-}
-
-void MidiMap::reset_instance()
-{
-	create_instance();
-	__instance->reset();
 }
 
 void MidiMap::reset()

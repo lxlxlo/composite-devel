@@ -72,6 +72,8 @@ Preferences::Preferences()
 	//server list
 	std::list<QString> sServerList;
 
+	m_midi_map = new MidiMap();
+
 //	//musicCategories
 //	std::list<QString> m_musicCategories;
 
@@ -236,15 +238,17 @@ Preferences::~Preferences()
 {
 	savePreferences();
 
+	delete m_midi_map;
 	INFOLOG( "DESTROY" );
 	__instance = 0;
 	delete m_pDefaultUIStyle;
 }
 
 
-
-
-
+MidiMap* Preferences::get_midi_map()
+{
+	return m_midi_map;
+}
 
 ///
 /// Load the preferences file
@@ -546,9 +550,8 @@ void Preferences::loadPreferences( bool bGlobal )
 				m_sDefaultEditor = LocalFileMng::readXmlString( filesNode, "defaulteditor", m_sDefaultEditor, true );
 			}
 
-			MidiMap::reset_instance();
-			MidiMap* mM = MidiMap::get_instance();
-			
+			MidiMap* mM = get_midi_map();
+			mM->reset();
 			
 			QDomNode pMidiEventMapNode = rootNode.firstChildElement( "midiEventMap" );
 			if ( !pMidiEventMapNode.isNull() ) {
@@ -858,7 +861,7 @@ void Preferences::savePreferences()
 	}
 	rootNode.appendChild( filesNode );
 
-	MidiMap * mM = MidiMap::get_instance();
+	MidiMap * mM = get_midi_map();
 	std::map< QString, Action* > mmcMap = mM->getMMCMap();
 
 	//---- MidiMap ----

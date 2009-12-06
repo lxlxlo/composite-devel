@@ -40,6 +40,7 @@ const float FALLOFF_SLOW = 	1.08f;
 const float FALLOFF_NORMAL=	1.1f;
 const float FALLOFF_FAST =	1.5f;
 
+class MidiMap;
 
 /**
 \ingroup H2CORE
@@ -436,6 +437,8 @@ public:
 		m_bPatternModePlaysSelected = b;
 	}
 
+	MidiMap* get_midi_map();
+
 private:
 	static Preferences *__instance;
 
@@ -458,7 +461,7 @@ private:
 	bool quantizeEvents;
 	bool recordEvents;
 	QString m_sLastNews;
-
+	MidiMap* m_midi_map;
 
 	//___ GUI properties ___
 	QString m_sQTStyle;

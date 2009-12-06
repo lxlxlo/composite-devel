@@ -1592,7 +1592,6 @@ void Hydrogen::create_instance()
 	// Create all the other instances that we need
 	// ....and in the right order
 	Logger::create_instance();
-	MidiMap::create_instance();
 	Preferences::create_instance();
 	EventQueue::create_instance();
 

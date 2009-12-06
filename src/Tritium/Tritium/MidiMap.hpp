@@ -34,12 +34,9 @@ namespace Tritium
     {
     public:
 	typedef std::map< QString, Action* > map_t;
-	static MidiMap* __instance;
-	~MidiMap();
 
-	static void create_instance();
-	static void reset_instance();  // convenience accessor to reset()
-	static MidiMap* get_instance() { assert(__instance); return __instance; }
+	MidiMap();
+	~MidiMap();
 
 	void reset();  // Reinitializes the object.
 
@@ -56,8 +53,6 @@ namespace Tritium
 	void setupNoteArray();
 
     private:
-	MidiMap();
-
 	Action* __note_array[ 128 ];
 	Action* __cc_array[ 128 ];
 

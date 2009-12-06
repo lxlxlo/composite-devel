@@ -45,6 +45,7 @@ namespace Tritium
 {
 
 class Transport;
+class MidiMap;
 
 ///
 /// Hydrogen Audio Engine.
