@@ -56,7 +56,7 @@ PlaylistDialog::PlaylistDialog ( QWidget* pParent )
 
 	setupUi ( this );
 	INFOLOG ( "INIT" );
-	setWindowTitle ( trUtf8 ( "Play List Browser" ) + QString(" - ") + QString( Playlist::get_instance()->__playlistName  ) );
+	setWindowTitle ( trUtf8 ( "Play List Browser" ) + QString(" - ") + QString( Hydrogen::get_instance()->get_playlist()->__playlistName  ) );
 	setFixedSize ( width(), height() );
 	installEventFilter(this);
 
@@ -236,8 +236,8 @@ PlaylistDialog::PlaylistDialog ( QWidget* pParent )
 
 
 		//restore the selected item		
-		int selected = Playlist::get_instance()->getActiveSongNumber();
-		int Selected = Playlist::get_instance()->getSelectedSongNr();
+		int selected = Hydrogen::get_instance()->get_playlist()->getActiveSongNumber();
+		int Selected = Hydrogen::get_instance()->get_playlist()->getSelectedSongNr();
 		if( selected == -1 && Selected == -1 ) return;
 		
 		int aselected = 0;
@@ -321,9 +321,9 @@ void PlaylistDialog::removeFromList()
 		if (m_pItem == 0){
 			m_pPlaylist->clear();
 			Hydrogen::get_instance()->m_PlayList.clear();
-			Playlist::get_instance()->setSelectedSongNr( -1 );
-			Playlist::get_instance()->setActiveSongNumber( -1 );
-			Playlist::get_instance()->__playlistName = "";
+			Hydrogen::get_instance()->get_playlist()->setSelectedSongNr( -1 );
+			Hydrogen::get_instance()->get_playlist()->setActiveSongNumber( -1 );
+			Hydrogen::get_instance()->get_playlist()->__playlistName = "";
 			setWindowTitle ( trUtf8 ( "Play List Browser" ) );
 			return;
 		}else
@@ -331,10 +331,10 @@ void PlaylistDialog::removeFromList()
 			///avoid segfault if the last item will be removed!!
 			delete m_pPlaylistItem;
 			updatePlayListVector();
-			if (  Playlist::get_instance()->getActiveSongNumber() == index ){
-				Playlist::get_instance()->setActiveSongNumber( -1 );
-			}else if (  Playlist::get_instance()->getActiveSongNumber() > index  ){
-				Playlist::get_instance()->setActiveSongNumber(  Playlist::get_instance()->getActiveSongNumber() -1 );
+			if (  Hydrogen::get_instance()->get_playlist()->getActiveSongNumber() == index ){
+				Hydrogen::get_instance()->get_playlist()->setActiveSongNumber( -1 );
+			}else if (  Hydrogen::get_instance()->get_playlist()->getActiveSongNumber() > index  ){
+				Hydrogen::get_instance()->get_playlist()->setActiveSongNumber(  Hydrogen::get_instance()->get_playlist()->getActiveSongNumber() -1 );
 			}
 			
 		}
@@ -348,9 +348,9 @@ void PlaylistDialog::clearPlaylist()
 	
 	m_pPlaylist->clear();
 	Hydrogen::get_instance()->m_PlayList.clear();
-	Playlist::get_instance()->setSelectedSongNr( -1 );
-	Playlist::get_instance()->setActiveSongNumber( -1 );
-	Playlist::get_instance()->__playlistName = "";
+	Hydrogen::get_instance()->get_playlist()->setSelectedSongNr( -1 );
+	Hydrogen::get_instance()->get_playlist()->setActiveSongNumber( -1 );
+	Hydrogen::get_instance()->get_playlist()->__playlistName = "";
 	setWindowTitle ( trUtf8 ( "Play List Browser" ) );
 	return;	
 }
@@ -412,9 +412,9 @@ void PlaylistDialog::loadList()
 
 			QTreeWidgetItem* m_pPlaylistItem = m_pPlaylist->topLevelItem ( 0 );
 			m_pPlaylist->setCurrentItem ( m_pPlaylistItem );
-			Playlist::get_instance()->setSelectedSongNr( 0 );
-			Playlist::get_instance()->__playlistName = filename;
-			setWindowTitle ( trUtf8 ( "Play List Browser" ) + QString(" - ") + QString( Playlist::get_instance()->__playlistName  ) );
+			Hydrogen::get_instance()->get_playlist()->setSelectedSongNr( 0 );
+			Hydrogen::get_instance()->get_playlist()->__playlistName = filename;
+			setWindowTitle ( trUtf8 ( "Play List Browser" ) + QString(" - ") + QString( Hydrogen::get_instance()->get_playlist()->__playlistName  ) );
 		}
 
 	}
@@ -536,8 +536,8 @@ void PlaylistDialog::saveListAs()
 		ERRORLOG( "Error saving the playlist" );
 	}else
 	{
-		Playlist::get_instance()->__playlistName = filename;
-		setWindowTitle ( trUtf8 ( "Play List Browser" ) + QString(" - ") + QString( Playlist::get_instance()->__playlistName  ) );
+		Hydrogen::get_instance()->get_playlist()->__playlistName = filename;
+		setWindowTitle ( trUtf8 ( "Play List Browser" ) + QString(" - ") + QString( Hydrogen::get_instance()->get_playlist()->__playlistName  ) );
 	}
 }
 
@@ -545,13 +545,13 @@ void PlaylistDialog::saveListAs()
 void PlaylistDialog::saveList()
 {
 
-	if ( Playlist::get_instance()->__playlistName == "") {
+	if ( Hydrogen::get_instance()->get_playlist()->__playlistName == "") {
 		// just in case!
 		return saveListAs();
 	}
 
 	LocalFileMng fileMng;
-	int err = fileMng.savePlayList( Playlist::get_instance()->__playlistName.toStdString() );
+	int err = fileMng.savePlayList( Hydrogen::get_instance()->get_playlist()->__playlistName.toStdString() );
 	if ( err != 0 ) {
 		ERRORLOG( "Error saving the playlist" );
 	}
@@ -670,7 +670,7 @@ void PlaylistDialog::o_upBClicked()
 {	
 	timer->stop();
 
-	Playlist* pList = Playlist::get_instance();
+	Playlist* pList = Hydrogen::get_instance()->get_playlist();
 
 	QTreeWidget* m_pPlaylist = m_pPlaylistTree;
 	QTreeWidgetItem* m_pPlaylistItem = m_pPlaylistTree->currentItem();
@@ -703,7 +703,7 @@ void PlaylistDialog::o_upBClicked()
 void PlaylistDialog::o_downBClicked()
 {
 	timer->stop();
-	Playlist* pList = Playlist::get_instance();
+	Playlist* pList = Hydrogen::get_instance()->get_playlist();
 
 	QTreeWidget* m_pPlaylist = m_pPlaylistTree;
 	int length = m_pPlaylist->topLevelItemCount();
@@ -786,7 +786,7 @@ void PlaylistDialog::nodePlayBTN( Button* ref )
 
 		QTreeWidget* m_pPlaylist = m_pPlaylistTree;
 		int index = m_pPlaylist->indexOfTopLevelItem ( m_pPlaylistItem );
-		Playlist::get_instance()->setActiveSongNumber( index );
+		Hydrogen::get_instance()->get_playlist()->setActiveSongNumber( index );
 	
 		pH2App->setSong ( pSong );
 		engine->setSelectedPatternNumber ( 0 );
@@ -835,8 +835,8 @@ void PlaylistDialog::on_m_pPlaylistTree_itemDoubleClicked ()
 
 	QTreeWidget* m_pPlaylist = m_pPlaylistTree;
 	int index = m_pPlaylist->indexOfTopLevelItem ( m_pPlaylistItem );
-	Playlist::get_instance()->setSelectedSongNr( index );
-	Playlist::get_instance()->setActiveSongNumber( index );
+	Hydrogen::get_instance()->get_playlist()->setSelectedSongNr( index );
+	Hydrogen::get_instance()->get_playlist()->setActiveSongNumber( index );
 	
 	HydrogenApp *pH2App = HydrogenApp::get_instance();
 	Hydrogen *engine = Hydrogen::get_instance();
@@ -935,7 +935,7 @@ void PlaylistDialog::updateActiveSongNumber()
 		
 	}
 		
-	int selected = Playlist::get_instance()->getActiveSongNumber();
+	int selected = Hydrogen::get_instance()->get_playlist()->getActiveSongNumber();
 	if ( selected == -1 )
 		return;
 	
@@ -960,14 +960,14 @@ bool PlaylistDialog::eventFilter ( QObject * /*o*/, QEvent * e )
 			case  Qt::Key_F5 :
 				if( Hydrogen::get_instance()->m_PlayList.size() == 0)
 					break;
-				Playlist::get_instance()->setPrevSongPlaylist();
+				Hydrogen::get_instance()->get_playlist()->setPrevSongPlaylist();
 				return TRUE;
 				break;
 
 			case  Qt::Key_F6 :
 				if( Hydrogen::get_instance()->m_PlayList.size() == 0)
 					break;
-				Playlist::get_instance()->setNextSongPlaylist();
+				Hydrogen::get_instance()->get_playlist()->setNextSongPlaylist();
 				return TRUE;
 				break;
 		}

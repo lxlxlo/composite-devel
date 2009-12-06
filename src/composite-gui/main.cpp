@@ -270,7 +270,6 @@ int main(int argc, char *argv[])
 
 		// Hydrogen here to honor all preferences.
 		Tritium::Hydrogen::create_instance();
-		Tritium::Playlist::create_instance();
 		MainForm *pMainForm = new MainForm( pQApp, songFilename );
 		pMainForm->show();
 		pSplash->finish( pMainForm );
@@ -281,7 +280,6 @@ int main(int argc, char *argv[])
 		delete pMainForm;
 		delete pQApp;
 		delete pPref;
-		delete Tritium::Playlist::get_instance();
 		// delete Tritium::Hydrogen::get_instance(); // Deleted by pMainForm
 
 		INFOLOG( "Quitting..." );

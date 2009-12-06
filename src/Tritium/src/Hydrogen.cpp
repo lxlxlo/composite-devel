@@ -258,6 +258,7 @@ ActionManager* m_action_manager = 0;
 AudioEngine* m_audio_engine = 0;
 EventQueue* m_event_queue = 0;
 H2Transport* m_pTransport = 0;
+Playlist* m_playlist = 0;
 // This is *the* priority queue for scheduling notes/events to be
 // sent to the Sampler.
 SeqScript m_queue;
@@ -405,7 +406,7 @@ void audioEngine_init()
 	JackClient::create_instance(false);
 #endif
 	m_audio_engine = new AudioEngine();
-	// Playlist::create_instance();
+	m_playlist = new Playlist();
 
 	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_STATE, STATE_INITIALIZED );
 
@@ -1628,6 +1629,11 @@ ActionManager* Hydrogen::get_action_manager()
 EventQueue* Hydrogen::get_event_queue()
 {
 	return m_event_queue;
+}
+
+Playlist* Hydrogen::get_playlist()
+{
+	return m_playlist;
 }
 
 /// Start the internal sequencer

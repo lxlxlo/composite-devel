@@ -49,6 +49,7 @@ class AudioOutput;
 class MidiInput;
 class Drumkit;
 class EventQueue;
+class Playlist;
 
 ///
 /// Hydrogen Audio Engine.
@@ -87,6 +88,7 @@ public:
 	ActionManager* get_action_manager();
 	AudioEngine* get_audio_engine();
 	EventQueue* get_event_queue();
+	Playlist* get_playlist();
 
 	/// Set current song
 	void setSong( Song *newSong );

@@ -133,7 +133,7 @@ HydrogenApp::HydrogenApp( MainForm *pMainForm, Song *pFirstSong )
 	
 	m_pAppPlaylistListener = new AppPlaylistListener;
 	m_pAppPlaylistListener->q = this;
-	m_pAppPlaylistListener->d = Playlist::get_instance();
+	m_pAppPlaylistListener->d = Hydrogen::get_instance()->get_playlist();
 	m_pAppPlaylistListener->d->subscribe(m_pAppPlaylistListener);
 	// Unsubscription done by the destructor.
 	m_pPlaylistDialog = new PlaylistDialog( 0 );

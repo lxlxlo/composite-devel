@@ -1113,6 +1113,7 @@ bool MainForm::eventFilter( QObject * /*o*/, QEvent *e )
 	if ( e->type() == QEvent::KeyPress) {
 		// special processing for key press
 		QKeyEvent *k = (QKeyEvent *)e;
+		Hydrogen *engine = Hydrogen::get_instance();
 
 		// qDebug( "Got key press for instrument '%c'", k->ascii() );
 		int songnumber = 0;
@@ -1124,7 +1125,7 @@ bool MainForm::eventFilter( QObject * /*o*/, QEvent *e )
 
 
 			case Qt::Key_Comma:
-				Hydrogen::get_instance()->handleBeatCounter();
+				engine->handleBeatCounter();
 				return TRUE; // eat even
 				break;
 
@@ -1144,7 +1145,7 @@ bool MainForm::eventFilter( QObject * /*o*/, QEvent *e )
 				break;
 
 			case Qt::Key_Backslash:
-				Hydrogen::get_instance()->onTapTempoAccelEvent();
+				engine->onTapTempoAccelEvent();
 				return TRUE; // eat event
 				break;
 
@@ -1154,41 +1155,41 @@ bool MainForm::eventFilter( QObject * /*o*/, QEvent *e )
 				break;
 			
 			case  Qt::Key_F5 :
-				if( Hydrogen::get_instance()->m_PlayList.size() == 0)
+				if( engine->m_PlayList.size() == 0)
 					break;
-				Playlist::get_instance()->setPrevSongPlaylist();
-				songnumber = Playlist::get_instance()->getActiveSongNumber();
+				engine->get_playlist()->setPrevSongPlaylist();
+				songnumber = engine->get_playlist()->getActiveSongNumber();
 				HydrogenApp::get_instance()->setScrollStatusBarMessage( trUtf8( "Playlist: Set song No. %1" ).arg( songnumber +1 ), 5000 );
 				return TRUE;
 				break;
 
 			case  Qt::Key_F6 :
-				if( Hydrogen::get_instance()->m_PlayList.size() == 0)
+				if( engine->m_PlayList.size() == 0)
 					break;
-				Playlist::get_instance()->setNextSongPlaylist();
-				songnumber = Playlist::get_instance()->getActiveSongNumber();
+				engine->get_playlist()->setNextSongPlaylist();
+				songnumber = engine->get_playlist()->getActiveSongNumber();
 				HydrogenApp::get_instance()->setScrollStatusBarMessage( trUtf8( "Playlist: Set song No. %1" ).arg( songnumber +1 ), 5000 );
 				return TRUE;
 				break;
 
 			case  Qt::Key_F12 : //panic button stop all playing notes
-				Hydrogen::get_instance()->__panic();
+				engine->__panic();
 //				QMessageBox::information( this, "Hydrogen", trUtf8( "Panic" ) );
 				return TRUE;
 				break;
 
 			case  Qt::Key_F9 : // Qt::Key_Left do not work. Some ideas ?
-				Hydrogen::get_instance()->setPatternPos( Hydrogen::get_instance()->getPatternPos() - 1 );
+				engine->setPatternPos( engine->getPatternPos() - 1 );
 				return TRUE;
 				break;
 
 			case  Qt::Key_F10 : // Qt::Key_Right do not work. Some ideas ?
-				Hydrogen::get_instance()->setPatternPos( Hydrogen::get_instance()->getPatternPos() + 1 );
+				engine->setPatternPos( engine->getPatternPos() + 1 );
 				return TRUE;
 				break;
 			
 			case Qt::Key_L :
-				Hydrogen::get_instance()->togglePlaysSelected();
+				engine->togglePlaysSelected();
 				QString msg = Preferences::get_instance()->patternModePlaysSelected() ? "Single pattern mode" : "Stacked pattern mode";
 				HydrogenApp::get_instance()->setStatusBarMessage( msg, 5000 );
 				HydrogenApp::get_instance()->getSongEditorPanel()->setModeActionBtn( Preferences::get_instance()->patternModePlaysSelected() );
@@ -1358,7 +1359,7 @@ void MainForm::onPlaylistDisplayTimer()
 {
 	if( Hydrogen::get_instance()->m_PlayList.size() == 0)
 		return;
-	int songnumber = Playlist::get_instance()->getActiveSongNumber();
+	int songnumber = Hydrogen::get_instance()->get_playlist()->getActiveSongNumber();
 	QString songname;
 	if ( songnumber == -1 )
 			return;

@@ -37,14 +37,10 @@ using namespace Tritium;
 int selectedSongNumber = -1;
 int activeSongNumber = -1;
 
-Playlist* Playlist::__instance = NULL;	
-
-
 Playlist::Playlist()
 	: m_listener(0)
 {
 	//INFOLOG( "[Playlist]" );
-	__instance = this;
 	__playlistName = "";
 
 }
@@ -53,7 +49,6 @@ Playlist::Playlist()
 
 Playlist::~Playlist()
 {
-	__instance = 0;
 }
 
 void Playlist::subscribe(PlaylistListener* listener)
@@ -66,15 +61,6 @@ void Playlist::unsubscribe()
 {
 	subscribe(0);
 }
-
-void Playlist::create_instance()
-{
-	if ( __instance == 0 ) {
-		__instance = new Playlist;
-	}
-}
-
-
 
 void Playlist::setNextSongByNumber(int SongNumber)
 {
