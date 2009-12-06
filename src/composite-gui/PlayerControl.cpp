@@ -454,7 +454,7 @@ PlayerControl::~PlayerControl() {
 
 void PlayerControl::updatePlayerControl()
 {
-	Preferences *pPref = Preferences::get_instance();
+	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
 	HydrogenApp *pH2App = HydrogenApp::get_instance();
 	m_pShowMixerBtn->setPressed( pH2App->getMixer()->isVisible() );
 	m_pShowInstrumentRackBtn->setPressed( pH2App->getInstrumentRack()->isVisible() );
@@ -588,7 +588,7 @@ void PlayerControl::updatePlayerControl()
 	switch (beatstocountondisplay){
 		case 1 :
 			if (bcDisplaystatus == 1){
-				Preferences::get_instance()->m_bbc = Preferences::BC_OFF;
+				Hydrogen::get_instance()->get_preferences()->m_bbc = Preferences::BC_OFF;
 				bcDisplaystatus = 0;
 			}
 			sprintf(bcstatus, "R");
@@ -596,8 +596,8 @@ void PlayerControl::updatePlayerControl()
 				
 			break;
 		default:
-			if (Preferences::get_instance()->m_bbc == Preferences::BC_OFF){
-				Preferences::get_instance()->m_bbc = Preferences::BC_ON;
+			if (Hydrogen::get_instance()->get_preferences()->m_bbc == Preferences::BC_OFF){
+				Hydrogen::get_instance()->get_preferences()->m_bbc = Preferences::BC_ON;
 				bcDisplaystatus = 1;
 			}
 			sprintf(bcstatus, "%02d ", beatstocountondisplay -1);
@@ -711,7 +711,7 @@ void PlayerControl::bpmChanged() {
 //beatcounter
 void PlayerControl::bconoffBtnClicked( Button* )
 {
-	Preferences *pPref = Preferences::get_instance();
+	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
 	if (m_pBConoffBtn->isPressed()) {
 		pPref->m_bbc = Preferences::BC_ON;
 		(HydrogenApp::get_instance())->setStatusBarMessage(trUtf8(" BC Panel on"), 5000);
@@ -728,7 +728,7 @@ void PlayerControl::bconoffBtnClicked( Button* )
 
 void PlayerControl::bcSetPlayBtnClicked( Button* )
 {
-	Preferences *pPref = Preferences::get_instance();
+	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
 	if (m_pBCSetPlayBtn->isPressed()) {
 		pPref->m_mmcsetplay = Preferences::SET_PLAY_ON;
 		(HydrogenApp::get_instance())->setStatusBarMessage(trUtf8(" Count BPM and start PLAY"), 5000);
@@ -804,7 +804,7 @@ void PlayerControl::bctButtonClicked( Button* tBtn)
 
 void PlayerControl::jackTransportBtnClicked( Button* )
 {
-	Preferences *pPref = Preferences::get_instance();
+	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
 
 	if (m_pJackTransportBtn->isPressed()) {
 		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
@@ -841,7 +841,7 @@ void PlayerControl::jackTimeMasterEvent( int data )
 void PlayerControl::jackMasterBtnClicked( Button* )
 {	
 #ifdef JACK_SUPPORT
-	Preferences *pPref = Preferences::get_instance();
+	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
 
 	// This function just manipulates Hydrogen.
 	// The widget updates itself by the EventListener
@@ -950,7 +950,7 @@ void PlayerControl::songLoopBtnClicked( Button* )
 
 void PlayerControl::metronomeButtonClicked(Button* ref)
 {
-	Preferences::get_instance()->m_bUseMetronome = ref->isPressed();
+	Hydrogen::get_instance()->get_preferences()->m_bUseMetronome = ref->isPressed();
 }
 
 

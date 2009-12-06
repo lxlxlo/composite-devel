@@ -51,6 +51,7 @@ class Drumkit;
 class EventQueue;
 class Playlist;
 class Effects;
+class Preferences;
 
 ///
 /// Hydrogen Audio Engine.
@@ -58,8 +59,11 @@ class Effects;
 class Hydrogen
 {
 public:
-	/// Return the Hydrogen instance
-	static void create_instance();  // Also creates other instances, like AudioEngine
+	// The preferences object must be created and
+	// initialized before Hydrogen is created
+	// (for now).  Hydrogen takes ownership and
+	// will delete it.
+	static void create_instance(Preferences* prefs);  // Also creates other instances, like AudioEngine
 	static Hydrogen* get_instance() { assert(__instance); return __instance; };
 
 	~Hydrogen();
@@ -86,6 +90,7 @@ public:
 	void togglePlaysSelected( void );
 // ***** ~SEQUENCER ********
 
+	Preferences* get_preferences();
 	ActionManager* get_action_manager();
 	AudioEngine* get_audio_engine();
 	EventQueue* get_event_queue();
@@ -227,7 +232,7 @@ private:
 
 
 	/// Private constructor
-	Hydrogen();
+	Hydrogen(Preferences* prefs);
 
 	void __kill_instruments();
 

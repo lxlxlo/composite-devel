@@ -132,7 +132,7 @@ void MidiInput::handleControlChangeMessage( const MidiMessage& msg )
 	
 	Hydrogen *pEngine = Hydrogen::get_instance();
 	ActionManager * aH = pEngine->get_action_manager();
-	MidiMap * mM = Preferences::get_instance()->get_midi_map();
+	MidiMap * mM = Hydrogen::get_instance()->get_preferences()->get_midi_map();
 
 	Action * pAction; 
 
@@ -152,7 +152,7 @@ void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
 	INFOLOG( "handleNoteOnMessage" );
 
 
-	int nMidiChannelFilter = Preferences::get_instance()->m_nMidiChannelFilter;
+	int nMidiChannelFilter = Hydrogen::get_instance()->get_preferences()->m_nMidiChannelFilter;
 	int nChannel = msg.m_nChannel;
 	int nNote = msg.m_nData1;
 	float fVelocity = msg.m_nData2 / 127.0;
@@ -170,14 +170,14 @@ void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
 
 	Hydrogen *pEngine = Hydrogen::get_instance();
 	ActionManager * aH = pEngine->get_action_manager();
-	MidiMap * mM = Preferences::get_instance()->get_midi_map();
+	MidiMap * mM = Hydrogen::get_instance()->get_preferences()->get_midi_map();
 
 	pEngine->lastMidiEvent = "NOTE";
 	pEngine->lastMidiEventParameter = msg.m_nData1;
 	
 	bool action = aH->handleAction( mM->getNoteAction( msg.m_nData1 ) );
 	
-	if ( action && Preferences::get_instance()->m_bMidiDiscardNoteAfterAction)
+	if ( action && Hydrogen::get_instance()->get_preferences()->m_bMidiDiscardNoteAfterAction)
 	{
 		return;
 	}
@@ -216,7 +216,7 @@ void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
 void MidiInput::handleNoteOffMessage( const MidiMessage& msg )
 {
 	INFOLOG( "handleNoteOffMessage" );
-	if ( Preferences::get_instance()->m_bMidiNoteOffIgnore ) {
+	if ( Hydrogen::get_instance()->get_preferences()->m_bMidiNoteOffIgnore ) {
 		return;
 	}
 
@@ -278,7 +278,7 @@ void MidiInput::handleSysexMessage( const MidiMessage& msg )
 	
 	Hydrogen *pEngine = Hydrogen::get_instance();
 	ActionManager * aH = pEngine->get_action_manager();
-	MidiMap * mM = Preferences::get_instance()->get_midi_map();
+	MidiMap * mM = Hydrogen::get_instance()->get_preferences()->get_midi_map();
 
 	pEngine->lastMidiEventParameter = msg.m_nData1;
 

@@ -32,6 +32,7 @@
 #include <Tritium/H2Exception.hpp>
 #include <Tritium/SoundLibrary.hpp>
 #include <Tritium/Preferences.hpp>
+#include <Tritium/Hydrogen.hpp>
 #include <Tritium/Logger.hpp>
 
 
@@ -84,7 +85,7 @@ SoundLibraryImportDialog::~SoundLibraryImportDialog()
 //update combo box
 void SoundLibraryImportDialog::updateRepositoryCombo()
 {
-	Tritium::Preferences* pref = Tritium::Preferences::get_instance();
+	Tritium::Preferences* pref = Tritium::Hydrogen::get_instance()->get_preferences();
 
 	/*
 		Read serverList from config and put servers into the comboBox
@@ -342,7 +343,7 @@ void SoundLibraryImportDialog::on_DownloadBtn_clicked()
 			QString sType = m_soundLibraryList[ i ].m_sType;
 			QString sLocalFile;
 
-			QString dataDir = Tritium::Preferences::get_instance()->getDataDirectory();
+			QString dataDir = Tritium::Hydrogen::get_instance()->get_preferences()->getDataDirectory();
 
 			if( sType == "drumkit") {
 				sLocalFile = QDir::tempPath() + "/" + QFileInfo( sURL ).fileName();
@@ -439,7 +440,7 @@ void SoundLibraryImportDialog::on_InstallBtn_clicked()
 {
 	QApplication::setOverrideCursor(Qt::WaitCursor);
 
-	QString dataDir = Tritium::Preferences::get_instance()->getDataDirectory();
+	QString dataDir = Tritium::Hydrogen::get_instance()->get_preferences()->getDataDirectory();
 	try {
 		Tritium::Drumkit::install( SoundLibraryPathTxt->text() );
 		QMessageBox::information( this, "Hydrogen", QString( trUtf8( "SoundLibrary imported in %1" ).arg( dataDir )  ) );

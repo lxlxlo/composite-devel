@@ -452,7 +452,7 @@ void SongEditor::paintEvent( QPaintEvent *ev )
 
 void SongEditor::createBackground()
 {
-	UIStyle *pStyle = Preferences::get_instance()->getDefaultUIStyle();
+	UIStyle *pStyle = Hydrogen::get_instance()->get_preferences()->getDefaultUIStyle();
 	QColor backgroundColor( pStyle->m_songEditor_backgroundColor.getRed(), pStyle->m_songEditor_backgroundColor.getGreen(), pStyle->m_songEditor_backgroundColor.getBlue() );
 	QColor alternateRowColor( pStyle->m_songEditor_alternateRowColor.getRed(), pStyle->m_songEditor_alternateRowColor.getGreen(), pStyle->m_songEditor_alternateRowColor.getBlue() );
 	QColor linesColor( pStyle->m_songEditor_lineColor.getRed(), pStyle->m_songEditor_lineColor.getGreen(), pStyle->m_songEditor_lineColor.getBlue() );
@@ -593,7 +593,7 @@ void SongEditor::drawSequence()
 
 void SongEditor::drawPattern( int pos, int number )
 {
-	Preferences *pref = Preferences::get_instance();
+	Preferences *pref = Hydrogen::get_instance()->get_preferences();
 	UIStyle *pStyle = pref->getDefaultUIStyle();
 	QPainter p( m_pSequencePixmap );
 	QColor patternColor( pStyle->m_songEditor_pattern1Color.getRed(), pStyle->m_songEditor_pattern1Color.getGreen(), pStyle->m_songEditor_pattern1Color.getBlue() );
@@ -826,7 +826,7 @@ void SongEditorPatternList::updateEditor()
 
 void SongEditorPatternList::createBackground()
 {
-	Preferences *pref = Preferences::get_instance();
+	Preferences *pref = Hydrogen::get_instance()->get_preferences();
 	UIStyle *pStyle = pref->getDefaultUIStyle();
 	QColor textColor( pStyle->m_songEditor_textColor.getRed(), pStyle->m_songEditor_textColor.getGreen(), pStyle->m_songEditor_textColor.getBlue() );
 
@@ -930,7 +930,7 @@ void SongEditorPatternList::patternPopup_load()
 	Instrument *instr = song->get_instrument_list()->get( 0 );
 	assert( instr );
 	
-	QDir dirPattern( Preferences::get_instance()->getDataDirectory() + "/patterns" );
+	QDir dirPattern( Hydrogen::get_instance()->get_preferences()->getDataDirectory() + "/patterns" );
 	std::auto_ptr<QFileDialog> fd( new QFileDialog );
 	fd->setFileMode(QFileDialog::ExistingFile);
 	fd->setFilter( trUtf8("Hydrogen Pattern (*.h2pattern)") );
@@ -1438,14 +1438,14 @@ void SongEditorPositionRuler::setGridWidth( uint width )
 
 void SongEditorPositionRuler::createBackground()
 {
-	UIStyle *pStyle = Preferences::get_instance()->getDefaultUIStyle();
+	UIStyle *pStyle = Hydrogen::get_instance()->get_preferences()->getDefaultUIStyle();
 	QColor backgroundColor( pStyle->m_songEditor_backgroundColor.getRed(), pStyle->m_songEditor_backgroundColor.getGreen(), pStyle->m_songEditor_backgroundColor.getBlue() );
 	QColor textColor( pStyle->m_songEditor_textColor.getRed(), pStyle->m_songEditor_textColor.getGreen(), pStyle->m_songEditor_textColor.getBlue() );
 	QColor alternateRowColor( pStyle->m_songEditor_alternateRowColor.getRed(), pStyle->m_songEditor_alternateRowColor.getGreen(), pStyle->m_songEditor_alternateRowColor.getBlue() );
 
 	m_pBackgroundPixmap->fill( backgroundColor );
 
-	Preferences *pref = Preferences::get_instance();
+	Preferences *pref = Hydrogen::get_instance()->get_preferences();
 	QString family = pref->getApplicationFontFamily();
 	int size = pref->getApplicationFontPointSize();
 	QFont font( family, size );

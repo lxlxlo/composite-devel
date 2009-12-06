@@ -144,7 +144,7 @@ void Drumkit::dump()
 void Drumkit::install( const QString& filename )
 {
 	INFOLOG( "[Drumkit::install] drumkit = " + filename );
-	QString dataDir = Preferences::get_instance()->getDataDirectory() + "drumkits/";
+	QString dataDir = Hydrogen::get_instance()->get_preferences()->getDataDirectory() + "drumkits/";
 
 	int r;
 	struct archive *drumkitFile;
@@ -192,7 +192,7 @@ void Drumkit::install( const QString& filename )
 void Drumkit::install( const QString& filename )
 {
         INFOLOG( "[Drumkit::install] drumkit = " + filename );
-        QString dataDir = Preferences::get_instance()->getDataDirectory() + "drumkits/";
+        QString dataDir = Hydrogen::get_instance()->get_preferences()->getDataDirectory() + "drumkits/";
 
         // GUNZIP !!!
         QString gunzippedName = filename.left( filename.indexOf( "." ) );
@@ -309,7 +309,7 @@ void Drumkit::removeDrumkit( const QString& sDrumkitName )
 {
 	INFOLOG( "Removing drumkit: " + sDrumkitName );
 
-	QString dataDir = Preferences::get_instance()->getDataDirectory() + "drumkits/";
+	QString dataDir = Hydrogen::get_instance()->get_preferences()->getDataDirectory() + "drumkits/";
 	dataDir += sDrumkitName;
 	QString cmd = QString( "rm -rf \"" ) + dataDir + "\"";
 	INFOLOG( cmd );

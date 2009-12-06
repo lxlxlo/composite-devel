@@ -28,6 +28,7 @@
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/Logger.hpp>
+#include <Tritium/Preferences.hpp>
 
 #define THIS_NAMESPACE t_songhelpers
 #include "test_macros.hpp"
@@ -44,7 +45,8 @@ namespace THIS_NAMESPACE
 
 	Fixture() : s(0) {
 	    Logger::create_instance();
-	    Hydrogen::create_instance();
+	    Preferences *prefs = new Preferences();
+	    Hydrogen::create_instance(prefs);
 	    BOOST_MESSAGE(song_file_name);
 	    s = Song::load(song_file_name);
 	    BOOST_REQUIRE( s != 0 );

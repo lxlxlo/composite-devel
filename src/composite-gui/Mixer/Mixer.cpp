@@ -92,7 +92,7 @@ Mixer::Mixer( QWidget* pParent )
 		connect( m_pLadspaFXLine[nFX], SIGNAL( volumeChanged(LadspaFXMixerLine*) ), this, SLOT( ladspaVolumeChanged( LadspaFXMixerLine*) ) );
 	}
 
-	if ( Preferences::get_instance()->isFXTabVisible() ) {
+	if ( Hydrogen::get_instance()->get_preferences()->isFXTabVisible() ) {
 		m_pFXFrame->show();
 	}
 	else {
@@ -117,7 +117,7 @@ Mixer::Mixer( QWidget* pParent )
 	m_pShowFXPanelBtn->setPressed(false);
 	m_pShowFXPanelBtn->setToolTip( trUtf8( "Show FX panel" ) );
 	connect( m_pShowFXPanelBtn, SIGNAL(clicked(Button*)), this, SLOT( showFXPanelClicked(Button*)));
-	m_pShowFXPanelBtn->setPressed( Preferences::get_instance()->isFXTabVisible() );
+	m_pShowFXPanelBtn->setPressed( Hydrogen::get_instance()->get_preferences()->isFXTabVisible() );
 
 #ifndef LADSPA_SUPPORT
 	m_pShowFXPanelBtn->hide();
@@ -133,7 +133,7 @@ Mixer::Mixer( QWidget* pParent )
 			QSize(42, 13)
 	);
 	m_pShowPeaksBtn->move( 67, 258 );
-	m_pShowPeaksBtn->setPressed( (Preferences::get_instance())->showInstrumentPeaks() );
+	m_pShowPeaksBtn->setPressed( (Hydrogen::get_instance()->get_preferences())->showInstrumentPeaks() );
 	m_pShowPeaksBtn->setToolTip( trUtf8( "Show instrument peaks" ) );
 	connect( m_pShowPeaksBtn, SIGNAL(clicked(Button*)), this, SLOT( showPeaksBtnClicked(Button*)));
 //~ Master frame
@@ -362,7 +362,7 @@ void Mixer::masterVolumeChanged(MasterMixerLine* ref)
 
 void Mixer::updateMixer()
 {
-	Preferences *pPref = Preferences::get_instance();
+	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
 	bool bShowPeaks = pPref->showInstrumentPeaks();
 
 	Hydrogen *pEngine = Hydrogen::get_instance();
@@ -690,11 +690,11 @@ void Mixer::showFXPanelClicked(Button* ref)
 {
 	if ( ref->isPressed() ) {
 		m_pFXFrame->show();
-		Preferences::get_instance()->setFXTabVisible( true );
+		Hydrogen::get_instance()->get_preferences()->setFXTabVisible( true );
 	}
 	else {
 		m_pFXFrame->hide();
-		Preferences::get_instance()->setFXTabVisible( false );
+		Hydrogen::get_instance()->get_preferences()->setFXTabVisible( false );
 	}
 
 	resizeEvent( NULL ); 	// force an update
@@ -704,7 +704,7 @@ void Mixer::showFXPanelClicked(Button* ref)
 
 void Mixer::showPeaksBtnClicked(Button* ref)
 {
-	Preferences *pPref = Preferences::get_instance();
+	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
 
 	if ( ref->isPressed() ) {
 		pPref->setInstrumentPeaks( true );

@@ -53,7 +53,7 @@ PreferencesDialog::PreferencesDialog(QWidget* parent)
 	setMinimumSize( width(), height() );
 	setMaximumSize( width(), height() );
 
-	Preferences *pPref = Preferences::get_instance();
+	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
 	pPref->loadPreferences( false );	// reload user's preferences
 
 	driverComboBox->clear();
@@ -217,7 +217,7 @@ PreferencesDialog::~PreferencesDialog()
 
 void PreferencesDialog::on_cancelBtn_clicked()
 {
-	Preferences *preferencesMng = Preferences::get_instance();
+	Preferences *preferencesMng = Hydrogen::get_instance()->get_preferences();
 	preferencesMng->loadPreferences( false );	// reload old user's preferences
 
 	reject();
@@ -228,7 +228,7 @@ void PreferencesDialog::on_okBtn_clicked()
 {
 	m_bNeedDriverRestart = true;
 
-	Preferences *pPref = Preferences::get_instance();
+	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
 
 	midiTable->saveMidiTable();
 
@@ -365,7 +365,7 @@ void PreferencesDialog::on_driverComboBox_activated( int /*index*/ )
 
 void PreferencesDialog::updateDriverInfo()
 {
-	Preferences *pPref = Preferences::get_instance();
+	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
 	QString info;
 
 	bool bJack_support = false;
@@ -411,7 +411,7 @@ void PreferencesDialog::updateDriverInfo()
 
 void PreferencesDialog::on_selectApplicationFontBtn_clicked()
 {
-	Preferences *preferencesMng = Preferences::get_instance();
+	Preferences *preferencesMng = Hydrogen::get_instance()->get_preferences();
 
 	QString family = preferencesMng->getApplicationFontFamily();
 	int pointSize = preferencesMng->getApplicationFontPointSize();
@@ -463,7 +463,7 @@ void PreferencesDialog::on_restartDriverBtn_clicked()
 
 void PreferencesDialog::on_selectMixerFontBtn_clicked()
 {
-	Preferences *preferencesMng = Preferences::get_instance();
+	Preferences *preferencesMng = Hydrogen::get_instance()->get_preferences();
 
 	QString family = preferencesMng->getMixerFontFamily();
 	int pointSize = preferencesMng->getMixerFontPointSize();
@@ -522,6 +522,6 @@ void PreferencesDialog::on_styleComboBox_activated( int /*index*/ )
 	QString sStyle = styleComboBox->currentText();
 	pQApp->setStyle( sStyle );
 
-	Preferences *pPref = Preferences::get_instance();
+	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
 	pPref->setQTStyle( sStyle );
 }

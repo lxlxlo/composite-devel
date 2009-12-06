@@ -269,7 +269,7 @@ PlaylistDialog::~PlaylistDialog()
 
 void PlaylistDialog::addSong()
 {
-	static QString songDir = Preferences::get_instance()->getDataDirectory()  + "/songs";;
+	static QString songDir = Hydrogen::get_instance()->get_preferences()->getDataDirectory()  + "/songs";;
 
 	std::auto_ptr<QFileDialog> fd( new QFileDialog );
 	fd->setFileMode ( QFileDialog::ExistingFile );
@@ -375,7 +375,7 @@ void PlaylistDialog::updatePlayListNode ( QString file )
 void PlaylistDialog::loadList()
 {
 
-	static QString sDirectory =  Preferences::get_instance()->getDataDirectory()  + "playlists/" ;
+	static QString sDirectory =  Hydrogen::get_instance()->get_preferences()->getDataDirectory()  + "playlists/" ;
 
 	std::auto_ptr<QFileDialog> fd( new QFileDialog );
 	fd->setFileMode ( QFileDialog::ExistingFile );
@@ -424,9 +424,9 @@ void PlaylistDialog::loadList()
 void PlaylistDialog::newScript()
 {
 
-	Preferences *pPref = Preferences::get_instance();
+	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
 
-	QString sDirectory = ( Preferences::get_instance()->getDataDirectory()  + "scripts/");
+	QString sDirectory = ( Hydrogen::get_instance()->get_preferences()->getDataDirectory()  + "scripts/");
 	std::auto_ptr<QFileDialog> fd( new QFileDialog );
 	fd->setFileMode ( QFileDialog::AnyFile );
 	fd->setFilter ( trUtf8 ( "Hydrogen Scripts (*.sh)" ) );
@@ -505,7 +505,7 @@ void PlaylistDialog::newScript()
 void PlaylistDialog::saveListAs()
 {
 
-	QString sDirectory =  Preferences::get_instance()->getDataDirectory()  + "playlists/";
+	QString sDirectory =  Hydrogen::get_instance()->get_preferences()->getDataDirectory()  + "playlists/";
 	std::auto_ptr<QFileDialog> fd( new QFileDialog );
 	fd->setFileMode ( QFileDialog::AnyFile );
 	fd->setFilter ( trUtf8 ( "Hydrogen Playlist (*.h2playlist)" ) );
@@ -568,7 +568,7 @@ void PlaylistDialog::loadScript()
 		return;
 	}
 
-	static QString lastUsedDir =  Preferences::get_instance()->getDataDirectory()  + "scripts/";
+	static QString lastUsedDir =  Hydrogen::get_instance()->get_preferences()->getDataDirectory()  + "scripts/";
 
 	std::auto_ptr<QFileDialog> fd( new QFileDialog );
 	fd->setFileMode ( QFileDialog::ExistingFile );
@@ -620,7 +620,7 @@ void PlaylistDialog::removeScript()
 
 void PlaylistDialog::editScript()
 {
-	Preferences *pPref = Preferences::get_instance();
+	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
 	if( pPref->getDefaultEditor().isEmpty() ){
 		QMessageBox::information ( this, "Hydrogen", trUtf8 ( "No Default Editor Set. Please set your Default Editor\nDo not use a console based Editor\nSorry, but this will not work for the moment." ) );
 

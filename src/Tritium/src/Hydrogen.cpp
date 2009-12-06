@@ -135,7 +135,7 @@ public:
 
 		{
 			// TODO:  This seems too complicated for what we're doing...
-			Preferences *pref = Preferences::get_instance();
+			Preferences *pref = Hydrogen::get_instance()->get_preferences();
 			TransportPosition quant(pos);
 			quant.ceil(TransportPosition::TICK);
 
@@ -254,6 +254,7 @@ float m_fProcessTime = 0.0f;		///< time used in process function
 float m_fMaxProcessTime = 0.0f;		///< max ms usable in process with no xrun
 //~ info
 
+Preferences* m_preferences = 0;
 ActionManager* m_action_manager = 0;
 AudioEngine* m_audio_engine = 0;
 EventQueue* m_event_queue = 0;
@@ -1088,7 +1089,7 @@ inline void audioEngine_updateNoteQueue( unsigned nFrames, const TransportPositi
 			int nPatternSize = MAX_NOTES;
 
 			
-			if ( Preferences::get_instance()->patternModePlaysSelected() )
+			if ( Hydrogen::get_instance()->get_preferences()->patternModePlaysSelected() )
 			{
 				m_pPlayingPatterns->clear();
 				Pattern * pSelectedPattern =
@@ -1157,9 +1158,9 @@ inline void audioEngine_updateNoteQueue( unsigned nFrames, const TransportPositi
 				fVelocity = 0.8;
 				Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_METRONOME, 0 );
 			}
-			if ( Preferences::get_instance()->m_bUseMetronome ) {
+			if ( Hydrogen::get_instance()->get_preferences()->m_bUseMetronome ) {
 				m_pMetronomeInstrument->set_volume(
-					Preferences::get_instance()->m_fMetronomeVolume
+					Hydrogen::get_instance()->get_preferences()->m_fMetronomeVolume
 					);
 				Note *pMetronomeNote = new Note( m_pMetronomeInstrument,
 								 tick,
@@ -1336,7 +1337,7 @@ void audioEngine_noteOff( Note *note )
 AudioOutput* createDriver( const QString& sDriver )
 {
 	INFOLOG( QString( "Driver: '%1'" ).arg( sDriver ) );
-	Preferences *pPref = Preferences::get_instance();
+	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
 	AudioOutput *pDriver = NULL;
 
 	if ( sDriver == "Jack" ) {
@@ -1350,7 +1351,7 @@ AudioOutput* createDriver( const QString& sDriver )
 			pDriver = 0;
 		} else {
 			jao->setConnectDefaults(
-				Preferences::get_instance()->m_bJackConnectDefaults
+				Hydrogen::get_instance()->get_preferences()->m_bJackConnectDefaults
 				);
 		}
 #endif
@@ -1379,7 +1380,7 @@ AudioOutput* createDriver( const QString& sDriver )
 /// Start all audio drivers
 void audioEngine_startAudioDrivers()
 {
-	Preferences *preferencesMng = Preferences::get_instance();
+	Preferences *preferencesMng = Hydrogen::get_instance()->get_preferences();
 
 	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 	QMutexLocker mx(&mutex_OutputPointer);
@@ -1569,8 +1570,11 @@ Hydrogen* Hydrogen::__instance = NULL;
 
 
 
-Hydrogen::Hydrogen()
+Hydrogen::Hydrogen(Preferences* prefs)
 {
+	assert(prefs);
+	m_preferences = prefs;
+
 	INFOLOG( "[Hydrogen]" );
 
 	__instance = this;
@@ -1594,26 +1598,33 @@ Hydrogen::~Hydrogen()
 	delete m_action_manager;
 	delete m_event_queue;
 	delete m_pTransport;
+	delete m_preferences;
 	__instance = 0;
 }
 
 
 
-void Hydrogen::create_instance()
+void Hydrogen::create_instance(Preferences *prefs)
 {
+	assert(prefs);
+	m_preferences = prefs;
 	// Create all the other instances that we need
 	// ....and in the right order
 	Logger::create_instance();
-	Preferences::create_instance();
 	m_event_queue = new EventQueue();
 	m_action_manager = new ActionManager();
 
 	if( __instance == 0 ) {
-		__instance = new Hydrogen;
+		__instance = new Hydrogen(prefs);
 	}
 
 	// See audioEngine_init() for:
 	// AudioEngine, Effects, Playlist
+}
+
+Preferences* Hydrogen::get_preferences()
+{
+	return m_preferences;
 }
 
 AudioEngine* Hydrogen::get_audio_engine()
@@ -1707,7 +1718,7 @@ void Hydrogen::addRealtimeNote( int instrument,
 				bool use_frame,
 				uint32_t frame )
 {
-	Preferences *pref = Preferences::get_instance();
+	Preferences *pref = Hydrogen::get_instance()->get_preferences();
 	Instrument* i = getSong()->get_instrument_list()->get(instrument);
 	Note note( i,
 		   velocity,
@@ -1798,7 +1809,7 @@ void Hydrogen::restartDrivers()
 void Hydrogen::startExportSong( const QString& filename )
 {
 	m_pTransport->stop();
-	Preferences *pPref = Preferences::get_instance();
+	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
 
 	m_oldEngineMode = m_pSong->get_mode();
 	m_bOldLoopEnabled = m_pSong->is_loop_enabled();
@@ -2213,7 +2224,7 @@ void Hydrogen::setSelectedPatternNumber( int nPat )
 	if ( nPat == m_nSelectedPatternNumber )	return;
 	
 	
-	if ( Preferences::get_instance()->patternModePlaysSelected() ) {
+	if ( Hydrogen::get_instance()->get_preferences()->patternModePlaysSelected() ) {
 		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 	
 		m_nSelectedPatternNumber = nPat;
@@ -2246,7 +2257,7 @@ void Hydrogen::setSelectedInstrumentNumber( int nInstrument )
 #ifdef JACK_SUPPORT
 void Hydrogen::renameJackPorts()
 {
-	if( Preferences::get_instance()->m_bJackTrackOuts == true ){
+	if( Hydrogen::get_instance()->get_preferences()->m_bJackTrackOuts == true ){
 		audioEngine_renameJackPorts();
 	}
 }
@@ -2325,7 +2336,7 @@ bool Hydrogen::getJackTimeMaster()
  */
 void Hydrogen::togglePlaysSelected()
 {
-	Preferences * P = Preferences::get_instance();
+	Preferences * P = Hydrogen::get_instance()->get_preferences();
 	bool isPlaysSelected = P->patternModePlaysSelected();
 
 	// NEED TO IMPLEMENT!!

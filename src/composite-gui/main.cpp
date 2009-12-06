@@ -196,15 +196,13 @@ int main(int argc, char *argv[])
 
 		// Man your battle stations... this is not a drill.
 		Tritium::Logger::create_instance();
-		Tritium::Preferences::create_instance();
+		Tritium::Preferences *pPref = new Tritium::Preferences();
 		Tritium::Logger::get_instance()->set_logging_level( logLevelOpt );
 		// See below for Tritium::Hydrogen.
 
 
 		INFOLOG( QString("Using QT version ") + QString( qVersion() ) );
 		INFOLOG( "Using data path: " + Tritium::DataPath::get_data_path() );
-
-		Tritium::Preferences *pPref = Tritium::Preferences::get_instance();
 
 		if (sSelectedDriver == "auto") {
 			pPref->m_sAudioDriver = "Auto";
@@ -269,7 +267,7 @@ int main(int argc, char *argv[])
 		}
 
 		// Hydrogen here to honor all preferences.
-		Tritium::Hydrogen::create_instance();
+		Tritium::Hydrogen::create_instance(pPref);
 		MainForm *pMainForm = new MainForm( pQApp, songFilename );
 		pMainForm->show();
 		pSplash->finish( pMainForm );
@@ -279,7 +277,6 @@ int main(int argc, char *argv[])
 		delete pSplash;
 		delete pMainForm;
 		delete pQApp;
-		delete pPref;
 		// delete Tritium::Hydrogen::get_instance(); // Deleted by pMainForm
 
 		INFOLOG( "Quitting..." );

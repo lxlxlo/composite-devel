@@ -24,6 +24,7 @@
 #include <Tritium/Song.hpp>
 #include <Tritium/TransportPosition.hpp>
 #include <Tritium/Logger.hpp>
+#include <Tritium/Preferences.hpp>
 
 #include <stdint.h>  // uint32_t, etc.
 #include <cmath>
@@ -46,7 +47,8 @@ namespace THIS_NAMESPACE
 
 	Fixture() {
 	    Logger::create_instance();
-	    Hydrogen::create_instance();
+	    Preferences* prefs = new Preferences();
+	    Hydrogen::create_instance(prefs);
 	    s = Song::load(song_file_name);
 	    x.set_current_song(s);
 	}

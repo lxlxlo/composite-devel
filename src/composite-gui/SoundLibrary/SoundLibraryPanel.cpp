@@ -120,8 +120,8 @@ SoundLibraryPanel::SoundLibraryPanel( QWidget *pParent )
 
 	this->setLayout( pVBox );
 
-	__expand_pattern_list = Preferences::get_instance()->__expandPatternItem;
-	__expand_songs_list = Preferences::get_instance()->__expandSongItem;
+	__expand_pattern_list = Hydrogen::get_instance()->get_preferences()->__expandPatternItem;
+	__expand_songs_list = Hydrogen::get_instance()->get_preferences()->__expandSongItem;
 
 	updateDrumkitList();
 }
@@ -718,7 +718,7 @@ void SoundLibraryPanel::on_instrumentDeleteAction()
 void SoundLibraryPanel::on_songLoadAction()
 {
 	QString songName = __sound_library_tree->currentItem()->text( 0 );
-	QString sDirectory = Preferences::get_instance()->getDataDirectory()  + "songs";
+	QString sDirectory = Hydrogen::get_instance()->get_preferences()->getDataDirectory()  + "songs";
 
 	QString sFilename = sDirectory + "/" + songName + ".h2song";
 	
@@ -734,7 +734,7 @@ void SoundLibraryPanel::on_songLoadAction()
 	}
 
 	// add the new loaded song in the "last used song" vector
-	Preferences *pPref = Preferences::get_instance();
+	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
 
 	std::vector<QString> recentFiles = pPref->getRecentFiles();
 	recentFiles.insert( recentFiles.begin(), sFilename );
@@ -839,7 +839,7 @@ void SoundLibraryPanel::test_expandedItems()
 	assert( __sound_library_tree );
 	__expand_songs_list = __sound_library_tree->isItemExpanded( __song_item );
 	__expand_pattern_list = __sound_library_tree->isItemExpanded( __pattern_item );
-	Preferences::get_instance()->__expandSongItem = __expand_songs_list;
-	Preferences::get_instance()->__expandPatternItem = __expand_pattern_list;
+	Hydrogen::get_instance()->get_preferences()->__expandSongItem = __expand_songs_list;
+	Hydrogen::get_instance()->get_preferences()->__expandPatternItem = __expand_pattern_list;
 	//ERRORLOG( QString("songs %1 patterns %2").arg(__expand_songs_list).arg(__expand_pattern_list) );
 }

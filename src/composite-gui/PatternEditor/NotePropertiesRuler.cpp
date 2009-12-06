@@ -45,7 +45,7 @@ NotePropertiesRuler::NotePropertiesRuler( QWidget *parent, PatternEditorPanel *p
 	//infoLog("INIT");
 	//setAttribute(Qt::WA_NoBackground);
 
-	m_nGridWidth = (Preferences::get_instance())->getPatternEditorGridWidth();
+	m_nGridWidth = (Hydrogen::get_instance()->get_preferences())->getPatternEditorGridWidth();
 	m_nEditorWidth = 20 + m_nGridWidth * ( MAX_NOTES * 4 );
 
 	if (m_mode == VELOCITY ) {
@@ -296,7 +296,7 @@ void NotePropertiesRuler::createVelocityBackground(QPixmap *pixmap)
 		return;
 	}
 
-	UIStyle *pStyle = Preferences::get_instance()->getDefaultUIStyle();
+	UIStyle *pStyle = Hydrogen::get_instance()->get_preferences()->getDefaultUIStyle();
 
 	H2RGBColor valueColor(
 			(int)( pStyle->m_patternEditor_backgroundColor.getRed() * ( 1 - 0.3 ) ),
@@ -460,7 +460,7 @@ void NotePropertiesRuler::createPanBackground(QPixmap *pixmap)
 	}
 
 
-	UIStyle *pStyle = Preferences::get_instance()->getDefaultUIStyle();
+	UIStyle *pStyle = Hydrogen::get_instance()->get_preferences()->getDefaultUIStyle();
 
 	QColor backgroundColor( pStyle->m_patternEditor_backgroundColor.getRed(), pStyle->m_patternEditor_backgroundColor.getGreen(), pStyle->m_patternEditor_backgroundColor.getBlue() );
 
@@ -617,7 +617,7 @@ void NotePropertiesRuler::createLeadLagBackground(QPixmap *pixmap)
 	}
  
  
-	UIStyle *pStyle = Preferences::get_instance()->getDefaultUIStyle();
+	UIStyle *pStyle = Hydrogen::get_instance()->get_preferences()->getDefaultUIStyle();
 	
 	QColor backgroundColor( pStyle->m_patternEditor_backgroundColor.getRed(), pStyle->m_patternEditor_backgroundColor.getGreen(), pStyle->m_patternEditor_backgroundColor.getBlue() );
 	QColor blackKeysColor( 240, 240, 240 );

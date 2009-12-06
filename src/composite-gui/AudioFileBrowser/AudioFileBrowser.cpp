@@ -65,9 +65,9 @@ AudioFileBrowser::AudioFileBrowser ( QWidget* pParent )
 	tree->resize( 799, 310 );
 	tree->header()->resizeSection( 0, 405 );
 	tree->setAlternatingRowColors( true );
-	tree->setRootIndex( model->index( Preferences::get_instance()->__lastsampleDirectory ) );
+	tree->setRootIndex( model->index( Hydrogen::get_instance()->get_preferences()->__lastsampleDirectory ) );
 	
-	pathLineEdit->setText( Preferences::get_instance()->__lastsampleDirectory );
+	pathLineEdit->setText( Hydrogen::get_instance()->get_preferences()->__lastsampleDirectory );
 	m_psamplefilename = "";	
 	m_pselectedFile << "false" << "false";
 
@@ -87,7 +87,7 @@ AudioFileBrowser::AudioFileBrowser ( QWidget* pParent )
 	m_pSampleWaveDisplay->updateDisplay( sEmptySampleFilename );
 	m_pSampleWaveDisplay->move( 3, 3 );
 
-	playSamplescheckBox->setChecked( Preferences::get_instance()->__playsamplesonclicking );
+	playSamplescheckBox->setChecked( Hydrogen::get_instance()->get_preferences()->__playsamplesonclicking );
 	//get the kde or gnome environment variable for mouse double or single clicking
 	singleClick = false;
 	getEnvironment();
@@ -320,7 +320,7 @@ void AudioFileBrowser::on_m_pStopBtn_clicked()
 
 void AudioFileBrowser::on_cancelBTN_clicked()
 {
-	Preferences::get_instance()->__lastsampleDirectory = pathLineEdit->text();
+	Hydrogen::get_instance()->get_preferences()->__lastsampleDirectory = pathLineEdit->text();
 	m_pselectedFile << "false" << "false" << "";
 	reject();
 }
@@ -355,7 +355,7 @@ void AudioFileBrowser::on_openBTN_clicked()
 			++i;++i;++i;
 		}
 	}
-	Preferences::get_instance()->__lastsampleDirectory = pathLineEdit->text();
+	Hydrogen::get_instance()->get_preferences()->__lastsampleDirectory = pathLineEdit->text();
 	accept();
 }
 
@@ -363,7 +363,7 @@ void AudioFileBrowser::on_openBTN_clicked()
 
 void AudioFileBrowser::on_playSamplescheckBox_clicked()
 {
-	Preferences::get_instance()->__playsamplesonclicking = playSamplescheckBox->isChecked();
+	Hydrogen::get_instance()->get_preferences()->__playsamplesonclicking = playSamplescheckBox->isChecked();
 }
 
 

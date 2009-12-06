@@ -168,7 +168,7 @@ void Sampler::process( SeqScriptConstIterator beg,
 	// audioEngine_process_clearAudioBuffers()
 
 	// Max notes limit
-	int m_nMaxNotes = Preferences::get_instance()->m_nMaxNotes;
+	int m_nMaxNotes = Hydrogen::get_instance()->get_preferences()->m_nMaxNotes;
 	while ( ( int )d->current_notes.size() > m_nMaxNotes ) {
 		d->current_notes.front().get_instrument()->dequeue();
 		d->current_notes.pop_front();
@@ -247,7 +247,7 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
 	if ( pInstr->is_muted() ) {                             // is instrument muted?
 		cost_L = 0.0;
 		cost_R = 0.0;
-                if ( Preferences::get_instance()->m_nJackTrackOutputMode == 0 ) {
+                if ( Hydrogen::get_instance()->get_preferences()->m_nJackTrackOutputMode == 0 ) {
 		// Post-Fader
 			cost_track_L = 0.0;
 			cost_track_R = 0.0;
@@ -264,7 +264,7 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
 		fSendFXLevel_L = cost_L;
 
 		cost_L = cost_L * pInstr->get_volume();		// instrument volume
-                if ( Preferences::get_instance()->m_nJackTrackOutputMode == 0 ) {
+                if ( Hydrogen::get_instance()->get_preferences()->m_nJackTrackOutputMode == 0 ) {
 		// Post-Fader
 			cost_track_L = cost_L * 2;
 		}
@@ -283,7 +283,7 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
 		fSendFXLevel_R = cost_R;
 
 		cost_R = cost_R * pInstr->get_volume();		// instrument volume
-                if ( Preferences::get_instance()->m_nJackTrackOutputMode == 0 ) {
+                if ( Hydrogen::get_instance()->get_preferences()->m_nJackTrackOutputMode == 0 ) {
 		// Post-Fader
 			cost_track_R = cost_R * 2;
 		}
@@ -295,7 +295,7 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
 	}
 
 	// direct track outputs only use velocity
-	if ( Preferences::get_instance()->m_nJackTrackOutputMode == 1 ) {
+	if ( Hydrogen::get_instance()->get_preferences()->m_nJackTrackOutputMode == 1 ) {
 		cost_track_L = cost_track_L * note.get_velocity();
 		cost_track_L = cost_track_L * fLayerGain;
 		cost_track_R = cost_track_L;

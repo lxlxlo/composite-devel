@@ -70,7 +70,7 @@ PatternEditorPanel::PatternEditorPanel( QWidget *pParent )
 {
 	setAcceptDrops(true);
 
-	Preferences *pPref = Preferences::get_instance();
+	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
 	
 
 // Editor TOP
@@ -586,8 +586,8 @@ void PatternEditorPanel::gridResolutionChanged( QString str )
 	//INFOLOG( to_string( nResolution ) );
 	m_pDrumPatternEditor->setResolution( nResolution, bUseTriplets );
 
-	Preferences::get_instance()->setPatternEditorGridResolution( nResolution );
-	Preferences::get_instance()->setPatternEditorUsingTriplets( bUseTriplets );
+	Hydrogen::get_instance()->get_preferences()->setPatternEditorGridResolution( nResolution );
+	Hydrogen::get_instance()->get_preferences()->setPatternEditorUsingTriplets( bUseTriplets );
 }
 
 
@@ -630,7 +630,7 @@ void PatternEditorPanel::selectedPatternChangedEvent()
 
 void PatternEditorPanel::hearNotesBtnClick(Button *ref)
 {
-	Preferences *pref = ( Preferences::get_instance() );
+	Preferences *pref = ( Hydrogen::get_instance()->get_preferences() );
 	pref->setHearNewNotes( ref->isPressed() );
 
 	if (ref->isPressed() ) {
@@ -646,7 +646,7 @@ void PatternEditorPanel::hearNotesBtnClick(Button *ref)
 
 void PatternEditorPanel::recordEventsBtnClick(Button *ref)
 {
-	Preferences *pref = ( Preferences::get_instance() );
+	Preferences *pref = ( Hydrogen::get_instance()->get_preferences() );
 	pref->setRecordEvents( ref->isPressed() );
 
 	if (ref->isPressed() ) {
@@ -662,7 +662,7 @@ void PatternEditorPanel::recordEventsBtnClick(Button *ref)
 
 void PatternEditorPanel::quantizeEventsBtnClick(Button *ref)
 {
-	Preferences *pref = ( Preferences::get_instance() );
+	Preferences *pref = ( Hydrogen::get_instance()->get_preferences() );
 	pref->setQuantizeEvents( ref->isPressed() );
 
 	if (ref->isPressed() ) {

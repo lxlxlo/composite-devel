@@ -132,7 +132,7 @@ MixerLine::MixerLine(QWidget* parent)
 		connect( m_pKnob[i], SIGNAL( valueChanged(Knob*) ), this, SLOT( knobChanged(Knob*) ) );
 	}
 
-	Preferences *pref = Preferences::get_instance();
+	Preferences *pref = Hydrogen::get_instance()->get_preferences();
 
 	QString family = pref->getMixerFontFamily();
 	int size = pref->getMixerFontPointSize();
@@ -486,7 +486,7 @@ MasterMixerLine::MasterMixerLine(QWidget* parent)
 	// Background image
 	setPixmap( "/mixerPanel/masterMixerline_background.png" );
 
-	Preferences *pref = Preferences::get_instance();
+	Preferences *pref = Hydrogen::get_instance()->get_preferences();
 	int size = pref->getMixerFontPointSize();
 	QString family = pref->getMixerFontFamily();
 	float m_fFalloffTemp = pref->getMixerFalloffSpeed();
@@ -760,7 +760,7 @@ FxMixerLine::FxMixerLine(QWidget* parent)
 	activeBtn->setToolTip( trUtf8( "FX on/off") );
 	connect( activeBtn, SIGNAL( clicked(Button*) ), this, SLOT( click(Button*) ) );
 
-	Preferences *pref = Preferences::get_instance();
+	Preferences *pref = Hydrogen::get_instance()->get_preferences();
 
 	// m_pFader
 	m_pFader = new Fader( this, false, false );
@@ -928,7 +928,7 @@ InstrumentNameWidget::InstrumentNameWidget(QWidget* parent)
 	m_nWidgetWidth = 17;
 	m_nWidgetHeight = 116;
 
-	Preferences *pref = Preferences::get_instance();
+	Preferences *pref = Hydrogen::get_instance()->get_preferences();
 	QString family = pref->getMixerFontFamily();
 	int size = pref->getMixerFontPointSize();
 	m_mixerFont.setFamily( family );

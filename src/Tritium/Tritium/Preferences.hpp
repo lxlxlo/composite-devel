@@ -202,10 +202,7 @@ public:
 	///Default text editor (used by Playlisteditor)
 	QString m_sDefaultEditor;
 
-	/// Returns an instance of PreferencesMng class
-	static void create_instance();
-	static Preferences* get_instance() { assert(__instance); return __instance; }
-
+	Preferences();
 	~Preferences();
 
 	/// Load the preferences file
@@ -440,8 +437,6 @@ public:
 	MidiMap* get_midi_map();
 
 private:
-	static Preferences *__instance;
-
 	QString m_sDataDirectory;
 
 
@@ -486,9 +481,6 @@ private:
 	WindowProperties m_ladspaProperties[MAX_FX];
 
 	UIStyle*  m_pDefaultUIStyle;
-
-
-	Preferences();
 
 	/// Create preferences directory
 	void createPreferencesDirectory();

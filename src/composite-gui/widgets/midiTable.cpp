@@ -142,7 +142,7 @@ void MidiTable::insertNewRow(QString actionString , QString eventString, int eve
 
 void MidiTable::setupMidiTable()
 {
-	MidiMap *mM = Preferences::get_instance()->get_midi_map();
+	MidiMap *mM = Hydrogen::get_instance()->get_preferences()->get_midi_map();
 
 	QStringList items;
 	items << "" << trUtf8("Event")  <<  trUtf8("Param.")  <<  trUtf8("Action") <<  trUtf8("Param.") ;
@@ -213,7 +213,7 @@ void MidiTable::setupMidiTable()
 
 void MidiTable::saveMidiTable()
 {
-	MidiMap *mM = Preferences::get_instance()->get_midi_map();
+	MidiMap *mM = Hydrogen::get_instance()->get_preferences()->get_midi_map();
 	
 	for ( int row = 0; row < __row_count; row++ ) {
 

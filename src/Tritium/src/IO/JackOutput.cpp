@@ -73,7 +73,7 @@ JackOutput::JackOutput( JackProcessCallback processCallback )
 	: AudioOutput()
 {
 	INFOLOG( "INIT" );
-	__track_out_enabled = Preferences::get_instance()->m_bJackTrackOuts;	// allow per-track output
+	__track_out_enabled = Hydrogen::get_instance()->get_preferences()->m_bJackTrackOuts;	// allow per-track output
 
 	jackDriverInstance = this;
 	this->processCallback = processCallback;
@@ -229,8 +229,8 @@ float* JackOutput::getTrackOut_R( unsigned nTrack )
 
 int JackOutput::init( unsigned /*nBufferSize*/ )
 {
-	output_port_name_1 = Preferences::get_instance()->m_sJackPortName1;
-	output_port_name_2 = Preferences::get_instance()->m_sJackPortName2;
+	output_port_name_1 = Hydrogen::get_instance()->get_preferences()->m_sJackPortName1;
+	output_port_name_2 = Hydrogen::get_instance()->get_preferences()->m_sJackPortName2;
 
 	jack_client_t* client = JackClient::get_instance()->ref();
 
@@ -291,7 +291,7 @@ void JackOutput::makeTrackOutputs( Song * song )
 {
 
 	/// Disable Track Outputs
-	if( Preferences::get_instance()->m_bJackTrackOuts == false )
+	if( Hydrogen::get_instance()->get_preferences()->m_bJackTrackOuts == false )
 			return;
 	///
 

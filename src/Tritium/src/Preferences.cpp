@@ -48,21 +48,10 @@
 namespace Tritium
 {
 
-Preferences* Preferences::__instance = NULL;
-
-void Preferences::create_instance()
-{
-	if ( __instance == 0 ) {
-		__instance = new Preferences;
-	}
-}
-
-
 Preferences::Preferences()
 		: demoPath( QString( DataPath::get_data_path() ) + "/demo_songs/" )
 		, m_sLastNews( "" )
 {
-	__instance = this;
 	INFOLOG( "INIT" );
 	
 	//Default jack track-outputs are post fader
@@ -240,7 +229,6 @@ Preferences::~Preferences()
 
 	delete m_midi_map;
 	INFOLOG( "DESTROY" );
-	__instance = 0;
 	delete m_pDefaultUIStyle;
 }
 

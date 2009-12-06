@@ -24,6 +24,7 @@
 #include <Tritium/SoundLibrary.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Logger.hpp>
+#include <Tritium/Hydrogen.hpp>
 
 #include <QList>
 #include <QInputDialog>
@@ -45,7 +46,7 @@ SoundLibraryRepositoryDialog::SoundLibraryRepositoryDialog( QWidget* pParent )
 //update all values
 void SoundLibraryRepositoryDialog::updateDialog(){
 	
-	Tritium::Preferences *pPref = Tritium::Preferences::get_instance();
+	Tritium::Preferences *pPref = Tritium::Hydrogen::get_instance()->get_preferences();
 
 	/*
 		Read serverList from config and put servers into the serverList
@@ -68,7 +69,7 @@ void SoundLibraryRepositoryDialog::updateDialog(){
 
 void SoundLibraryRepositoryDialog::on_AddBtn_clicked()
 {
-	Tritium::Preferences *pPref = Tritium::Preferences::get_instance();
+	Tritium::Preferences *pPref = Tritium::Hydrogen::get_instance()->get_preferences();
 	bool ok;
 
 	QString text = QInputDialog::getText(this, trUtf8("Edit server list"), trUtf8("URL"), QLineEdit::Normal,QString(""), &ok);
@@ -89,7 +90,7 @@ void SoundLibraryRepositoryDialog::on_DeleteBtn_clicked()
 	selectedItems = ServerListWidget->selectedItems();
 
 	//std::list<std::string>::const_iterator cur_Server;
-	Tritium::Preferences *pPref = Tritium::Preferences::get_instance();
+	Tritium::Preferences *pPref = Tritium::Hydrogen::get_instance()->get_preferences();
 
 	while( ! selectedItems.isEmpty() ){
 

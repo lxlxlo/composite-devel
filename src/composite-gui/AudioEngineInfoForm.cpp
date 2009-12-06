@@ -174,7 +174,7 @@ void AudioEngineInfoForm::updateInfo()
 		midiDriverName->setText("No MIDI driver support");
 	}
 
-	m_pMidiDeviceName->setText( Preferences::get_instance()->m_sMidiPortName );
+	m_pMidiDeviceName->setText( Hydrogen::get_instance()->get_preferences()->m_sMidiPortName );
 
 
 	int nSelectedPatternNumber = pEngine->getSelectedPatternNumber();
@@ -205,7 +205,7 @@ void AudioEngineInfoForm::updateInfo()
 
 	// SAMPLER
 	Sampler *pSampler = Hydrogen::get_instance()->get_audio_engine()->get_sampler();
-	sampler_playingNotesLbl->setText(QString( "%1 / %2" ).arg(pSampler->get_playing_notes_number()).arg(Preferences::get_instance()->m_nMaxNotes));
+	sampler_playingNotesLbl->setText(QString( "%1 / %2" ).arg(pSampler->get_playing_notes_number()).arg(Hydrogen::get_instance()->get_preferences()->m_nMaxNotes));
 
 }
 

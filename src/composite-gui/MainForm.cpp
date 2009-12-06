@@ -90,7 +90,7 @@ MainForm::MainForm( QApplication *app, const QString& songFilename )
 		}
 	}
 	else {
-		Preferences *pref = Preferences::get_instance();
+		Preferences *pref = Hydrogen::get_instance()->get_preferences();
 		bool restoreLastSong = pref->isRestoreLastSongEnabled();
 		QString filename = pref->getLastSongFilename();
 		if ( restoreLastSong && ( !filename.isEmpty() )) {
@@ -230,7 +230,7 @@ void MainForm::createMenuBar()
 	// Tools menu
 	QMenu *m_pToolsMenu = m_pMenubar->addMenu( trUtf8( "&Tools" ));
 
-//	if ( Preferences::get_instance()->getInterfaceMode() == Preferences::SINGLE_PANED ) {
+//	if ( Hydrogen::get_instance()->get_preferences()->getInterfaceMode() == Preferences::SINGLE_PANED ) {
 //		m_pWindowMenu->addAction( trUtf8("Show song editor"), this, SLOT( action_window_showSongEditor() ), QKeySequence( "" ) );
 //	}
 	m_pToolsMenu->addAction( trUtf8("Playlist &editor"), this, SLOT( action_window_showPlaylistDialog() ), QKeySequence( "" ) );
@@ -357,10 +357,10 @@ void MainForm::action_file_save()
 	if(! saved) {
 		QMessageBox::warning( this, "Composite", trUtf8("Could not save song.") );
 	} else {
-		Preferences::get_instance()->setLastSongFilename( song->get_filename() );
+		Hydrogen::get_instance()->get_preferences()->setLastSongFilename( song->get_filename() );
 
 		// add the new loaded song in the "last used song" vector
-		Preferences *pPref = Preferences::get_instance();
+		Preferences *pPref = Hydrogen::get_instance()->get_preferences();
 		vector<QString> recentFiles = pPref->getRecentFiles();
 		recentFiles.insert( recentFiles.begin(), filename );
 		pPref->setRecentFiles( recentFiles );
@@ -407,7 +407,7 @@ void MainForm::action_file_export_pattern_as()
 	Instrument *instr = song->get_instrument_list()->get ( 0 );
 	assert ( instr );
 
-	QDir dir  = Preferences::get_instance()->__lastspatternDirectory;
+	QDir dir  = Hydrogen::get_instance()->get_preferences()->__lastspatternDirectory;
 
 
 	std::auto_ptr<QFileDialog> fd( new QFileDialog );
@@ -431,7 +431,7 @@ void MainForm::action_file_export_pattern_as()
 		QString tmpfilename = filename;
 		QString toremove = tmpfilename.section( '/', -1 ); 
 		QString newdatapath =  tmpfilename.replace( toremove, "" );
-		Preferences::get_instance()->__lastspatternDirectory = newdatapath;
+		Hydrogen::get_instance()->get_preferences()->__lastspatternDirectory = newdatapath;
 	}
 
 	if ( !filename.isEmpty() )
@@ -475,7 +475,7 @@ void MainForm::action_file_open()
 		return;
 	}
 
-	static QString lastUsedDir = Preferences::get_instance()->getDataDirectory() + "/songs";
+	static QString lastUsedDir = Hydrogen::get_instance()->get_preferences()->getDataDirectory() + "/songs";
 	
 	std::auto_ptr<QFileDialog> fd( new QFileDialog );
 	fd->setFileMode(QFileDialog::ExistingFile);
@@ -516,7 +516,7 @@ void MainForm::action_file_openPattern()
 	Instrument *instr = song->get_instrument_list()->get ( 0 );
 	assert ( instr );
 
-	QDir dirPattern( Preferences::get_instance()->getDataDirectory() + "/patterns" );
+	QDir dirPattern( Hydrogen::get_instance()->get_preferences()->getDataDirectory() + "/patterns" );
 	std::auto_ptr<QFileDialog> fd( new QFileDialog );
 	fd->setFileMode ( QFileDialog::ExistingFile );
 	fd->setFilter ( trUtf8 ( "Hydrogen Pattern (*.h2pattern)" ) );
@@ -574,7 +574,7 @@ void MainForm::action_file_openDemo()
 	fd->setContentsPreview( "uno", "due" );
 	fd->setPreviewMode( QFileDialog::Contents );
 	*/
-	fd->setDirectory( QString( Preferences::get_instance()->getDemoPath() ) );
+	fd->setDirectory( QString( Hydrogen::get_instance()->get_preferences()->getDemoPath() ) );
 
 
 	QString filename;
@@ -771,7 +771,7 @@ void MainForm::action_window_showDrumkitManagerPanel()
 
 void MainForm::closeAll() {
 	// save window properties in the preferences files
-	Preferences *pref = Preferences::get_instance();
+	Preferences *pref = Hydrogen::get_instance()->get_preferences();
 
 	// mainform
 	WindowProperties mainFormProp;
@@ -918,7 +918,7 @@ void MainForm::updateRecentUsedSongList()
 {
 	m_pRecentFilesMenu->clear();
 
-	Preferences *pPref = Preferences::get_instance();
+	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
 	vector<QString> recentUsedSongs = pPref->getRecentFiles();
 
 	QString sFilename;
@@ -958,7 +958,7 @@ void MainForm::openSongFile( const QString& sFilename )
 	}
 
 	// add the new loaded song in the "last used song" vector
-	Preferences *pPref = Preferences::get_instance();
+	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
 	vector<QString> recentFiles = pPref->getRecentFiles();
 	recentFiles.insert( recentFiles.begin(), sFilename );
 	pPref->setRecentFiles( recentFiles );
@@ -1190,9 +1190,9 @@ bool MainForm::eventFilter( QObject * /*o*/, QEvent *e )
 			
 			case Qt::Key_L :
 				engine->togglePlaysSelected();
-				QString msg = Preferences::get_instance()->patternModePlaysSelected() ? "Single pattern mode" : "Stacked pattern mode";
+				QString msg = Hydrogen::get_instance()->get_preferences()->patternModePlaysSelected() ? "Single pattern mode" : "Stacked pattern mode";
 				HydrogenApp::get_instance()->setStatusBarMessage( msg, 5000 );
-				HydrogenApp::get_instance()->getSongEditorPanel()->setModeActionBtn( Preferences::get_instance()->patternModePlaysSelected() );
+				HydrogenApp::get_instance()->getSongEditorPanel()->setModeActionBtn( Hydrogen::get_instance()->get_preferences()->patternModePlaysSelected() );
 				HydrogenApp::get_instance()->getSongEditorPanel()->updateAll();
 				
 				return TRUE;

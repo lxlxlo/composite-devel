@@ -52,7 +52,7 @@ InstrumentLine::InstrumentLine(QWidget* pParent)
   : PixmapWidget(pParent, "InstrumentLine")
   , m_bIsSelected(false)
 {
-	int h = Preferences::get_instance()->getPatternEditorGridHeight();
+	int h = Hydrogen::get_instance()->get_preferences()->getPatternEditorGridHeight();
 	setFixedSize(181, h);
 
 	m_pNameLbl = new QLabel(this);
@@ -392,7 +392,7 @@ PatternEditorInstrumentList::PatternEditorInstrumentList( QWidget *parent, Patte
 	m_pPattern = NULL;
  	m_pPatternEditorPanel = pPatternEditorPanel;
 
-	m_nGridHeight = Preferences::get_instance()->getPatternEditorGridHeight();
+	m_nGridHeight = Hydrogen::get_instance()->get_preferences()->getPatternEditorGridHeight();
 
 	m_nEditorWidth = 181;
 	m_nEditorHeight = m_nGridHeight * MAX_INSTRUMENTS;

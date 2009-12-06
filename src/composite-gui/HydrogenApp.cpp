@@ -52,6 +52,7 @@
 #include <Tritium/Logger.hpp>
 
 #include <QtGui>
+#include <cassert>
 
 using namespace Tritium;
 
@@ -102,10 +103,10 @@ HydrogenApp::HydrogenApp( MainForm *pMainForm, Song *pFirstSong )
 	m_pEventQueueTimer->start(50);	// update at 20 fps
 
 
-	// Create the audio engine :)
-	Hydrogen::create_instance();
+	// Audio Engine must already be created
+	assert(Hydrogen::get_instance());
 	Hydrogen::get_instance()->setSong( pFirstSong );
-	Preferences::get_instance()->setLastSongFilename( pFirstSong->get_filename() );
+	Hydrogen::get_instance()->get_preferences()->setLastSongFilename( pFirstSong->get_filename() );
 
 	// set initial title
 	QString qsSongName( pFirstSong->get_name() );
@@ -116,7 +117,7 @@ HydrogenApp::HydrogenApp( MainForm *pMainForm, Song *pFirstSong )
 
         setWindowTitle( qsSongName  );
 
-	Preferences *pPref = Preferences::get_instance();
+	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
 
 	setupSinglePanedInterface();
 
@@ -184,7 +185,7 @@ HydrogenApp* HydrogenApp::get_instance() {
 
 void HydrogenApp::setupSinglePanedInterface()
 {
-	Preferences *pPref = Preferences::get_instance();
+	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
 
 	// MAINFORM
 	WindowProperties mainFormProp = pPref->getMainFormProperties();
@@ -297,7 +298,7 @@ void HydrogenApp::setSong(Song* song)
 	}
 
 	Hydrogen::get_instance()->setSong( song );
-	Preferences::get_instance()->setLastSongFilename( song->get_filename() );
+	Hydrogen::get_instance()->get_preferences()->setLastSongFilename( song->get_filename() );
 
 	m_pSongEditorPanel->updateAll();
 	m_pPatternEditorPanel->updateSLnameLabel();
@@ -390,13 +391,13 @@ void HydrogenApp::showInfoSplash()
 	}
 	INFOLOG( "[showInfoSplash] Selected news: " + sFilename );
 
-	QString sLastRead = Preferences::get_instance()->getLastNews();
+	QString sLastRead = Hydrogen::get_instance()->get_preferences()->getLastNews();
 	if ( sLastRead != sFilename && !sFilename.isEmpty() ) {
 		QString sDocURI = sDocPath;
 		sDocURI.append( "/" ).append( sFilename );
 		SimpleHTMLBrowser *m_pFirstTimeInfo = new SimpleHTMLBrowser( m_pMainForm, sDocPath, sDocURI, SimpleHTMLBrowser::WELCOME );
 		if ( m_pFirstTimeInfo->exec() == QDialog::Accepted ) {
-			Preferences::get_instance()->setLastNews( sFilename );
+			Hydrogen::get_instance()->get_preferences()->setLastNews( sFilename );
 		}
 	}
 }

@@ -213,7 +213,7 @@ int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString&
 
 	Pattern *pat = song->get_pattern_list()->get( selectedpattern );
 
-	QString sPatternDir = Preferences::get_instance()->getDataDirectory() + "patterns/" +  instr->get_drumkit_name();
+	QString sPatternDir = Hydrogen::get_instance()->get_preferences()->getDataDirectory() + "patterns/" +  instr->get_drumkit_name();
 
 	INFOLOG( "[savePattern]" + sPatternDir );
 
@@ -350,7 +350,7 @@ void LocalFileMng::fileCopy( const QString& sOrigFilename, const QString& sDestF
 std::vector<QString> LocalFileMng::getSongList()
 {
 	std::vector<QString> list;
-	QString sDirectory = Preferences::get_instance()->getDataDirectory();
+	QString sDirectory = Hydrogen::get_instance()->get_preferences()->getDataDirectory();
 
 	if( ! sDirectory.endsWith("/") ) { 
 		sDirectory += "/songs/";
@@ -431,7 +431,7 @@ std::vector<QString> LocalFileMng::getAllPatternName()
 
 std::vector<QString> LocalFileMng::getAllCategoriesFromPattern()
 {
-	Preferences *pPref = Tritium::Preferences::get_instance();
+	Preferences *pPref = Tritium::Hydrogen::get_instance()->get_preferences();
 	std::list<QString>::const_iterator cur_testpatternCategories;
 
 	std::vector<QString> categorylist;
@@ -485,7 +485,7 @@ std::vector<QString> LocalFileMng::getPatternsForDrumkit( const QString& sDrumki
 {
 	std::vector<QString> list;
 
-	QDir dir( Preferences::get_instance()->getDataDirectory() + "/patterns/" + sDrumkit );
+	QDir dir( Hydrogen::get_instance()->get_preferences()->getDataDirectory() + "/patterns/" + sDrumkit );
 
 	if ( !dir.exists() ) {
 		INFOLOG( QString( "No patterns for drumkit '%1'." ).arg( sDrumkit ) );
@@ -576,7 +576,7 @@ std::vector<QString> mergeQStringVectors( std::vector<QString> firstVector , std
 
 std::vector<QString> LocalFileMng::getPatternDirList()
 {
-	return getDrumkitsFromDirectory( Preferences::get_instance()->getDataDirectory() + "patterns" );
+	return getDrumkitsFromDirectory( Hydrogen::get_instance()->get_preferences()->getDataDirectory() + "patterns" );
 }
 
 
@@ -590,8 +590,8 @@ int  LocalFileMng::mergeAllPatternList( std::vector<QString> current )
 
 std::vector<QString> LocalFileMng::getUserDrumkitList()
 {
-	std::vector<QString> oldLocation = getDrumkitsFromDirectory( Preferences::get_instance()->getDataDirectory() );
-	std::vector<QString> newLocation = getDrumkitsFromDirectory( Preferences::get_instance()->getDataDirectory() + "drumkits" );
+	std::vector<QString> oldLocation = getDrumkitsFromDirectory( Hydrogen::get_instance()->get_preferences()->getDataDirectory() );
+	std::vector<QString> newLocation = getDrumkitsFromDirectory( Hydrogen::get_instance()->get_preferences()->getDataDirectory() + "drumkits" );
 	return mergeQStringVectors( newLocation ,  oldLocation );
 }
 
@@ -616,7 +616,7 @@ QString LocalFileMng::getDrumkitDirectory( const QString& drumkitName )
 	std::vector<QString> userDrumkits = Drumkit::getUserDrumkitList();
 	for ( unsigned i = 0; i < userDrumkits.size(); i++ ) {
 		if ( userDrumkits[ i ].endsWith(drumkitName) ) {
-			QString path = Preferences::get_instance()->getDataDirectory();
+			QString path = Hydrogen::get_instance()->get_preferences()->getDataDirectory();
 			return userDrumkits[ i ].remove(userDrumkits[ i ].length() - drumkitName.length(),drumkitName.length());
 		}
 	}
@@ -788,7 +788,7 @@ int LocalFileMng::saveDrumkit( Drumkit *info )
 
 	QVector<QString> tempVector(16);
 
-	QString sDrumkitDir = Preferences::get_instance()->getDataDirectory() + "drumkits/" + info->getName();
+	QString sDrumkitDir = Hydrogen::get_instance()->get_preferences()->getDataDirectory() + "drumkits/" + info->getName();
 
 	// check if the directory exists
 	QDir dir( sDrumkitDir );
