@@ -56,6 +56,9 @@ inline static float linear_interpolation( float fVal_A, float fVal_B, float fVal
 
 void SamplerPrivate::handle_event(const SeqEvent& ev)
 {
+	// TODO: If we receive a note that we don't have an instrument
+	// for, we still try to process it.  The results in a
+	// segfault.  Need to filter these out.  See handle_note_on()
 	switch(ev.type) {
 	case SeqEvent::NOTE_ON:
 		handle_note_on(ev);
@@ -77,7 +80,7 @@ void SamplerPrivate::panic()
 void SamplerPrivate::handle_note_on(const SeqEvent& ev)
 {
 	// Respect the mute groups.
-	Instrument *pInstr = ev.note.get_instrument();
+	Instrument *pInstr = ev.note.get_instrument(); // TODO: May return invalid note
 	if ( pInstr->get_mute_group() != -1 ) {
 		// remove all notes using the same mute group
 		NoteList::iterator j, prev;
