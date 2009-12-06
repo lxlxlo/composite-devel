@@ -181,26 +181,6 @@ private:
     SongPrivate *d;
 };
 
-
-
-/**
-   \ingroup H2CORE
-   \brief	Read XML file of a song
-*/
-class SongReader
-{
-public:
-    SongReader();
-    ~SongReader();
-    Song* readSong( const QString& filename );
-
-private:
-    QString m_sSongVersion;
-
-    /// Dato un XmlNode restituisce un oggetto Pattern
-    Pattern* getPattern( QDomNode pattern, InstrumentList* instrList );
-};
-
 } // namespace Tritium
 
 #endif // TRITIUM_SONG_HPP

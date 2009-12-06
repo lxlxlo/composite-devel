@@ -37,7 +37,7 @@
 namespace Tritium
 {
 
-class LoggerThread;
+class LoggerPrivate;
 
 /**
  * Class for writing logs to the console
@@ -65,7 +65,6 @@ public:
 	Debug = 8,
 	AELockTracing = 0x10
     } log_level_t;
-    typedef std::list<QString> queue_t;
 
     static void create_instance();
     static Logger* get_instance() { assert(__instance); return __instance; }
@@ -74,40 +73,16 @@ public:
     ~Logger();
 
     static void set_logging_level( const char* level ); // May be None, Error, Warning, Info, or Debug
-    static void set_log_level(unsigned lev) { __log_level = lev; }
-    static unsigned get_log_level() { return __log_level; }
+    static void set_log_level(unsigned lev);
+    static unsigned get_log_level();
 
     void log( unsigned lev,
 	      const char* funcname,
 	      const QString& msg );
 
-    friend class LoggerThread;
-
 private:
     static Logger *__instance;
-
-    /* __msg_queue needs to be a list type (e.g. std::list<>)
-     * because of the following properties:
-     *
-     * - Constant time insertion/removal of elements
-     * - Changing the list does not invalidate its iterators.
-     *
-     * However, the __mutex class member is here for safe access
-     * to __msg_queue.  It should only be locked when you are
-     * adding or removing elements to the END of the list.  This
-     * works because:
-     *
-     * - Only one thread is referencing and removing elements
-     *   from the beginning (the Logger thread).
-     *
-     * - While many threads are adding elements, they are only
-     *   adding elements to the END of the list.
-     *
-     */
-    QMutex __mutex;  // Lock for adding or removing elements only
-    queue_t __msg_queue;
-    static unsigned __log_level; // A bitmask of log_level_t
-    bool __use_file;
+    LoggerPrivate* d;
 
     /** Constructor */
     Logger();

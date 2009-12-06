@@ -19,6 +19,8 @@
  *
  */
 
+#include "LoggerPrivate.hpp"
+#include "WorkerThread.hpp"
 #include <Tritium/Logger.hpp>
 #include <Tritium/util.hpp>
 
@@ -40,9 +42,90 @@ using namespace std;
 using namespace Tritium;
 
 Logger* Logger::__instance = 0;
-unsigned Logger::__log_level = 0;
+static WorkerThread *worker_thread = 0;
 
-void Logger::set_logging_level(const char* level)
+/*********************************************************************
+ * LoggerPrivate implementation
+ *********************************************************************
+ */
+
+LoggerPrivate::LoggerPrivate(Logger* parent, bool use_file) :
+    m_log_level(Logger::Error),
+    m_use_file(use_file),
+    m_kill(false),
+    m_logger(parent),
+    m_logfile(0)
+{
+#ifdef WIN32
+    ::AllocConsole();
+    freopen( "CONOUT$", "wt", stdout );
+#endif
+    FILE *m_logfile = NULL;
+    if( m_use_file ) {
+	QString sLogFilename;
+#ifdef Q_OS_MACX
+	sLogFilename = QDir::homePath().append("/Library/Composite/composite.log");
+#else
+	sLogFilename = QDir::homePath().append("/.composite/composite.log");
+#endif
+	m_logfile = fopen( sLogFilename.toLocal8Bit(), "w" );
+	if( m_logfile == 0 ) {
+	    std::cerr << "Error: can't open log file for writing..." << endl;
+	} else {
+	    fprintf( m_logfile, "Start logger" );
+	}
+    }
+}
+
+LoggerPrivate::~LoggerPrivate()
+{
+    if(m_logfile) {
+	fprintf( m_logfile, "Stop logger" );
+	fclose( m_logfile );
+    }
+#ifdef WIN32
+    ::FreeConsole();
+#endif
+}
+
+bool LoggerPrivate::events_waiting()
+{
+    if(m_logger) {
+	return !(m_msg_queue.empty());
+    }
+    return false;
+}
+
+void LoggerPrivate::shutdown()
+{
+    m_kill = true;
+}
+
+int LoggerPrivate::process()
+{
+    if( m_kill ) return 0;
+
+    LoggerPrivate::queue_t& queue = m_msg_queue;
+    LoggerPrivate::queue_t::iterator it, last;
+    QString tmpString;
+    for( it = last = queue.begin() ; (it != queue.end()) && (!m_kill) ; ++it ) {
+	last = it;
+	printf( it->toLocal8Bit() );
+	if( m_logfile ) {
+	    fprintf( m_logfile, it->toLocal8Bit() );
+	}
+    }
+    if(m_kill)
+	return 0;
+
+    if( m_logfile ) fflush(m_logfile);
+    queue.erase( queue.begin(), last );
+    QMutexLocker lock(&m_mutex);
+    if( ! queue.empty() ) queue.pop_front();
+    return 0;
+}
+
+void LoggerPrivate::set_logging_level(const char* level)
 {
 	const char none[] = "None";
 	const char error[] = "Error";
@@ -89,94 +172,60 @@ void Logger::set_logging_level(const char* level)
 	// Logger::get_instance()->__use_file = use;
 }
 
-namespace Tritium
+void LoggerPrivate::log( unsigned level,
+			 const char* funcname,
+			 const QString& msg )
 {
+    if( level == Logger::None ) return;
 
-    class LoggerThread : public QThread
-    {
-	bool m_done;
-	Logger *pLogger;
-    public:
-	LoggerThread(Logger* d) :
-	    m_done(false),
-	    pLogger(d)
-	    {}
-	void shutdown() { m_done = true; }
-	void run();
-    };
+    const char* prefix[] = { "", "(E) ", "(W) ", "(I) ", "(D) " };
+#ifdef WIN32
+    const char* color[] = { "", "", "", "", "" };
+#else
+    const char* color[] = { "", "\033[31m", "\033[36m", "\033[32m", "" };
+#endif // WIN32
 
-    LoggerThread *loggerThread;
+    int i;
+    switch(level) {
+    case Logger::None:
+	assert(false);
+	i = 0;
+	break;
+    case Logger::Error:
+	i = 1;
+	break;
+    case Logger::Warning:
+	i = 2;
+	break;
+    case Logger::Info:
+	i = 3;
+	break;
+    case Logger::Debug:
+	i = 4;
+	break;
+    default:
+	i = 0;
+	break;
+    }
 
-} // namespace Tritium
+    QString tmp = QString("%1%2%3\t%4 \033[0m\n")
+	.arg(color[i])
+	.arg(prefix[i])
+	.arg(funcname)
+	.arg(msg);
 
-void LoggerThread::run()
+    QMutexLocker mx(&m_mutex);
+    m_msg_queue.push_back( tmp );
+}
+
+/*********************************************************************
+ * Logger implementation
+ *********************************************************************
+ */
+
+void Logger::set_logging_level(const char* level)
 {
-
-#ifdef WIN32
-	::AllocConsole();
-//	::SetConsoleTitle( "Hydrogen debug log" );
-	freopen( "CONOUT$", "wt", stdout );
-#endif
-
-	FILE *pLogFile = NULL;
-	if ( pLogger->__use_file ) {
-#ifdef Q_OS_MACX
-		QString sLogFilename = QDir::homePath().append( "/Library/Composite/composite.log" );
-#else
-		QString sLogFilename = QDir::homePath().append( "/.composite/composite.log" );
-#endif
-
-		pLogFile = fopen( sLogFilename.toLocal8Bit(), "w" );
-		if ( pLogFile == NULL ) {
-			std::cerr << "Error: can't open log file for writing..." << std::endl;
-		} else {
-			fprintf( pLogFile, "Start logger" );
-		}
-	}
-
-	QMutexLocker logger_mutex(&pLogger->__mutex);
-	logger_mutex.unlock();
-	while ( ! m_done ) {
-#ifdef WIN32
-		Sleep( 1000 );
-#else
-		usleep( 999999 );
-#endif
-
-		Logger::queue_t& queue = pLogger->__msg_queue;
-		Logger::queue_t::iterator it, last;
-		QString tmpString;
-		for( it = last = queue.begin() ; it != queue.end() ; ++it ) {
-			last = it;
-			printf( it->toLocal8Bit() );
-			if( pLogFile ) {
-				fprintf( pLogFile, it->toLocal8Bit() );
-				fflush( pLogFile );
-			}
-		}
-		// See Logger.hpp for documentation on __mutex and when
-		// it should be locked.
-		queue.erase( queue.begin(), last );
-		logger_mutex.relock();
-		if( ! queue.empty() ) queue.pop_front();
-		logger_mutex.unlock();
-	}
-
-	if ( pLogFile ) {
-		fprintf( pLogFile, "Stop logger" );
-		fclose( pLogFile );
-	}
-#ifdef WIN32
-	::FreeConsole();
-#endif
-
-
-#ifdef WIN32
-	Sleep( 1000 );
-#else
-	usleep( 100000 );
-#endif
-
+    get_instance()->d->set_logging_level(level);
 }
 
 void Logger::create_instance()
@@ -190,11 +239,12 @@ void Logger::create_instance()
  * Constructor
  */
 Logger::Logger()
-		: __use_file( false )
 {
-	__instance = this;
-	loggerThread = new LoggerThread(this);
-	loggerThread->start();
+    __instance = this;
+    d = new LoggerPrivate(this, false);
+    worker_thread = new WorkerThread();
+    worker_thread->add_client(d); // takes ownership of d.
+    worker_thread->start();
 }
 
 /**
@@ -202,54 +252,25 @@ Logger::Logger()
  */
 Logger::~Logger()
 {
-	loggerThread->shutdown();
-	loggerThread->wait();
-	delete loggerThread;
-	__instance = 0;
+    __instance = 0;
+    worker_thread->shutdown();
+    worker_thread->wait();
+    delete worker_thread;
 }
 
 void Logger::log( unsigned level,
 		  const char* funcname,
 		  const QString& msg )
 {
-	if( level == None ) return;
+    get_instance()->d->log(level, funcname, msg);
+}
 
-	const char* prefix[] = { "", "(E) ", "(W) ", "(I) ", "(D) " };
-#ifdef WIN32
-	const char* color[] = { "", "", "", "", "" };
-#else
-	const char* color[] = { "", "\033[31m", "\033[36m", "\033[32m", "" };
-#endif // WIN32
+void Logger::set_log_level(unsigned lev)
+{
+    get_instance()->d->set_log_level(lev);
+}
 
-	int i;
-	switch(level) {
-	case None:
-		assert(false);
-		i = 0;
-		break;
-	case Error:
-		i = 1;
-		break;
-	case Warning:
-		i = 2;
-		break;
-	case Info:
-		i = 3;
-		break;
-	case Debug:
-		i = 4;
-		break;
-	default:
-		i = 0;
-		break;
-	}
-
-	QString tmp = QString("%1%2%3\t%4 \033[0m\n")
-		.arg(color[i])
-		.arg(prefix[i])
-		.arg(funcname)
-		.arg(msg);
-
-	QMutexLocker mx(&__mutex);
-	__msg_queue.push_back( tmp );
+unsigned Logger::get_log_level()
+{
+    return get_instance()->d->get_log_level();
 }

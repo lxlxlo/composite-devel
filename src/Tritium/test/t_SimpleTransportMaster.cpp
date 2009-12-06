@@ -53,8 +53,8 @@ namespace THIS_NAMESPACE
 	~Fixture() {
 	    x.set_current_song(0);
 	    delete s;
-	    delete Logger::get_instance();
 	    delete Hydrogen::get_instance();
+	    delete Logger::get_instance();
 	}
     };
 
