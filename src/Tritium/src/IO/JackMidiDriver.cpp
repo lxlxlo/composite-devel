@@ -84,8 +84,9 @@ using namespace Tritium;
 
 JackProcessCallback jackMidiFallbackProcess; // implemented in hydrogen.cpp
 
-JackMidiDriver::JackMidiDriver()
+JackMidiDriver::JackMidiDriver(JackClient* parent)
 	: MidiInput( "JackMidiDriver" ),
+	  m_jack_client(parent),
 	  m_port(0)
 {
 	INFOLOG( "CREATE" );
@@ -99,7 +100,7 @@ JackMidiDriver::~JackMidiDriver()
 
 void JackMidiDriver::open(void)
 {
-	JackClient& client = *JackClient::get_instance();
+	JackClient& client = *m_jack_client;
 	if (client.setNonAudioProcessCallback(jackMidiFallbackProcess)) {
 		ERRORLOG("Could not set JACK process callback");
 	}
@@ -127,12 +128,12 @@ void JackMidiDriver::open(void)
 void JackMidiDriver::close(void)
 {
 	if(m_port) {
-		jack_client_t* client = JackClient::get_instance()->ref();
+		jack_client_t* client = m_jack_client->ref();
 		if(client) {
 			if (jack_port_unregister(client, m_port)) {
 				ERRORLOG("JACK returned an error when unregistering port.");
 			}
-		JackClient::get_instance()->unsubscribe((void*)this);
+		m_jack_client->unsubscribe((void*)this);
 		}
 		m_port = 0;
 	}
@@ -346,7 +347,7 @@ int JackMidiDriver::process(jack_nframes_t nframes, bool use_frame)
 
 std::vector<QString> JackMidiDriver::getOutputPortList(void)
 {
-	return JackClient::get_instance()->getMidiOutputPortList();
+	return m_jack_client->getMidiOutputPortList();
 }
 
 #endif // JACK_SUPPORT

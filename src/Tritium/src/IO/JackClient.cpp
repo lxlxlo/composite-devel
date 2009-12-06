@@ -33,30 +33,19 @@ using namespace std;
 namespace Tritium
 {
 
-JackClient* JackClient::__instance = NULL;
-
-void JackClient::create_instance(bool init_jack)
-{
-	if (__instance == NULL) {
-		__instance = new JackClient;
-	}
-	if (init_jack && (__instance->m_client == NULL)) {
-		__instance->open();
-	}
-}
-
 jack_client_t* JackClient::ref(void)
 {
 	return m_client;
 }
 
-JackClient::JackClient()
+JackClient::JackClient(bool init_jack)
 	: m_client(0),
 	  m_audio_process(0),
 	  m_nonaudio_process(0)
 {
 	INFOLOG( "INIT" );
-	open();
+	if(init_jack)
+	    open();
 }
 
 #define CLIENT_FAILURE(msg) {						\
@@ -148,7 +137,6 @@ JackClient::~JackClient()
 {
 	INFOLOG( "DESTROY" );
 	close();
-	__instance = 0;
 }
 
 void JackClient::close(void)

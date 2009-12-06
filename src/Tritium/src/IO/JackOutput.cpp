@@ -40,7 +40,6 @@ namespace Tritium
 
 unsigned long jack_server_sampleRate = 0;
 jack_nframes_t jack_server_bufferSize = 0;
-JackOutput *jackDriverInstance = NULL;
 
 int jackDriverSampleRate( jack_nframes_t nframes, void * /*arg*/ )
 {
@@ -59,23 +58,23 @@ int jackDriverBufferSize( jack_nframes_t nframes, void * /*arg*/ )
 	return 0;
 }
 
-void jackDriverShutdown( void * /*arg*/ )
+void jackDriverShutdown( void *arg )
 {
-//	jackDriverInstance->deactivate();
-	JackClient::get_instance()->clearAudioProcessCallback();
+	JackClient* client = static_cast<JackClient*>(arg);
+	if(client) client->clearAudioProcessCallback();
 	Hydrogen::get_instance()->raiseError( Hydrogen::JACK_SERVER_SHUTDOWN );
 }
 
 
 
 
-JackOutput::JackOutput( JackProcessCallback processCallback )
-	: AudioOutput()
+JackOutput::JackOutput( JackClient* parent, JackProcessCallback processCallback )
+    : AudioOutput(),
+      m_jack_client(parent)
 {
 	INFOLOG( "INIT" );
 	__track_out_enabled = Hydrogen::get_instance()->get_preferences()->m_bJackTrackOuts;	// allow per-track output
 
-	jackDriverInstance = this;
 	this->processCallback = processCallback;
 
 	track_port_count = 0;
@@ -102,9 +101,9 @@ JackOutput::~JackOutput()
 int JackOutput::connect()
 {
 	INFOLOG( "connect" );
-	jack_client_t* client = JackClient::get_instance()->ref();
+	jack_client_t* client = m_jack_client->ref();
 
-	JackClient::get_instance()->subscribe((void*)this);
+	m_jack_client->subscribe((void*)this);
 	if ( !client ) {
 		Hydrogen::get_instance()->raiseError( Hydrogen::JACK_CANNOT_ACTIVATE_CLIENT );
 		return 1;
@@ -150,7 +149,7 @@ void JackOutput::disconnect()
 {
 	INFOLOG( "disconnect" );
 	jack_client_t* client;
-	client = JackClient::get_instance()->ref();
+	client = m_jack_client->ref();
 
 	deactivate();
 
@@ -166,7 +165,7 @@ void JackOutput::disconnect()
 				jack_port_unregister(client, track_output_ports_R[j]);
 		}
 	}
-	JackClient::get_instance()->unsubscribe((void*)this);
+	m_jack_client->unsubscribe((void*)this);
 }
 
 
@@ -175,7 +174,7 @@ void JackOutput::disconnect()
 void JackOutput::deactivate()
 {
 	INFOLOG( "[deactivate]" );
-	JackClient::get_instance()->clearAudioProcessCallback();
+	m_jack_client->clearAudioProcessCallback();
 	memset( track_output_ports_L, 0, sizeof(track_output_ports_L) );
 	memset( track_output_ports_R, 0, sizeof(track_output_ports_R) );
 }
@@ -232,7 +231,7 @@ int JackOutput::init( unsigned /*nBufferSize*/ )
 	output_port_name_1 = Hydrogen::get_instance()->get_preferences()->m_sJackPortName1;
 	output_port_name_2 = Hydrogen::get_instance()->get_preferences()->m_sJackPortName2;
 
-	jack_client_t* client = JackClient::get_instance()->ref();
+	jack_client_t* client = m_jack_client->ref();
 
 	// Here, client should either be valid, or NULL.	
 	jack_server_sampleRate = jack_get_sample_rate ( client );
@@ -242,10 +241,10 @@ int JackOutput::init( unsigned /*nBufferSize*/ )
 	/* tell the JACK server to call `process()' whenever
 	   there is work to be done.
 	*/
-	JackClient::get_instance()->setAudioProcessCallback(this->processCallback);
+	m_jack_client->setAudioProcessCallback(this->processCallback);
 
 	#warning "XXX TO-DO: These need to be moved to JackClient"
-	JackClient::get_instance()->deactivate();
+	m_jack_client->deactivate();
 	/* tell the JACK server to call `srate()' whenever
 	   the sample rate of the system changes.
 	*/
@@ -260,9 +259,9 @@ int JackOutput::init( unsigned /*nBufferSize*/ )
 	   it ever shuts down, either entirely, or if it
 	   just decides to stop calling us.
 	*/
-	jack_on_shutdown ( client, jackDriverShutdown, 0 );
+	jack_on_shutdown ( client, jackDriverShutdown, ((void*)m_jack_client) );
 
-	JackClient::get_instance()->activate();
+	m_jack_client->activate();
 
 	/* create two ports */
 	output_port_1 = jack_port_register ( client, "out_L", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0 );
@@ -307,7 +306,7 @@ void JackOutput::makeTrackOutputs( Song * song )
 		setTrackOutput( n, instr );
 	}
 	// clean up unused ports
-	jack_client_t* client = JackClient::get_instance()->ref();
+	jack_client_t* client = m_jack_client->ref();
 	jack_port_t *p_L, *p_R;
 	for ( int n = nInstruments; n < track_port_count; n++ ) {
 		p_L = track_output_ports_L[n];
@@ -329,7 +328,7 @@ void JackOutput::setTrackOutput( int n, Instrument * instr )
 {
 
 	QString chName;
-	jack_client_t* client = JackClient::get_instance()->ref();
+	jack_client_t* client = m_jack_client->ref();
 
 	if ( track_port_count <= n ) { // need to create more ports
 		for ( int m = track_port_count; m <= n; m++ ) {

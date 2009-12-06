@@ -40,6 +40,7 @@ namespace Tritium
 
 class Song;
 class Instrument;
+class JackClient;
 
 ///
 /// Jack (Jack Audio Connection Kit) server driver.
@@ -47,7 +48,7 @@ class Instrument;
 class JackOutput : public AudioOutput
 {
 public:
-	JackOutput( JackProcessCallback processCallback );
+	JackOutput( JackClient* parent, JackProcessCallback processCallback );
 	~JackOutput();
 
 	int connect();
@@ -77,6 +78,7 @@ public:
 
 private:
 	Tritium::Hydrogen *m_pEngine;
+	Tritium::JackClient *m_jack_client;
 
 	JackProcessCallback processCallback;
 	jack_port_t *output_port_1;

@@ -124,12 +124,12 @@ TransportPosition::State H2Transport::get_state()
     return TransportPosition::STOPPED;
 }
 
-bool H2Transport::setJackTimeMaster(bool if_none_already)
+bool H2Transport::setJackTimeMaster(JackClient* parent, bool if_none_already)
 {
     bool rv;
 
     if( ! d->jtm.get() ) {
-	d->jtm.reset( new JackTimeMaster );
+	d->jtm.reset( new JackTimeMaster(parent) );
 	d->jtm->set_current_song( d->pSong );
     }
 

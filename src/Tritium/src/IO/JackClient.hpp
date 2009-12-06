@@ -44,9 +44,7 @@ class Hydrogen;
 class JackClient
 {
 public:
-    static JackClient* get_instance() { assert(__instance); return __instance; }
-    static void create_instance(bool init_jack = true);
-
+    JackClient(bool init_jack = true);
     ~JackClient(void);
 
     jack_client_t* ref(void);
@@ -66,10 +64,6 @@ public:
     void close(void);
 
 private:
-    JackClient(void);
-
-    static JackClient* __instance;
-
     jack_client_t* m_client;
     std::set<void*> m_children;
     JackProcessCallback m_audio_process;

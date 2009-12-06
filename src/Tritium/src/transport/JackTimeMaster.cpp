@@ -21,7 +21,9 @@
 
 #include <QtCore/QMutex>
 #include <QtCore/QMutexLocker>
+#include <Tritium/IO/AudioOutput.hpp>
 #include <Tritium/IO/JackOutput.hpp>
+#include <Tritium/Hydrogen.hpp>
 #include "../IO/JackClient.hpp"
 #include "JackTimeMaster.hpp"
 
@@ -29,18 +31,14 @@
 
 using namespace Tritium;
 
-namespace Tritium {
-    extern JackOutput* jackDriverInstance;  // Tritium::JackOutput (../IO/jack_output.cpp)
-}
-
-bool jack_is_up(void)
+bool jack_is_up(JackClient* oJackClient)
 {
     bool rv;
+    AudioOutput* ao = Hydrogen::get_instance()->get_audio_output();
     try {
-	#warning "This may not be realtime safe: JackClient::get_instance()."
-	if( jackDriverInstance
-	    && dynamic_cast<JackOutput*>(jackDriverInstance)
-	    && JackClient::get_instance()->ref() /* client pointer */ ) {
+	if( ao
+	    && dynamic_cast<JackOutput*>(ao)
+	    && oJackClient->ref() /* client pointer */ ) {
 	    rv = true;
 	} else {
 	    rv = false;
@@ -51,7 +49,8 @@ bool jack_is_up(void)
     return rv;
 }
 
-JackTimeMaster::JackTimeMaster() :
+JackTimeMaster::JackTimeMaster(JackClient* parent) :
+    m_jack_client(parent),
     m_pSong( 0 ),
     m_pBeat( 0 )
 
@@ -65,9 +64,9 @@ JackTimeMaster::~JackTimeMaster()
 bool JackTimeMaster::setMaster(bool if_none_already)
 {
     QMutexLocker mx(&m_mutex);
-    if( ! jack_is_up() ) return false;
+    if( ! jack_is_up(m_jack_client) ) return false;
 
-    int rv = jack_set_timebase_callback( JackClient::get_instance()->ref(),
+    int rv = jack_set_timebase_callback( m_jack_client->ref(),
 					 (if_none_already) ? 1 : 0,
 					 JackTimeMaster::_callback,
 					 (void*)this );
@@ -77,8 +76,8 @@ bool JackTimeMaster::setMaster(bool if_none_already)
 void JackTimeMaster::clearMaster(void)
 {
     QMutexLocker mx(&m_mutex);
-    if( ! jack_is_up() ) return;
-    jack_release_timebase(JackClient::get_instance()->ref()); // ignore return
+    if( ! jack_is_up(m_jack_client) ) return;
+    jack_release_timebase(m_jack_client->ref()); // ignore return
 }
 
 void JackTimeMaster::set_current_song(Song* s)

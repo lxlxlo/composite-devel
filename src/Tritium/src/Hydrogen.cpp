@@ -260,6 +260,9 @@ AudioEngine* m_audio_engine = 0;
 EventQueue* m_event_queue = 0;
 H2Transport* m_pTransport = 0;
 Playlist* m_playlist = 0;
+#ifdef JACK_SUPPORT
+JackClient* m_jack_client = 0;
+#endif
 #ifdef LADSPA_SUPPORT
 Effects* m_effects = 0;
 #endif
@@ -405,7 +408,7 @@ void audioEngine_init()
 	m_audioEngineState = STATE_INITIALIZED;
 
 #ifdef JACK_SUPPORT
-	JackClient::create_instance(false);
+	m_jack_client = new JackClient(false);
 #endif
 	m_audio_engine = new AudioEngine();
 #ifdef LADSPA_SUPPORT
@@ -445,6 +448,9 @@ void audioEngine_destroy()
 	delete m_effects;
 #endif
 	delete m_audio_engine;
+#ifdef JACK_SUPPORT
+	delete m_jack_client;
+#endif
 }
 
 
@@ -1342,9 +1348,9 @@ AudioOutput* createDriver( const QString& sDriver )
 
 	if ( sDriver == "Jack" ) {
 #ifdef JACK_SUPPORT
-		JackClient::get_instance()->open();
+		m_jack_client->open();
 		#warning "Could `new JackOutput` really return NullDriver?"
-		pDriver = new JackOutput( audioEngine_process );
+		pDriver = new JackOutput( m_jack_client, audioEngine_process );
 		JackOutput *jao = dynamic_cast<JackOutput*>(pDriver);
 		if ( jao == 0 ) {
 			delete pDriver;
@@ -1431,8 +1437,8 @@ void audioEngine_startAudioDrivers()
 	
 	if ( preferencesMng->m_sMidiDriver == "JackMidi" ) {
 #ifdef JACK_SUPPORT
-		JackClient::get_instance()->open();
-		m_pMidiDriver = new JackMidiDriver();
+		m_jack_client->open();
+		m_pMidiDriver = new JackMidiDriver(m_jack_client);
 		m_pMidiDriver->open();
 		m_pMidiDriver->setActive( true );
 #endif
@@ -1458,8 +1464,8 @@ void audioEngine_startAudioDrivers()
 	Hydrogen::get_instance()->get_audio_engine()->unlock();
 
 #ifdef JACK_SUPPORT
-	if( JackClient::get_instance()->ref() ) {
-		JackClient::get_instance()->activate();
+	if( m_jack_client->ref() ) {
+		m_jack_client->activate();
 	}
 #endif
 
@@ -1538,7 +1544,7 @@ void audioEngine_stopAudioDrivers()
 	}
 
 #ifdef JACK_SUPPORT
-	JackClient::get_instance()->close();
+	m_jack_client->close();
 #endif
 
 	Hydrogen::get_instance()->get_audio_engine()->unlock();
@@ -2314,7 +2320,7 @@ void Hydrogen::handleBeatCounter()
 
 bool Hydrogen::setJackTimeMaster(bool if_none_already)
 {
-	return m_pTransport->setJackTimeMaster(if_none_already);
+	return m_pTransport->setJackTimeMaster(m_jack_client, if_none_already);
 }
 
 void Hydrogen::clearJackTimeMaster()

@@ -27,6 +27,7 @@ namespace Tritium
 {
     class H2TransportPrivate;
     class Song;
+    class JackClient;
 
     /**
      * This is the only transport that Hydrogen shall directly interact with.
@@ -67,7 +68,7 @@ namespace Tritium
 	virtual TransportPosition::State get_state(void);
 
 	// Special Methods for Jack Transport.
-	bool setJackTimeMaster(bool if_none_already = false);
+	bool setJackTimeMaster(JackClient* parent, bool if_none_already = false);
 	void clearJackTimeMaster();
 	bool getJackTimeMaster();
 

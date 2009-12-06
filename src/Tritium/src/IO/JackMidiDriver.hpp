@@ -42,10 +42,12 @@
 namespace Tritium
 {
 
+class JackClient;
+
 class JackMidiDriver : public MidiInput
 {
 public:
-	JackMidiDriver(void);
+	JackMidiDriver(JackClient* parent);
 	~JackMidiDriver();
 
 	// Reimplemented from MidiInput
@@ -57,6 +59,7 @@ public:
 	int processNonAudio(jack_nframes_t nframes);
 
 private:
+	JackClient* m_jack_client;
 	jack_port_t* m_port;
 
 	int process(jack_nframes_t nframes, bool use_frame);

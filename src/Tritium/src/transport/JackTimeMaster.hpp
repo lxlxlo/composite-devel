@@ -28,11 +28,12 @@
 namespace Tritium
 {
     class Song;
+    class JackClient;
 
     class JackTimeMaster
     {
     public:
-	JackTimeMaster();
+	JackTimeMaster(JackClient* parent);
 	~JackTimeMaster();
 
 	bool setMaster(bool if_none_already = false);
@@ -52,6 +53,7 @@ namespace Tritium
 		      int new_pos);
 
     private:
+	JackClient* m_jack_client;
 	Song* m_pSong;
 	bool* m_pBeat;
 	QMutex m_mutex;
