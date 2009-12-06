@@ -29,6 +29,8 @@
 #include <Tritium/Action.hpp>
 #include <Tritium/Hydrogen.hpp>
 
+using namespace Tritium;
+
 MidiTable::MidiTable( QWidget *pParent )
  : QTableWidget( pParent )
 {
@@ -84,7 +86,8 @@ void MidiTable::updateTable()
 
 void MidiTable::insertNewRow(QString actionString , QString eventString, int eventParameter , int actionParameter)
 {
-	ActionManager *aH = ActionManager::get_instance();
+	Tritium::ActionManager *aH;
+	aH = Tritium::Hydrogen::get_instance()->get_action_manager();
 
 	insertRow( __row_count );
 	

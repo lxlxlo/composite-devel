@@ -26,40 +26,45 @@
 #include <cassert>
 #include <QtCore/QMutex>
 
-class Action;
-
-class MidiMap
+namespace Tritium
 {
-	public:
-		typedef std::map< QString, Action* > map_t;
-		static MidiMap* __instance;
-		~MidiMap();
+    class Action;
 
-		static void create_instance();
-		static void reset_instance();  // convenience accessor to reset()
-		static MidiMap* get_instance() { assert(__instance); return __instance; }
+    class MidiMap
+    {
+    public:
+	typedef std::map< QString, Action* > map_t;
+	static MidiMap* __instance;
+	~MidiMap();
 
-		void reset();  // Reinitializes the object.
+	static void create_instance();
+	static void reset_instance();  // convenience accessor to reset()
+	static MidiMap* get_instance() { assert(__instance); return __instance; }
 
-		void registerMMCEvent( QString, Action* );
-		void registerNoteEvent( int , Action* );
-		void registerCCEvent( int , Action * );
+	void reset();  // Reinitializes the object.
 
-		map_t getMMCMap();
+	void registerMMCEvent( QString, Action* );
+	void registerNoteEvent( int , Action* );
+	void registerCCEvent( int , Action * );
 
-		Action* getMMCAction( QString );
-		Action* getNoteAction( int note );
-		Action * getCCAction( int parameter );
+	map_t getMMCMap();
 
-		void setupNoteArray();
+	Action* getMMCAction( QString );
+	Action* getNoteAction( int note );
+	Action * getCCAction( int parameter );
 
-	private:
-		MidiMap();
+	void setupNoteArray();
 
-		Action* __note_array[ 128 ];
-		Action* __cc_array[ 128 ];
+    private:
+	MidiMap();
 
-		map_t mmcMap;
-		QMutex __mutex;
-};
+	Action* __note_array[ 128 ];
+	Action* __cc_array[ 128 ];
+
+	map_t mmcMap;
+	QMutex __mutex;
+    };
+
+} // namespace Tritium
+
 #endif // TRITIUM_MIDIMAP_HPP

@@ -24,6 +24,8 @@
 #include <map>
 #include <QMutexLocker>
 
+using namespace Tritium;
+
 MidiMap * MidiMap::__instance = 0;
 
 MidiMap::MidiMap()

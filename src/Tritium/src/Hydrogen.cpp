@@ -83,6 +83,7 @@
 #include <Tritium/Hydrogen.hpp>
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Note.hpp>
+#include <Tritium/Action.hpp>
 #include <Tritium/fx/LadspaFX.hpp>
 #include <Tritium/fx/Effects.hpp>
 #include <Tritium/IO/AudioOutput.hpp>
@@ -253,6 +254,7 @@ float m_fProcessTime = 0.0f;		///< time used in process function
 float m_fMaxProcessTime = 0.0f;		///< max ms usable in process with no xrun
 //~ info
 
+ActionManager* m_action_manager = 0;
 H2Transport* m_pTransport = 0;
 // This is *the* priority queue for scheduling notes/events to be
 // sent to the Sampler.
@@ -1578,6 +1580,7 @@ Hydrogen::~Hydrogen()
 	audioEngine_stopAudioDrivers();
 	audioEngine_destroy();
 	__kill_instruments();
+	delete m_action_manager;
 	delete m_pTransport;
 	__instance = 0;
 }
@@ -1592,7 +1595,8 @@ void Hydrogen::create_instance()
 	MidiMap::create_instance();
 	Preferences::create_instance();
 	EventQueue::create_instance();
-	ActionManager::create_instance();
+
+	m_action_manager = new ActionManager();
 
 	if( __instance == 0 ) {
 		__instance = new Hydrogen;
@@ -1607,6 +1611,11 @@ void Hydrogen::create_instance()
 Transport* Hydrogen::get_transport()
 {
 	return static_cast<Transport*>(m_pTransport);
+}
+
+ActionManager* Hydrogen::get_action_manager()
+{
+	return m_action_manager;
 }
 
 /// Start the internal sequencer

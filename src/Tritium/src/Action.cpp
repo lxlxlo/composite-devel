@@ -35,8 +35,6 @@
 #include <Tritium/Action.hpp>
 #include <map>
 
-ActionManager* ActionManager::__instance = NULL;
-
 using namespace Tritium;
 
 /* Class Action */
@@ -52,8 +50,6 @@ Action::Action( QString s )
 
 ActionManager::ActionManager()
 {
-	__instance = this;
-	
 	actionList <<""
 	<< "PLAY" 
 	<< "PLAY_TOGGLE"
@@ -99,20 +95,11 @@ ActionManager::ActionManager()
 }
 
 
-ActionManager::~ActionManager(){
-	__instance = 0;
-}
-
-void ActionManager::create_instance()
+ActionManager::~ActionManager()
 {
-	if ( __instance == 0 ) {
-		__instance = new ActionManager;
-	}
 }
 
-
-
-bool setAbsoluteFXLevel( int nLine, int fx_channel , int fx_param)
+bool Tritium::setAbsoluteFXLevel( int nLine, int fx_channel , int fx_param)
 {
 	//helper function to set fx levels
 			

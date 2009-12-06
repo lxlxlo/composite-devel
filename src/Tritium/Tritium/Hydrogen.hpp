@@ -80,6 +80,8 @@ public:
 	void togglePlaysSelected( void );
 // ***** ~SEQUENCER ********
 
+	ActionManager* get_action_manager();
+
 	/// Set current song
 	void setSong( Song *newSong );
 

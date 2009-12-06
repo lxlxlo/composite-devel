@@ -196,7 +196,7 @@ int main(int argc, char *argv[])
 
 		// Man your battle stations... this is not a drill.
 		Tritium::Logger::create_instance();
-		MidiMap::create_instance();
+		Tritium::MidiMap::create_instance();
 		Tritium::Preferences::create_instance();
 		Tritium::Logger::get_instance()->set_logging_level( logLevelOpt );
 		// See below for Tritium::Hydrogen.
@@ -285,8 +285,7 @@ int main(int argc, char *argv[])
 		delete Tritium::EventQueue::get_instance();
 		delete Tritium::AudioEngine::get_instance();
 
-		delete MidiMap::get_instance();
-		delete ActionManager::get_instance();
+		delete Tritium::MidiMap::get_instance();
 		delete Tritium::Playlist::get_instance();
 		// delete Tritium::Hydrogen::get_instance();
 

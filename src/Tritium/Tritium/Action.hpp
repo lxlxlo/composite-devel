@@ -20,73 +20,67 @@
  */
 #ifndef TRITIUM_ACTION_HPP
 #define TRITIUM_ACTION_HPP
-#include <map>
-#include <cassert>
 #include <QString>
 #include <QStringList>
 
-using namespace std;
+namespace Tritium {
 
-
-class Action
-{
-	public:
-		Action( QString );
+    class Action
+    {
+    public:
+	Action( QString );
 			
-		void setParameter1( QString text ){
-			parameter1 = text;
-		}
+	void setParameter1( QString text ){
+	    parameter1 = text;
+	}
 		
-		void setParameter2( QString text ){
-			parameter2 = text;
-		}
+	void setParameter2( QString text ){
+	    parameter2 = text;
+	}
 		
-		QString getParameter1(){
-			return parameter1;
-		}
+	QString getParameter1(){
+	    return parameter1;
+	}
 		
-		QString getParameter2(){
-			return parameter2;
-		}
+	QString getParameter2(){
+	    return parameter2;
+	}
 
-		QString getType(){
-			return type;
-		}
+	QString getType(){
+	    return type;
+	}
 		
 
 
-	private:
-		QString type;
-		QString parameter1;
-		QString parameter2;
-};
+    private:
+	QString type;
+	QString parameter1;
+	QString parameter2;
+    };
 
+    bool setAbsoluteFXLevel( int nLine, int fx_channel , int fx_param);
 
-bool setAbsoluteFXLevel( int nLine, int fx_channel , int fx_param);
+    class ActionManager
+    {
+    private:
+	QStringList actionList;
+	QStringList eventList;
 
-
-class ActionManager
-{
-	private:
-		static ActionManager *__instance;
-		QStringList actionList;
-		QStringList eventList;
-
-	public:
-		bool handleAction( Action * );
+    public:
+	bool handleAction( Action * );
 		
-		static void create_instance();
-		static ActionManager* get_instance() { assert(__instance); return __instance; }
+	QStringList getActionList(){
+	    return actionList;
+	}
 		
-		QStringList getActionList(){
-			return actionList;
-		}
-		
-		QStringList getEventList(){
-			return eventList;
-		}
+	QStringList getEventList(){
+	    return eventList;
+	}
 
-		ActionManager();
-		~ActionManager();
-};
+	ActionManager();
+	~ActionManager();
+    };
+
+} // namespace Tritium
+
 #endif // TRITIUM_ACTION_HPP
