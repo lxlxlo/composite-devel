@@ -33,7 +33,6 @@
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentLayer.hpp>
 #include <Tritium/InstrumentList.hpp>
-#include <Tritium/AudioEngine.hpp>
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/Logger.hpp>
 using namespace Tritium;
@@ -337,7 +336,7 @@ InstrumentEditor::~InstrumentEditor()
 
 void InstrumentEditor::selectedInstrumentChangedEvent()
 {
-	g_engine->get_audio_engine()->lock( RIGHT_HERE );
+	g_engine->lock( RIGHT_HERE );
 
 	Song *pSong = g_engine->getSong();
 	if (pSong != NULL) {
@@ -358,7 +357,7 @@ void InstrumentEditor::selectedInstrumentChangedEvent()
 	else {
 		m_pInstrument = NULL;
 	}
-	g_engine->get_audio_engine()->unlock();
+	g_engine->unlock();
 
 	// update layer list
 	if (m_pInstrument) {
@@ -548,7 +547,7 @@ void InstrumentEditor::buttonClicked( Button* pButton )
 	}
 	else if ( pButton == m_pRemoveLayerBtn ) {
 		//Engine *pEngine = g_engine;
-		g_engine->get_audio_engine()->lock( RIGHT_HERE );
+		g_engine->lock( RIGHT_HERE );
 
 		if ( m_pInstrument ) {
 			Tritium::InstrumentLayer *pLayer = m_pInstrument->get_layer( m_nSelectedLayer );
@@ -557,7 +556,7 @@ void InstrumentEditor::buttonClicked( Button* pButton )
 				delete pLayer;
 			}
 		}
-		g_engine->get_audio_engine()->unlock();
+		g_engine->unlock();
 		selectedInstrumentChangedEvent();    // update all
 		m_pLayerPreview->updateAll();
 	}
@@ -608,7 +607,7 @@ void InstrumentEditor::loadLayer()
 	
 			Tritium::Instrument *pInstr = NULL;
 	
-			g_engine->get_audio_engine()->lock( RIGHT_HERE );
+			g_engine->lock( RIGHT_HERE );
 			Song *song = engine->getSong();
 			InstrumentList *instrList = song->get_instrument_list();
 			pInstr = instrList->get( engine->getSelectedInstrumentNumber() );
@@ -648,7 +647,7 @@ void InstrumentEditor::loadLayer()
 	
 			pInstr->set_drumkit_name( "" );   // external sample, no drumkit info
 	
-			g_engine->get_audio_engine()->unlock();
+			g_engine->unlock();
 
 		}
 	}

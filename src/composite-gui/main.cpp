@@ -30,7 +30,6 @@
 #include "MainForm.hpp"
 
 #include <Tritium/MidiMap.hpp>
-#include <Tritium/AudioEngine.hpp>
 #include <Tritium/Engine.hpp>
 #include <Tritium/globals.hpp>
 #include <Tritium/EventQueue.hpp>

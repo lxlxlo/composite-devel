@@ -31,7 +31,6 @@
 
 #include <Tritium/Engine.hpp>
 #include <Tritium/Preferences.hpp>
-#include <Tritium/AudioEngine.hpp>
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Transport.hpp>
 
@@ -368,7 +367,7 @@ void SongEditorPanel::upBtnClicked( Button* /*btn*/ )
 	Engine *pEngine = g_engine;
 	int nSelectedPatternPos = pEngine->getSelectedPatternNumber();
 
-	g_engine->get_audio_engine()->lock( RIGHT_HERE );
+	g_engine->lock( RIGHT_HERE );
 	Song *pSong = pEngine->getSong();
 	PatternList *pList = pSong->get_pattern_list();
 
@@ -376,14 +375,14 @@ void SongEditorPanel::upBtnClicked( Button* /*btn*/ )
 		Pattern *pTemp = pList->get( nSelectedPatternPos - 1 );
 		pList->replace( pList->get( nSelectedPatternPos ), nSelectedPatternPos - 1 );
 		pList->replace( pTemp, nSelectedPatternPos );
-		g_engine->get_audio_engine()->unlock();
+		g_engine->unlock();
 		pEngine->setSelectedPatternNumber( nSelectedPatternPos - 1 );
 
 		updateAll();
 		pSong->set_modified( true );
 	}
 	else {
-		g_engine->get_audio_engine()->unlock();
+		g_engine->unlock();
 	}
 }
 
@@ -397,7 +396,7 @@ void SongEditorPanel::downBtnClicked( Button* /*btn*/ )
 	Engine *pEngine = g_engine;
 	int nSelectedPatternPos = pEngine->getSelectedPatternNumber();
 
-	g_engine->get_audio_engine()->lock( RIGHT_HERE );
+	g_engine->lock( RIGHT_HERE );
 	Song *pSong = pEngine->getSong();
 	PatternList *pList = pSong->get_pattern_list();
 
@@ -406,14 +405,14 @@ void SongEditorPanel::downBtnClicked( Button* /*btn*/ )
 		pList->replace( pList->get( nSelectedPatternPos ), nSelectedPatternPos + 1 );
 		pList->replace( pTemp, nSelectedPatternPos );
 
-		g_engine->get_audio_engine()->unlock();
+		g_engine->unlock();
 		pEngine->setSelectedPatternNumber( nSelectedPatternPos + 1 );
 
 		updateAll();
 		pSong->set_modified( true );
 	}
 	else {
-		g_engine->get_audio_engine()->unlock();
+		g_engine->unlock();
 	}
 }
 
@@ -429,7 +428,7 @@ void SongEditorPanel::clearSequence( Button* /*btn*/)
 
 	Engine *engine = g_engine;
 
-	g_engine->get_audio_engine()->lock( RIGHT_HERE );
+	g_engine->lock( RIGHT_HERE );
 
 	Song *song = engine->getSong();
 	Song::pattern_group_t *pPatternGroupsVect = song->get_pattern_group_vector();
@@ -440,7 +439,7 @@ void SongEditorPanel::clearSequence( Button* /*btn*/)
 	}
 	pPatternGroupsVect->clear();
 
-	g_engine->get_audio_engine()->unlock();
+	g_engine->unlock();
 
 	updateAll();
 	song->set_modified( true );

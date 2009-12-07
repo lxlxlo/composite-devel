@@ -20,7 +20,6 @@
  */
 #include <QObject>
 
-#include <Tritium/AudioEngine.hpp>
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/Engine.hpp>
 #include <Tritium/Transport.hpp>
@@ -482,7 +481,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		 * this is useful if the bpm is set by a rotary control knob
 		*/
 
-		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		Engine::get_instance()->lock( RIGHT_HERE );
 
 		int mult = 1;	
 
@@ -512,14 +511,14 @@ bool ActionManager::handleAction( Action * pAction ){
 		}
 
 
-		Engine::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->unlock();
 
 		return true;
 	}
 
 
 	if( sActionString == "BPM_INCR" ){
-		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		Engine::get_instance()->lock( RIGHT_HERE );
 
 		int mult = 1;	
 
@@ -531,7 +530,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		if (pSong->get_bpm()  < 300) {
 			pEngine->setBPM( pSong->get_bpm() + 1*mult );
 		}
-		Engine::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->unlock();
 
 		return true;
 	}
@@ -539,7 +538,7 @@ bool ActionManager::handleAction( Action * pAction ){
 
 
 	if( sActionString == "BPM_DECR" ){
-		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		Engine::get_instance()->lock( RIGHT_HERE );
 
 		int mult = 1;	
 
@@ -550,7 +549,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		if (pSong->get_bpm()  > 40 ) {
 			pEngine->setBPM( pSong->get_bpm() - 1*mult );
 		}
-		Engine::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->unlock();
 		
 		return true;
 	}

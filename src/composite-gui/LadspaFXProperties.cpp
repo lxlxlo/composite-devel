@@ -20,7 +20,6 @@
  */
 
 #include <Tritium/Engine.hpp>
-#include <Tritium/AudioEngine.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/fx/Effects.hpp>
 #include <Tritium/Preferences.hpp>
@@ -354,13 +353,13 @@ void LadspaFXProperties::selectFXBtnClicked()
 					break;
 				}
 			}
-			//g_engine->get_audio_engine()->lock( RIGHT_HERE );
+			//g_engine->lock( RIGHT_HERE );
 			Song *pSong = (g_engine )->getSong();
 			pSong->set_modified(true);
 
 			g_engine->get_effects()->setLadspaFX( pFX, m_nLadspaFX );
 
-			//g_engine->get_audio_engine()->unlock();
+			//g_engine->unlock();
 			g_engine->restartLadspaFX();
 			updateControls();
 		}
@@ -427,9 +426,9 @@ void LadspaFXProperties::activateBtnClicked()
 //	Song *pSong = (g_engine )->getSong();
 	LadspaFX *pFX = g_engine->get_effects()->getLadspaFX(m_nLadspaFX);
 	if (pFX) {
-		g_engine->get_audio_engine()->lock( RIGHT_HERE );
+		g_engine->lock( RIGHT_HERE );
 		pFX->setEnabled( !pFX->isEnabled() );
-		g_engine->get_audio_engine()->unlock();
+		g_engine->unlock();
 	}
 #endif
 }

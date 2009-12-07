@@ -32,7 +32,6 @@
 #include <Tritium/IO/MidiInput.hpp>
 #include <Tritium/IO/AudioOutput.hpp>
 #include <Tritium/Sampler.hpp>
-#include <Tritium/AudioEngine.hpp>
 using namespace Tritium;
 
 #include "Skin.hpp"
@@ -204,7 +203,7 @@ void AudioEngineInfoForm::updateInfo()
 	}
 
 	// SAMPLER
-	Sampler *pSampler = g_engine->get_audio_engine()->get_sampler();
+	Sampler *pSampler = g_engine->get_sampler();
 	sampler_playingNotesLbl->setText(QString( "%1 / %2" ).arg(pSampler->get_playing_notes_number()).arg(g_engine->get_preferences()->m_nMaxNotes));
 
 }

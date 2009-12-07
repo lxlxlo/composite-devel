@@ -23,7 +23,6 @@
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/Note.hpp>
-#include <Tritium/AudioEngine.hpp>
 #include <Tritium/Engine.hpp>
 
 #include <vector>
@@ -66,7 +65,7 @@ void Pattern::purge_instrument( Instrument * I )
 		
 		if ( pNote->get_instrument() == I ) {
 			if ( !locked ) {
-				Tritium::Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+				Tritium::Engine::get_instance()->lock( RIGHT_HERE );
 				locked = true;
 			}
 			slate.push_back( pNote );
@@ -78,7 +77,7 @@ void Pattern::purge_instrument( Instrument * I )
 	}
 	
 	if ( locked ) {
-		Tritium::Engine::get_instance()->get_audio_engine()->unlock();
+		Tritium::Engine::get_instance()->unlock();
 		while ( slate.size() ) {
 			delete slate.front();
 			slate.pop_front();

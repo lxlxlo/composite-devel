@@ -24,7 +24,6 @@
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/Pattern.hpp>
-#include <Tritium/AudioEngine.hpp>
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/Transport.hpp>
 #include <Tritium/Logger.hpp>
@@ -865,7 +864,7 @@ void PatternEditorPanel::moveUpBtnClicked(Button *)
 	Engine *engine = g_engine;
 	int nSelectedInstrument = engine->getSelectedInstrumentNumber();
 
-	g_engine->get_audio_engine()->lock( RIGHT_HERE );
+	g_engine->lock( RIGHT_HERE );
 
 	Song *pSong = engine->getSong();
 	InstrumentList *pInstrumentList = pSong->get_instrument_list();
@@ -889,13 +888,13 @@ void PatternEditorPanel::moveUpBtnClicked(Button *)
 			pSeq2->m_noteList = noteList;
 		}
 */
-		g_engine->get_audio_engine()->unlock();
+		g_engine->unlock();
 		engine->setSelectedInstrumentNumber( nSelectedInstrument - 1 );
 
 		pSong->set_modified( true );
 	}
 	else {
-		g_engine->get_audio_engine()->unlock();
+		g_engine->unlock();
 	}
 }
 
@@ -906,7 +905,7 @@ void PatternEditorPanel::moveDownBtnClicked(Button *)
 	Engine *engine = g_engine;
 	int nSelectedInstrument = engine->getSelectedInstrumentNumber();
 
-	g_engine->get_audio_engine()->lock( RIGHT_HERE );
+	g_engine->lock( RIGHT_HERE );
 
 	Song *pSong = engine->getSong();
 	InstrumentList *pInstrumentList = pSong->get_instrument_list();
@@ -930,13 +929,13 @@ void PatternEditorPanel::moveDownBtnClicked(Button *)
 			pSeq2->m_noteList = noteList;
 		}
 */
-		g_engine->get_audio_engine()->unlock();
+		g_engine->unlock();
 		engine->setSelectedInstrumentNumber( nSelectedInstrument + 1 );
 
 		pSong->set_modified( true );
 	}
 	else {
-		g_engine->get_audio_engine()->unlock();
+		g_engine->unlock();
 	}
 
 }

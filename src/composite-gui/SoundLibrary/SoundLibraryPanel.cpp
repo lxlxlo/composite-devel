@@ -42,7 +42,6 @@
 #include "../InstrumentEditor/InstrumentEditorPanel.hpp"
 
 #include <Tritium/ADSR.hpp>
-#include <Tritium/AudioEngine.hpp>
 #include <Tritium/Transport.hpp>
 #include <Tritium/DataPath.hpp>
 #include <Tritium/H2Exception.hpp>
@@ -342,7 +341,7 @@ void SoundLibraryPanel::on_DrumkitList_itemActivated(
 		Instrument *pInstrument = Instrument::load_instrument( sDrumkitName, sInstrName );
 		pInstrument->set_muted( false );
 
-		g_engine->get_audio_engine()->get_sampler()->preview_instrument( pInstrument );
+		g_engine->get_sampler()->preview_instrument( pInstrument );
 	}
 }
 

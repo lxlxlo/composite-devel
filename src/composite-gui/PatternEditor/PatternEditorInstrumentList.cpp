@@ -21,7 +21,6 @@
 
 #include "PatternEditorInstrumentList.hpp"
 
-#include <Tritium/AudioEngine.hpp>
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/Engine.hpp>
 #include <Tritium/Instrument.hpp>
@@ -211,7 +210,7 @@ Tritium::Pattern* InstrumentLine::getCurrentPattern()
 
 void InstrumentLine::functionClearNotes()
 {
-// 	g_engine->get_audio_engine()->lock( RIGHT_HERE );	// lock the audio engine
+// 	g_engine->lock( RIGHT_HERE );	// lock the audio engine
 
 	Engine * H = g_engine;
 	Pattern *pCurrentPattern = getCurrentPattern();
@@ -231,7 +230,7 @@ void InstrumentLine::functionClearNotes()
 // 		delete pNote;
 // 		pCurrentPattern->note_map.erase( pos );
 // 	}
-// 	g_engine->get_audio_engine()->unlock();	// unlock the audio engine
+// 	g_engine->unlock();	// unlock the audio engine
 
 	// this will force an update...
 	g_engine->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
@@ -262,7 +261,7 @@ void InstrumentLine::functionFillNotes()
 	int nResolution = 4 * MAX_NOTES / ( nBase * pPatternEditor->getResolution() );
 
 
-	g_engine->get_audio_engine()->lock( RIGHT_HERE );	// lock the audio engine
+	g_engine->lock( RIGHT_HERE );	// lock the audio engine
 
 
 	Song *pSong = pEngine->getSong();
@@ -297,7 +296,7 @@ void InstrumentLine::functionFillNotes()
 			}
 		}
 	}
-	g_engine->get_audio_engine()->unlock();	// unlock the audio engine
+	g_engine->unlock();	// unlock the audio engine
 
 	// this will force an update...
 	g_engine->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
@@ -314,7 +313,7 @@ void InstrumentLine::functionRandomizeVelocity()
 	PatternEditorPanel *pPatternEditorPanel = CompositeApp::get_instance()->getPatternEditorPanel();
 	DrumPatternEditor *pPatternEditor = pPatternEditorPanel->getDrumPatternEditor();
 
-	g_engine->get_audio_engine()->lock( RIGHT_HERE );	// lock the audio engine
+	g_engine->lock( RIGHT_HERE );	// lock the audio engine
 
 	int nBase;
 	if ( pPatternEditor->isUsingTriplets() ) {
@@ -354,7 +353,7 @@ void InstrumentLine::functionRandomizeVelocity()
 			}
 		}
 	}
-	g_engine->get_audio_engine()->unlock();	// unlock the audio engine
+	g_engine->unlock();	// unlock the audio engine
 
 	// this will force an update...
 	g_engine->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
@@ -370,11 +369,11 @@ void InstrumentLine::functionDeleteInstrument()
 	Engine *pEngine = g_engine;
 	pEngine->removeInstrument( m_nInstrumentNumber, false );
 	
-	g_engine->get_audio_engine()->lock( RIGHT_HERE );
+	g_engine->lock( RIGHT_HERE );
 #ifdef JACK_SUPPORT
 	pEngine->renameJackPorts();
 #endif
-	g_engine->get_audio_engine()->unlock();
+	g_engine->unlock();
 }
 
 
@@ -439,13 +438,13 @@ InstrumentLine* PatternEditorInstrumentList::createInstrumentLine()
 void PatternEditorInstrumentList::moveInstrumentLine( int nSourceInstrument , int nTargetInstrument )
 {
 		Engine *engine = g_engine;
-		g_engine->get_audio_engine()->lock( RIGHT_HERE );
+		g_engine->lock( RIGHT_HERE );
 
 		Song *pSong = engine->getSong();
 		InstrumentList *pInstrumentList = pSong->get_instrument_list();
 
 		if ( ( nTargetInstrument > (int)pInstrumentList->get_size() ) || ( nTargetInstrument < 0) ) {
-			g_engine->get_audio_engine()->unlock();
+			g_engine->unlock();
 			return;
 		}
 
@@ -472,7 +471,7 @@ void PatternEditorInstrumentList::moveInstrumentLine( int nSourceInstrument , in
 		engine->renameJackPorts();
 		#endif
 
-		g_engine->get_audio_engine()->unlock();
+		g_engine->unlock();
 		engine->setSelectedInstrumentNumber( nTargetInstrument );
 
 		pSong->set_modified( true );
@@ -595,14 +594,14 @@ void PatternEditorInstrumentList::dropEvent(QDropEvent *event)
 
 		pNewInstrument->set_id( QString("%1").arg( nID ) );
 
-		g_engine->get_audio_engine()->lock( RIGHT_HERE );
+		g_engine->lock( RIGHT_HERE );
 		pEngine->getSong()->get_instrument_list()->add( pNewInstrument );
 
 		#ifdef JACK_SUPPORT
 		pEngine->renameJackPorts();
 		#endif
 
-		g_engine->get_audio_engine()->unlock();
+		g_engine->unlock();
 
 	
 		int nTargetInstrument = event->pos().y() / m_nGridHeight;

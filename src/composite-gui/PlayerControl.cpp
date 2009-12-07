@@ -38,7 +38,6 @@
 
 #include <Tritium/Engine.hpp>
 #include <Tritium/Transport.hpp>
-#include <Tritium/AudioEngine.hpp>
 #include <Tritium/IO/JackOutput.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/JackTimeMasterEvents.hpp>
@@ -701,9 +700,9 @@ void PlayerControl::bpmChanged() {
 
 	m_pEngine->getSong()->set_modified( true );
 
-	g_engine->get_audio_engine()->lock( RIGHT_HERE );
+	g_engine->lock( RIGHT_HERE );
 	m_pEngine->setBPM( fNewBpmValue );
-	g_engine->get_audio_engine()->unlock();
+	g_engine->unlock();
 }
 
 
@@ -807,15 +806,15 @@ void PlayerControl::jackTransportBtnClicked( Button* )
 	Preferences *pPref = g_engine->get_preferences();
 
 	if (m_pJackTransportBtn->isPressed()) {
-		g_engine->get_audio_engine()->lock( RIGHT_HERE );
+		g_engine->lock( RIGHT_HERE );
 		pPref->m_bJackTransportMode = Preferences::USE_JACK_TRANSPORT;
-		g_engine->get_audio_engine()->unlock();
+		g_engine->unlock();
 		(CompositeApp::get_instance())->setStatusBarMessage(trUtf8("Jack-transport mode = On"), 5000);
 	}
 	else {
-		g_engine->get_audio_engine()->lock( RIGHT_HERE );
+		g_engine->lock( RIGHT_HERE );
 		pPref->m_bJackTransportMode = Preferences::NO_JACK_TRANSPORT;
-		g_engine->get_audio_engine()->unlock();
+		g_engine->unlock();
 		(CompositeApp::get_instance())->setStatusBarMessage(trUtf8("Jack-transport mode = Off"), 5000);
 	}
 
@@ -876,9 +875,9 @@ void PlayerControl::bpmClicked()
 
 		m_pEngine->getSong()->set_modified( true );
 
-		g_engine->get_audio_engine()->lock( RIGHT_HERE );
+		g_engine->lock( RIGHT_HERE );
 		m_pEngine->setBPM( fNewVal );
-		g_engine->get_audio_engine()->unlock();
+		g_engine->unlock();
 	}
 	else {
 		// user entered nothing or pressed Cancel

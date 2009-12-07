@@ -33,7 +33,6 @@
 
 #include <Tritium/Engine.hpp>
 #include <Tritium/Preferences.hpp>
-#include <Tritium/AudioEngine.hpp>
 #include <Tritium/Logger.hpp>
 using namespace Tritium;
 
@@ -688,7 +687,7 @@ void MasterMixerLine::rotaryChanged( Rotary *pRef )
 	sprintf( sVal, "%#.2f", fVal);
 
 	Engine *pEngine = g_engine;
-	g_engine->get_audio_engine()->lock( RIGHT_HERE );
+	g_engine->lock( RIGHT_HERE );
 
 	if ( pRef == m_pHumanizeTimeRotary ) {
 		pEngine->getSong()->set_humanize_time_value( fVal );
@@ -706,7 +705,7 @@ void MasterMixerLine::rotaryChanged( Rotary *pRef )
 		ERRORLOG( "[knobChanged] Unhandled knob" );
 	}
 
-	g_engine->get_audio_engine()->unlock();
+	g_engine->unlock();
 
 	( CompositeApp::get_instance() )->setStatusBarMessage( sMsg, 2000 );
 }

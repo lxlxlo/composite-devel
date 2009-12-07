@@ -23,7 +23,6 @@
 #include <Tritium/Engine.hpp>
 #include <Tritium/Transport.hpp>
 #include <Tritium/Playlist.hpp>
-#include <Tritium/AudioEngine.hpp>
 #include <Tritium/ADSR.hpp>
 #include <Tritium/smf/SMF.hpp>
 #include <Tritium/Preferences.hpp>
@@ -634,7 +633,7 @@ void MainForm::action_window_showSongEditor()
 
 void MainForm::action_instruments_addInstrument()
 {
-	g_engine->get_audio_engine()->lock( RIGHT_HERE );
+	g_engine->lock( RIGHT_HERE );
 	InstrumentList* pList = g_engine->getSong()->get_instrument_list();
 
 	// create a new valid ID for this instrument
@@ -654,7 +653,7 @@ void MainForm::action_instruments_addInstrument()
 	g_engine->renameJackPorts();
 	#endif
 	
-	g_engine->get_audio_engine()->unlock();
+	g_engine->unlock();
 
 	g_engine->setSelectedInstrumentNumber( pList->get_size() - 1 );
 
@@ -683,7 +682,7 @@ void MainForm::action_instruments_clearAll()
 	}
 
 	// Remove all layers
-	g_engine->get_audio_engine()->lock( RIGHT_HERE );
+	g_engine->lock( RIGHT_HERE );
 	Song *pSong = g_engine->getSong();
 	InstrumentList* pList = pSong->get_instrument_list();
 	for (uint i = 0; i < pList->get_size(); i++) {
@@ -696,7 +695,7 @@ void MainForm::action_instruments_clearAll()
 			pInstr->set_layer( NULL, nLayer );
 		}
 	}
-	g_engine->get_audio_engine()->unlock();
+	g_engine->unlock();
 	g_engine->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
 }
 
@@ -868,13 +867,13 @@ void MainForm::onRestartAccelEvent()
 void MainForm::onBPMPlusAccelEvent()
 {
 	Engine* pEngine = g_engine;
-	g_engine->get_audio_engine()->lock( RIGHT_HERE );
+	g_engine->lock( RIGHT_HERE );
 
 	Song* pSong = pEngine->getSong();
 	if (pSong->get_bpm()  < 300) {
 		pEngine->setBPM( pSong->get_bpm() + 0.1 );
 	}
-	g_engine->get_audio_engine()->unlock();
+	g_engine->unlock();
 }
 
 
@@ -882,13 +881,13 @@ void MainForm::onBPMPlusAccelEvent()
 void MainForm::onBPMMinusAccelEvent()
 {
 	Engine* pEngine = g_engine;
-	g_engine->get_audio_engine()->lock( RIGHT_HERE );
+	g_engine->lock( RIGHT_HERE );
 
 	Song* pSong = pEngine->getSong();
 	if (pSong->get_bpm() > 40 ) {
 		pEngine->setBPM( pSong->get_bpm() - 0.1 );
 	}
-	g_engine->get_audio_engine()->unlock();
+	g_engine->unlock();
 }
 
 

@@ -75,7 +75,6 @@
 #include <Tritium/ADSR.hpp>
 #include <Tritium/SoundLibrary.hpp>
 #include <Tritium/H2Exception.hpp>
-#include <Tritium/AudioEngine.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentLayer.hpp>
 #include <Tritium/InstrumentList.hpp>
@@ -256,7 +255,7 @@ float m_fMaxProcessTime = 0.0f;		///< max ms usable in process with no xrun
 
 Preferences* m_preferences = 0;
 ActionManager* m_action_manager = 0;
-AudioEngine* m_audio_engine = 0;
+Sampler* m_sampler = 0;
 EventQueue* m_event_queue = 0;
 H2Transport* m_pTransport = 0;
 Playlist* m_playlist = 0;
@@ -378,7 +377,7 @@ void audioEngine_init()
 	// check current state
 	if ( m_audioEngineState != STATE_UNINITIALIZED ) {
 		ERRORLOG( "Error the audio engine is not in UNINITIALIZED state" );
-		Engine::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->unlock();
 		return;
 	}
 
@@ -410,7 +409,7 @@ void audioEngine_init()
 #ifdef JACK_SUPPORT
 	m_jack_client = new JackClient(false);
 #endif
-	m_audio_engine = new AudioEngine();
+	m_sampler = new Sampler();
 #ifdef LADSPA_SUPPORT
 	m_effects = new Effects();
 #endif
@@ -429,9 +428,9 @@ void audioEngine_destroy()
 		ERRORLOG( "Error the audio engine is not in INITIALIZED state" );
 		return;
 	}
-	Engine::get_instance()->get_audio_engine()->get_sampler()->panic();
+	Engine::get_instance()->get_sampler()->panic();
 
-	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	Engine::get_instance()->lock( RIGHT_HERE );
 	INFOLOG( "*** Engine audio engine shutdown ***" );
 
 	audioEngine_clearNoteQueue();
@@ -443,11 +442,11 @@ void audioEngine_destroy()
 	delete m_pMetronomeInstrument;
 	m_pMetronomeInstrument = NULL;
 
-	Engine::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->unlock();
 #ifdef LADSPA_SUPPORT
 	delete m_effects;
 #endif
-	delete m_audio_engine;
+	delete m_sampler;
 #ifdef JACK_SUPPORT
 	delete m_jack_client;
 #endif
@@ -464,7 +463,7 @@ void audioEngine_destroy()
 int audioEngine_start( bool bLockEngine, unsigned nTotalFrames )
 {
 	if ( bLockEngine ) {
-		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		Engine::get_instance()->lock( RIGHT_HERE );
 	}
 
 	INFOLOG( "[audioEngine_start]" );
@@ -473,7 +472,7 @@ int audioEngine_start( bool bLockEngine, unsigned nTotalFrames )
 	if ( m_audioEngineState != STATE_READY ) {
 		ERRORLOG( "Error the audio engine is not in READY state" );
 		if ( bLockEngine ) {
-			Engine::get_instance()->get_audio_engine()->unlock();
+			Engine::get_instance()->unlock();
 		}
 		return 0;	// FIXME!!
 	}
@@ -493,7 +492,7 @@ int audioEngine_start( bool bLockEngine, unsigned nTotalFrames )
 	m_pTransport->start();
 
 	if ( bLockEngine ) {
-		Engine::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->unlock();
 	}
 	return 0; // per ora restituisco sempre OK
 }
@@ -504,7 +503,7 @@ int audioEngine_start( bool bLockEngine, unsigned nTotalFrames )
 void audioEngine_stop( bool bLockEngine )
 {
 	if ( bLockEngine ) {
-		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		Engine::get_instance()->lock( RIGHT_HERE );
 	}
 	INFOLOG( "[audioEngine_stop]" );
 
@@ -512,7 +511,7 @@ void audioEngine_stop( bool bLockEngine )
 	if ( m_audioEngineState != STATE_READY ) {
 		ERRORLOG( "Error the audio engine is not in READY state, can't stop." );
 		if ( bLockEngine ) {
-			Engine::get_instance()->get_audio_engine()->unlock();
+			Engine::get_instance()->unlock();
 		}
 		return;
 	}
@@ -530,7 +529,7 @@ void audioEngine_stop( bool bLockEngine )
 	audioEngine_clearNoteQueue();
 
 	if ( bLockEngine ) {
-		Engine::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->unlock();
 	}
 }
 
@@ -601,12 +600,12 @@ inline void audioEngine_process_playNotes( unsigned long nframes )
 			//stop note bevore playing new note, only if set into the planned instrumenteditor checkbox `always stop note`
 			//Instrument * noteInstrument = pNote->get_instrument();
 			//if ( noteInstrument->is_stop_notes() ){ 
-			//	Engine::get_instance()->get_audio_engine()->get_sampler()->note_off( pNote );
+			//	Engine::get_instance()->get_sampler()->note_off( pNote );
 			//}
 ///~new note off stuff
 
 			// aggiungo la nota alla lista di note da eseguire
-			Engine::get_instance()->get_audio_engine()->get_sampler()->note_on( pNote );
+			Engine::get_instance()->get_sampler()->note_on( pNote );
 			
 			m_songNoteQueue.pop(); // rimuovo la nota dalla lista di note
 			pNote->get_instrument()->dequeue();
@@ -627,7 +626,7 @@ void audioEngine_clearNoteQueue()
 {
 	m_queue.clear();
 	m_GuiInput.clear();
-	Engine::get_instance()->get_audio_engine()->get_sampler()->panic();
+	Engine::get_instance()->get_sampler()->panic();
 }
 
 /// Clear all audio buffers
@@ -701,10 +700,10 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 	// on the audioengine
 	if (m_pMidiDriver) m_pMidiDriver->processAudio(nframes);
 
-	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	Engine::get_instance()->lock( RIGHT_HERE );
 
 	if( m_audioEngineState < STATE_READY) {
-		Engine::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->unlock();
 		return 0;
 	}
 
@@ -729,14 +728,14 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 	*/
 
 	// SAMPLER
-	Sampler* pSampler = Engine::get_instance()->get_audio_engine()->get_sampler();
+	Sampler* pSampler = Engine::get_instance()->get_sampler();
 	pSampler->process( m_queue.begin_const(),
 			   m_queue.end_const(nframes),
 			   pos,
 			   nframes
 	    );
-	float* out_L = Engine::get_instance()->get_audio_engine()->get_sampler()->__main_out_L;
-	float* out_R = Engine::get_instance()->get_audio_engine()->get_sampler()->__main_out_R;
+	float* out_L = Engine::get_instance()->get_sampler()->__main_out_L;
+	float* out_R = Engine::get_instance()->get_sampler()->__main_out_R;
 	for ( unsigned i = 0; i < nframes; ++i ) {
 		m_pMainBuffer_L[ i ] += out_L[ i ];
 		m_pMainBuffer_R[ i ] += out_R[ i ];
@@ -803,7 +802,7 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 
 	m_fMaxProcessTime = 1000.0 / ( (float)pos.frame_rate / nframes );
 
-	Engine::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->unlock();
 
  	if ( m_sendPatternChange ) {
  		Engine::get_instance()->get_event_queue()->push_event( EVENT_PATTERN_CHANGED, -1 );
@@ -887,7 +886,7 @@ void audioEngine_setSong( Song *newSong )
 		audioEngine_removeSong();
 	}
 
-	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	Engine::get_instance()->lock( RIGHT_HERE );
 
 	m_pTransport->stop();
 	audioEngine_stop( false );  // Also clears all note queues.
@@ -920,7 +919,7 @@ void audioEngine_setSong( Song *newSong )
 
 	m_pTransport->locate( 0 );
 
-	Engine::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->unlock();
 
 	Engine::get_instance()->get_event_queue()->push_event( EVENT_STATE, STATE_READY );
 }
@@ -929,7 +928,7 @@ void audioEngine_setSong( Song *newSong )
 
 void audioEngine_removeSong()
 {
-	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	Engine::get_instance()->lock( RIGHT_HERE );
 
 	m_pTransport->stop();
 	audioEngine_stop( false );
@@ -937,7 +936,7 @@ void audioEngine_removeSong()
 	// check current state
 	if ( m_audioEngineState != STATE_READY ) {
 		ERRORLOG( "Error the audio engine is not in READY state" );
-		Engine::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->unlock();
 		return;
 	}
 
@@ -949,7 +948,7 @@ void audioEngine_removeSong()
 
 	// change the current audio engine state
 	m_audioEngineState = STATE_PREPARED;
-	Engine::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->unlock();
 
 	Engine::get_instance()->get_event_queue()->push_event( EVENT_STATE, STATE_PREPARED );
 }
@@ -1388,7 +1387,7 @@ void audioEngine_startAudioDrivers()
 {
 	Preferences *preferencesMng = Engine::get_instance()->get_preferences();
 
-	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	Engine::get_instance()->lock( RIGHT_HERE );
 	QMutexLocker mx(&mutex_OutputPointer);
 
 	INFOLOG( "[audioEngine_startAudioDrivers]" );
@@ -1398,7 +1397,7 @@ void audioEngine_startAudioDrivers()
 		ERRORLOG( QString( "Error the audio engine is not in INITIALIZED"
 				    " state. state=%1" )
 			   .arg( m_audioEngineState ) );
-		Engine::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->unlock();
 		return;
 	}
 
@@ -1461,7 +1460,7 @@ void audioEngine_startAudioDrivers()
 	// Unlocking earlier might execute the jack process() callback before we
 	// are fully initialized.
 	mx.unlock();
-	Engine::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->unlock();
 
 #ifdef JACK_SUPPORT
 	if( m_jack_client->ref() ) {
@@ -1525,7 +1524,7 @@ void audioEngine_stopAudioDrivers()
 	m_audioEngineState = STATE_INITIALIZED;
 	Engine::get_instance()->get_event_queue()->push_event( EVENT_STATE, STATE_INITIALIZED );
 
-	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	Engine::get_instance()->lock( RIGHT_HERE );
 
 	// delete MIDI driver
 	if ( m_pMidiDriver ) {
@@ -1547,7 +1546,7 @@ void audioEngine_stopAudioDrivers()
 	m_jack_client->close();
 #endif
 
-	Engine::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->unlock();
 }
 
 
@@ -1625,7 +1624,7 @@ void Engine::create_instance(Preferences *prefs)
 	}
 
 	// See audioEngine_init() for:
-	// AudioEngine, Effects, Playlist
+	// Sampler, Effects, Playlist
 }
 
 Preferences* Engine::get_preferences()
@@ -1633,9 +1632,9 @@ Preferences* Engine::get_preferences()
 	return m_preferences;
 }
 
-AudioEngine* Engine::get_audio_engine()
+Sampler* Engine::get_sampler()
 {
-	return m_audio_engine;
+	return m_sampler;
 }
 
 Transport* Engine::get_transport()
@@ -1664,6 +1663,37 @@ Effects* Engine::get_effects()
 	return m_effects;
 }
 #endif
+
+void Engine::lock( const char* file, unsigned int line, const char* function )
+{
+	__engine_mutex.lock();
+	__locker.file = file;
+	__locker.line = line;
+	__locker.function = function;
+}
+
+
+
+bool Engine::try_lock( const char* file, unsigned int line, const char* function )
+{
+	bool locked = __engine_mutex.tryLock();
+	if ( ! locked ) {
+		// Lock not obtained
+		return false;
+	}
+	__locker.file = file;
+	__locker.line = line;
+	__locker.function = function;
+	return true;
+}
+
+
+
+void Engine::unlock()
+{
+	// Leave "__locker" dirty.
+	__engine_mutex.unlock();
+}
 
 /// Start the internal sequencer
 void Engine::sequencer_play()
@@ -1834,7 +1864,7 @@ void Engine::startExportSong( const QString& filename )
 
 	m_pAudioDriver = new DiskWriterDriver( audioEngine_process, nSamplerate, filename );
 
-	Engine::get_instance()->get_audio_engine()->get_sampler()->stop_playing_notes();
+	Engine::get_instance()->get_sampler()->stop_playing_notes();
 
 	// reset
 	m_pTransport->locate( 0 );
@@ -1988,10 +2018,10 @@ int Engine::loadDrumkit( Drumkit *drumkitInfo )
 		} else {
 			pInstr = Instrument::create_empty();
 			// The instrument isn't playing yet; no need for locking
-			// :-) - Jakob Lund.  Engine::get_instance()->get_audio_engine()->lock(
+			// :-) - Jakob Lund.  Engine::get_instance()->lock(
 			// "Engine::loadDrumkit" );
 			songInstrList->add( pInstr );
-			// Engine::get_instance()->get_audio_engine()->unlock();
+			// Engine::get_instance()->unlock();
 		}
 
 		Instrument *pNewInstr = pDrumkitInstrList->get( nInstr );
@@ -2018,9 +2048,9 @@ int Engine::loadDrumkit( Drumkit *drumkitInfo )
 	}
 
 	#ifdef JACK_SUPPORT
-	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	Engine::get_instance()->lock( RIGHT_HERE );
 		renameJackPorts();
-	Engine::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->unlock();
 	#endif
 
 	m_audioEngineState = old_ae_state;
@@ -2057,7 +2087,7 @@ void Engine::removeInstrument( int instrumentnumber, bool conditional )
 	Song *pSong = getSong();
 	InstrumentList* pList = pSong->get_instrument_list();
 	if(pList->get_size()==1){
-		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		Engine::get_instance()->lock( RIGHT_HERE );
 		Instrument* pInstr = pList->get( 0 );
 		pInstr->set_name( (QString( "Instrument 1" )) );
 		// remove all layers
@@ -2066,7 +2096,7 @@ void Engine::removeInstrument( int instrumentnumber, bool conditional )
 			delete pLayer;
 			pInstr->set_layer( NULL, nLayer );
 		}		
-	Engine::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->unlock();
 	Engine::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
 	INFOLOG("clear last instrument to empty instrument 1 instead delete the last instrument");
 	return;
@@ -2082,10 +2112,10 @@ void Engine::removeInstrument( int instrumentnumber, bool conditional )
 				);
 	}
 	// delete the instrument from the instruments list
-	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	Engine::get_instance()->lock( RIGHT_HERE );
 	getSong()->get_instrument_list()->del( instrumentnumber );
 	getSong()->set_modified(true);
-	Engine::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->unlock();
 	
 	// At this point the instrument has been removed from both the
 	// instrument list and every pattern in the song.  Hence there's no way
@@ -2207,9 +2237,9 @@ void Engine::setBPM( float fBPM )
 void Engine::restartLadspaFX()
 {
 	if ( m_pAudioDriver ) {
-		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		Engine::get_instance()->lock( RIGHT_HERE );
 		audioEngine_setupLadspaFX( m_pAudioDriver->getBufferSize() );
-		Engine::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->unlock();
 	} else {
 		ERRORLOG( "m_pAudioDriver = NULL" );
 	}
@@ -2231,10 +2261,10 @@ void Engine::setSelectedPatternNumber( int nPat )
 	
 	
 	if ( Engine::get_instance()->get_preferences()->patternModePlaysSelected() ) {
-		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		Engine::get_instance()->lock( RIGHT_HERE );
 	
 		m_nSelectedPatternNumber = nPat;
-		Engine::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->unlock();
 	} else {
 		m_nSelectedPatternNumber = nPat;
 	}
@@ -2390,7 +2420,7 @@ void Engine::__kill_instruments()
 void Engine::__panic()
 {
 	sequencer_stop();	
-	Engine::get_instance()->get_audio_engine()->get_sampler()->stop_playing_notes();
+	Engine::get_instance()->get_sampler()->stop_playing_notes();
 }
 
 

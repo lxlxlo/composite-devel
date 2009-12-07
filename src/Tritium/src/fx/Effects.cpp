@@ -24,7 +24,6 @@
 
 #include <Tritium/Preferences.hpp>
 #include <Tritium/fx/LadspaFX.hpp>
-#include <Tritium/AudioEngine.hpp>
 #include <Tritium/Logger.hpp>
 #include <Tritium/Engine.hpp>
 
@@ -84,7 +83,7 @@ void  Effects::setLadspaFX( LadspaFX* pFX, int nFX )
 	assert( nFX < MAX_FX );
 	//INFOLOG( "[setLadspaFX] FX: " + pFX->getPluginLabel() + ", " + to_string( nFX ) );
 
-	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	Engine::get_instance()->lock( RIGHT_HERE );
 
 
 	if ( m_FXList[ nFX ] ) {
@@ -100,7 +99,7 @@ void  Effects::setLadspaFX( LadspaFX* pFX, int nFX )
 	}
 
 
-	Engine::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->unlock();
 }
 
 

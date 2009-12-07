@@ -23,6 +23,7 @@
 
 #include <stdint.h> // for uint32_t et al
 #include <Tritium/Song.hpp>
+#include <QMutex>
 #include <vector>
 #include <list>
 #include <cassert>
@@ -36,22 +37,30 @@
 #define STATE_PLAYING		5     // Currently playing a sequence.
 */
 
+/**
+ * Convenience macro for locking the Engine.
+ */
+#ifndef RIGHT_HERE
+#define RIGHT_HERE __FILE__, __LINE__, __PRETTY_FUNCTION__
+#endif
+
 inline int randomValue( int max );
 
 namespace Tritium
 {
 
-class AudioEngine;
-class Transport;
-class MidiMap;
 class ActionManager;
+class AudioEngine;
 class AudioOutput;
-class MidiInput;
 class Drumkit;
-class EventQueue;
-class Playlist;
 class Effects;
+class EventQueue;
+class MidiInput;
+class MidiMap;
+class Playlist;
 class Preferences;
+class Sampler;
+class Transport;
 
 ///
 /// The main audio engine
@@ -92,12 +101,37 @@ public:
 
 	Preferences* get_preferences();
 	ActionManager* get_action_manager();
-	AudioEngine* get_audio_engine();
+	Sampler* get_sampler();
 	EventQueue* get_event_queue();
 	Playlist* get_playlist();
 #ifdef LADSPA_SUPPORT
 	Effects* get_effects();
 #endif
+
+	/// Global locks
+	/* Mutex locking and unlocking
+	 *
+	 * Easy usage:  Use the RIGHT_HERE macro like this...
+	 *     Engine::get_instance()->lock( RIGHT_HERE );
+	 *
+	 * More complex usage:  The parameters file and function
+	 * need to be pointers to null-terminated strings that are
+	 * persistent for the entire session.  This does *not*
+	 * include the return value of std::string::c_str(), or
+	 * QString::toLocal8Bit().data().
+	 *
+	 * Tracing the locks:  Enable the Logger::AELockTracing
+	 * logging level.  When you do, there will be a performance
+	 * penalty because the strings will be converted to a
+	 * QString.  At the moment, you'll have to do that with
+	 * your debugger.
+	 *
+	 * Notes: The order of the parameters match GCC's
+	 * implementation of the assert() macros.
+	 */
+	void lock( const char* file, unsigned int line, const char* function );
+	bool try_lock( const char* file, unsigned int line, const char* function ); /// Return true on success (locked).
+	void unlock();
 
 	/// Set current song
 	void setSong( Song *newSong );
@@ -223,6 +257,17 @@ public:
 
 private:
 	static Engine* __instance;
+
+	Sampler* __sampler;
+
+	/// Mutex for syncronized access to the Song object and the AudioEngine.
+	QMutex __engine_mutex;
+
+	struct _locker_struct {
+		const char* file;
+		unsigned int line;
+		const char* function;
+	} __locker;
 
 	// used for song export
 	Song::SongMode m_oldEngineMode;

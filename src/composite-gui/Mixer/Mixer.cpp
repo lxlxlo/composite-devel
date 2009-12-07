@@ -29,7 +29,6 @@
 #include "../widgets/Button.hpp"
 #include "../widgets/PixmapWidget.hpp"
 
-#include <Tritium/AudioEngine.hpp>
 #include <Tritium/Engine.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentList.hpp>

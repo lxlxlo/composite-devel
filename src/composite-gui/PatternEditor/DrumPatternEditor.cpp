@@ -32,7 +32,6 @@
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Note.hpp>
-#include <Tritium/AudioEngine.hpp>
 #include <Tritium/Logger.hpp>
 
 #include "../CompositeApp.hpp"
@@ -161,7 +160,7 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 
 	if (ev->button() == Qt::LeftButton ) {
 		m_bRightBtnPressed = false;
-		g_engine->get_audio_engine()->lock( RIGHT_HERE );	// lock the audio engine
+		g_engine->lock( RIGHT_HERE );	// lock the audio engine
 
 		bool bNoteAlreadyExist = false;
 		Pattern::note_map_t::iterator pos;
@@ -196,7 +195,7 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 			}
 		}
 		pSong->set_modified( true );
-		g_engine->get_audio_engine()->unlock(); // unlock the audio engine
+		g_engine->unlock(); // unlock the audio engine
 	}
 	else if (ev->button() == Qt::RightButton ) {
 		m_bRightBtnPressed = true;
@@ -208,7 +207,7 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 			nRealColumn = (ev->x() - 20) / static_cast<float>(m_nGridWidth);
 		}
 
-		g_engine->get_audio_engine()->lock( RIGHT_HERE );
+		g_engine->lock( RIGHT_HERE );
 
 		Pattern::note_map_t::iterator pos;
 		for ( pos = m_pPattern->note_map.lower_bound( nColumn ); pos != m_pPattern->note_map.upper_bound( nColumn ); ++pos ) {
@@ -250,7 +249,7 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 				}
 			}
 		}
-		g_engine->get_audio_engine()->unlock();
+		g_engine->unlock();
 	}
 
 	// update the selected line
@@ -293,7 +292,7 @@ void DrumPatternEditor::mouseMoveEvent(QMouseEvent *ev)
 	if (m_bRightBtnPressed && m_pDraggedNote ) {
 		int nTickColumn = getColumn( ev );
 
-		g_engine->get_audio_engine()->lock( RIGHT_HERE );	// lock the audio engine
+		g_engine->lock( RIGHT_HERE );	// lock the audio engine
 		int nLen = nTickColumn - m_nDraggedNoteStartPosition;
 
 		if (nLen <= 0) {
@@ -302,7 +301,7 @@ void DrumPatternEditor::mouseMoveEvent(QMouseEvent *ev)
 		m_pDraggedNote->set_length( nLen );
 
 		g_engine->getSong()->set_modified( true );
-		g_engine->get_audio_engine()->unlock(); // unlock the audio engine
+		g_engine->unlock(); // unlock the audio engine
 
 		//__draw_pattern();
 		update( 0, 0, width(), height() );

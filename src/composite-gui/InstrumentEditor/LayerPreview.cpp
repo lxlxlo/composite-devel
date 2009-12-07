@@ -27,7 +27,6 @@
 #include <Tritium/InstrumentLayer.hpp>
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/Note.hpp>
-#include <Tritium/AudioEngine.hpp>
 #include <Tritium/Sampler.hpp>
 using namespace Tritium;
 
@@ -141,7 +140,7 @@ void LayerPreview::paintEvent(QPaintEvent *ev)
 
 void LayerPreview::selectedInstrumentChangedEvent()
 {
-	g_engine->get_audio_engine()->lock( RIGHT_HERE );
+	g_engine->lock( RIGHT_HERE );
 	Song *pSong = g_engine->getSong();
 	if (pSong != NULL) {
 		InstrumentList *pInstrList = pSong->get_instrument_list();
@@ -160,7 +159,7 @@ void LayerPreview::selectedInstrumentChangedEvent()
 	else {
 		m_pInstrument = NULL;
 	}
-	g_engine->get_audio_engine()->unlock();
+	g_engine->unlock();
 
 	// select the last valid layer
 	if ( m_pInstrument ) {
