@@ -68,7 +68,7 @@ void JackClient::open(void)
 {
 	if(m_client) return;
 
-	QString sClientName = "Hydrogen";
+	QString sClientName = "Tritium";
 	jack_status_t status;
 	int tries = 2;  // Sometimes jackd doesn't stop and start fast enough.
 	while ( tries > 0 ) {
@@ -94,7 +94,7 @@ void JackClient::open(void)
 			}
 			break;
 		case JackServerStarted:
-			CLIENT_SUCCESS("JACK Server started for Hydrogen.");
+			CLIENT_SUCCESS("JACK Server started for Tritium.");
 			break;
 		case JackServerFailed:
 			CLIENT_FAILURE("unable to connect");
