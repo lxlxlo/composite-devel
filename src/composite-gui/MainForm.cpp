@@ -153,7 +153,7 @@ MainForm::~MainForm()
 
 	// remove the autosave file
 	m_autosaveTimer.stop();
-	QFile autosaveFile( "hydrogen_autosave.h2song" );
+	QFile autosaveFile( "tritium_autosave.h2song" );
 	autosaveFile.remove();
 
 	hide();

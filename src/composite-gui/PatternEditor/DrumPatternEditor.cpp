@@ -366,7 +366,7 @@ void DrumPatternEditor::__draw_pattern(QPainter& painter)
 		BUGFIX
 		
 		if m_pPattern is not renewed every time we draw a note, 
-		hydrogen will crash after you save a song and create a new one. 
+		Tritium will crash after you save a song and create a new one. 
 		-smoors
 	*/
 	Engine *pEngine = Engine::get_instance();

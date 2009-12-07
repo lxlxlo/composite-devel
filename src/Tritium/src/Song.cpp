@@ -336,7 +336,7 @@ namespace Tritium
 
     /// Create default song
     Song* Song::get_default_song(){
-	Song *song = new Song( "empty", "hydrogen", 120, 0.5 );
+	Song *song = new Song( "empty", "Tritium", 120, 0.5 );
 
 	song->set_metronome_volume( 0.5 );
 	song->set_notes( "..." );

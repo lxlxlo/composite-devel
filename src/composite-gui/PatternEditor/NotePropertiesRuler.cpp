@@ -150,10 +150,10 @@ void NotePropertiesRuler::mousePressEvent(QMouseEvent *ev)
 				pNote->set_leadlag((val * -2.0) + 1.0);
 				char valueChar[100];
 				if (pNote->get_leadlag() < 0.0) {
-					sprintf( valueChar, "%.2f",  ( pNote->get_leadlag() * -5)); // FIXME: '5' taken from fLeadLagFactor calculation in hydrogen.cpp
+					sprintf( valueChar, "%.2f",  ( pNote->get_leadlag() * -5)); // FIXME: '5' taken from fLeadLagFactor calculation in Engine.cpp
 					CompositeApp::get_instance()->setStatusBarMessage( QString("Leading beat by: %1 ticks").arg( valueChar ), 2000 );
 				} else if (pNote->get_leadlag() > 0.0) {
-					sprintf( valueChar, "%.2f",  ( pNote->get_leadlag() * 5)); // FIXME: '5' taken from fLeadLagFactor calculation in hydrogen.cpp
+					sprintf( valueChar, "%.2f",  ( pNote->get_leadlag() * 5)); // FIXME: '5' taken from fLeadLagFactor calculation in Engine.cpp
 					CompositeApp::get_instance()->setStatusBarMessage( QString("Lagging beat by: %1 ticks").arg( valueChar ), 2000 );
 				} else {
 					CompositeApp::get_instance()->setStatusBarMessage( QString("Note on beat"), 2000 );
@@ -257,10 +257,10 @@ void NotePropertiesRuler::wheelEvent(QWheelEvent *ev)
 			pNote->set_leadlag((val * -2.0) + 1.0);
 			char valueChar[100];
 			if (pNote->get_leadlag() < 0.0) {
-				sprintf( valueChar, "%.2f",  ( pNote->get_leadlag() * -5)); // FIXME: '5' taken from fLeadLagFactor calculation in hydrogen.cpp
+				sprintf( valueChar, "%.2f",  ( pNote->get_leadlag() * -5)); // FIXME: '5' taken from fLeadLagFactor calculation in Engine.cpp
 				CompositeApp::get_instance()->setStatusBarMessage( QString("Leading beat by: %1 ticks").arg( valueChar ), 2000 );
 			} else if (pNote->get_leadlag() > 0.0) {
-				sprintf( valueChar, "%.2f",  ( pNote->get_leadlag() * 5)); // FIXME: '5' taken from fLeadLagFactor calculation in hydrogen.cpp
+				sprintf( valueChar, "%.2f",  ( pNote->get_leadlag() * 5)); // FIXME: '5' taken from fLeadLagFactor calculation in Engine.cpp
 				CompositeApp::get_instance()->setStatusBarMessage( QString("Lagging beat by: %1 ticks").arg( valueChar ), 2000 );
 			} else {
 				CompositeApp::get_instance()->setStatusBarMessage( QString("Note on beat"), 2000 );

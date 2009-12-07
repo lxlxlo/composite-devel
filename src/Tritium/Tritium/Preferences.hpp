@@ -98,7 +98,7 @@ private:
 
 /**
 \ingroup H2CORE
-\brief	Colors for hydrogen
+\brief	Colors for Composite
 */
 class UIStyle
 {

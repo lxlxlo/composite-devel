@@ -119,7 +119,7 @@ Song* SongReader::readSong( const QString& filename )
 
 	
     if ( m_sSongVersion != QString( get_version().c_str() ) ) {
-	WARNINGLOG( "Trying to load a song created with a different version of hydrogen." );
+	WARNINGLOG( "Trying to load a song created with a different version of Hydrogen/Tritium/Composite." );
 	WARNINGLOG( "Song [" + filename + "] saved with version " + m_sSongVersion );
     }
 

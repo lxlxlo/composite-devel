@@ -82,7 +82,7 @@
 using namespace std;
 using namespace Tritium;
 
-JackProcessCallback jackMidiFallbackProcess; // implemented in hydrogen.cpp
+JackProcessCallback jackMidiFallbackProcess; // implemented in Engine.cpp
 
 JackMidiDriver::JackMidiDriver(JackClient* parent)
 	: MidiInput( "JackMidiDriver" ),

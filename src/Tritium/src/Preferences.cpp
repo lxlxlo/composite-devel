@@ -627,7 +627,7 @@ void Preferences::savePreferences()
 
 	QDomNode rootNode = doc.createElement( "hydrogen_preferences" );
 
-	// hydrogen version
+	// Hydrogen/Tritium/Composite version
 	LocalFileMng::writeXmlString( rootNode, "version", QString( get_version().c_str() ) );
 
 	////// GENERAL ///////

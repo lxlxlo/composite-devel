@@ -51,7 +51,7 @@
 #include "config.h"
 
 #ifdef WIN32
-#    include "hydrogen/timeHelper.h"
+#    include <Tritium/timehelper.hpp>
 #else
 #    include <unistd.h>
 #    include <sys/time.h>
@@ -289,7 +289,7 @@ unsigned long m_nFreeRollingFrameCounter;
 float *m_pMainBuffer_L = NULL;
 float *m_pMainBuffer_R = NULL;
 
-Engine* hydrogenInstance = NULL;   ///< Engine class instance (used for log)
+Engine* engineInstance = NULL;   ///< Engine class instance (used for log)
 
 int  m_audioEngineState = STATE_UNINITIALIZED;	///< Audio engine state
 
@@ -1584,7 +1584,7 @@ Engine::Engine(Preferences* prefs)
 	INFOLOG( "[Engine]" );
 
 	__instance = this;
-	hydrogenInstance = this;
+	engineInstance = this;
 	m_pTransport = new H2Transport;
 
 	audioEngine_init();
