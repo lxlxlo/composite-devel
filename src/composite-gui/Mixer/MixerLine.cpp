@@ -291,8 +291,8 @@ void MixerLine::setPeak_L( float peak ) {
 			if ( peak < 0.1f ) {
 				peak = 0.0f;
 			}
-			char tmp[20];
-			sprintf(tmp, "%#.2f", peak);
+			QString tmp;
+			tmp.setNum(peak, 'f', '2');
 			m_pPeakLCD->setText( tmp );
 			if ( peak > 1.0 ) {
 				m_pPeakLCD->setSmallRed();
