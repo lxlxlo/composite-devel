@@ -59,8 +59,8 @@ LadspaFXSelector::LadspaFXSelector(int nLadspaFX)
 	m_pGroupsListView->setHeaderLabels( QStringList( trUtf8( "Groups" ) ) );
 
 #ifdef LADSPA_SUPPORT
-	//Song *pSong = Hydrogen::get_instance()->getSong();
-	LadspaFX *pFX = Hydrogen::get_instance()->get_effects()->getLadspaFX(nLadspaFX);
+	//Song *pSong = Engine::get_instance()->getSong();
+	LadspaFX *pFX = Engine::get_instance()->get_effects()->getLadspaFX(nLadspaFX);
 	if (pFX) {
 		m_sSelectedPluginName = pFX->getPluginName();
 	}
@@ -100,7 +100,7 @@ void LadspaFXSelector::buildLadspaGroups()
 // 	m_pGroupsListView->addTopLevelItem( pRootItem );
 // 	m_pGroupsListView->setItemExpanded( pRootItem, true );
 	
-	Tritium::LadspaFXGroup* pFXGroup = Hydrogen::get_instance()->get_effects()->getLadspaFXGroup();
+	Tritium::LadspaFXGroup* pFXGroup = Engine::get_instance()->get_effects()->getLadspaFXGroup();
 	for (uint i = 0; i < pFXGroup->getChildList().size(); i++) {
 		Tritium::LadspaFXGroup *pNewGroup = ( pFXGroup->getChildList() )[ i ];
 		addGroup( m_pGroupsListView, pNewGroup );
@@ -177,7 +177,7 @@ void LadspaFXSelector::pluginSelected()
 	m_sSelectedPluginName = sSelected;
 
 
-	std::vector<Tritium::LadspaFXInfo*> pluginList = Hydrogen::get_instance()->get_effects()->getPluginList();
+	std::vector<Tritium::LadspaFXInfo*> pluginList = Engine::get_instance()->get_effects()->getPluginList();
 	for (uint i = 0; i < pluginList.size(); i++) {
 		Tritium::LadspaFXInfo *pFXInfo = pluginList[i];
 		if (pFXInfo->m_sName == m_sSelectedPluginName ) {
@@ -242,7 +242,7 @@ void LadspaFXSelector::on_m_pGroupsListView_currentItemChanged(
 // 		m_pPluginsListBox->takeItem( 0 );    // This way of clearing the list causes multiple signal emissions,
 // 	}                                            // each time calling pluginSelected().  Jakob.
 
-	Tritium::LadspaFXGroup* pFXGroup = Hydrogen::get_instance()->get_effects()->getLadspaFXGroup();
+	Tritium::LadspaFXGroup* pFXGroup = Engine::get_instance()->get_effects()->getLadspaFXGroup();
 
 	std::vector<Tritium::LadspaFXInfo*> pluginList = findPluginsInGroup( itemText, pFXGroup );
 	

@@ -39,7 +39,7 @@
 namespace Tritium
 {
 
-class Hydrogen;
+class Engine;
 
 class JackClient
 {
@@ -69,7 +69,7 @@ private:
     JackProcessCallback m_audio_process;
     JackProcessCallback m_nonaudio_process;
 
-    friend class Hydrogen;
+    friend class Engine;
 };
 
 } // namespace Tritium

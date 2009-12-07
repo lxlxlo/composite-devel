@@ -46,7 +46,7 @@ namespace THIS_NAMESPACE
 	Fixture() : s(0) {
 	    Logger::create_instance();
 	    Preferences *prefs = new Preferences();
-	    Hydrogen::create_instance(prefs);
+	    Engine::create_instance(prefs);
 	    BOOST_MESSAGE(song_file_name);
 	    s = Song::load(song_file_name);
 	    BOOST_REQUIRE( s != 0 );
@@ -54,7 +54,7 @@ namespace THIS_NAMESPACE
 
 	~Fixture() {
 	    delete s;
-	    delete Hydrogen::get_instance();
+	    delete Engine::get_instance();
 	    delete Logger::get_instance();
 	}
     };

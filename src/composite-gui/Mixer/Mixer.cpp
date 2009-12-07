@@ -92,7 +92,7 @@ Mixer::Mixer( QWidget* pParent )
 		connect( m_pLadspaFXLine[nFX], SIGNAL( volumeChanged(LadspaFXMixerLine*) ), this, SLOT( ladspaVolumeChanged( LadspaFXMixerLine*) ) );
 	}
 
-	if ( Hydrogen::get_instance()->get_preferences()->isFXTabVisible() ) {
+	if ( Engine::get_instance()->get_preferences()->isFXTabVisible() ) {
 		m_pFXFrame->show();
 	}
 	else {
@@ -117,7 +117,7 @@ Mixer::Mixer( QWidget* pParent )
 	m_pShowFXPanelBtn->setPressed(false);
 	m_pShowFXPanelBtn->setToolTip( trUtf8( "Show FX panel" ) );
 	connect( m_pShowFXPanelBtn, SIGNAL(clicked(Button*)), this, SLOT( showFXPanelClicked(Button*)));
-	m_pShowFXPanelBtn->setPressed( Hydrogen::get_instance()->get_preferences()->isFXTabVisible() );
+	m_pShowFXPanelBtn->setPressed( Engine::get_instance()->get_preferences()->isFXTabVisible() );
 
 #ifndef LADSPA_SUPPORT
 	m_pShowFXPanelBtn->hide();
@@ -133,7 +133,7 @@ Mixer::Mixer( QWidget* pParent )
 			QSize(42, 13)
 	);
 	m_pShowPeaksBtn->move( 67, 258 );
-	m_pShowPeaksBtn->setPressed( (Hydrogen::get_instance()->get_preferences())->showInstrumentPeaks() );
+	m_pShowPeaksBtn->setPressed( (Engine::get_instance()->get_preferences())->showInstrumentPeaks() );
 	m_pShowPeaksBtn->setToolTip( trUtf8( "Show instrument peaks" ) );
 	connect( m_pShowPeaksBtn, SIGNAL(clicked(Button*)), this, SLOT( showPeaksBtnClicked(Button*)));
 //~ Master frame
@@ -193,24 +193,24 @@ MixerLine* Mixer::createMixerLine()
 void Mixer::muteClicked(MixerLine* ref)
 {
 	int nLine = findMixerLineByRef(ref);
-	Hydrogen::get_instance()->setSelectedInstrumentNumber( nLine );
+	Engine::get_instance()->setSelectedInstrumentNumber( nLine );
 	bool isMuteClicked = ref->isMuteClicked();
 
-	Hydrogen *engine = Hydrogen::get_instance();
+	Engine *engine = Engine::get_instance();
 	Song *song = engine->getSong();
 	InstrumentList *instrList = song->get_instrument_list();
 
 	Instrument *pInstr = instrList->get(nLine);
 	pInstr->set_muted( isMuteClicked);
 	//(HydrogenApp::get_instance())->setSelectedInstrument(nLine);
-	Hydrogen::get_instance()->setSelectedInstrumentNumber(nLine);
+	Engine::get_instance()->setSelectedInstrumentNumber(nLine);
 }
 
 
 
 void Mixer::soloClicked(MixerLine* ref)
 {
-	Hydrogen *pEngine = Hydrogen::get_instance();
+	Engine *pEngine = Engine::get_instance();
 	Song *pSong = pEngine->getSong();
 	InstrumentList *pInstrList = pSong->get_instrument_list();
 	int nInstruments = pInstrList->get_size();
@@ -237,7 +237,7 @@ void Mixer::soloClicked(MixerLine* ref)
 		}
 	}
 
-	Hydrogen::get_instance()->setSelectedInstrumentNumber(nLine);
+	Engine::get_instance()->setSelectedInstrumentNumber(nLine);
 }
 
 
@@ -248,7 +248,7 @@ void Mixer::soloClicked(uint nLine)
 	MixerLine * L = m_pMixerLine[ nLine ];
 	L->setSoloClicked( !L->isSoloClicked() );
 	soloClicked( L );
-// 	Hydrogen *pEngine = Hydrogen::get_instance();
+// 	Engine *pEngine = Engine::get_instance();
 // 	Song *pSong = pEngine->getSong();
 // 	InstrumentList *pInstrList = pSong->get_instrument_list();
 // 	int nInstruments = pInstrList->get_size();
@@ -286,17 +286,17 @@ bool Mixer::isSoloClicked( uint n )
 void Mixer::noteOnClicked( MixerLine* ref )
 {
 	int nLine = findMixerLineByRef( ref );
-	Hydrogen::get_instance()->setSelectedInstrumentNumber( nLine );
+	Engine::get_instance()->setSelectedInstrumentNumber( nLine );
 
-	Hydrogen *engine = Hydrogen::get_instance();
+	Engine *engine = Engine::get_instance();
 	Song *song = engine->getSong();
 	InstrumentList *instrList = song->get_instrument_list();
 
 	const float fPitch = 0.0f;
 	Note *note = new Note( instrList->get(nLine), 1.0, 0.5f, 0.5f, -1, fPitch );
-	Hydrogen::get_instance()->midi_noteOn(note);
+	Engine::get_instance()->midi_noteOn(note);
 
-	Hydrogen::get_instance()->setSelectedInstrumentNumber(nLine);
+	Engine::get_instance()->setSelectedInstrumentNumber(nLine);
 }
 
 
@@ -305,17 +305,17 @@ void Mixer::noteOnClicked( MixerLine* ref )
  void Mixer::noteOffClicked( MixerLine* ref )
 {
 	int nLine = findMixerLineByRef( ref );
-	Hydrogen::get_instance()->setSelectedInstrumentNumber( nLine );
+	Engine::get_instance()->setSelectedInstrumentNumber( nLine );
 
-	Hydrogen *engine = Hydrogen::get_instance();
+	Engine *engine = Engine::get_instance();
 	Song *song = engine->getSong();
 	InstrumentList *instrList = song->get_instrument_list();
 
 	const float fPitch = 0.0f;
 	Note *note = new Note( instrList->get( nLine ), 1.0, 0.5, 0.5, -1, fPitch );
-	Hydrogen::get_instance()->midi_noteOff(note);
+	Engine::get_instance()->midi_noteOff(note);
 
-	Hydrogen::get_instance()->setSelectedInstrumentNumber(nLine);
+	Engine::get_instance()->setSelectedInstrumentNumber(nLine);
 }
 
 
@@ -335,9 +335,9 @@ uint Mixer::findMixerLineByRef(MixerLine* ref)
 void Mixer::volumeChanged(MixerLine* ref)
 {
 	int nLine = findMixerLineByRef(ref);
-	Hydrogen::get_instance()->setSelectedInstrumentNumber( nLine );
+	Engine::get_instance()->setSelectedInstrumentNumber( nLine );
 
-	Hydrogen *engine = Hydrogen::get_instance();
+	Engine *engine = Engine::get_instance();
 	Song *song = engine->getSong();
 	InstrumentList *instrList = song->get_instrument_list();
 
@@ -345,7 +345,7 @@ void Mixer::volumeChanged(MixerLine* ref)
 
 	instr->set_volume( ref->getVolume() );
 
-	Hydrogen::get_instance()->setSelectedInstrumentNumber(nLine);
+	Engine::get_instance()->setSelectedInstrumentNumber(nLine);
 }
 
 
@@ -354,7 +354,7 @@ void Mixer::volumeChanged(MixerLine* ref)
 void Mixer::masterVolumeChanged(MasterMixerLine* ref)
 {
 	float volume = ref->getVolume();
-	Song *song = Hydrogen::get_instance()->getSong();
+	Song *song = Engine::get_instance()->getSong();
 	song->set_volume(volume);
 }
 
@@ -362,10 +362,10 @@ void Mixer::masterVolumeChanged(MasterMixerLine* ref)
 
 void Mixer::updateMixer()
 {
-	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pPref = Engine::get_instance()->get_preferences();
 	bool bShowPeaks = pPref->showInstrumentPeaks();
 
-	Hydrogen *pEngine = Hydrogen::get_instance();
+	Engine *pEngine = Engine::get_instance();
 	Song *pSong = pEngine->getSong();
 	InstrumentList *pInstrList = pSong->get_instrument_list();
 
@@ -541,7 +541,7 @@ void Mixer::updateMixer()
 #ifdef LADSPA_SUPPORT
 	// LADSPA
 	for (uint nFX = 0; nFX < MAX_FX; nFX++) {
-		LadspaFX *pFX = Hydrogen::get_instance()->get_effects()->getLadspaFX( nFX );
+		LadspaFX *pFX = Engine::get_instance()->get_effects()->getLadspaFX( nFX );
 		if ( pFX ) {
 			m_pLadspaFXLine[nFX]->setName( pFX->getPluginName() );
 			float fNewPeak_L = 0.0;
@@ -594,9 +594,9 @@ void Mixer::nameClicked(MixerLine* /*ref*/)
 void Mixer::nameSelected(MixerLine* ref)
 {
 	int nLine = findMixerLineByRef(ref);
-	Hydrogen::get_instance()->setSelectedInstrumentNumber( nLine );
+	Engine::get_instance()->setSelectedInstrumentNumber( nLine );
 
-	Hydrogen::get_instance()->setSelectedInstrumentNumber(nLine);
+	Engine::get_instance()->setSelectedInstrumentNumber(nLine);
 }
 
 
@@ -617,9 +617,9 @@ void Mixer::panChanged(MixerLine* ref) {
 	}
 
 	int nLine = findMixerLineByRef(ref);
-	Hydrogen::get_instance()->setSelectedInstrumentNumber( nLine );
+	Engine::get_instance()->setSelectedInstrumentNumber( nLine );
 
-	Hydrogen *engine = Hydrogen::get_instance();
+	Engine *engine = Engine::get_instance();
 	Song *song = engine->getSong();
 	InstrumentList *instrList = song->get_instrument_list();
 
@@ -628,16 +628,16 @@ void Mixer::panChanged(MixerLine* ref) {
 	instr->set_pan_r( pan_R );
 
 
-	Hydrogen::get_instance()->setSelectedInstrumentNumber(nLine);
+	Engine::get_instance()->setSelectedInstrumentNumber(nLine);
 }
 
 
 
 void Mixer::knobChanged(MixerLine* ref, int nKnob) {
 	int nLine = findMixerLineByRef(ref);
-	Hydrogen::get_instance()->setSelectedInstrumentNumber( nLine );
+	Engine::get_instance()->setSelectedInstrumentNumber( nLine );
 
-	Hydrogen *engine = Hydrogen::get_instance();
+	Engine *engine = Engine::get_instance();
 	Song *song = engine->getSong();
 	InstrumentList *instrList = song->get_instrument_list();
 	Instrument *pInstr = instrList->get(nLine);
@@ -645,7 +645,7 @@ void Mixer::knobChanged(MixerLine* ref, int nKnob) {
 	QString sInfo = trUtf8( "Set FX %1 level ").arg( nKnob + 1 );
 	( HydrogenApp::get_instance() )->setStatusBarMessage( sInfo+ QString( "[%1]" ).arg( ref->getFXLevel(nKnob), 0, 'f', 2 ), 2000 );
 
-	Hydrogen::get_instance()->setSelectedInstrumentNumber(nLine);
+	Engine::get_instance()->setSelectedInstrumentNumber(nLine);
 }
 
 
@@ -690,11 +690,11 @@ void Mixer::showFXPanelClicked(Button* ref)
 {
 	if ( ref->isPressed() ) {
 		m_pFXFrame->show();
-		Hydrogen::get_instance()->get_preferences()->setFXTabVisible( true );
+		Engine::get_instance()->get_preferences()->setFXTabVisible( true );
 	}
 	else {
 		m_pFXFrame->hide();
-		Hydrogen::get_instance()->get_preferences()->setFXTabVisible( false );
+		Engine::get_instance()->get_preferences()->setFXTabVisible( false );
 	}
 
 	resizeEvent( NULL ); 	// force an update
@@ -704,7 +704,7 @@ void Mixer::showFXPanelClicked(Button* ref)
 
 void Mixer::showPeaksBtnClicked(Button* ref)
 {
-	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pPref = Engine::get_instance()->get_preferences();
 
 	if ( ref->isPressed() ) {
 		pPref->setInstrumentPeaks( true );
@@ -723,12 +723,12 @@ void Mixer::ladspaActiveBtnClicked( LadspaFXMixerLine* ref )
 #ifdef LADSPA_SUPPORT
 	bool bActive = ref->isFxActive();
 
-	//Hydrogen *engine = Hydrogen::get_instance();
+	//Engine *engine = Engine::get_instance();
 	//Song *song = engine->getSong();
 
 	for (uint nFX = 0; nFX < MAX_FX; nFX++) {
 		if (ref == m_pLadspaFXLine[ nFX ] ) {
-			LadspaFX *pFX = Hydrogen::get_instance()->get_effects()->getLadspaFX(nFX);
+			LadspaFX *pFX = Engine::get_instance()->get_effects()->getLadspaFX(nFX);
 			if (pFX) {
 				pFX->setEnabled( bActive );
 			}
@@ -749,7 +749,7 @@ void Mixer::ladspaEditBtnClicked( LadspaFXMixerLine *ref )
 			HydrogenApp::get_instance()->getLadspaFXProperties(nFX)->show();
 		}
 	}
-	Hydrogen::get_instance()->getSong()->set_modified(true);
+	Engine::get_instance()->getSong()->set_modified(true);
 #endif
 }
 
@@ -758,12 +758,12 @@ void Mixer::ladspaEditBtnClicked( LadspaFXMixerLine *ref )
 void Mixer::ladspaVolumeChanged( LadspaFXMixerLine* ref)
 {
 #ifdef LADSPA_SUPPORT
-	Song *pSong = (Hydrogen::get_instance() )->getSong();
+	Song *pSong = (Engine::get_instance() )->getSong();
 	pSong->set_modified(true);
 
 	for (uint nFX = 0; nFX < MAX_FX; nFX++) {
 		if (ref == m_pLadspaFXLine[ nFX ] ) {
-			LadspaFX *pFX = Hydrogen::get_instance()->get_effects()->getLadspaFX(nFX);
+			LadspaFX *pFX = Engine::get_instance()->get_effects()->getLadspaFX(nFX);
 			if (pFX) {
 				pFX->setVolume( ref->getVolume() );
 				QString sInfo = trUtf8( "Set LADSPA FX ( %1 ) volume").arg( QString(pFX->getPluginName() ) );

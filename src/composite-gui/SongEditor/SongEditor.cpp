@@ -100,20 +100,20 @@ void SongEditor::setGridWidth( uint width )
 
 void SongEditor::keyPressEvent ( QKeyEvent * ev )
 {
-	Hydrogen *pEngine = Hydrogen::get_instance();
+	Engine *pEngine = Engine::get_instance();
 	PatternList *pPatternList = pEngine->getSong()->get_pattern_list();
 	Song::pattern_group_t* pColumns = pEngine->getSong()->get_pattern_group_vector();
 
 	if ( ev->key() == Qt::Key_Delete ) {
 		if ( m_selectedCells.size() != 0 ) {
-			Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+			Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 			// delete all selected cells
 			for ( uint i = 0; i < m_selectedCells.size(); i++ ) {
 				QPoint cell = m_selectedCells[ i ];
 				PatternList* pColumn = (*pColumns)[ cell.x() ];
 				pColumn->del(pPatternList->get( cell.y() ) );
 			}
-			Hydrogen::get_instance()->get_audio_engine()->unlock();
+			Engine::get_instance()->get_audio_engine()->unlock();
 
 			m_selectedCells.clear();
 			m_bSequenceChanged = true;
@@ -144,13 +144,13 @@ void SongEditor::mousePressEvent( QMouseEvent *ev )
 		m_bIsCtrlPressed = false;
 	}
 
-	Hydrogen *pEngine = Hydrogen::get_instance();
+	Engine *pEngine = Engine::get_instance();
 	Song *pSong = pEngine->getSong();
 	PatternList *pPatternList = pSong->get_pattern_list();
 
 	// don't lock the audio driver before checking that...
 	if ( nRow >= (int)pPatternList->get_size() || nRow < 0 || nColumn < 0 ) { return; }
-	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 
 	SongEditorActionMode actionMode = HydrogenApp::get_instance()->getSongEditorPanel()->getActionMode();
@@ -244,7 +244,7 @@ void SongEditor::mousePressEvent( QMouseEvent *ev )
 		pSong->set_modified( true );
 	}
 
-	Hydrogen::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->get_audio_engine()->unlock();
 
 	// update
 	m_bSequenceChanged = true;
@@ -257,8 +257,8 @@ void SongEditor::mouseMoveEvent(QMouseEvent *ev)
 {
 	int nRow = ev->y() / m_nGridHeight;
 	int nColumn = ( (int)ev->x() - 10 ) / (int)m_nGridWidth;
-	PatternList *pPatternList = Hydrogen::get_instance()->getSong()->get_pattern_list();
-	Song::pattern_group_t* pColumns = Hydrogen::get_instance()->getSong()->get_pattern_group_vector();
+	PatternList *pPatternList = Engine::get_instance()->getSong()->get_pattern_list();
+	Song::pattern_group_t* pColumns = Engine::get_instance()->getSong()->get_pattern_group_vector();
 
 	if ( m_bIsMoving ) {
 //		WARNINGLOG( "[mouseMoveEvent] Move patterns not implemented yet" );
@@ -341,13 +341,13 @@ void SongEditor::mouseMoveEvent(QMouseEvent *ev)
 
 void SongEditor::mouseReleaseEvent( QMouseEvent * /*ev*/ )
 {
-	Hydrogen *pEngine = Hydrogen::get_instance();
+	Engine *pEngine = Engine::get_instance();
 
 	PatternList *pPatternList = pEngine->getSong()->get_pattern_list();
 	Song::pattern_group_t* pColumns = pEngine->getSong()->get_pattern_group_vector();
 
 	if ( m_bIsMoving ) {	// fine dello spostamento dei pattern
-		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 		// create the new patterns
 		for ( uint i = 0; i < m_movingCells.size(); i++ ) {
 			QPoint cell = m_movingCells[ i ];
@@ -404,7 +404,7 @@ void SongEditor::mouseReleaseEvent( QMouseEvent * /*ev*/ )
 
 
 		pEngine->getSong()->set_modified( true );
-		Hydrogen::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->get_audio_engine()->unlock();
 
 		m_bIsMoving = false;
 		m_movingCells.clear();
@@ -452,12 +452,12 @@ void SongEditor::paintEvent( QPaintEvent *ev )
 
 void SongEditor::createBackground()
 {
-	UIStyle *pStyle = Hydrogen::get_instance()->get_preferences()->getDefaultUIStyle();
+	UIStyle *pStyle = Engine::get_instance()->get_preferences()->getDefaultUIStyle();
 	QColor backgroundColor( pStyle->m_songEditor_backgroundColor.getRed(), pStyle->m_songEditor_backgroundColor.getGreen(), pStyle->m_songEditor_backgroundColor.getBlue() );
 	QColor alternateRowColor( pStyle->m_songEditor_alternateRowColor.getRed(), pStyle->m_songEditor_alternateRowColor.getGreen(), pStyle->m_songEditor_alternateRowColor.getBlue() );
 	QColor linesColor( pStyle->m_songEditor_lineColor.getRed(), pStyle->m_songEditor_lineColor.getGreen(), pStyle->m_songEditor_lineColor.getBlue() );
 
-	Hydrogen *pEngine = Hydrogen::get_instance();
+	Engine *pEngine = Engine::get_instance();
 	Song *pSong = pEngine->getSong();
 
 	uint nPatterns = pSong->get_pattern_list()->get_size();
@@ -543,7 +543,7 @@ void SongEditor::drawSequence()
 	p.drawPixmap( rect(), *m_pBackgroundPixmap, rect() );
 	p.end();
 
-	Song* song = Hydrogen::get_instance()->getSong();
+	Song* song = Engine::get_instance()->getSong();
 	PatternList *patList = song->get_pattern_list();
 	Song::pattern_group_t* pColumns = song->get_pattern_group_vector();
 	uint listLength = patList->get_size();
@@ -593,7 +593,7 @@ void SongEditor::drawSequence()
 
 void SongEditor::drawPattern( int pos, int number )
 {
-	Preferences *pref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pref = Engine::get_instance()->get_preferences();
 	UIStyle *pStyle = pref->getDefaultUIStyle();
 	QPainter p( m_pSequencePixmap );
 	QColor patternColor( pStyle->m_songEditor_pattern1Color.getRed(), pStyle->m_songEditor_pattern1Color.getGreen(), pStyle->m_songEditor_pattern1Color.getBlue() );
@@ -688,7 +688,7 @@ void SongEditorPatternList::mousePressEvent( QMouseEvent *ev )
 {
 	int row = (ev->y() / m_nGridHeight);
 
-	Hydrogen *engine = Hydrogen::get_instance();
+	Engine *engine = Engine::get_instance();
 	Song *song = engine->getSong();
 	PatternList *patternList = song->get_pattern_list();
 
@@ -728,7 +728,7 @@ void SongEditorPatternList::mousePressEvent( QMouseEvent *ev )
 ///
 void SongEditorPatternList::togglePattern( int row ) {
 
-	Hydrogen *engine = Hydrogen::get_instance();
+	Engine *engine = Engine::get_instance();
 /*	Song *song = engine->getSong();
 	PatternList *patternList = song->get_pattern_list();*/
 
@@ -768,7 +768,7 @@ void SongEditorPatternList::mouseDoubleClickEvent( QMouseEvent *ev )
 
 void SongEditorPatternList::inlineEditPatternName( int row )
 {
-	Hydrogen *engine = Hydrogen::get_instance();
+	Engine *engine = Engine::get_instance();
 	Song *song = engine->getSong();
 	PatternList *patternList = song->get_pattern_list();
 
@@ -789,8 +789,8 @@ void SongEditorPatternList::inlineEditingEntered()
 	if ( PatternPropertiesDialog::nameCheck( line->text() ) )
 	{
 		patternBeingEdited->set_name( line->text() );
-		Hydrogen::get_instance()->getSong()->set_modified( true );
-		Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );
+		Engine::get_instance()->getSong()->set_modified( true );
+		Engine::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );
 		createBackground();
 		update();
 	}
@@ -826,7 +826,7 @@ void SongEditorPatternList::updateEditor()
 
 void SongEditorPatternList::createBackground()
 {
-	Preferences *pref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pref = Engine::get_instance()->get_preferences();
 	UIStyle *pStyle = pref->getDefaultUIStyle();
 	QColor textColor( pStyle->m_songEditor_textColor.getRed(), pStyle->m_songEditor_textColor.getGreen(), pStyle->m_songEditor_textColor.getBlue() );
 
@@ -838,7 +838,7 @@ void SongEditorPatternList::createBackground()
 	boldTextFont.setPointSize(10);
 	boldTextFont.setBold( true );
 
-	Hydrogen *pEngine = Hydrogen::get_instance();
+	Engine *pEngine = Engine::get_instance();
 	Song *pSong = pEngine->getSong();
 	int nPatterns = pSong->get_pattern_list()->get_size();
 	int nSelectedPattern = pEngine->getSelectedPatternNumber();
@@ -923,14 +923,14 @@ void SongEditorPatternList::createBackground()
 void SongEditorPatternList::patternPopup_load()
 {
 
-	Hydrogen *engine = Hydrogen::get_instance();
+	Engine *engine = Engine::get_instance();
 	int tmpselectedpatternpos = engine->getSelectedPatternNumber();
 	Song *song = engine->getSong();
 	PatternList *pPatternList = song->get_pattern_list();
 	Instrument *instr = song->get_instrument_list()->get( 0 );
 	assert( instr );
 	
-	QDir dirPattern( Hydrogen::get_instance()->get_preferences()->getDataDirectory() + "/patterns" );
+	QDir dirPattern( Engine::get_instance()->get_preferences()->getDataDirectory() + "/patterns" );
 	std::auto_ptr<QFileDialog> fd( new QFileDialog );
 	fd->setFileMode(QFileDialog::ExistingFile);
 	fd->setFilter( trUtf8("Hydrogen Pattern (*.h2pattern)") );
@@ -977,7 +977,7 @@ void SongEditorPatternList::patternPopup_load()
 
 void SongEditorPatternList::patternPopup_save()
 {	
-	Hydrogen *engine = Hydrogen::get_instance();
+	Engine *engine = Engine::get_instance();
 	int nSelectedPattern = engine->getSelectedPatternNumber();
 	Song *song = engine->getSong();
 	Pattern *pat = song->get_pattern_list()->get( nSelectedPattern );
@@ -987,7 +987,7 @@ void SongEditorPatternList::patternPopup_save()
 	LocalFileMng fileMng;
 	int err = fileMng.savePattern( song , nSelectedPattern, patternname, patternname, 1 );
 	if ( err == 1 ) {
-		int res = QMessageBox::information( this, "Hydrogen", tr( "The pattern-file exists. \nOverwrite the existing pattern?"), tr("&Ok"), tr("&Cancel"), 0, 1 );
+		int res = QMessageBox::information( this, "Composite", tr( "The pattern-file exists. \nOverwrite the existing pattern?"), tr("&Ok"), tr("&Cancel"), 0, 1 );
 		if ( res == 0 ) {
 			int err2 = fileMng.savePattern( song , nSelectedPattern, patternname, patternname, 3 );
 			if( err2 == 1){
@@ -1021,7 +1021,7 @@ void SongEditorPatternList::patternPopup_edit()
 
 void SongEditorPatternList::patternPopup_properties()
 {
-	Hydrogen *engine = Hydrogen::get_instance();
+	Engine *engine = Engine::get_instance();
 	Song *song = engine->getSong();
 	PatternList *patternList = song->get_pattern_list();
 
@@ -1030,10 +1030,10 @@ void SongEditorPatternList::patternPopup_properties()
 
 	PatternPropertiesDialog *dialog = new PatternPropertiesDialog(this, pattern, false);
 	if (dialog->exec() == QDialog::Accepted) {
-// 		Hydrogen *engine = Hydrogen::get_instance();
+// 		Engine *engine = Engine::get_instance();
 // 		Song *song = engine->getSong();
 		song->set_modified( true );
-		Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );
+		Engine::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );
 		createBackground();
 		update();
 	}
@@ -1045,13 +1045,13 @@ void SongEditorPatternList::patternPopup_properties()
 
 void SongEditorPatternList::patternPopup_delete()
 {
-	Hydrogen *pEngine = Hydrogen::get_instance();
+	Engine *pEngine = Engine::get_instance();
 
 //	int state = engine->get_transport()->get_state();
 // 	// per ora non lascio possibile la cancellazione del pattern durante l'esecuzione
 // 	// da togliere quando correggo il bug
 //         if (state == PLAYING) {
-//                 QMessageBox::information( this, "Hydrogen", trUtf8("Can't delete the pattern while the audio engine is playing"));
+//                 QMessageBox::information( this, "Composite", trUtf8("Can't delete the pattern while the audio engine is playing"));
 //                 return;
 //         }
 
@@ -1062,7 +1062,7 @@ void SongEditorPatternList::patternPopup_delete()
 //	pEngine->sequencer_stop();
 
 // "lock engine" I am not sure, but think this is unnecessarily. -wolke-
-//	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+//	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 	Song *song = pEngine->getSong();
 	PatternList *pSongPatternList = song->get_pattern_list();
@@ -1129,7 +1129,7 @@ void SongEditorPatternList::patternPopup_delete()
 	song->set_modified( true );
 
 // "unlock" I am not sure, but think this is unnecessarily. -wolke-
-//	Hydrogen::get_instance()->get_audio_engine()->unlock();
+//	Engine::get_instance()->get_audio_engine()->unlock();
 
 	( HydrogenApp::get_instance() )->getSongEditorPanel()->updateAll();
 }
@@ -1138,7 +1138,7 @@ void SongEditorPatternList::patternPopup_delete()
 
 void SongEditorPatternList::patternPopup_copy()
 {
-	Hydrogen *pEngine = Hydrogen::get_instance();
+	Engine *pEngine = Engine::get_instance();
 	Song *pSong = pEngine->getSong();
 	PatternList *pPatternList = pSong->get_pattern_list();
 	int nSelectedPattern = pEngine->getSelectedPatternNumber();
@@ -1167,7 +1167,7 @@ void SongEditorPatternList::patternPopup_copy()
 
 void SongEditorPatternList::patternPopup_fill()
 {
-	Hydrogen *pEngine = Hydrogen::get_instance();
+	Engine *pEngine = Engine::get_instance();
 	int nSelectedPattern = pEngine->getSelectedPatternNumber();
 	FillRange range;
 	PatternFillDialog *dialog = new PatternFillDialog( this, &range );
@@ -1187,8 +1187,8 @@ void SongEditorPatternList::patternPopup_fill()
 
 void SongEditorPatternList::fillRangeWithPattern(FillRange* pRange, int nPattern)
 {
-	Hydrogen *pEngine = Hydrogen::get_instance();
-	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	Engine *pEngine = Engine::get_instance();
+	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 
 	Song *pSong = pEngine->getSong();
@@ -1252,7 +1252,7 @@ void SongEditorPatternList::fillRangeWithPattern(FillRange* pRange, int nPattern
 				break;
 			}
 		}
-	Hydrogen::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->get_audio_engine()->unlock();
 
 
 	// Update
@@ -1279,7 +1279,7 @@ void SongEditorPatternList::dropEvent(QDropEvent *event)
 	}
 
 	if (sText.startsWith("move pattern:")) {
-		Hydrogen *engine = Hydrogen::get_instance();
+		Engine *engine = Engine::get_instance();
 		int nSourcePattern = engine->getSelectedPatternNumber();
 
 		int nTargetPattern = event->pos().y() / m_nGridHeight;
@@ -1295,7 +1295,7 @@ void SongEditorPatternList::dropEvent(QDropEvent *event)
 	}else {
 
 
-		PatternList *pPatternList = Hydrogen::get_instance()->getSong()->get_pattern_list();
+		PatternList *pPatternList = Engine::get_instance()->getSong()->get_pattern_list();
 
 		QStringList tokens = sText.split( "::" );
 		QString sPatternName = tokens.at( 1 );
@@ -1316,7 +1316,7 @@ void SongEditorPatternList::dropEvent(QDropEvent *event)
 			}
 			pPatternList->replace( pNewPattern, nTargetPattern );
 
-			Hydrogen::get_instance()->getSong()->set_modified( true );
+			Engine::get_instance()->getSong()->set_modified( true );
 			createBackground();
 			update();
 		}
@@ -1330,7 +1330,7 @@ void SongEditorPatternList::dropEvent(QDropEvent *event)
 
 void SongEditorPatternList::movePatternLine( int nSourcePattern , int nTargetPattern )
 {
-		Hydrogen *engine = Hydrogen::get_instance();
+		Engine *engine = Engine::get_instance();
 
 		Song *pSong = engine->getSong();
 		PatternList *pPatternList = pSong->get_pattern_list();
@@ -1438,14 +1438,14 @@ void SongEditorPositionRuler::setGridWidth( uint width )
 
 void SongEditorPositionRuler::createBackground()
 {
-	UIStyle *pStyle = Hydrogen::get_instance()->get_preferences()->getDefaultUIStyle();
+	UIStyle *pStyle = Engine::get_instance()->get_preferences()->getDefaultUIStyle();
 	QColor backgroundColor( pStyle->m_songEditor_backgroundColor.getRed(), pStyle->m_songEditor_backgroundColor.getGreen(), pStyle->m_songEditor_backgroundColor.getBlue() );
 	QColor textColor( pStyle->m_songEditor_textColor.getRed(), pStyle->m_songEditor_textColor.getGreen(), pStyle->m_songEditor_textColor.getBlue() );
 	QColor alternateRowColor( pStyle->m_songEditor_alternateRowColor.getRed(), pStyle->m_songEditor_alternateRowColor.getGreen(), pStyle->m_songEditor_alternateRowColor.getBlue() );
 
 	m_pBackgroundPixmap->fill( backgroundColor );
 
-	Preferences *pref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pref = Engine::get_instance()->get_preferences();
 	QString family = pref->getApplicationFontFamily();
 	int size = pref->getApplicationFontPointSize();
 	QFont font( family, size );
@@ -1487,18 +1487,18 @@ void SongEditorPositionRuler::mousePressEvent( QMouseEvent *ev )
 {
 	int column = (ev->x() / m_nGridWidth);
 
-	if ( column >= (int)Hydrogen::get_instance()->getSong()->get_pattern_group_vector()->size() ) {
+	if ( column >= (int)Engine::get_instance()->getSong()->get_pattern_group_vector()->size() ) {
 		return;
 	}
 	
 	// disabling son relocates while in pattern mode as it causes weird behaviour. (jakob lund)
-	if ( Hydrogen::get_instance()->getSong()->get_mode() == Song::PATTERN_MODE ) {
+	if ( Engine::get_instance()->getSong()->get_mode() == Song::PATTERN_MODE ) {
 		return;
 	}
 
-	int nPatternPos = Hydrogen::get_instance()->getPatternPos();
+	int nPatternPos = Engine::get_instance()->getPatternPos();
 	if ( nPatternPos != column ) {
-		Hydrogen::get_instance()->setPatternPos( column );
+		Engine::get_instance()->setPatternPos( column );
 		update();
 	}
 }
@@ -1511,7 +1511,7 @@ void SongEditorPositionRuler::paintEvent( QPaintEvent *ev )
 		return;
 	}
 	
-	Hydrogen *H = Hydrogen::get_instance();
+	Engine *H = Engine::get_instance();
 
 	float fPos = H->getPatternPos();
 

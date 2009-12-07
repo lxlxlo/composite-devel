@@ -45,7 +45,7 @@ SimpleHTMLBrowser::SimpleHTMLBrowser( QWidget *pParent, const QString& sDataPath
 		setStyleSheet("color:#000000;");
 	}
 	else {
-		setWindowTitle( trUtf8( "Welcome to Hydrogen" ) );
+		setWindowTitle( trUtf8( "Welcome to Composite" ) );
 		resize( 800, 650 );
 		setMinimumSize( width(), height() );
 		setMaximumSize( width(), height() );

@@ -104,9 +104,9 @@ HydrogenApp::HydrogenApp( MainForm *pMainForm, Song *pFirstSong )
 
 
 	// Audio Engine must already be created
-	assert(Hydrogen::get_instance());
-	Hydrogen::get_instance()->setSong( pFirstSong );
-	Hydrogen::get_instance()->get_preferences()->setLastSongFilename( pFirstSong->get_filename() );
+	assert(Engine::get_instance());
+	Engine::get_instance()->setSong( pFirstSong );
+	Engine::get_instance()->get_preferences()->setLastSongFilename( pFirstSong->get_filename() );
 
 	// set initial title
 	QString qsSongName( pFirstSong->get_name() );
@@ -117,7 +117,7 @@ HydrogenApp::HydrogenApp( MainForm *pMainForm, Song *pFirstSong )
 
         setWindowTitle( qsSongName  );
 
-	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pPref = Engine::get_instance()->get_preferences();
 
 	setupSinglePanedInterface();
 
@@ -134,7 +134,7 @@ HydrogenApp::HydrogenApp( MainForm *pMainForm, Song *pFirstSong )
 	
 	m_pAppPlaylistListener = new AppPlaylistListener;
 	m_pAppPlaylistListener->q = this;
-	m_pAppPlaylistListener->d = Hydrogen::get_instance()->get_playlist();
+	m_pAppPlaylistListener->d = Engine::get_instance()->get_playlist();
 	m_pAppPlaylistListener->d->subscribe(m_pAppPlaylistListener);
 	// Unsubscription done by the destructor.
 	m_pPlaylistDialog = new PlaylistDialog( 0 );
@@ -155,10 +155,10 @@ HydrogenApp::~HydrogenApp()
 	delete m_pPlaylistDialog;
 	delete m_pAppPlaylistListener;
 
-	Hydrogen *engine = Hydrogen::get_instance();
+	Engine *engine = Engine::get_instance();
 	if (engine) {
 		Tritium::Song * song = engine->getSong();
-		// Hydrogen calls removeSong on from its destructor, so here we just delete the objects:
+		// Engine calls removeSong on from its destructor, so here we just delete the objects:
 		delete engine;
 		delete song;
 	}
@@ -185,7 +185,7 @@ HydrogenApp* HydrogenApp::get_instance() {
 
 void HydrogenApp::setupSinglePanedInterface()
 {
-	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pPref = Engine::get_instance()->get_preferences();
 
 	// MAINFORM
 	WindowProperties mainFormProp = pPref->getMainFormProperties();
@@ -290,15 +290,15 @@ void HydrogenApp::setSong(Song* song)
 {
 
 
-	Song* oldSong = (Hydrogen::get_instance())->getSong();
+	Song* oldSong = (Engine::get_instance())->getSong();
 	if (oldSong != NULL) {
-		(Hydrogen::get_instance())->removeSong();
+		(Engine::get_instance())->removeSong();
 		delete oldSong;
 		oldSong = NULL;
 	}
 
-	Hydrogen::get_instance()->setSong( song );
-	Hydrogen::get_instance()->get_preferences()->setLastSongFilename( song->get_filename() );
+	Engine::get_instance()->setSong( song );
+	Engine::get_instance()->get_preferences()->setLastSongFilename( song->get_filename() );
 
 	m_pSongEditorPanel->updateAll();
 	m_pPatternEditorPanel->updateSLnameLabel();
@@ -391,13 +391,13 @@ void HydrogenApp::showInfoSplash()
 	}
 	INFOLOG( "[showInfoSplash] Selected news: " + sFilename );
 
-	QString sLastRead = Hydrogen::get_instance()->get_preferences()->getLastNews();
+	QString sLastRead = Engine::get_instance()->get_preferences()->getLastNews();
 	if ( sLastRead != sFilename && !sFilename.isEmpty() ) {
 		QString sDocURI = sDocPath;
 		sDocURI.append( "/" ).append( sFilename );
 		SimpleHTMLBrowser *m_pFirstTimeInfo = new SimpleHTMLBrowser( m_pMainForm, sDocPath, sDocURI, SimpleHTMLBrowser::WELCOME );
 		if ( m_pFirstTimeInfo->exec() == QDialog::Accepted ) {
-			Hydrogen::get_instance()->get_preferences()->setLastNews( sFilename );
+			Engine::get_instance()->get_preferences()->setLastNews( sFilename );
 		}
 	}
 }
@@ -410,7 +410,7 @@ void HydrogenApp::onDrumkitLoad( QString name ){
 void HydrogenApp::onEventQueueTimer()
 {
 	// use the timer to do schedule instrument slaughter;
-	EventQueue *pQueue = Hydrogen::get_instance()->get_event_queue();
+	EventQueue *pQueue = Engine::get_instance()->get_event_queue();
 
 	Event event;
 	while ( ( event = pQueue->pop_event() ).type != EVENT_NONE ) {

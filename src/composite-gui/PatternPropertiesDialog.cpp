@@ -47,7 +47,7 @@ PatternPropertiesDialog::PatternPropertiesDialog(QWidget* parent, Pattern *patte
 	}
 	categoryComboBox->addItem( category );
 
-	Preferences *pPref = Tritium::Hydrogen::get_instance()->get_preferences();
+	Preferences *pPref = Tritium::Engine::get_instance()->get_preferences();
 
 	std::list<QString>::const_iterator cur_patternCategories;
 	
@@ -88,7 +88,7 @@ void PatternPropertiesDialog::on_okBtn_clicked()
 	QString pattName = patternNameTxt->text();
 	QString pattCategory = categoryComboBox->currentText();
 
-	Preferences *pPref = Tritium::Hydrogen::get_instance()->get_preferences();
+	Preferences *pPref = Tritium::Engine::get_instance()->get_preferences();
 	std::list<QString>::const_iterator cur_testpatternCategories;
 
 	bool test = true;
@@ -111,7 +111,7 @@ void PatternPropertiesDialog::on_okBtn_clicked()
 void PatternPropertiesDialog::defaultNameCheck( QString pattName, bool savepattern )
 {
 
-	PatternList *patternList = Hydrogen::get_instance()->getSong()->get_pattern_list();
+	PatternList *patternList = Engine::get_instance()->getSong()->get_pattern_list();
 	
 	for (uint i = 0; i < patternList->get_size(); i++) {
 		if ( patternList->get(i)->get_name() == pattName) {
@@ -132,7 +132,7 @@ bool PatternPropertiesDialog::nameCheck( QString pattName )
 	if (pattName == "") {
 		return false;
 	}
-	PatternList *patternList = Hydrogen::get_instance()->getSong()->get_pattern_list();
+	PatternList *patternList = Engine::get_instance()->getSong()->get_pattern_list();
 	
 	for (uint i = 0; i < patternList->get_size(); i++) {
 		if ( patternList->get(i)->get_name() == pattName) {

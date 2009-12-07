@@ -29,7 +29,7 @@ namespace Tritium
     class SimpleTransportMasterPrivate;
 
     /**
-     * This defines a very simple transport master for Hydrogen.
+     * This defines a very simple transport master for Tritium.
      */
     class SimpleTransportMaster : public Transport
     {

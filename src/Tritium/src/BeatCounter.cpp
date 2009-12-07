@@ -67,7 +67,7 @@ void BeatCounter::setOffsetAdjust()
 {
     //individual fine tuning for the beatcounter
     //to adjust  ms_offset from different people and controller
-    Preferences *pref = Hydrogen::get_instance()->get_preferences();
+    Preferences *pref = Engine::get_instance()->get_preferences();
 
     m_nCoutOffset = pref->m_countOffset;
     m_nStartOffset = pref->m_startOffset;
@@ -75,7 +75,7 @@ void BeatCounter::setOffsetAdjust()
 
 void BeatCounter::trigger()
 {
-    Hydrogen* H2 = Hydrogen::get_instance();
+    Engine* H2 = Engine::get_instance();
     Transport* transport = H2->get_transport();
     TransportPosition Xpos;
 
@@ -129,7 +129,7 @@ void BeatCounter::trigger()
 	    if ( beatCountBpm > 500)
 		beatCountBpm = 500; 
 	    H2->setBPM( beatCountBpm );
-	    if (Hydrogen::get_instance()->get_preferences()->m_mmcsetplay
+	    if (Engine::get_instance()->get_preferences()->m_mmcsetplay
 		== Preferences::SET_PLAY_OFF) {
 		beatCount = 1; 
 		eventCount = 1;
@@ -216,7 +216,7 @@ void BeatCounter::setTapTempo( float fInterval )
     fOldBpm2 = fOldBpm1;
     fOldBpm1 = fBPM;
 
-    Hydrogen::get_instance()->setBPM( fBPM );
+    Engine::get_instance()->setBPM( fBPM );
 }
 
 void BeatCounter::onTapTempoAccelEvent()

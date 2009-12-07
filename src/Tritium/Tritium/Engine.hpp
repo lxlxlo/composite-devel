@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef TRITIUM_HYDROGEN_HPP
-#define TRITIUM_HYDROGEN_HPP
+#ifndef TRITIUM_ENGINE_HPP
+#define TRITIUM_ENGINE_HPP
 
 #include <stdint.h> // for uint32_t et al
 #include <Tritium/Song.hpp>
@@ -54,19 +54,19 @@ class Effects;
 class Preferences;
 
 ///
-/// Hydrogen Audio Engine.
+/// The main audio engine
 ///
-class Hydrogen
+class Engine
 {
 public:
 	// The preferences object must be created and
-	// initialized before Hydrogen is created
-	// (for now).  Hydrogen takes ownership and
+	// initialized before Engine is created
+	// (for now).  Engine takes ownership and
 	// will delete it.
 	static void create_instance(Preferences* prefs);  // Also creates other instances, like AudioEngine
-	static Hydrogen* get_instance() { assert(__instance); return __instance; };
+	static Engine* get_instance() { assert(__instance); return __instance; };
 
-	~Hydrogen();
+	~Engine();
 
 // ***** ACCESS TO TRANSPORT ******
 	Transport* get_transport(); // Never returns null
@@ -222,7 +222,7 @@ public:
 	
 
 private:
-	static Hydrogen* __instance;
+	static Engine* __instance;
 
 	// used for song export
 	Song::SongMode m_oldEngineMode;
@@ -232,7 +232,7 @@ private:
 
 
 	/// Private constructor
-	Hydrogen(Preferences* prefs);
+	Engine(Preferences* prefs);
 
 	void __kill_instruments();
 
@@ -240,5 +240,5 @@ private:
 
 } // namespace Tritium
 
-#endif  // TRITIUM_HYDROGEN_HPP
+#endif  // TRITIUM_ENGINE_HPP
 

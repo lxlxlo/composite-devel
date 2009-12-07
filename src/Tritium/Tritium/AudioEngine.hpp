@@ -46,7 +46,7 @@ public:
 	/* Mutex locking and unlocking
 	 *
 	 * Easy usage:  Use the RIGHT_HERE macro like this...
-	 *     Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	 *     Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 	 *
 	 * More complex usage:  The parameters file and function
 	 * need to be pointers to null-terminated strings that are

@@ -120,8 +120,8 @@ SoundLibraryPanel::SoundLibraryPanel( QWidget *pParent )
 
 	this->setLayout( pVBox );
 
-	__expand_pattern_list = Hydrogen::get_instance()->get_preferences()->__expandPatternItem;
-	__expand_songs_list = Hydrogen::get_instance()->get_preferences()->__expandSongItem;
+	__expand_pattern_list = Engine::get_instance()->get_preferences()->__expandPatternItem;
+	__expand_songs_list = Engine::get_instance()->get_preferences()->__expandSongItem;
 
 	updateDrumkitList();
 }
@@ -146,7 +146,7 @@ SoundLibraryPanel::~SoundLibraryPanel()
 
 void SoundLibraryPanel::updateDrumkitList()
 {
-	QString currentSL = Hydrogen::get_instance()->m_currentDrumkit ; 
+	QString currentSL = Engine::get_instance()->m_currentDrumkit ; 
 
 	LocalFileMng mng;
 
@@ -342,7 +342,7 @@ void SoundLibraryPanel::on_DrumkitList_itemActivated(
 		Instrument *pInstrument = Instrument::load_instrument( sDrumkitName, sInstrName );
 		pInstrument->set_muted( false );
 
-		Hydrogen::get_instance()->get_audio_engine()->get_sampler()->preview_instrument( pInstrument );
+		Engine::get_instance()->get_audio_engine()->get_sampler()->preview_instrument( pInstrument );
 	}
 }
 
@@ -535,8 +535,8 @@ void SoundLibraryPanel::on_drumkitLoadAction()
 
 	QApplication::setOverrideCursor(Qt::WaitCursor);
 
-	Hydrogen::get_instance()->loadDrumkit( drumkitInfo );
-	Hydrogen::get_instance()->getSong()->set_modified( true );
+	Engine::get_instance()->loadDrumkit( drumkitInfo );
+	Engine::get_instance()->getSong()->set_modified( true );
 	HydrogenApp::get_instance()->onDrumkitLoad( drumkitInfo->getName() );
 	HydrogenApp::get_instance()->getPatternEditorPanel()->getDrumPatternEditor()->updateEditor();
 
@@ -560,7 +560,7 @@ void SoundLibraryPanel::restore_background_color()
 {
 	std::vector<QString> systemList = Drumkit::getSystemDrumkitList();
 	std::vector<QString> userList = Drumkit::getUserDrumkitList();
-	QString curlib =  Hydrogen::get_instance()->m_currentDrumkit;
+	QString curlib =  Engine::get_instance()->m_currentDrumkit;
  
 	for (uint i = 0; i < systemList.size() ; i++){
 		if (  !__system_drumkits_item->child( i ) )
@@ -581,7 +581,7 @@ void SoundLibraryPanel::change_background_color()
 {
 	std::vector<QString> systemList = Drumkit::getSystemDrumkitList();
 	std::vector<QString> userList = Drumkit::getUserDrumkitList();
-	QString curlib =  Hydrogen::get_instance()->m_currentDrumkit;
+	QString curlib =  Engine::get_instance()->m_currentDrumkit;
  
 	for (uint i = 0; i < systemList.size() ; i++){
 		if (  !__system_drumkits_item->child( i ) )
@@ -609,8 +609,8 @@ void SoundLibraryPanel::on_drumkitDeleteAction()
 	QString sSoundLibrary = __sound_library_tree->currentItem()->text( 0 );
 
 	//if we delete the current loaded drumkit we can get truble with some empty pointers
-	if ( sSoundLibrary == Hydrogen::get_instance()->getCurrentDrumkitname() ){
-		QMessageBox::warning( this, "Hydrogen", QString( "You try to delet the current loaded drumkit.\nThis is not possible!") );
+	if ( sSoundLibrary == Engine::get_instance()->getCurrentDrumkitname() ){
+		QMessageBox::warning( this, "Composite", QString( "You try to delet the current loaded drumkit.\nThis is not possible!") );
 		return;
 	}
 
@@ -624,11 +624,11 @@ void SoundLibraryPanel::on_drumkitDeleteAction()
 	}
 
 	if ( bIsUserSoundLibrary == false ) {
-		QMessageBox::warning( this, "Hydrogen", QString( "A system drumkit can't be deleted.") );
+		QMessageBox::warning( this, "Composite", QString( "A system drumkit can't be deleted.") );
 		return;
 	}
 
-	int res = QMessageBox::information( this, "Hydrogen", tr( "Warning, the selected drumkit will be deleted from disk.\nAre you sure?"), tr("&Ok"), tr("&Cancel"), 0, 1 );
+	int res = QMessageBox::information( this, "Composite", tr( "Warning, the selected drumkit will be deleted from disk.\nAre you sure?"), tr("&Ok"), tr("&Cancel"), 0, 1 );
 	if ( res == 1 ) {
 		return;
 	}
@@ -675,7 +675,7 @@ void SoundLibraryPanel::on_drumkitPropertiesAction()
 
 	assert( drumkitInfo );
 
-	QString sPreDrumkitName = Hydrogen::get_instance()->getCurrentDrumkitname();
+	QString sPreDrumkitName = Engine::get_instance()->getCurrentDrumkitname();
 
 	Drumkit *preDrumkitInfo = NULL;
 	
@@ -697,7 +697,7 @@ void SoundLibraryPanel::on_drumkitPropertiesAction()
 	}
 
 	if ( preDrumkitInfo == NULL ){
-		QMessageBox::warning( this, "Hydrogen", QString( "The current loaded song missing his soundlibrary.\nPlease load a existing soundlibrary first") );
+		QMessageBox::warning( this, "Composite", QString( "The current loaded song missing his soundlibrary.\nPlease load a existing soundlibrary first") );
 		return;
 	}
 	assert( preDrumkitInfo );
@@ -711,30 +711,30 @@ void SoundLibraryPanel::on_drumkitPropertiesAction()
 
 void SoundLibraryPanel::on_instrumentDeleteAction()
 {
-	QMessageBox::warning( this, "Hydrogen", QString( "Not implemented yet.") );
+	QMessageBox::warning( this, "Composite", QString( "Not implemented yet.") );
 	ERRORLOG( "[on_instrumentDeleteAction] not implemented yet" );
 }
 
 void SoundLibraryPanel::on_songLoadAction()
 {
 	QString songName = __sound_library_tree->currentItem()->text( 0 );
-	QString sDirectory = Hydrogen::get_instance()->get_preferences()->getDataDirectory()  + "songs";
+	QString sDirectory = Engine::get_instance()->get_preferences()->getDataDirectory()  + "songs";
 
 	QString sFilename = sDirectory + "/" + songName + ".h2song";
 	
 
-	Hydrogen *engine = Hydrogen::get_instance();
+	Engine *engine = Engine::get_instance();
 	engine->get_transport()->stop();
 
 	Tritium::LocalFileMng mng;
 	Song *pSong = Song::load( sFilename );
 	if ( pSong == NULL ) {
-		QMessageBox::information( this, "Hydrogen", trUtf8("Error loading song.") );
+		QMessageBox::information( this, "Composite", trUtf8("Error loading song.") );
 		return;
 	}
 
 	// add the new loaded song in the "last used song" vector
-	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pPref = Engine::get_instance()->get_preferences();
 
 	std::vector<QString> recentFiles = pPref->getRecentFiles();
 	recentFiles.insert( recentFiles.begin(), sFilename );
@@ -756,7 +756,7 @@ void SoundLibraryPanel::on_patternLoadAction()
 
 	QString patternName = __sound_library_tree->currentItem()->text( 0 ) + ".h2pattern";
 	QString drumkitname = __sound_library_tree->currentItem()->toolTip ( 0 );
-	Hydrogen *engine = Hydrogen::get_instance();
+	Engine *engine = Engine::get_instance();
 	Song *song = engine->getSong();
 	PatternList *pPatternList = song->get_pattern_list();
 	
@@ -818,7 +818,7 @@ void SoundLibraryPanel::on_patternDeleteAction()
 		} 
 	}
 
-	int res = QMessageBox::information( this, "Hydrogen", tr( "Warning, the selected pattern will be deleted from disk.\nAre you sure?"), tr("&Ok"), tr("&Cancel"), 0, 1 );
+	int res = QMessageBox::information( this, "Composite", tr( "Warning, the selected pattern will be deleted from disk.\nAre you sure?"), tr("&Ok"), tr("&Cancel"), 0, 1 );
 	if ( res == 1 ) {
 		return;
 	}
@@ -839,7 +839,7 @@ void SoundLibraryPanel::test_expandedItems()
 	assert( __sound_library_tree );
 	__expand_songs_list = __sound_library_tree->isItemExpanded( __song_item );
 	__expand_pattern_list = __sound_library_tree->isItemExpanded( __pattern_item );
-	Hydrogen::get_instance()->get_preferences()->__expandSongItem = __expand_songs_list;
-	Hydrogen::get_instance()->get_preferences()->__expandPatternItem = __expand_pattern_list;
+	Engine::get_instance()->get_preferences()->__expandSongItem = __expand_songs_list;
+	Engine::get_instance()->get_preferences()->__expandPatternItem = __expand_pattern_list;
 	//ERRORLOG( QString("songs %1 patterns %2").arg(__expand_songs_list).arg(__expand_pattern_list) );
 }

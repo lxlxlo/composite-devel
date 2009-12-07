@@ -53,7 +53,7 @@ PreferencesDialog::PreferencesDialog(QWidget* parent)
 	setMinimumSize( width(), height() );
 	setMaximumSize( width(), height() );
 
-	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pPref = Engine::get_instance()->get_preferences();
 	pPref->loadPreferences( false );	// reload user's preferences
 
 	driverComboBox->clear();
@@ -172,8 +172,8 @@ PreferencesDialog::PreferencesDialog(QWidget* parent)
 	// list midi output ports
 	midiPortComboBox->clear();
 	midiPortComboBox->addItem( "None" );
-	if ( Hydrogen::get_instance()->get_midi_input() ) {
-		std::vector<QString> midiOutList = Hydrogen::get_instance()->get_midi_input()->getOutputPortList();
+	if ( Engine::get_instance()->get_midi_input() ) {
+		std::vector<QString> midiOutList = Engine::get_instance()->get_midi_input()->getOutputPortList();
 
 		if ( midiOutList.size() != 0 ) {
 			midiPortComboBox->setEnabled( true );
@@ -217,7 +217,7 @@ PreferencesDialog::~PreferencesDialog()
 
 void PreferencesDialog::on_cancelBtn_clicked()
 {
-	Preferences *preferencesMng = Hydrogen::get_instance()->get_preferences();
+	Preferences *preferencesMng = Engine::get_instance()->get_preferences();
 	preferencesMng->loadPreferences( false );	// reload old user's preferences
 
 	reject();
@@ -228,7 +228,7 @@ void PreferencesDialog::on_okBtn_clicked()
 {
 	m_bNeedDriverRestart = true;
 
-	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pPref = Engine::get_instance()->get_preferences();
 
 	midiTable->saveMidiTable();
 
@@ -318,14 +318,14 @@ void PreferencesDialog::on_okBtn_clicked()
 
 	pPref->m_countOffset = sBcountOffset->value();
 	pPref->m_startOffset = sBstartOffset->value();
-	Hydrogen::get_instance()->setBcOffsetAdjust();
+	Engine::get_instance()->setBcOffsetAdjust();
 
 	pPref->savePreferences();
 
 	
 
 	if (m_bNeedDriverRestart) {
-		(Hydrogen::get_instance())->restartDrivers();
+		(Engine::get_instance())->restartDrivers();
 	}
 	accept();
 }
@@ -365,7 +365,7 @@ void PreferencesDialog::on_driverComboBox_activated( int /*index*/ )
 
 void PreferencesDialog::updateDriverInfo()
 {
-	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pPref = Engine::get_instance()->get_preferences();
 	QString info;
 
 	bool bJack_support = false;
@@ -411,7 +411,7 @@ void PreferencesDialog::updateDriverInfo()
 
 void PreferencesDialog::on_selectApplicationFontBtn_clicked()
 {
-	Preferences *preferencesMng = Hydrogen::get_instance()->get_preferences();
+	Preferences *preferencesMng = Engine::get_instance()->get_preferences();
 
 	QString family = preferencesMng->getApplicationFontFamily();
 	int pointSize = preferencesMng->getApplicationFontPointSize();
@@ -455,7 +455,7 @@ void PreferencesDialog::on_sampleRateComboBox_editTextChanged( const QString&  )
 
 void PreferencesDialog::on_restartDriverBtn_clicked()
 {
-	Hydrogen::get_instance()->restartDrivers();
+	Engine::get_instance()->restartDrivers();
 	m_bNeedDriverRestart = false;
 }
 
@@ -463,7 +463,7 @@ void PreferencesDialog::on_restartDriverBtn_clicked()
 
 void PreferencesDialog::on_selectMixerFontBtn_clicked()
 {
-	Preferences *preferencesMng = Hydrogen::get_instance()->get_preferences();
+	Preferences *preferencesMng = Engine::get_instance()->get_preferences();
 
 	QString family = preferencesMng->getMixerFontFamily();
 	int pointSize = preferencesMng->getMixerFontPointSize();
@@ -522,6 +522,6 @@ void PreferencesDialog::on_styleComboBox_activated( int /*index*/ )
 	QString sStyle = styleComboBox->currentText();
 	pQApp->setStyle( sStyle );
 
-	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pPref = Engine::get_instance()->get_preferences();
 	pPref->setQTStyle( sStyle );
 }

@@ -28,7 +28,7 @@
 
 namespace Tritium
 {
-	class Hydrogen;
+	class Engine;
 }
 
 class LCDSpinBox;
@@ -120,7 +120,7 @@ class PlayerControl : public QLabel, public EventListener
 		//~ beatcounter
 
 	private:
-		Tritium::Hydrogen *m_pEngine;
+		Tritium::Engine *m_pEngine;
 		QPixmap m_background;
 
 		Button *m_pRwdBtn;

@@ -21,7 +21,7 @@
  */
 /*
  * DataPath.h
- * Header to define the path to the data files for Hydrogen in such a
+ * Header to define the path to the data files for Composite in such a
  * way that self-contained Mac OS X application bundles can be built.
  * Copyright (c) 2005 Jonathan Dempsey
  *

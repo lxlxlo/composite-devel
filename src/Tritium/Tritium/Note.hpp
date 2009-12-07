@@ -93,7 +93,7 @@ public:
 	float m_fLowPassFilterBuffer_R;		///< Low pass filter buffer
 	//~ filter
 
-	// This is used exclusively by the Sequencer (Hydrogen)
+	// This is used exclusively by the Sequencer (Engine)
 	int m_nHumanizeDelay;	///< Used in "humanize" function
 
 	#warning "TODO: Check these defaults"
@@ -198,7 +198,7 @@ private:
 	float __pan_r;			///< Pan of the note (right volume) [0..1]
 	float __leadlag;		///< Lead or lag offset of the note
 
-	int __length;                   ///< Length in ticks.  Used by the sequencer (Hydrogen)
+	int __length;                   ///< Length in ticks.  Used by the sequencer (Engine)
 	float __pitch;
 }; // class Note
 

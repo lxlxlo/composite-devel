@@ -34,7 +34,7 @@ using namespace Tritium;
 bool jack_is_up(JackClient* oJackClient)
 {
     bool rv;
-    AudioOutput* ao = Hydrogen::get_instance()->get_audio_output();
+    AudioOutput* ao = Engine::get_instance()->get_audio_output();
     try {
 	if( ao
 	    && dynamic_cast<JackOutput*>(ao)

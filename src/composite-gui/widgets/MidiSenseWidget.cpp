@@ -38,7 +38,7 @@ MidiSenseWidget::MidiSenseWidget(QWidget* pParent) : QDialog( pParent )
 	pVBox->addWidget( m_pURLLabel );
 	setLayout( pVBox );
 	
-	Tritium::Hydrogen *pEngine = Tritium::Hydrogen::get_instance();
+	Tritium::Engine *pEngine = Tritium::Engine::get_instance();
 	pEngine->lastMidiEvent = "";
 	pEngine->lastMidiEventParameter = 0;
 	
@@ -54,7 +54,7 @@ MidiSenseWidget::~MidiSenseWidget(){
 }
 
 void MidiSenseWidget::updateMidi(){
-	Tritium::Hydrogen *pEngine = Tritium::Hydrogen::get_instance();
+	Tritium::Engine *pEngine = Tritium::Engine::get_instance();
 	if(	!pEngine->lastMidiEvent.isEmpty() ){
 		lastMidiEvent = pEngine->lastMidiEvent;
 		lastMidiEventParameter = pEngine->lastMidiEventParameter;

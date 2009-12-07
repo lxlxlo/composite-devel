@@ -337,12 +337,12 @@ InstrumentEditor::~InstrumentEditor()
 
 void InstrumentEditor::selectedInstrumentChangedEvent()
 {
-	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
-	Song *pSong = Hydrogen::get_instance()->getSong();
+	Song *pSong = Engine::get_instance()->getSong();
 	if (pSong != NULL) {
 		InstrumentList *pInstrList = pSong->get_instrument_list();
-		int nInstr = Hydrogen::get_instance()->getSelectedInstrumentNumber();
+		int nInstr = Engine::get_instance()->getSelectedInstrumentNumber();
 		if ( nInstr >= (int)pInstrList->get_size() ) {
 			nInstr = -1;
 		}
@@ -358,7 +358,7 @@ void InstrumentEditor::selectedInstrumentChangedEvent()
 	else {
 		m_pInstrument = NULL;
 	}
-	Hydrogen::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->get_audio_engine()->unlock();
 
 	// update layer list
 	if (m_pInstrument) {
@@ -547,8 +547,8 @@ void InstrumentEditor::buttonClicked( Button* pButton )
 		loadLayer();
 	}
 	else if ( pButton == m_pRemoveLayerBtn ) {
-		//Hydrogen *pEngine = Hydrogen::get_instance();
-		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		//Engine *pEngine = Engine::get_instance();
+		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 		if ( m_pInstrument ) {
 			Tritium::InstrumentLayer *pLayer = m_pInstrument->get_layer( m_nSelectedLayer );
@@ -557,7 +557,7 @@ void InstrumentEditor::buttonClicked( Button* pButton )
 				delete pLayer;
 			}
 		}
-		Hydrogen::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->get_audio_engine()->unlock();
 		selectedInstrumentChangedEvent();    // update all
 		m_pLayerPreview->updateAll();
 	}
@@ -572,7 +572,7 @@ void InstrumentEditor::loadLayer()
 {
 	static QString lastUsedDir = QDir::homePath();
 
-	Hydrogen *engine = Hydrogen::get_instance();
+	Engine *engine = Engine::get_instance();
 
 	AudioFileBrowser *fb = new AudioFileBrowser( NULL );
 	QStringList filename;
@@ -608,7 +608,7 @@ void InstrumentEditor::loadLayer()
 	
 			Tritium::Instrument *pInstr = NULL;
 	
-			Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+			Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 			Song *song = engine->getSong();
 			InstrumentList *instrList = song->get_instrument_list();
 			pInstr = instrList->get( engine->getSelectedInstrumentNumber() );
@@ -648,7 +648,7 @@ void InstrumentEditor::loadLayer()
 	
 			pInstr->set_drumkit_name( "" );   // external sample, no drumkit info
 	
-			Hydrogen::get_instance()->get_audio_engine()->unlock();
+			Engine::get_instance()->get_audio_engine()->unlock();
 
 		}
 	}
@@ -692,13 +692,13 @@ void InstrumentEditor::labelClicked( ClickableLabel* /*pRef*/ )
 	if (m_pInstrument) {
 		QString sOldName = m_pInstrument->get_name();
 		bool bIsOkPressed;
-		QString sNewName = QInputDialog::getText( this, "Hydrogen", trUtf8( "New instrument name" ), QLineEdit::Normal, sOldName, &bIsOkPressed );
+		QString sNewName = QInputDialog::getText( this, "Composite", trUtf8( "New instrument name" ), QLineEdit::Normal, sOldName, &bIsOkPressed );
 		if ( bIsOkPressed  ) {
 			m_pInstrument->set_name( sNewName );
 			selectedInstrumentChangedEvent();
 
 			// this will force an update...
-			Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
+			Engine::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
 
 		}
 		else {

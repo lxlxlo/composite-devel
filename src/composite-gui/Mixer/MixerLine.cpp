@@ -132,7 +132,7 @@ MixerLine::MixerLine(QWidget* parent)
 		connect( m_pKnob[i], SIGNAL( valueChanged(Knob*) ), this, SLOT( knobChanged(Knob*) ) );
 	}
 
-	Preferences *pref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pref = Engine::get_instance()->get_preferences();
 
 	QString family = pref->getMixerFontFamily();
 	int size = pref->getMixerFontPointSize();
@@ -206,7 +206,7 @@ void MixerLine::updateMixerLine()
 
 
 void MixerLine::click(Button *ref) {
-	Song *song = (Hydrogen::get_instance())->getSong();
+	Song *song = (Engine::get_instance())->getSong();
 
 	if (ref == m_pMuteBtn) {
 		song->set_modified( true );
@@ -235,7 +235,7 @@ void MixerLine::rightClick(Button *ref)
 
 void MixerLine::faderChanged(Fader *ref)
 {
-	Song *song = (Hydrogen::get_instance())->getSong();
+	Song *song = (Engine::get_instance())->getSong();
 	song->set_modified( true );
 	emit volumeChanged(this);
 
@@ -363,7 +363,7 @@ void MixerLine::nameSelected() {
 
 void MixerLine::panChanged(Rotary *ref)
 {
-	Song *song = Hydrogen::get_instance()->getSong();
+	Song *song = Engine::get_instance()->getSong();
 	song->set_modified( true );
 	emit panChanged( this );
 
@@ -486,7 +486,7 @@ MasterMixerLine::MasterMixerLine(QWidget* parent)
 	// Background image
 	setPixmap( "/mixerPanel/masterMixerline_background.png" );
 
-	Preferences *pref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pref = Engine::get_instance()->get_preferences();
 	int size = pref->getMixerFontPointSize();
 	QString family = pref->getMixerFontFamily();
 	float m_fFalloffTemp = pref->getMixerFalloffSpeed();
@@ -546,7 +546,7 @@ MasterMixerLine::~MasterMixerLine()
 
 void MasterMixerLine::muteClicked(Button* pBtn)
 {
-	Hydrogen::get_instance()->getSong()->set_mute( pBtn->isPressed() );
+	Engine::get_instance()->getSong()->set_mute( pBtn->isPressed() );
 }
 
 
@@ -557,7 +557,7 @@ void MasterMixerLine::faderChanged(MasterFader *ref)
 
 	emit volumeChanged(this);
 
-	Song *song = Hydrogen::get_instance()->getSong();
+	Song *song = Engine::get_instance()->getSong();
 	song->set_modified( true );
 
 	char m_pMasterFaderPos[100];
@@ -668,7 +668,7 @@ void MasterMixerLine::updateMixerLine()
 	}
 	m_nPeakTimer++;
 
-	Song *pSong = Hydrogen::get_instance()->getSong();
+	Song *pSong = Engine::get_instance()->getSong();
 	if ( pSong ) {
 		m_pHumanizeTimeRotary->setValue( pSong->get_humanize_time_value() );
 		m_pHumanizeVelocityRotary->setValue( pSong->get_humanize_velocity_value() );
@@ -687,8 +687,8 @@ void MasterMixerLine::rotaryChanged( Rotary *pRef )
 	char sVal[100];
 	sprintf( sVal, "%#.2f", fVal);
 
-	Hydrogen *pEngine = Hydrogen::get_instance();
-	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	Engine *pEngine = Engine::get_instance();
+	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 	if ( pRef == m_pHumanizeTimeRotary ) {
 		pEngine->getSong()->set_humanize_time_value( fVal );
@@ -706,7 +706,7 @@ void MasterMixerLine::rotaryChanged( Rotary *pRef )
 		ERRORLOG( "[knobChanged] Unhandled knob" );
 	}
 
-	Hydrogen::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->get_audio_engine()->unlock();
 
 	( HydrogenApp::get_instance() )->setStatusBarMessage( sMsg, 2000 );
 }
@@ -760,7 +760,7 @@ FxMixerLine::FxMixerLine(QWidget* parent)
 	activeBtn->setToolTip( trUtf8( "FX on/off") );
 	connect( activeBtn, SIGNAL( clicked(Button*) ), this, SLOT( click(Button*) ) );
 
-	Preferences *pref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pref = Engine::get_instance()->get_preferences();
 
 	// m_pFader
 	m_pFader = new Fader( this, false, false );
@@ -791,7 +791,7 @@ FxMixerLine::~FxMixerLine()
 
 
 void FxMixerLine::click(Button *ref) {
-	Song *song = Hydrogen::get_instance()->getSong();
+	Song *song = Engine::get_instance()->getSong();
 
 	if (ref == activeBtn ) {
 		song->set_modified( true );
@@ -815,7 +815,7 @@ void FxMixerLine::faderChanged(Fader * /*ref*/)
 	}
 
 
-	Song *song = Hydrogen::get_instance()->getSong();
+	Song *song = Engine::get_instance()->getSong();
 	song->set_modified( true );
 	emit volumeChanged( this );
 
@@ -928,7 +928,7 @@ InstrumentNameWidget::InstrumentNameWidget(QWidget* parent)
 	m_nWidgetWidth = 17;
 	m_nWidgetHeight = 116;
 
-	Preferences *pref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pref = Engine::get_instance()->get_preferences();
 	QString family = pref->getMixerFontFamily();
 	int size = pref->getMixerFontPointSize();
 	m_mixerFont.setFamily( family );
@@ -1094,7 +1094,7 @@ void LadspaFXMixerLine::rotaryChanged(Rotary * /*ref*/)
 //	sprintf(tmp, "%#.1f", fMaxPeak);
 //	m_pVolumeLbl->setText(tmp);
 
-	Song *song = Hydrogen::get_instance()->getSong();
+	Song *song = Engine::get_instance()->getSong();
 	song->set_modified( true );
 	emit volumeChanged(this);
 }

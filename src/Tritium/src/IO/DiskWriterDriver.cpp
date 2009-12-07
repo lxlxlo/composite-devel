@@ -51,7 +51,7 @@ DiskWriterDriverThread * diskWriterDriverThread;
 void DiskWriterDriverThread::run()
 {
 	INFOLOG( "DiskWriterDriver thread start" );
-        Transport* xport = Hydrogen::get_instance()->get_transport();
+        Transport* xport = Engine::get_instance()->get_transport();
         TransportPosition xpos;
 
 	// always rolling, no user interaction
@@ -110,16 +110,16 @@ void DiskWriterDriverThread::run()
                 // position actually refers to the *next* process cycle.
                 xport->get_position(&xpos);
 		if ( (xpos.frame % report_interval) == 0 ) {
-			int nPatterns = Hydrogen::get_instance()->getSong()->get_pattern_group_vector()->size();
-			int nCurrentPatternPos = Hydrogen::get_instance()->getPatternPos();
+			int nPatterns = Engine::get_instance()->getSong()->get_pattern_group_vector()->size();
+			int nCurrentPatternPos = Engine::get_instance()->getPatternPos();
 			assert( nCurrentPatternPos != -1 );
 
 			float fPercent = ( float ) nCurrentPatternPos / ( float )nPatterns * 100.0;
-			Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_PROGRESS, ( int )fPercent );
+			Engine::get_instance()->get_event_queue()->push_event( EVENT_PROGRESS, ( int )fPercent );
 			INFOLOG( QString( "DiskWriterDriver: %1%, transport frames:%2" ).arg( fPercent ).arg( xpos.frame ) );
 		}
 	}
-	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_PROGRESS, 100 );
+	Engine::get_instance()->get_event_queue()->push_event( EVENT_PROGRESS, 100 );
 
 	delete[] pData;
 	pData = NULL;

@@ -22,7 +22,7 @@
 
 /*
  In redesigning the Sampler, the following responsibilities were
- shifted over to the Sequencer (Tritium::Hydrogen):
+ shifted over to the Sequencer (Tritium::Engine):
 
    o Must explicitly schedule Note On/Off events.  If Off event
      omitted, the note will stop when the sample ends.
@@ -135,7 +135,7 @@ public:
 
 		{
 			// TODO:  This seems too complicated for what we're doing...
-			Preferences *pref = Hydrogen::get_instance()->get_preferences();
+			Preferences *pref = Engine::get_instance()->get_preferences();
 			TransportPosition quant(pos);
 			quant.ceil(TransportPosition::TICK);
 
@@ -171,7 +171,7 @@ public:
 		ev.note = *pNote;
 		ev.quantize = quantize;
 		ev.instrument_index =
-			Hydrogen::get_instance()->getSong()
+			Engine::get_instance()->getSong()
 			->get_instrument_list()->get_pos( pNote->get_instrument() );
 		__events.push_back(ev);
 	}
@@ -184,7 +184,7 @@ public:
 		ev.note = *pNote;
 		ev.quantize = quantize;
 		ev.instrument_index =
-			Hydrogen::get_instance()->getSong()
+			Engine::get_instance()->getSong()
 			->get_instrument_list()->get_pos( pNote->get_instrument() );
 		__events.push_back(ev);
 	}
@@ -289,7 +289,7 @@ unsigned long m_nFreeRollingFrameCounter;
 float *m_pMainBuffer_L = NULL;
 float *m_pMainBuffer_R = NULL;
 
-Hydrogen* hydrogenInstance = NULL;   ///< Hydrogen class instance (used for log)
+Engine* hydrogenInstance = NULL;   ///< Engine class instance (used for log)
 
 int  m_audioEngineState = STATE_UNINITIALIZED;	///< Audio engine state
 
@@ -358,7 +358,7 @@ inline float getGaussian( float z )
 
 void audioEngine_raiseError( unsigned nErrorCode )
 {
-	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_ERROR, nErrorCode );
+	Engine::get_instance()->get_event_queue()->push_event( EVENT_ERROR, nErrorCode );
 }
 
 
@@ -373,12 +373,12 @@ void updateTickSize()
 
 void audioEngine_init()
 {
-	INFOLOG( "*** Hydrogen audio engine init ***" );
+	INFOLOG( "*** Engine audio engine init ***" );
 
 	// check current state
 	if ( m_audioEngineState != STATE_UNINITIALIZED ) {
 		ERRORLOG( "Error the audio engine is not in UNINITIALIZED state" );
-		Hydrogen::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->get_audio_engine()->unlock();
 		return;
 	}
 
@@ -416,7 +416,7 @@ void audioEngine_init()
 #endif
 	m_playlist = new Playlist();
 
-	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_STATE, STATE_INITIALIZED );
+	Engine::get_instance()->get_event_queue()->push_event( EVENT_STATE, STATE_INITIALIZED );
 
 }
 
@@ -429,21 +429,21 @@ void audioEngine_destroy()
 		ERRORLOG( "Error the audio engine is not in INITIALIZED state" );
 		return;
 	}
-	Hydrogen::get_instance()->get_audio_engine()->get_sampler()->panic();
+	Engine::get_instance()->get_audio_engine()->get_sampler()->panic();
 
-	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
-	INFOLOG( "*** Hydrogen audio engine shutdown ***" );
+	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	INFOLOG( "*** Engine audio engine shutdown ***" );
 
 	audioEngine_clearNoteQueue();
 
 	// change the current audio engine state
 	m_audioEngineState = STATE_UNINITIALIZED;
-	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_STATE, STATE_UNINITIALIZED );
+	Engine::get_instance()->get_event_queue()->push_event( EVENT_STATE, STATE_UNINITIALIZED );
 
 	delete m_pMetronomeInstrument;
 	m_pMetronomeInstrument = NULL;
 
-	Hydrogen::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->get_audio_engine()->unlock();
 #ifdef LADSPA_SUPPORT
 	delete m_effects;
 #endif
@@ -464,7 +464,7 @@ void audioEngine_destroy()
 int audioEngine_start( bool bLockEngine, unsigned nTotalFrames )
 {
 	if ( bLockEngine ) {
-		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 	}
 
 	INFOLOG( "[audioEngine_start]" );
@@ -473,7 +473,7 @@ int audioEngine_start( bool bLockEngine, unsigned nTotalFrames )
 	if ( m_audioEngineState != STATE_READY ) {
 		ERRORLOG( "Error the audio engine is not in READY state" );
 		if ( bLockEngine ) {
-			Hydrogen::get_instance()->get_audio_engine()->unlock();
+			Engine::get_instance()->get_audio_engine()->unlock();
 		}
 		return 0;	// FIXME!!
 	}
@@ -493,7 +493,7 @@ int audioEngine_start( bool bLockEngine, unsigned nTotalFrames )
 	m_pTransport->start();
 
 	if ( bLockEngine ) {
-		Hydrogen::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->get_audio_engine()->unlock();
 	}
 	return 0; // per ora restituisco sempre OK
 }
@@ -504,7 +504,7 @@ int audioEngine_start( bool bLockEngine, unsigned nTotalFrames )
 void audioEngine_stop( bool bLockEngine )
 {
 	if ( bLockEngine ) {
-		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 	}
 	INFOLOG( "[audioEngine_stop]" );
 
@@ -512,7 +512,7 @@ void audioEngine_stop( bool bLockEngine )
 	if ( m_audioEngineState != STATE_READY ) {
 		ERRORLOG( "Error the audio engine is not in READY state, can't stop." );
 		if ( bLockEngine ) {
-			Hydrogen::get_instance()->get_audio_engine()->unlock();
+			Engine::get_instance()->get_audio_engine()->unlock();
 		}
 		return;
 	}
@@ -522,7 +522,7 @@ void audioEngine_stop( bool bLockEngine )
 	m_audioEngineState = STATE_READY;
 	*/
 	m_pTransport->stop();
-	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_STATE, STATE_READY );
+	Engine::get_instance()->get_event_queue()->push_event( EVENT_STATE, STATE_READY );
 
 	m_fMasterPeak_L = 0.0f;
 	m_fMasterPeak_R = 0.0f;
@@ -530,7 +530,7 @@ void audioEngine_stop( bool bLockEngine )
 	audioEngine_clearNoteQueue();
 
 	if ( bLockEngine ) {
-		Hydrogen::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->get_audio_engine()->unlock();
 	}
 }
 
@@ -601,19 +601,19 @@ inline void audioEngine_process_playNotes( unsigned long nframes )
 			//stop note bevore playing new note, only if set into the planned instrumenteditor checkbox `always stop note`
 			//Instrument * noteInstrument = pNote->get_instrument();
 			//if ( noteInstrument->is_stop_notes() ){ 
-			//	Hydrogen::get_instance()->get_audio_engine()->get_sampler()->note_off( pNote );
+			//	Engine::get_instance()->get_audio_engine()->get_sampler()->note_off( pNote );
 			//}
 ///~new note off stuff
 
 			// aggiungo la nota alla lista di note da eseguire
-			Hydrogen::get_instance()->get_audio_engine()->get_sampler()->note_on( pNote );
+			Engine::get_instance()->get_audio_engine()->get_sampler()->note_on( pNote );
 			
 			m_songNoteQueue.pop(); // rimuovo la nota dalla lista di note
 			pNote->get_instrument()->dequeue();
 			// raise noteOn event
 			int nInstrument = m_pSong->get_instrument_list()
 					         ->get_pos( pNote->get_instrument() );
-			Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_NOTEON, nInstrument );
+			Engine::get_instance()->get_event_queue()->push_event( EVENT_NOTEON, nInstrument );
 			continue;
 		} else {
 			// this note will not be played
@@ -627,7 +627,7 @@ void audioEngine_clearNoteQueue()
 {
 	m_queue.clear();
 	m_GuiInput.clear();
-	Hydrogen::get_instance()->get_audio_engine()->get_sampler()->panic();
+	Engine::get_instance()->get_audio_engine()->get_sampler()->panic();
 }
 
 /// Clear all audio buffers
@@ -671,7 +671,7 @@ inline void audioEngine_process_clearAudioBuffers( uint32_t nFrames )
 
 #ifdef LADSPA_SUPPORT
 	if ( m_audioEngineState >= STATE_READY ) {
-		Effects* pEffects = Hydrogen::get_instance()->get_effects();
+		Effects* pEffects = Engine::get_instance()->get_effects();
 		for ( unsigned i = 0; i < MAX_FX; ++i ) {	// clear FX buffers
 			LadspaFX* pFX = pEffects->getLadspaFX( i );
 			if ( pFX ) {
@@ -701,14 +701,14 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 	// on the audioengine
 	if (m_pMidiDriver) m_pMidiDriver->processAudio(nframes);
 
-	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 	if( m_audioEngineState < STATE_READY) {
-		Hydrogen::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->get_audio_engine()->unlock();
 		return 0;
 	}
 
-        Transport* xport = Hydrogen::get_instance()->get_transport();
+        Transport* xport = Engine::get_instance()->get_transport();
         TransportPosition pos;
         xport->get_position(&pos);
 
@@ -729,14 +729,14 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 	*/
 
 	// SAMPLER
-	Sampler* pSampler = Hydrogen::get_instance()->get_audio_engine()->get_sampler();
+	Sampler* pSampler = Engine::get_instance()->get_audio_engine()->get_sampler();
 	pSampler->process( m_queue.begin_const(),
 			   m_queue.end_const(nframes),
 			   pos,
 			   nframes
 	    );
-	float* out_L = Hydrogen::get_instance()->get_audio_engine()->get_sampler()->__main_out_L;
-	float* out_R = Hydrogen::get_instance()->get_audio_engine()->get_sampler()->__main_out_R;
+	float* out_L = Engine::get_instance()->get_audio_engine()->get_sampler()->__main_out_L;
+	float* out_R = Engine::get_instance()->get_audio_engine()->get_sampler()->__main_out_R;
 	for ( unsigned i = 0; i < nframes; ++i ) {
 		m_pMainBuffer_L[ i ] += out_L[ i ];
 		m_pMainBuffer_R[ i ] += out_R[ i ];
@@ -749,7 +749,7 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 	// Process LADSPA FX
 	if ( m_audioEngineState >= STATE_READY ) {
 		for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
-			LadspaFX *pFX = Hydrogen::get_instance()->get_effects()->getLadspaFX( nFX );
+			LadspaFX *pFX = Engine::get_instance()->get_effects()->getLadspaFX( nFX );
 			if ( ( pFX ) && ( pFX->isEnabled() ) ) {
 				pFX->processFX( nframes );
 				float *buf_L = NULL;
@@ -803,10 +803,10 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 
 	m_fMaxProcessTime = 1000.0 / ( (float)pos.frame_rate / nframes );
 
-	Hydrogen::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->get_audio_engine()->unlock();
 
  	if ( m_sendPatternChange ) {
- 		Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_PATTERN_CHANGED, -1 );
+ 		Engine::get_instance()->get_event_queue()->push_event( EVENT_PATTERN_CHANGED, -1 );
 		m_sendPatternChange = false;
  	}
 
@@ -832,7 +832,7 @@ void audioEngine_setupLadspaFX( unsigned nBufferSize )
 
 #ifdef LADSPA_SUPPORT
 	for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
-		LadspaFX *pFX = Hydrogen::get_instance()->get_effects()->getLadspaFX( nFX );
+		LadspaFX *pFX = Engine::get_instance()->get_effects()->getLadspaFX( nFX );
 		if ( pFX == NULL ) {
 			return;
 		}
@@ -849,7 +849,7 @@ void audioEngine_setupLadspaFX( unsigned nBufferSize )
 		//pFX->m_pBuffer_R = new float[ nBufferSize ];
 //		}
 
-		Hydrogen::get_instance()->get_effects()->getLadspaFX( nFX )->connectAudioPorts(
+		Engine::get_instance()->get_effects()->getLadspaFX( nFX )->connectAudioPorts(
 		    pFX->m_pBuffer_L,
 		    pFX->m_pBuffer_R,
 		    pFX->m_pBuffer_L,
@@ -887,7 +887,7 @@ void audioEngine_setSong( Song *newSong )
 		audioEngine_removeSong();
 	}
 
-	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 	m_pTransport->stop();
 	audioEngine_stop( false );  // Also clears all note queues.
@@ -897,9 +897,9 @@ void audioEngine_setSong( Song *newSong )
 		ERRORLOG( "Error the audio engine is not in PREPARED state" );
 	}
 
-	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );
-	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_PATTERN_CHANGED, -1 );
-	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
+	Engine::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );
+	Engine::get_instance()->get_event_queue()->push_event( EVENT_PATTERN_CHANGED, -1 );
+	Engine::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
 
 	//sleep( 1 );
 
@@ -920,16 +920,16 @@ void audioEngine_setSong( Song *newSong )
 
 	m_pTransport->locate( 0 );
 
-	Hydrogen::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->get_audio_engine()->unlock();
 
-	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_STATE, STATE_READY );
+	Engine::get_instance()->get_event_queue()->push_event( EVENT_STATE, STATE_READY );
 }
 
 
 
 void audioEngine_removeSong()
 {
-	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 	m_pTransport->stop();
 	audioEngine_stop( false );
@@ -937,7 +937,7 @@ void audioEngine_removeSong()
 	// check current state
 	if ( m_audioEngineState != STATE_READY ) {
 		ERRORLOG( "Error the audio engine is not in READY state" );
-		Hydrogen::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->get_audio_engine()->unlock();
 		return;
 	}
 
@@ -949,9 +949,9 @@ void audioEngine_removeSong()
 
 	// change the current audio engine state
 	m_audioEngineState = STATE_PREPARED;
-	Hydrogen::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->get_audio_engine()->unlock();
 
-	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_STATE, STATE_PREPARED );
+	Engine::get_instance()->get_event_queue()->push_event( EVENT_STATE, STATE_PREPARED );
 }
 
 #if 0
@@ -1095,7 +1095,7 @@ inline void audioEngine_updateNoteQueue( unsigned nFrames, const TransportPositi
 			int nPatternSize = MAX_NOTES;
 
 			
-			if ( Hydrogen::get_instance()->get_preferences()->patternModePlaysSelected() )
+			if ( Engine::get_instance()->get_preferences()->patternModePlaysSelected() )
 			{
 				m_pPlayingPatterns->clear();
 				Pattern * pSelectedPattern =
@@ -1158,15 +1158,15 @@ inline void audioEngine_updateNoteQueue( unsigned nFrames, const TransportPositi
 			if ( m_nPatternTickPosition == 0 ) {
 				fPitch = 3;
 				fVelocity = 1.0;
-				Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_METRONOME, 1 );
+				Engine::get_instance()->get_event_queue()->push_event( EVENT_METRONOME, 1 );
 			} else {
 				fPitch = 0;
 				fVelocity = 0.8;
-				Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_METRONOME, 0 );
+				Engine::get_instance()->get_event_queue()->push_event( EVENT_METRONOME, 0 );
 			}
-			if ( Hydrogen::get_instance()->get_preferences()->m_bUseMetronome ) {
+			if ( Engine::get_instance()->get_preferences()->m_bUseMetronome ) {
 				m_pMetronomeInstrument->set_volume(
-					Hydrogen::get_instance()->get_preferences()->m_fMetronomeVolume
+					Engine::get_instance()->get_preferences()->m_fMetronomeVolume
 					);
 				Note *pMetronomeNote = new Note( m_pMetronomeInstrument,
 								 tick,
@@ -1343,7 +1343,7 @@ void audioEngine_noteOff( Note *note )
 AudioOutput* createDriver( const QString& sDriver )
 {
 	INFOLOG( QString( "Driver: '%1'" ).arg( sDriver ) );
-	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pPref = Engine::get_instance()->get_preferences();
 	AudioOutput *pDriver = NULL;
 
 	if ( sDriver == "Jack" ) {
@@ -1357,7 +1357,7 @@ AudioOutput* createDriver( const QString& sDriver )
 			pDriver = 0;
 		} else {
 			jao->setConnectDefaults(
-				Hydrogen::get_instance()->get_preferences()->m_bJackConnectDefaults
+				Engine::get_instance()->get_preferences()->m_bJackConnectDefaults
 				);
 		}
 #endif
@@ -1366,7 +1366,7 @@ AudioOutput* createDriver( const QString& sDriver )
 		pDriver = new FakeDriver( audioEngine_process );
 	} else {
 		ERRORLOG( "Unknown driver " + sDriver );
-		audioEngine_raiseError( Hydrogen::UNKNOWN_DRIVER );
+		audioEngine_raiseError( Engine::UNKNOWN_DRIVER );
 	}
 
 	if ( pDriver  ) {
@@ -1386,9 +1386,9 @@ AudioOutput* createDriver( const QString& sDriver )
 /// Start all audio drivers
 void audioEngine_startAudioDrivers()
 {
-	Preferences *preferencesMng = Hydrogen::get_instance()->get_preferences();
+	Preferences *preferencesMng = Engine::get_instance()->get_preferences();
 
-	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 	QMutexLocker mx(&mutex_OutputPointer);
 
 	INFOLOG( "[audioEngine_startAudioDrivers]" );
@@ -1398,7 +1398,7 @@ void audioEngine_startAudioDrivers()
 		ERRORLOG( QString( "Error the audio engine is not in INITIALIZED"
 				    " state. state=%1" )
 			   .arg( m_audioEngineState ) );
-		Hydrogen::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->get_audio_engine()->unlock();
 		return;
 	}
 
@@ -1414,7 +1414,7 @@ void audioEngine_startAudioDrivers()
 //	sAudioDriver = "Auto";
 	if ( sAudioDriver == "Auto" ) {
 		if ( ( m_pAudioDriver = createDriver( "Jack" ) ) == NULL ) {
-			audioEngine_raiseError( Hydrogen::ERROR_STARTING_DRIVER );
+			audioEngine_raiseError( Engine::ERROR_STARTING_DRIVER );
 			ERRORLOG( "Error starting audio driver" );
 			ERRORLOG( "Using the NULL output audio driver" );
 
@@ -1425,7 +1425,7 @@ void audioEngine_startAudioDrivers()
 	} else {
 		m_pAudioDriver = createDriver( sAudioDriver );
 		if ( m_pAudioDriver == NULL ) {
-			audioEngine_raiseError( Hydrogen::ERROR_STARTING_DRIVER );
+			audioEngine_raiseError( Engine::ERROR_STARTING_DRIVER );
 			ERRORLOG( "Error starting audio driver" );
 			ERRORLOG( "Using the NULL output audio driver" );
 			
@@ -1453,15 +1453,15 @@ void audioEngine_startAudioDrivers()
 
 
 	if ( m_audioEngineState == STATE_PREPARED ) {
-		Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_STATE, STATE_PREPARED );
+		Engine::get_instance()->get_event_queue()->push_event( EVENT_STATE, STATE_PREPARED );
 	} else if ( m_audioEngineState == STATE_READY ) {
-		Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_STATE, STATE_READY );
+		Engine::get_instance()->get_event_queue()->push_event( EVENT_STATE, STATE_READY );
 	}
 
 	// Unlocking earlier might execute the jack process() callback before we
 	// are fully initialized.
 	mx.unlock();
-	Hydrogen::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->get_audio_engine()->unlock();
 
 #ifdef JACK_SUPPORT
 	if( m_jack_client->ref() ) {
@@ -1472,7 +1472,7 @@ void audioEngine_startAudioDrivers()
 	if ( m_pAudioDriver ) {
 		int res = m_pAudioDriver->connect();
 		if ( res != 0 ) {
-			audioEngine_raiseError( Hydrogen::ERROR_STARTING_DRIVER );
+			audioEngine_raiseError( Engine::ERROR_STARTING_DRIVER );
 			ERRORLOG( "Error starting audio driver [audioDriver::connect()]" );
 			ERRORLOG( "Using the NULL output audio driver" );
 
@@ -1511,7 +1511,7 @@ void audioEngine_stopAudioDrivers()
 {
 	INFOLOG( "[audioEngine_stopAudioDrivers]" );
 
-	Hydrogen::get_instance()->get_transport()->stop();
+	Engine::get_instance()->get_transport()->stop();
 
 	if ( ( m_audioEngineState != STATE_PREPARED )
 	     && ( m_audioEngineState != STATE_READY ) ) {
@@ -1523,9 +1523,9 @@ void audioEngine_stopAudioDrivers()
 
 	// change the current audio engine state
 	m_audioEngineState = STATE_INITIALIZED;
-	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_STATE, STATE_INITIALIZED );
+	Engine::get_instance()->get_event_queue()->push_event( EVENT_STATE, STATE_INITIALIZED );
 
-	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 	// delete MIDI driver
 	if ( m_pMidiDriver ) {
@@ -1547,7 +1547,7 @@ void audioEngine_stopAudioDrivers()
 	m_jack_client->close();
 #endif
 
-	Hydrogen::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->get_audio_engine()->unlock();
 }
 
 
@@ -1566,22 +1566,22 @@ void audioEngine_restartAudioDrivers()
 
 //----------------------------------------------------------------------------
 //
-// Implementation of Hydrogen class
+// Implementation of Engine class
 //
 //----------------------------------------------------------------------------
 
-/// static reference of Hydrogen class (Singleton)
-Hydrogen* Hydrogen::__instance = NULL;
+/// static reference of Engine class (Singleton)
+Engine* Engine::__instance = NULL;
 
 
 
 
-Hydrogen::Hydrogen(Preferences* prefs)
+Engine::Engine(Preferences* prefs)
 {
 	assert(prefs);
 	m_preferences = prefs;
 
-	INFOLOG( "[Hydrogen]" );
+	INFOLOG( "[Engine]" );
 
 	__instance = this;
 	hydrogenInstance = this;
@@ -1593,9 +1593,9 @@ Hydrogen::Hydrogen(Preferences* prefs)
 
 
 
-Hydrogen::~Hydrogen()
+Engine::~Engine()
 {
-	INFOLOG( "[~Hydrogen]" );
+	INFOLOG( "[~Engine]" );
 	m_pTransport->stop();
 	removeSong();
 	audioEngine_stopAudioDrivers();
@@ -1610,7 +1610,7 @@ Hydrogen::~Hydrogen()
 
 
 
-void Hydrogen::create_instance(Preferences *prefs)
+void Engine::create_instance(Preferences *prefs)
 {
 	assert(prefs);
 	m_preferences = prefs;
@@ -1621,65 +1621,65 @@ void Hydrogen::create_instance(Preferences *prefs)
 	m_action_manager = new ActionManager();
 
 	if( __instance == 0 ) {
-		__instance = new Hydrogen(prefs);
+		__instance = new Engine(prefs);
 	}
 
 	// See audioEngine_init() for:
 	// AudioEngine, Effects, Playlist
 }
 
-Preferences* Hydrogen::get_preferences()
+Preferences* Engine::get_preferences()
 {
 	return m_preferences;
 }
 
-AudioEngine* Hydrogen::get_audio_engine()
+AudioEngine* Engine::get_audio_engine()
 {
 	return m_audio_engine;
 }
 
-Transport* Hydrogen::get_transport()
+Transport* Engine::get_transport()
 {
 	return static_cast<Transport*>(m_pTransport);
 }
 
-ActionManager* Hydrogen::get_action_manager()
+ActionManager* Engine::get_action_manager()
 {
 	return m_action_manager;
 }
 
-EventQueue* Hydrogen::get_event_queue()
+EventQueue* Engine::get_event_queue()
 {
 	return m_event_queue;
 }
 
-Playlist* Hydrogen::get_playlist()
+Playlist* Engine::get_playlist()
 {
 	return m_playlist;
 }
 
 #ifdef LADSPA_SUPPORT
-Effects* Hydrogen::get_effects()
+Effects* Engine::get_effects()
 {
 	return m_effects;
 }
 #endif
 
 /// Start the internal sequencer
-void Hydrogen::sequencer_play()
+void Engine::sequencer_play()
 {
 	m_pTransport->start();
 }
 
 /// Stop the internal sequencer
-void Hydrogen::sequencer_stop()
+void Engine::sequencer_stop()
 {
 	m_pTransport->stop();
 }
 
 
 
-void Hydrogen::setSong( Song *pSong )
+void Engine::setSong( Song *pSong )
 {
 	while( m_pSong != 0 ) {
 		removeSong();
@@ -1689,33 +1689,33 @@ void Hydrogen::setSong( Song *pSong )
 
 
 
-void Hydrogen::removeSong()
+void Engine::removeSong()
 {
 	audioEngine_removeSong();
 }
 
 
 
-Song* Hydrogen::getSong()
+Song* Engine::getSong()
 {
 	return m_pSong;
 }
 
 
 
-void Hydrogen::midi_noteOn( Note *note )
+void Engine::midi_noteOn( Note *note )
 {
 	audioEngine_noteOn( note );
 }
 
 
 
-void Hydrogen::midi_noteOff( Note *note )
+void Engine::midi_noteOff( Note *note )
 {
 	audioEngine_noteOff( note );
 }
 
-void Hydrogen::addRealtimeNote( int instrument,
+void Engine::addRealtimeNote( int instrument,
 				float velocity,
 				float pan_L,
 				float pan_R,
@@ -1724,7 +1724,7 @@ void Hydrogen::addRealtimeNote( int instrument,
 				bool use_frame,
 				uint32_t frame )
 {
-	Preferences *pref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pref = Engine::get_instance()->get_preferences();
 	Instrument* i = getSong()->get_instrument_list()->get(instrument);
 	Note note( i,
 		   velocity,
@@ -1738,28 +1738,28 @@ void Hydrogen::addRealtimeNote( int instrument,
 
 
 
-float Hydrogen::getMasterPeak_L()
+float Engine::getMasterPeak_L()
 {
 	return m_fMasterPeak_L;
 }
 
 
 
-float Hydrogen::getMasterPeak_R()
+float Engine::getMasterPeak_R()
 {
 	return m_fMasterPeak_R;
 }
 
 
 
-unsigned long Hydrogen::getTickPosition()
+unsigned long Engine::getTickPosition()
 {
 	TransportPosition pos;
 	m_pTransport->get_position(&pos);
 	return pos.tick + (pos.beat-1) * pos.ticks_per_beat;
 }
 
-PatternList* Hydrogen::getCurrentPatternList()
+PatternList* Engine::getCurrentPatternList()
 {
 	TransportPosition pos;
 	m_pTransport->get_position(&pos);
@@ -1770,7 +1770,7 @@ PatternList* Hydrogen::getCurrentPatternList()
 	}
 }
 
-PatternList * Hydrogen::getNextPatterns()
+PatternList * Engine::getNextPatterns()
 {
 	static PatternList the_nothing;
 	TransportPosition pos;
@@ -1788,14 +1788,14 @@ PatternList * Hydrogen::getNextPatterns()
 }
 
 /// Set the next pattern (Pattern mode only)
-void Hydrogen::sequencer_setNextPattern( int pos, bool /*appendPattern*/, bool /*deletePattern*/ )
+void Engine::sequencer_setNextPattern( int pos, bool /*appendPattern*/, bool /*deletePattern*/ )
 {
 	m_pSong->set_next_pattern(pos);
 }
 
 
 
-int Hydrogen::getPatternPos()
+int Engine::getPatternPos()
 {
 	TransportPosition pos;
 	m_pTransport->get_position(&pos);
@@ -1804,7 +1804,7 @@ int Hydrogen::getPatternPos()
 
 
 
-void Hydrogen::restartDrivers()
+void Engine::restartDrivers()
 {
 	audioEngine_restartAudioDrivers();
 }
@@ -1812,10 +1812,10 @@ void Hydrogen::restartDrivers()
 
 
 /// Export a song to a wav file, returns the elapsed time in mSec
-void Hydrogen::startExportSong( const QString& filename )
+void Engine::startExportSong( const QString& filename )
 {
 	m_pTransport->stop();
-	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pPref = Engine::get_instance()->get_preferences();
 
 	m_oldEngineMode = m_pSong->get_mode();
 	m_bOldLoopEnabled = m_pSong->is_loop_enabled();
@@ -1834,7 +1834,7 @@ void Hydrogen::startExportSong( const QString& filename )
 
 	m_pAudioDriver = new DiskWriterDriver( audioEngine_process, nSamplerate, filename );
 
-	Hydrogen::get_instance()->get_audio_engine()->get_sampler()->stop_playing_notes();
+	Engine::get_instance()->get_audio_engine()->get_sampler()->stop_playing_notes();
 
 	// reset
 	m_pTransport->locate( 0 );
@@ -1861,7 +1861,7 @@ void Hydrogen::startExportSong( const QString& filename )
 
 
 
-void Hydrogen::stopExportSong()
+void Engine::stopExportSong()
 {
 	if ( ! dynamic_cast<DiskWriterDriver*>(m_pAudioDriver) ) {
 		return;
@@ -1887,7 +1887,7 @@ void Hydrogen::stopExportSong()
 
 
 /// Used to display audio driver info
-AudioOutput* Hydrogen::get_audio_output()
+AudioOutput* Engine::get_audio_output()
 {
 	return m_pAudioDriver;
 }
@@ -1895,47 +1895,47 @@ AudioOutput* Hydrogen::get_audio_output()
 
 
 /// Used to display midi driver info
-MidiInput* Hydrogen::get_midi_input()
+MidiInput* Engine::get_midi_input()
 {
 	return m_pMidiDriver;
 }
 
 
 
-void Hydrogen::setMasterPeak_L( float value )
+void Engine::setMasterPeak_L( float value )
 {
 	m_fMasterPeak_L = value;
 }
 
 
 
-void Hydrogen::setMasterPeak_R( float value )
+void Engine::setMasterPeak_R( float value )
 {
 	m_fMasterPeak_R = value;
 }
 
 
 
-int Hydrogen::getState()
+int Engine::getState()
 {
 	return m_audioEngineState;
 }
 
-float Hydrogen::getProcessTime()
+float Engine::getProcessTime()
 {
 	return m_fProcessTime;
 }
 
 
 
-float Hydrogen::getMaxProcessTime()
+float Engine::getMaxProcessTime()
 {
 	return m_fMaxProcessTime;
 }
 
 
 
-int Hydrogen::loadDrumkit( Drumkit *drumkitInfo )
+int Engine::loadDrumkit( Drumkit *drumkitInfo )
 {
 	int old_ae_state = m_audioEngineState;
 	if( m_audioEngineState >= STATE_READY ) {
@@ -1988,10 +1988,10 @@ int Hydrogen::loadDrumkit( Drumkit *drumkitInfo )
 		} else {
 			pInstr = Instrument::create_empty();
 			// The instrument isn't playing yet; no need for locking
-			// :-) - Jakob Lund.  Hydrogen::get_instance()->get_audio_engine()->lock(
-			// "Hydrogen::loadDrumkit" );
+			// :-) - Jakob Lund.  Engine::get_instance()->get_audio_engine()->lock(
+			// "Engine::loadDrumkit" );
 			songInstrList->add( pInstr );
-			// Hydrogen::get_instance()->get_audio_engine()->unlock();
+			// Engine::get_instance()->get_audio_engine()->unlock();
 		}
 
 		Instrument *pNewInstr = pDrumkitInstrList->get( nInstr );
@@ -2018,9 +2018,9 @@ int Hydrogen::loadDrumkit( Drumkit *drumkitInfo )
 	}
 
 	#ifdef JACK_SUPPORT
-	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 		renameJackPorts();
-	Hydrogen::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->get_audio_engine()->unlock();
 	#endif
 
 	m_audioEngineState = old_ae_state;
@@ -2030,8 +2030,8 @@ int Hydrogen::loadDrumkit( Drumkit *drumkitInfo )
 
 
 //this is also a new function and will used from the new delete function in
-//Hydrogen::loadDrumkit to delete the instruments by number
-void Hydrogen::removeInstrument( int instrumentnumber, bool conditional )
+//Engine::loadDrumkit to delete the instruments by number
+void Engine::removeInstrument( int instrumentnumber, bool conditional )
 {
 	Instrument *pInstr = m_pSong->get_instrument_list()->get( instrumentnumber );
 
@@ -2057,7 +2057,7 @@ void Hydrogen::removeInstrument( int instrumentnumber, bool conditional )
 	Song *pSong = getSong();
 	InstrumentList* pList = pSong->get_instrument_list();
 	if(pList->get_size()==1){
-		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 		Instrument* pInstr = pList->get( 0 );
 		pInstr->set_name( (QString( "Instrument 1" )) );
 		// remove all layers
@@ -2066,8 +2066,8 @@ void Hydrogen::removeInstrument( int instrumentnumber, bool conditional )
 			delete pLayer;
 			pInstr->set_layer( NULL, nLayer );
 		}		
-	Hydrogen::get_instance()->get_audio_engine()->unlock();
-	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
+	Engine::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
 	INFOLOG("clear last instrument to empty instrument 1 instead delete the last instrument");
 	return;
 	}
@@ -2076,16 +2076,16 @@ void Hydrogen::removeInstrument( int instrumentnumber, bool conditional )
 	// next-last
 	if ( instrumentnumber
 	     >= (int)getSong()->get_instrument_list()->get_size() - 1 ) {
-		Hydrogen::get_instance()
+		Engine::get_instance()
 			->setSelectedInstrumentNumber(
 				std::max(0, instrumentnumber - 1)
 				);
 	}
 	// delete the instrument from the instruments list
-	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 	getSong()->get_instrument_list()->del( instrumentnumber );
 	getSong()->set_modified(true);
-	Hydrogen::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->get_audio_engine()->unlock();
 	
 	// At this point the instrument has been removed from both the
 	// instrument list and every pattern in the song.  Hence there's no way
@@ -2098,17 +2098,17 @@ void Hydrogen::removeInstrument( int instrumentnumber, bool conditional )
 	__kill_instruments(); // checks if there are still notes.
 	
 	// this will force a GUI update.
-	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
+	Engine::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
 }
 
 
-void Hydrogen::raiseError( unsigned nErrorCode )
+void Engine::raiseError( unsigned nErrorCode )
 {
 	audioEngine_raiseError( nErrorCode );
 }
 
 
-unsigned long Hydrogen::getRealtimeFrames()
+unsigned long Engine::getRealtimeFrames()
 {
 	return m_nFreeRollingFrameCounter;
 }
@@ -2119,7 +2119,7 @@ unsigned long Hydrogen::getRealtimeFrames()
  * @return -1 if pos > number of patterns in the song, tick no. > 0 otherwise
  * The driver should be LOCKED when calling this!!
  */
-long Hydrogen::getTickForPosition( int pos )
+long Engine::getTickForPosition( int pos )
 {
 	int nPatternGroups = m_pSong->get_pattern_group_vector()->size();
 	if( nPatternGroups == 0 ) return -1;	
@@ -2157,12 +2157,12 @@ long Hydrogen::getTickForPosition( int pos )
 }
 
 /// Set the position in the song
-void Hydrogen::setPatternPos( int pos )
+void Engine::setPatternPos( int pos )
 {
 	m_pTransport->locate(pos+1, 1, 0);
 }
 
-void Hydrogen::getLadspaFXPeak( int nFX, float *fL, float *fR )
+void Engine::getLadspaFXPeak( int nFX, float *fL, float *fR )
 {
 #ifdef LADSPA_SUPPORT
 	( *fL ) = m_fFXPeak_L[nFX];
@@ -2175,7 +2175,7 @@ void Hydrogen::getLadspaFXPeak( int nFX, float *fL, float *fR )
 
 
 
-void Hydrogen::setLadspaFXPeak( int nFX, float fL, float fR )
+void Engine::setLadspaFXPeak( int nFX, float fL, float fR )
 {
 #ifdef LADSPA_SUPPORT
 	m_fFXPeak_L[nFX] = fL;
@@ -2184,18 +2184,18 @@ void Hydrogen::setLadspaFXPeak( int nFX, float fL, float fR )
 }
 
 
-void Hydrogen::onTapTempoAccelEvent()
+void Engine::onTapTempoAccelEvent()
 {
 	m_BeatCounter.onTapTempoAccelEvent();
 }
 
-void Hydrogen::setTapTempo( float fInterval )
+void Engine::setTapTempo( float fInterval )
 {
 	m_BeatCounter.setTapTempo(fInterval);
 }
 
 
-void Hydrogen::setBPM( float fBPM )
+void Engine::setBPM( float fBPM )
 {
 	if( (fBPM < 500.0) && (fBPM > 20.0) ) {
 		m_pSong->set_bpm(fBPM);
@@ -2204,12 +2204,12 @@ void Hydrogen::setBPM( float fBPM )
 
 
 
-void Hydrogen::restartLadspaFX()
+void Engine::restartLadspaFX()
 {
 	if ( m_pAudioDriver ) {
-		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 		audioEngine_setupLadspaFX( m_pAudioDriver->getBufferSize() );
-		Hydrogen::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->get_audio_engine()->unlock();
 	} else {
 		ERRORLOG( "m_pAudioDriver = NULL" );
 	}
@@ -2217,53 +2217,53 @@ void Hydrogen::restartLadspaFX()
 
 
 
-int Hydrogen::getSelectedPatternNumber()
+int Engine::getSelectedPatternNumber()
 {
 	return m_nSelectedPatternNumber;
 }
 
 
 
-void Hydrogen::setSelectedPatternNumber( int nPat )
+void Engine::setSelectedPatternNumber( int nPat )
 {
 	// FIXME: controllare se e' valido..
 	if ( nPat == m_nSelectedPatternNumber )	return;
 	
 	
-	if ( Hydrogen::get_instance()->get_preferences()->patternModePlaysSelected() ) {
-		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	if ( Engine::get_instance()->get_preferences()->patternModePlaysSelected() ) {
+		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 	
 		m_nSelectedPatternNumber = nPat;
-		Hydrogen::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->get_audio_engine()->unlock();
 	} else {
 		m_nSelectedPatternNumber = nPat;
 	}
 
-	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );
+	Engine::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );
 }
 
 
 
-int Hydrogen::getSelectedInstrumentNumber()
+int Engine::getSelectedInstrumentNumber()
 {
 	return m_nSelectedInstrumentNumber;
 }
 
 
 
-void Hydrogen::setSelectedInstrumentNumber( int nInstrument )
+void Engine::setSelectedInstrumentNumber( int nInstrument )
 {
 	if ( m_nSelectedInstrumentNumber == nInstrument )	return;
 
 	m_nSelectedInstrumentNumber = nInstrument;
-	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
+	Engine::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
 }
 
 
 #ifdef JACK_SUPPORT
-void Hydrogen::renameJackPorts()
+void Engine::renameJackPorts()
 {
-	if( Hydrogen::get_instance()->get_preferences()->m_bJackTrackOuts == true ){
+	if( Engine::get_instance()->get_preferences()->m_bJackTrackOuts == true ){
 		audioEngine_renameJackPorts();
 	}
 }
@@ -2272,45 +2272,45 @@ void Hydrogen::renameJackPorts()
 
 ///BeatCounter
 
-void Hydrogen::setbeatsToCount( int beatstocount)
+void Engine::setbeatsToCount( int beatstocount)
 {
 	m_BeatCounter.setBeatsToCount(beatstocount);
 }
 
 
-int Hydrogen::getbeatsToCount()
+int Engine::getbeatsToCount()
 {
 	return m_BeatCounter.getBeatsToCount();
 }
 
 
-void Hydrogen::setNoteLength( float notelength)
+void Engine::setNoteLength( float notelength)
 {
 	m_BeatCounter.setNoteLength(notelength);
 }
 
 
 
-float Hydrogen::getNoteLength()
+float Engine::getNoteLength()
 {
 	return m_BeatCounter.getNoteLength();
 }
 
 
 
-int Hydrogen::getBcStatus()
+int Engine::getBcStatus()
 {
 	return m_BeatCounter.status();
 }
 
 
-void Hydrogen::setBcOffsetAdjust()
+void Engine::setBcOffsetAdjust()
 {
 	m_BeatCounter.setOffsetAdjust();
 }
 
 
-void Hydrogen::handleBeatCounter()
+void Engine::handleBeatCounter()
 {
 	m_BeatCounter.trigger();
 }
@@ -2318,17 +2318,17 @@ void Hydrogen::handleBeatCounter()
 
 // jack transport master
 
-bool Hydrogen::setJackTimeMaster(bool if_none_already)
+bool Engine::setJackTimeMaster(bool if_none_already)
 {
 	return m_pTransport->setJackTimeMaster(m_jack_client, if_none_already);
 }
 
-void Hydrogen::clearJackTimeMaster()
+void Engine::clearJackTimeMaster()
 {
 	m_pTransport->clearJackTimeMaster();
 }
 
-bool Hydrogen::getJackTimeMaster()
+bool Engine::getJackTimeMaster()
 {
 	return m_pTransport->getJackTimeMaster();
 }
@@ -2340,9 +2340,9 @@ bool Hydrogen::getJackTimeMaster()
  * mode.  In stacked pattern mode, more than one pattern may be
  * playing at once.  Also called "Live" mode.
  */
-void Hydrogen::togglePlaysSelected()
+void Engine::togglePlaysSelected()
 {
-	Preferences * P = Hydrogen::get_instance()->get_preferences();
+	Preferences * P = Engine::get_instance()->get_preferences();
 	bool isPlaysSelected = P->patternModePlaysSelected();
 
 	// NEED TO IMPLEMENT!!
@@ -2361,7 +2361,7 @@ int jackMidiFallbackProcess(jack_nframes_t nframes, void* /*arg*/)
 }
 #endif
 
-void Hydrogen::__kill_instruments()
+void Engine::__kill_instruments()
 {
 	int c = 0;
 	Instrument * pInstr = NULL;
@@ -2387,10 +2387,10 @@ void Hydrogen::__kill_instruments()
 
 
 
-void Hydrogen::__panic()
+void Engine::__panic()
 {
 	sequencer_stop();	
-	Hydrogen::get_instance()->get_audio_engine()->get_sampler()->stop_playing_notes();
+	Engine::get_instance()->get_audio_engine()->get_sampler()->stop_playing_notes();
 }
 
 

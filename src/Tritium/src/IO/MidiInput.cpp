@@ -49,7 +49,7 @@ MidiInput::~MidiInput()
 
 void MidiInput::handleMidiMessage( const MidiMessage& msg )
 {
-	Hydrogen::get_instance()->get_event_queue()->push_event( EVENT_MIDI_ACTIVITY, -1 );
+	Engine::get_instance()->get_event_queue()->push_event( EVENT_MIDI_ACTIVITY, -1 );
 
 //	infoLog( "[handleMidiMessage]" );
 //	infoLog( "[handleMidiMessage] channel: " + to_string( msg.m_nChannel ) );
@@ -80,7 +80,7 @@ void MidiInput::handleMidiMessage( const MidiMessage& msg )
 
 	case MidiMessage::PROGRAM_CHANGE:
 		INFOLOG( QString( "[handleMidiMessage] PROGRAM_CHANGE event, seting next pattern to %1" ).arg( msg.m_nData1 ) );
-		Hydrogen::get_instance()->sequencer_setNextPattern(msg.m_nData1, false, false);
+		Engine::get_instance()->sequencer_setNextPattern(msg.m_nData1, false, false);
 		break;
 
 	case MidiMessage::CHANNEL_PRESSURE:
@@ -97,7 +97,7 @@ void MidiInput::handleMidiMessage( const MidiMessage& msg )
 
 	case MidiMessage::START:
 		INFOLOG( "START event" );
-		Hydrogen::get_instance()->get_transport()->start();
+		Engine::get_instance()->get_transport()->start();
 		break;
 
 	case MidiMessage::CONTINUE:
@@ -106,7 +106,7 @@ void MidiInput::handleMidiMessage( const MidiMessage& msg )
 
 	case MidiMessage::STOP:
 		INFOLOG( "STOP event" );
-		Hydrogen::get_instance()->get_transport()->stop();
+		Engine::get_instance()->get_transport()->stop();
 		break;
 
 	case MidiMessage::SONG_POS:
@@ -130,9 +130,9 @@ void MidiInput::handleControlChangeMessage( const MidiMessage& msg )
 {
 	//INFOLOG( QString( "[handleMidiMessage] CONTROL_CHANGE Parameter: %1, Value: %2" ).arg( msg.m_nData1 ).arg( msg.m_nData2 ) );
 	
-	Hydrogen *pEngine = Hydrogen::get_instance();
+	Engine *pEngine = Engine::get_instance();
 	ActionManager * aH = pEngine->get_action_manager();
-	MidiMap * mM = Hydrogen::get_instance()->get_preferences()->get_midi_map();
+	MidiMap * mM = Engine::get_instance()->get_preferences()->get_midi_map();
 
 	Action * pAction; 
 
@@ -152,7 +152,7 @@ void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
 	INFOLOG( "handleNoteOnMessage" );
 
 
-	int nMidiChannelFilter = Hydrogen::get_instance()->get_preferences()->m_nMidiChannelFilter;
+	int nMidiChannelFilter = Engine::get_instance()->get_preferences()->m_nMidiChannelFilter;
 	int nChannel = msg.m_nChannel;
 	int nNote = msg.m_nData1;
 	float fVelocity = msg.m_nData2 / 127.0;
@@ -168,16 +168,16 @@ void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
 		bIsChannelValid = ( nChannel == nMidiChannelFilter );
 	}
 
-	Hydrogen *pEngine = Hydrogen::get_instance();
+	Engine *pEngine = Engine::get_instance();
 	ActionManager * aH = pEngine->get_action_manager();
-	MidiMap * mM = Hydrogen::get_instance()->get_preferences()->get_midi_map();
+	MidiMap * mM = Engine::get_instance()->get_preferences()->get_midi_map();
 
 	pEngine->lastMidiEvent = "NOTE";
 	pEngine->lastMidiEventParameter = msg.m_nData1;
 	
 	bool action = aH->handleAction( mM->getNoteAction( msg.m_nData1 ) );
 	
-	if ( action && Hydrogen::get_instance()->get_preferences()->m_bMidiDiscardNoteAfterAction)
+	if ( action && Engine::get_instance()->get_preferences()->m_bMidiDiscardNoteAfterAction)
 	{
 		return;
 	}
@@ -216,11 +216,11 @@ void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
 void MidiInput::handleNoteOffMessage( const MidiMessage& msg )
 {
 	INFOLOG( "handleNoteOffMessage" );
-	if ( Hydrogen::get_instance()->get_preferences()->m_bMidiNoteOffIgnore ) {
+	if ( Engine::get_instance()->get_preferences()->m_bMidiNoteOffIgnore ) {
 		return;
 	}
 
-	Hydrogen *pEngine = Hydrogen::get_instance();
+	Engine *pEngine = Engine::get_instance();
 	Song *pSong = pEngine->getSong();
 
 	int nNote = msg.m_nData1;
@@ -276,9 +276,9 @@ void MidiInput::handleSysexMessage( const MidiMessage& msg )
 	*/
 	
 	
-	Hydrogen *pEngine = Hydrogen::get_instance();
+	Engine *pEngine = Engine::get_instance();
 	ActionManager * aH = pEngine->get_action_manager();
-	MidiMap * mM = Hydrogen::get_instance()->get_preferences()->get_midi_map();
+	MidiMap * mM = Engine::get_instance()->get_preferences()->get_midi_map();
 
 	pEngine->lastMidiEventParameter = msg.m_nData1;
 

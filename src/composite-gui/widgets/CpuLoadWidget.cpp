@@ -135,7 +135,7 @@ void CpuLoadWidget::paintEvent( QPaintEvent*)
 void CpuLoadWidget::updateCpuLoadWidget()
 {
 	// Process time
-	Tritium::Hydrogen *engine = Tritium::Hydrogen::get_instance();
+	Tritium::Engine *engine = Tritium::Engine::get_instance();
 	int perc = 0;
 	if ( engine->getMaxProcessTime() != 0.0 ) {
 		perc = (int)( engine->getProcessTime() / ( engine->getMaxProcessTime() / 100.0 ) );

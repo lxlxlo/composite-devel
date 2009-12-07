@@ -30,14 +30,14 @@ namespace Tritium
     class JackClient;
 
     /**
-     * This is the only transport that Hydrogen shall directly interact with.
+     * This is the only transport that Engine shall directly interact with.
      * It shall manage all transport backends (Internal, Jack, whatever).
      *
      * From the sequencer's point of view, it is expected to be used like this:
      *
      * int process(uint32_t nFrames) {
      *     TransportPosition pos;        // Defined in TransportMasterInterface.h
-     *     Transport* xport = Hydrogen::get_instance()->get_transport();
+     *     Transport* xport = Engine::get_instance()->get_transport();
      *     xport->get_position(&pos);
      *
      *     // Sequence notes based on [Bar:beat.tick] + bbt_offset

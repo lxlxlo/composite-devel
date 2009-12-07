@@ -87,7 +87,7 @@ void MidiTable::updateTable()
 void MidiTable::insertNewRow(QString actionString , QString eventString, int eventParameter , int actionParameter)
 {
 	Tritium::ActionManager *aH;
-	aH = Tritium::Hydrogen::get_instance()->get_action_manager();
+	aH = Tritium::Engine::get_instance()->get_action_manager();
 
 	insertRow( __row_count );
 	
@@ -142,7 +142,7 @@ void MidiTable::insertNewRow(QString actionString , QString eventString, int eve
 
 void MidiTable::setupMidiTable()
 {
-	MidiMap *mM = Hydrogen::get_instance()->get_preferences()->get_midi_map();
+	MidiMap *mM = Engine::get_instance()->get_preferences()->get_midi_map();
 
 	QStringList items;
 	items << "" << trUtf8("Event")  <<  trUtf8("Param.")  <<  trUtf8("Action") <<  trUtf8("Param.") ;
@@ -213,7 +213,7 @@ void MidiTable::setupMidiTable()
 
 void MidiTable::saveMidiTable()
 {
-	MidiMap *mM = Hydrogen::get_instance()->get_preferences()->get_midi_map();
+	MidiMap *mM = Engine::get_instance()->get_preferences()->get_midi_map();
 	
 	for ( int row = 0; row < __row_count; row++ ) {
 

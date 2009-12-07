@@ -144,7 +144,7 @@ void Drumkit::dump()
 void Drumkit::install( const QString& filename )
 {
 	INFOLOG( "[Drumkit::install] drumkit = " + filename );
-	QString dataDir = Hydrogen::get_instance()->get_preferences()->getDataDirectory() + "drumkits/";
+	QString dataDir = Engine::get_instance()->get_preferences()->getDataDirectory() + "drumkits/";
 
 	int r;
 	struct archive *drumkitFile;
@@ -192,7 +192,7 @@ void Drumkit::install( const QString& filename )
 void Drumkit::install( const QString& filename )
 {
         INFOLOG( "[Drumkit::install] drumkit = " + filename );
-        QString dataDir = Hydrogen::get_instance()->get_preferences()->getDataDirectory() + "drumkits/";
+        QString dataDir = Engine::get_instance()->get_preferences()->getDataDirectory() + "drumkits/";
 
         // GUNZIP !!!
         QString gunzippedName = filename.left( filename.indexOf( "." ) );
@@ -246,7 +246,7 @@ void Drumkit::save( const QString& sName, const QString& sAuthor, const QString&
 	pDrumkitInfo->setInfo( sInfo );
 	pDrumkitInfo->setLicense( sLicense );
 
-	Song *pSong = Hydrogen::get_instance()->getSong();
+	Song *pSong = Engine::get_instance()->getSong();
 	InstrumentList *pSongInstrList = pSong->get_instrument_list();
 	InstrumentList *pInstrumentList = new InstrumentList();
 
@@ -309,7 +309,7 @@ void Drumkit::removeDrumkit( const QString& sDrumkitName )
 {
 	INFOLOG( "Removing drumkit: " + sDrumkitName );
 
-	QString dataDir = Hydrogen::get_instance()->get_preferences()->getDataDirectory() + "drumkits/";
+	QString dataDir = Engine::get_instance()->get_preferences()->getDataDirectory() + "drumkits/";
 	dataDir += sDrumkitName;
 	QString cmd = QString( "rm -rf \"" ) + dataDir + "\"";
 	INFOLOG( cmd );

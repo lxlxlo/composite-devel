@@ -125,7 +125,7 @@ QString LocalFileMng::getPatternNameFromPatternDir( const QString& patternDirNam
 Pattern* LocalFileMng::loadPattern( const QString& directory )
 {
 
-	InstrumentList* instrList = Hydrogen::get_instance()->getSong()->get_instrument_list();
+	InstrumentList* instrList = Engine::get_instance()->getSong()->get_instrument_list();
 	Pattern *pPattern = NULL;
 	QString patternInfoFile = directory;
 
@@ -213,7 +213,7 @@ int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString&
 
 	Pattern *pat = song->get_pattern_list()->get( selectedpattern );
 
-	QString sPatternDir = Hydrogen::get_instance()->get_preferences()->getDataDirectory() + "patterns/" +  instr->get_drumkit_name();
+	QString sPatternDir = Engine::get_instance()->get_preferences()->getDataDirectory() + "patterns/" +  instr->get_drumkit_name();
 
 	INFOLOG( "[savePattern]" + sPatternDir );
 
@@ -350,7 +350,7 @@ void LocalFileMng::fileCopy( const QString& sOrigFilename, const QString& sDestF
 std::vector<QString> LocalFileMng::getSongList()
 {
 	std::vector<QString> list;
-	QString sDirectory = Hydrogen::get_instance()->get_preferences()->getDataDirectory();
+	QString sDirectory = Engine::get_instance()->get_preferences()->getDataDirectory();
 
 	if( ! sDirectory.endsWith("/") ) { 
 		sDirectory += "/songs/";
@@ -431,7 +431,7 @@ std::vector<QString> LocalFileMng::getAllPatternName()
 
 std::vector<QString> LocalFileMng::getAllCategoriesFromPattern()
 {
-	Preferences *pPref = Tritium::Hydrogen::get_instance()->get_preferences();
+	Preferences *pPref = Tritium::Engine::get_instance()->get_preferences();
 	std::list<QString>::const_iterator cur_testpatternCategories;
 
 	std::vector<QString> categorylist;
@@ -485,7 +485,7 @@ std::vector<QString> LocalFileMng::getPatternsForDrumkit( const QString& sDrumki
 {
 	std::vector<QString> list;
 
-	QDir dir( Hydrogen::get_instance()->get_preferences()->getDataDirectory() + "/patterns/" + sDrumkit );
+	QDir dir( Engine::get_instance()->get_preferences()->getDataDirectory() + "/patterns/" + sDrumkit );
 
 	if ( !dir.exists() ) {
 		INFOLOG( QString( "No patterns for drumkit '%1'." ).arg( sDrumkit ) );
@@ -576,7 +576,7 @@ std::vector<QString> mergeQStringVectors( std::vector<QString> firstVector , std
 
 std::vector<QString> LocalFileMng::getPatternDirList()
 {
-	return getDrumkitsFromDirectory( Hydrogen::get_instance()->get_preferences()->getDataDirectory() + "patterns" );
+	return getDrumkitsFromDirectory( Engine::get_instance()->get_preferences()->getDataDirectory() + "patterns" );
 }
 
 
@@ -590,8 +590,8 @@ int  LocalFileMng::mergeAllPatternList( std::vector<QString> current )
 
 std::vector<QString> LocalFileMng::getUserDrumkitList()
 {
-	std::vector<QString> oldLocation = getDrumkitsFromDirectory( Hydrogen::get_instance()->get_preferences()->getDataDirectory() );
-	std::vector<QString> newLocation = getDrumkitsFromDirectory( Hydrogen::get_instance()->get_preferences()->getDataDirectory() + "drumkits" );
+	std::vector<QString> oldLocation = getDrumkitsFromDirectory( Engine::get_instance()->get_preferences()->getDataDirectory() );
+	std::vector<QString> newLocation = getDrumkitsFromDirectory( Engine::get_instance()->get_preferences()->getDataDirectory() + "drumkits" );
 	return mergeQStringVectors( newLocation ,  oldLocation );
 }
 
@@ -616,7 +616,7 @@ QString LocalFileMng::getDrumkitDirectory( const QString& drumkitName )
 	std::vector<QString> userDrumkits = Drumkit::getUserDrumkitList();
 	for ( unsigned i = 0; i < userDrumkits.size(); i++ ) {
 		if ( userDrumkits[ i ].endsWith(drumkitName) ) {
-			QString path = Hydrogen::get_instance()->get_preferences()->getDataDirectory();
+			QString path = Engine::get_instance()->get_preferences()->getDataDirectory();
 			return userDrumkits[ i ].remove(userDrumkits[ i ].length() - drumkitName.length(),drumkitName.length());
 		}
 	}
@@ -788,7 +788,7 @@ int LocalFileMng::saveDrumkit( Drumkit *info )
 
 	QVector<QString> tempVector(16);
 
-	QString sDrumkitDir = Hydrogen::get_instance()->get_preferences()->getDataDirectory() + "drumkits/" + info->getName();
+	QString sDrumkitDir = Engine::get_instance()->get_preferences()->getDataDirectory() + "drumkits/" + info->getName();
 
 	// check if the directory exists
 	QDir dir( sDrumkitDir );
@@ -930,14 +930,14 @@ int LocalFileMng::savePlayList( const std::string& patternname)
 	writeXmlString( rootNode, "LIB_ID", "in_work" );
 		
 	QDomNode playlistNode = doc.createElement( "Songs" );
-	for ( uint i = 0; i < Hydrogen::get_instance()->m_PlayList.size(); ++i ){
+	for ( uint i = 0; i < Engine::get_instance()->m_PlayList.size(); ++i ){
 		QDomNode nextNode = doc.createElement( "next" );
 		
-		LocalFileMng::writeXmlString ( nextNode, "song", Hydrogen::get_instance()->m_PlayList[i].m_hFile );
+		LocalFileMng::writeXmlString ( nextNode, "song", Engine::get_instance()->m_PlayList[i].m_hFile );
 		
-		LocalFileMng::writeXmlString ( nextNode, "script", Hydrogen::get_instance()->m_PlayList[i].m_hScript );
+		LocalFileMng::writeXmlString ( nextNode, "script", Engine::get_instance()->m_PlayList[i].m_hScript );
 		
-		LocalFileMng::writeXmlString ( nextNode, "enabled", Hydrogen::get_instance()->m_PlayList[i].m_hScriptEnabled );
+		LocalFileMng::writeXmlString ( nextNode, "enabled", Engine::get_instance()->m_PlayList[i].m_hScriptEnabled );
 		
 		playlistNode.appendChild( nextNode );
 	}
@@ -972,7 +972,7 @@ int LocalFileMng::loadPlayList( const std::string& patternname)
 
 	QDomDocument doc = LocalFileMng::openXmlDocument( QString( patternname.c_str() ) );
 	
-	Hydrogen::get_instance()->m_PlayList.clear();
+	Engine::get_instance()->m_PlayList.clear();
 
 	QDomNode rootNode = doc.firstChildElement( "playlist" );	// root element
 	if ( rootNode.isNull() ) {
@@ -983,14 +983,14 @@ int LocalFileMng::loadPlayList( const std::string& patternname)
 
 	if ( ! playlistNode.isNull() ) {
 		// new code :)
-		Hydrogen::get_instance()->m_PlayList.clear();
+		Engine::get_instance()->m_PlayList.clear();
 		QDomNode nextNode = playlistNode.firstChildElement( "next" );
 		while (  ! nextNode.isNull() ) {
-			Hydrogen::HPlayListNode playListItem;
+			Engine::HPlayListNode playListItem;
 			playListItem.m_hFile = LocalFileMng::readXmlString( nextNode, "song", "" );
 			playListItem.m_hScript = LocalFileMng::readXmlString( nextNode, "script", "" );
 			playListItem.m_hScriptEnabled = LocalFileMng::readXmlString( nextNode, "enabled", "" );
-			Hydrogen::get_instance()->m_PlayList.push_back( playListItem );	
+			Engine::get_instance()->m_PlayList.push_back( playListItem );	
 			nextNode = nextNode.nextSiblingElement( "next" );
 		}
 	}
@@ -1437,7 +1437,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 		QDomNode fxNode = doc.createElement( "fx" );
 
 #ifdef LADSPA_SUPPORT
-		LadspaFX *pFX = Hydrogen::get_instance()->get_effects()->getLadspaFX( nFX );
+		LadspaFX *pFX = Engine::get_instance()->get_effects()->getLadspaFX( nFX );
 		if ( pFX ) {
 			LocalFileMng::writeXmlString( fxNode, "name", pFX->getPluginLabel() );
 			LocalFileMng::writeXmlString( fxNode, "filename", pFX->getLibraryPath() );

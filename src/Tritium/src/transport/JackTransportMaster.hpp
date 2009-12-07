@@ -29,20 +29,20 @@ namespace Tritium
     class JackTransportMasterPrivate;
 
     /**
-     * This class is the interface between Hydrogen and the JACK Transport.  it
+     * This class is the interface between Engine and the JACK Transport.  it
      * is *NOT* the JACK Transport Master.  It is a Jack Transport Client.  This
-     * is used whether Hydrogen is the JACK transport master or not.
+     * is used whether Engine is the JACK transport master or not.
      *
-     * When Hydrogen is a JACK transport slave, it looks like this:
+     * When Engine is a JACK transport slave, it looks like this:
      *
      * jackd --> jack_position_t --> JackTransportMaster
-     *            --> Tritium::Transport --> Sequencer (Hydrogen)
+     *            --> Tritium::Transport --> Sequencer (Engine)
      *
-     * When Hydrogen is the JACK transport master, it looks like this:
+     * When Engine is the JACK transport master, it looks like this:
      *
-     * HydrogenBasicTransportMaster --> JackTimebaseCallback --> jackd
+     * EngineBasicTransportMaster --> JackTimebaseCallback --> jackd
      *    --> jack_position_t --> JackTransportMaster
-     *           --> Tritium::Transport --> Sequencer (Hydrogen)
+     *           --> Tritium::Transport --> Sequencer (Engine)
      */
     class JackTransportMaster : public Transport
     {

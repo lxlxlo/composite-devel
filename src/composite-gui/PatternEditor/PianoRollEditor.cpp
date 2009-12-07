@@ -47,7 +47,7 @@ PianoRollEditor::PianoRollEditor( QWidget *pParent )
 	setAttribute(Qt::WA_NoBackground);
 	setFocusPolicy(Qt::ClickFocus);
 
-	unsigned nGridWidth = Hydrogen::get_instance()->get_preferences()->getPatternEditorGridWidth();
+	unsigned nGridWidth = Engine::get_instance()->get_preferences()->getPatternEditorGridWidth();
 
 	unsigned nEditorWidth = 20 + nGridWidth * ( MAX_NOTES * 4 );
 	unsigned nEditorHeight = m_nOctaves * 12 * m_nRowHeight;
@@ -130,7 +130,7 @@ void PianoRollEditor::selectedPatternChangedEvent()
 {
 	INFOLOG( "updating m_pPattern pointer" );
 
-	Hydrogen *pEngine = Hydrogen::get_instance();
+	Engine *pEngine = Engine::get_instance();
 	PatternList *pPatternList = pEngine->getSong()->get_pattern_list();
 	int nSelectedPatternNumber = pEngine->getSelectedPatternNumber();
 	if ( (nSelectedPatternNumber != -1) && ( (uint)nSelectedPatternNumber < pPatternList->get_size() ) ) {
@@ -174,7 +174,7 @@ void PianoRollEditor::drawPattern()
 void PianoRollEditor::drawNote( Note *pNote, QPainter *pPainter )
 {
 	int nInstrument = -1;
-	InstrumentList * pInstrList = Hydrogen::get_instance()->getSong()->get_instrument_list();
+	InstrumentList * pInstrList = Engine::get_instance()->getSong()->get_instrument_list();
 	for ( uint nInstr = 0; nInstr < pInstrList->get_size(); ++nInstr ) {
 		Instrument *pInstr = pInstrList->get( nInstr );
 		if ( pInstr == pNote->get_instrument() ) {
@@ -187,12 +187,12 @@ void PianoRollEditor::drawNote( Note *pNote, QPainter *pPainter )
 		return;
 	}
 
-	if ( nInstrument != Hydrogen::get_instance()->getSelectedInstrumentNumber() ) {
+	if ( nInstrument != Engine::get_instance()->getSelectedInstrumentNumber() ) {
 		return;
 	}
 
 
-	int nGridWidth = Hydrogen::get_instance()->get_preferences()->getPatternEditorGridWidth();
+	int nGridWidth = Engine::get_instance()->get_preferences()->getPatternEditorGridWidth();
 
 	uint start_x = 20 + pNote->get_position() * nGridWidth;
 	uint start_y = height() - m_nRowHeight - ( m_nRowHeight * pNote->m_noteKey.m_key + ( 12 * pNote->m_noteKey.m_nOctave ) * m_nRowHeight ) + 1;

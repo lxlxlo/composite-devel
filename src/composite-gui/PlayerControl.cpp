@@ -374,7 +374,7 @@ PlayerControl::PlayerControl(QWidget *parent)
 	m_pJackMasterBtn->move(56, 26);
 	//~ jack time master
 
-	m_pEngine = Hydrogen::get_instance();
+	m_pEngine = Engine::get_instance();
 
 	// CPU load widget
 	m_pCpuLoadWidget = new CpuLoadWidget( pJackPanel );
@@ -454,7 +454,7 @@ PlayerControl::~PlayerControl() {
 
 void PlayerControl::updatePlayerControl()
 {
-	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pPref = Engine::get_instance()->get_preferences();
 	HydrogenApp *pH2App = HydrogenApp::get_instance();
 	m_pShowMixerBtn->setPressed( pH2App->getMixer()->isVisible() );
 	m_pShowInstrumentRackBtn->setPressed( pH2App->getInstrumentRack()->isVisible() );
@@ -538,7 +538,7 @@ void PlayerControl::updatePlayerControl()
 				else
 				{
 					m_pJackMasterBtn->setPressed(false);
-					Hydrogen::get_instance()->clearJackTimeMaster();	
+					Engine::get_instance()->clearJackTimeMaster();	
 					pPref->m_bJackMasterMode = Preferences::NO_JACK_TIME_MASTER;
 				}
 				//m_pJackTransportBtn->setPressed(true);
@@ -553,7 +553,7 @@ void PlayerControl::updatePlayerControl()
 	//~ jack transport master
 
 	// time
-	float fFrames = Hydrogen::get_instance()->get_transport()->get_current_frame();
+	float fFrames = Engine::get_instance()->get_transport()->get_current_frame();
 	float fSampleRate = m_pEngine->get_audio_output()->getSampleRate();
 	if ( fSampleRate != 0 ) {
 		float fSeconds = fFrames / fSampleRate;
@@ -588,7 +588,7 @@ void PlayerControl::updatePlayerControl()
 	switch (beatstocountondisplay){
 		case 1 :
 			if (bcDisplaystatus == 1){
-				Hydrogen::get_instance()->get_preferences()->m_bbc = Preferences::BC_OFF;
+				Engine::get_instance()->get_preferences()->m_bbc = Preferences::BC_OFF;
 				bcDisplaystatus = 0;
 			}
 			sprintf(bcstatus, "R");
@@ -596,8 +596,8 @@ void PlayerControl::updatePlayerControl()
 				
 			break;
 		default:
-			if (Hydrogen::get_instance()->get_preferences()->m_bbc == Preferences::BC_OFF){
-				Hydrogen::get_instance()->get_preferences()->m_bbc = Preferences::BC_ON;
+			if (Engine::get_instance()->get_preferences()->m_bbc == Preferences::BC_OFF){
+				Engine::get_instance()->get_preferences()->m_bbc = Preferences::BC_ON;
 				bcDisplaystatus = 1;
 			}
 			sprintf(bcstatus, "%02d ", beatstocountondisplay -1);
@@ -701,9 +701,9 @@ void PlayerControl::bpmChanged() {
 
 	m_pEngine->getSong()->set_modified( true );
 
-	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 	m_pEngine->setBPM( fNewBpmValue );
-	Hydrogen::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->get_audio_engine()->unlock();
 }
 
 
@@ -711,7 +711,7 @@ void PlayerControl::bpmChanged() {
 //beatcounter
 void PlayerControl::bconoffBtnClicked( Button* )
 {
-	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pPref = Engine::get_instance()->get_preferences();
 	if (m_pBConoffBtn->isPressed()) {
 		pPref->m_bbc = Preferences::BC_ON;
 		(HydrogenApp::get_instance())->setStatusBarMessage(trUtf8(" BC Panel on"), 5000);
@@ -728,7 +728,7 @@ void PlayerControl::bconoffBtnClicked( Button* )
 
 void PlayerControl::bcSetPlayBtnClicked( Button* )
 {
-	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pPref = Engine::get_instance()->get_preferences();
 	if (m_pBCSetPlayBtn->isPressed()) {
 		pPref->m_mmcsetplay = Preferences::SET_PLAY_ON;
 		(HydrogenApp::get_instance())->setStatusBarMessage(trUtf8(" Count BPM and start PLAY"), 5000);
@@ -804,23 +804,23 @@ void PlayerControl::bctButtonClicked( Button* tBtn)
 
 void PlayerControl::jackTransportBtnClicked( Button* )
 {
-	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pPref = Engine::get_instance()->get_preferences();
 
 	if (m_pJackTransportBtn->isPressed()) {
-		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 		pPref->m_bJackTransportMode = Preferences::USE_JACK_TRANSPORT;
-		Hydrogen::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->get_audio_engine()->unlock();
 		(HydrogenApp::get_instance())->setStatusBarMessage(trUtf8("Jack-transport mode = On"), 5000);
 	}
 	else {
-		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 		pPref->m_bJackTransportMode = Preferences::NO_JACK_TRANSPORT;
-		Hydrogen::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->get_audio_engine()->unlock();
 		(HydrogenApp::get_instance())->setStatusBarMessage(trUtf8("Jack-transport mode = Off"), 5000);
 	}
 
 	if (pPref->m_sAudioDriver != "Jack") {
-		QMessageBox::warning( this, "Hydrogen", trUtf8( "JACK-transport will work only with JACK driver." ) );
+		QMessageBox::warning( this, "Composite", trUtf8( "JACK-transport will work only with JACK driver." ) );
 	}
 }
 
@@ -841,13 +841,13 @@ void PlayerControl::jackTimeMasterEvent( int data )
 void PlayerControl::jackMasterBtnClicked( Button* )
 {	
 #ifdef JACK_SUPPORT
-	Preferences *pPref = Hydrogen::get_instance()->get_preferences();
+	Preferences *pPref = Engine::get_instance()->get_preferences();
 
-	// This function just manipulates Hydrogen.
+	// This function just manipulates the Engine.
 	// The widget updates itself by the EventListener
 	if (m_pJackMasterBtn->isPressed()) {
 		// Set as time master.
-		Hydrogen::get_instance()->setJackTimeMaster(false);
+		Engine::get_instance()->setJackTimeMaster(false);
 		pPref->m_bJackMasterMode = Preferences::USE_JACK_TIME_MASTER;
 		HydrogenApp::get_instance()->setStatusBarMessage(trUtf8(" Jack-Time-Master mode = On"), 5000);
 	}
@@ -855,11 +855,11 @@ void PlayerControl::jackMasterBtnClicked( Button* )
 		// Clear time master.
 		pPref->m_bJackMasterMode = Preferences::NO_JACK_TIME_MASTER;
 		(HydrogenApp::get_instance())->setStatusBarMessage(trUtf8(" Jack-Time-Master mode = Off"), 5000);
-		Hydrogen::get_instance()->clearJackTimeMaster();
+		Engine::get_instance()->clearJackTimeMaster();
 	}
 
 	if (pPref->m_sAudioDriver != "Jack") {
-		QMessageBox::warning( this, "Hydrogen", trUtf8( "JACK-transport will work only with JACK driver." ) );
+		QMessageBox::warning( this, "Composite", trUtf8( "JACK-transport will work only with JACK driver." ) );
 	}
 #endif
 }
@@ -868,7 +868,7 @@ void PlayerControl::jackMasterBtnClicked( Button* )
 void PlayerControl::bpmClicked()
 {
 	bool bIsOkPressed;
-	double fNewVal= QInputDialog::getDouble( this, "Hydrogen", trUtf8( "New BPM value" ),  m_pLCDBPMSpinbox->getValue(), 10, 400, 2, &bIsOkPressed );
+	double fNewVal= QInputDialog::getDouble( this, "Composite", trUtf8( "New BPM value" ),  m_pLCDBPMSpinbox->getValue(), 10, 400, 2, &bIsOkPressed );
 	if ( bIsOkPressed  ) {
 		if ( fNewVal < 30 ) {
 			return;
@@ -876,9 +876,9 @@ void PlayerControl::bpmClicked()
 
 		m_pEngine->getSong()->set_modified( true );
 
-		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 		m_pEngine->setBPM( fNewVal );
-		Hydrogen::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->get_audio_engine()->unlock();
 	}
 	else {
 		// user entered nothing or pressed Cancel
@@ -919,7 +919,7 @@ void PlayerControl::onBpmTimerEvent()
 
 void PlayerControl::FFWDBtnClicked( Button* )
 {
-	Hydrogen *pEngine = Hydrogen::get_instance();
+	Engine *pEngine = Engine::get_instance();
 	pEngine->setPatternPos( pEngine->getPatternPos() + 1 );
 }
 
@@ -927,7 +927,7 @@ void PlayerControl::FFWDBtnClicked( Button* )
 
 void PlayerControl::RewindBtnClicked( Button* )
 {
-	Hydrogen *pEngine = Hydrogen::get_instance();
+	Engine *pEngine = Engine::get_instance();
 	pEngine->setPatternPos( pEngine->getPatternPos() - 1 );
 }
 
@@ -935,7 +935,7 @@ void PlayerControl::RewindBtnClicked( Button* )
 
 void PlayerControl::songLoopBtnClicked( Button* )
 {
-	Hydrogen *pEngine = Hydrogen::get_instance();
+	Engine *pEngine = Engine::get_instance();
 	Song *song = pEngine->getSong();
 	song->set_loop_enabled( ! song->is_loop_enabled() );
 	song->set_modified( true );
@@ -950,7 +950,7 @@ void PlayerControl::songLoopBtnClicked( Button* )
 
 void PlayerControl::metronomeButtonClicked(Button* ref)
 {
-	Hydrogen::get_instance()->get_preferences()->m_bUseMetronome = ref->isPressed();
+	Engine::get_instance()->get_preferences()->m_bUseMetronome = ref->isPressed();
 }
 
 

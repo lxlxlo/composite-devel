@@ -60,8 +60,8 @@ DrumPatternEditor::DrumPatternEditor(QWidget* parent, PatternEditorPanel *panel)
 	//setAttribute(Qt::WA_NoBackground);
 	setFocusPolicy(Qt::ClickFocus);
 
-	m_nGridWidth = Hydrogen::get_instance()->get_preferences()->getPatternEditorGridWidth();
-	m_nGridHeight = Hydrogen::get_instance()->get_preferences()->getPatternEditorGridHeight();
+	m_nGridWidth = Engine::get_instance()->get_preferences()->getPatternEditorGridWidth();
+	m_nGridHeight = Engine::get_instance()->get_preferences()->getPatternEditorGridHeight();
 
 	unsigned nEditorWidth = 20 + m_nGridWidth * ( MAX_NOTES * 4 );
 	m_nEditorHeight = m_nGridHeight * MAX_INSTRUMENTS;
@@ -82,7 +82,7 @@ DrumPatternEditor::~DrumPatternEditor()
 
 void DrumPatternEditor::updateEditor()
 {
-	Hydrogen* engine = Hydrogen::get_instance();
+	Engine* engine = Engine::get_instance();
 
 	// check engine state
 	int state = engine->getState();
@@ -91,7 +91,7 @@ void DrumPatternEditor::updateEditor()
 		return;
 	}
 
-	Hydrogen *pEngine = Hydrogen::get_instance();
+	Engine *pEngine = Engine::get_instance();
 	PatternList *pPatternList = pEngine->getSong()->get_pattern_list();
 	int nSelectedPatternNumber = pEngine->getSelectedPatternNumber();
 	if ( (nSelectedPatternNumber != -1) && ( (uint)nSelectedPatternNumber < pPatternList->get_size() ) ) {
@@ -143,7 +143,7 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 	if ( m_pPattern == NULL ) {
 		return;
 	}
-	Song *pSong = Hydrogen::get_instance()->getSong();
+	Song *pSong = Engine::get_instance()->getSong();
 	int nInstruments = pSong->get_instrument_list()->get_size();
 
 	int row = (int)( ev->y()  / (float)m_nGridHeight);
@@ -161,7 +161,7 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 
 	if (ev->button() == Qt::LeftButton ) {
 		m_bRightBtnPressed = false;
-		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );	// lock the audio engine
+		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );	// lock the audio engine
 
 		bool bNoteAlreadyExist = false;
 		Pattern::note_map_t::iterator pos;
@@ -189,14 +189,14 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 			m_pPattern->note_map.insert( std::make_pair( nPosition, pNote ) );
 
 			// hear note
-			Preferences *pref = Hydrogen::get_instance()->get_preferences();
+			Preferences *pref = Engine::get_instance()->get_preferences();
 			if ( pref->getHearNewNotes() ) {
 				Note *pNote2 = new Note( pSelectedInstrument, fVelocity, fPan_L, fPan_R, nLength, fPitch);
-				Hydrogen::get_instance()->midi_noteOn(pNote2);
+				Engine::get_instance()->midi_noteOn(pNote2);
 			}
 		}
 		pSong->set_modified( true );
-		Hydrogen::get_instance()->get_audio_engine()->unlock(); // unlock the audio engine
+		Engine::get_instance()->get_audio_engine()->unlock(); // unlock the audio engine
 	}
 	else if (ev->button() == Qt::RightButton ) {
 		m_bRightBtnPressed = true;
@@ -208,7 +208,7 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 			nRealColumn = (ev->x() - 20) / static_cast<float>(m_nGridWidth);
 		}
 
-		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 		Pattern::note_map_t::iterator pos;
 		for ( pos = m_pPattern->note_map.lower_bound( nColumn ); pos != m_pPattern->note_map.upper_bound( nColumn ); ++pos ) {
@@ -250,13 +250,13 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 				}
 			}
 		}
-		Hydrogen::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->get_audio_engine()->unlock();
 	}
 
 	// update the selected line
-	int nSelectedInstrument = Hydrogen::get_instance()->getSelectedInstrumentNumber();
+	int nSelectedInstrument = Engine::get_instance()->getSelectedInstrumentNumber();
 	if (nSelectedInstrument != row) {
-		Hydrogen::get_instance()->setSelectedInstrumentNumber( row );
+		Engine::get_instance()->setSelectedInstrumentNumber( row );
 	}
 	else {
 		update( 0, 0, width(), height() );
@@ -293,7 +293,7 @@ void DrumPatternEditor::mouseMoveEvent(QMouseEvent *ev)
 	if (m_bRightBtnPressed && m_pDraggedNote ) {
 		int nTickColumn = getColumn( ev );
 
-		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );	// lock the audio engine
+		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );	// lock the audio engine
 		int nLen = nTickColumn - m_nDraggedNoteStartPosition;
 
 		if (nLen <= 0) {
@@ -301,8 +301,8 @@ void DrumPatternEditor::mouseMoveEvent(QMouseEvent *ev)
 		}
 		m_pDraggedNote->set_length( nLen );
 
-		Hydrogen::get_instance()->getSong()->set_modified( true );
-		Hydrogen::get_instance()->get_audio_engine()->unlock(); // unlock the audio engine
+		Engine::get_instance()->getSong()->set_modified( true );
+		Engine::get_instance()->get_audio_engine()->unlock(); // unlock the audio engine
 
 		//__draw_pattern();
 		update( 0, 0, width(), height() );
@@ -327,7 +327,7 @@ void DrumPatternEditor::keyPressEvent (QKeyEvent *ev)
 ///
 void DrumPatternEditor::__draw_pattern(QPainter& painter)
 {
-	const UIStyle *pStyle = Hydrogen::get_instance()->get_preferences()->getDefaultUIStyle();
+	const UIStyle *pStyle = Engine::get_instance()->get_preferences()->getDefaultUIStyle();
 	const QColor selectedRowColor( pStyle->m_patternEditor_selectedRowColor.getRed(), pStyle->m_patternEditor_selectedRowColor.getGreen(), pStyle->m_patternEditor_selectedRowColor.getBlue() );
 
 	__create_background( painter );
@@ -337,8 +337,8 @@ void DrumPatternEditor::__draw_pattern(QPainter& painter)
 	}
 
 	int nNotes = m_pPattern->get_length();
-	int nSelectedInstrument = Hydrogen::get_instance()->getSelectedInstrumentNumber();
-	Song *pSong = Hydrogen::get_instance()->getSong();
+	int nSelectedInstrument = Engine::get_instance()->getSelectedInstrumentNumber();
+	Song *pSong = Engine::get_instance()->getSong();
 
 	InstrumentList * pInstrList = pSong->get_instrument_list();
 
@@ -369,7 +369,7 @@ void DrumPatternEditor::__draw_pattern(QPainter& painter)
 		hydrogen will crash after you save a song and create a new one. 
 		-smoors
 	*/
-	Hydrogen *pEngine = Hydrogen::get_instance();
+	Engine *pEngine = Engine::get_instance();
 	PatternList *pPatternList = pEngine->getSong()->get_pattern_list();
 	int nSelectedPatternNumber = pEngine->getSelectedPatternNumber();
 	if ( (nSelectedPatternNumber != -1) && ( (uint)nSelectedPatternNumber < pPatternList->get_size() ) ) {
@@ -398,13 +398,13 @@ void DrumPatternEditor::__draw_pattern(QPainter& painter)
 ///
 void DrumPatternEditor::__draw_note( uint pos, Note *note, QPainter& p )
 {
-	static const UIStyle *pStyle = Hydrogen::get_instance()->get_preferences()->getDefaultUIStyle();
+	static const UIStyle *pStyle = Engine::get_instance()->get_preferences()->getDefaultUIStyle();
 	static const QColor noteColor( pStyle->m_patternEditor_noteColor.getRed(), pStyle->m_patternEditor_noteColor.getGreen(), pStyle->m_patternEditor_noteColor.getBlue() );
 
 	p.setRenderHint( QPainter::Antialiasing );
 
 	int nInstrument = -1;
-	InstrumentList * pInstrList = Hydrogen::get_instance()->getSong()->get_instrument_list();
+	InstrumentList * pInstrList = Engine::get_instance()->getSong()->get_instrument_list();
 	for ( uint nInstr = 0; nInstr < pInstrList->get_size(); ++nInstr ) {
 		Instrument *pInstr = pInstrList->get( nInstr );
 		if ( pInstr == note->get_instrument() ) {
@@ -458,7 +458,7 @@ void DrumPatternEditor::__draw_note( uint pos, Note *note, QPainter& p )
 
 void DrumPatternEditor::__draw_grid( QPainter& p )
 {
-	static const UIStyle *pStyle = Hydrogen::get_instance()->get_preferences()->getDefaultUIStyle();
+	static const UIStyle *pStyle = Engine::get_instance()->get_preferences()->getDefaultUIStyle();
 	static const QColor res_1( pStyle->m_patternEditor_line1Color.getRed(), pStyle->m_patternEditor_line1Color.getGreen(), pStyle->m_patternEditor_line1Color.getBlue() );
 	static const QColor res_2( pStyle->m_patternEditor_line2Color.getRed(), pStyle->m_patternEditor_line2Color.getGreen(), pStyle->m_patternEditor_line2Color.getBlue() );
 	static const QColor res_3( pStyle->m_patternEditor_line3Color.getRed(), pStyle->m_patternEditor_line3Color.getGreen(), pStyle->m_patternEditor_line3Color.getBlue() );
@@ -546,8 +546,8 @@ void DrumPatternEditor::__draw_grid( QPainter& p )
 	// fill the first half of the rect with a solid color
 	static const QColor backgroundColor( pStyle->m_patternEditor_backgroundColor.getRed(), pStyle->m_patternEditor_backgroundColor.getGreen(), pStyle->m_patternEditor_backgroundColor.getBlue() );
 	static const QColor selectedRowColor( pStyle->m_patternEditor_selectedRowColor.getRed(), pStyle->m_patternEditor_selectedRowColor.getGreen(), pStyle->m_patternEditor_selectedRowColor.getBlue() );
-	int nSelectedInstrument = Hydrogen::get_instance()->getSelectedInstrumentNumber();
-	Song *pSong = Hydrogen::get_instance()->getSong();
+	int nSelectedInstrument = Engine::get_instance()->getSelectedInstrumentNumber();
+	Song *pSong = Engine::get_instance()->getSong();
 	int nInstruments = pSong->get_instrument_list()->get_size();
 	for ( uint i = 0; i < (uint)nInstruments; i++ ) {
 		uint y = m_nGridHeight * i + 1;
@@ -564,7 +564,7 @@ void DrumPatternEditor::__draw_grid( QPainter& p )
 
 void DrumPatternEditor::__create_background( QPainter& p)
 {
-	static const UIStyle *pStyle = Hydrogen::get_instance()->get_preferences()->getDefaultUIStyle();
+	static const UIStyle *pStyle = Engine::get_instance()->get_preferences()->getDefaultUIStyle();
 	static const QColor backgroundColor( pStyle->m_patternEditor_backgroundColor.getRed(), pStyle->m_patternEditor_backgroundColor.getGreen(), pStyle->m_patternEditor_backgroundColor.getBlue() );
 	static const QColor alternateRowColor( pStyle->m_patternEditor_alternateRowColor.getRed(), pStyle->m_patternEditor_alternateRowColor.getGreen(), pStyle->m_patternEditor_alternateRowColor.getBlue() );
 	static const QColor lineColor( pStyle->m_patternEditor_lineColor.getRed(), pStyle->m_patternEditor_lineColor.getGreen(), pStyle->m_patternEditor_lineColor.getBlue() );
@@ -574,7 +574,7 @@ void DrumPatternEditor::__create_background( QPainter& p)
 		nNotes = m_pPattern->get_length();
 	}
 
-	Song *pSong = Hydrogen::get_instance()->getSong();
+	Song *pSong = Engine::get_instance()->getSong();
 	int nInstruments = pSong->get_instrument_list()->get_size();
 
 	if ( m_nEditorHeight != (int)( m_nGridHeight * nInstruments ) ) {

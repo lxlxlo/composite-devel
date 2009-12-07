@@ -65,9 +65,9 @@ AudioFileBrowser::AudioFileBrowser ( QWidget* pParent )
 	tree->resize( 799, 310 );
 	tree->header()->resizeSection( 0, 405 );
 	tree->setAlternatingRowColors( true );
-	tree->setRootIndex( model->index( Hydrogen::get_instance()->get_preferences()->__lastsampleDirectory ) );
+	tree->setRootIndex( model->index( Engine::get_instance()->get_preferences()->__lastsampleDirectory ) );
 	
-	pathLineEdit->setText( Hydrogen::get_instance()->get_preferences()->__lastsampleDirectory );
+	pathLineEdit->setText( Engine::get_instance()->get_preferences()->__lastsampleDirectory );
 	m_psamplefilename = "";	
 	m_pselectedFile << "false" << "false";
 
@@ -87,7 +87,7 @@ AudioFileBrowser::AudioFileBrowser ( QWidget* pParent )
 	m_pSampleWaveDisplay->updateDisplay( sEmptySampleFilename );
 	m_pSampleWaveDisplay->move( 3, 3 );
 
-	playSamplescheckBox->setChecked( Hydrogen::get_instance()->get_preferences()->__playsamplesonclicking );
+	playSamplescheckBox->setChecked( Engine::get_instance()->get_preferences()->__playsamplesonclicking );
 	//get the kde or gnome environment variable for mouse double or single clicking
 	singleClick = false;
 	getEnvironment();
@@ -102,7 +102,7 @@ AudioFileBrowser::AudioFileBrowser ( QWidget* pParent )
 AudioFileBrowser::~AudioFileBrowser()
 {
 	Sample *pNewSample = Sample::load( sEmptySampleFilename );
-	Hydrogen::get_instance()->get_audio_engine()->get_sampler()->preview_sample( pNewSample, 100 );
+	Engine::get_instance()->get_audio_engine()->get_sampler()->preview_sample( pNewSample, 100 );
 	INFOLOG ( "DESTROY" );
 }
 
@@ -162,7 +162,7 @@ void AudioFileBrowser::updateModelIndex()
 	}else
 	{
 		toremove = newpath.section( '/', -1 );
-//		QMessageBox::information ( this, "Hydrogen", newpath + toremove);
+//		QMessageBox::information ( this, "Composite", newpath + toremove);
 		newpath.replace( toremove, "" );
 		tree->setRootIndex( model->index( newpath ) );
 	}
@@ -272,7 +272,7 @@ void AudioFileBrowser::browseTree( const QModelIndex& index )
 						on_m_pPlayBtn_clicked();
 					}else
 					{
-						QMessageBox::information ( this, "Hydrogen", trUtf8( "No clicking audio preview for samples longer than 10 minutes!" )  );
+						QMessageBox::information ( this, "Composite", trUtf8( "No clicking audio preview for samples longer than 10 minutes!" )  );
 					}
 				}
 			}
@@ -303,7 +303,7 @@ void AudioFileBrowser::on_m_pPlayBtn_clicked()
 	Sample *pNewSample = Sample::load( m_psamplefilename );
 	if ( pNewSample ){
 		int length = ( ( pNewSample->get_n_frames() / pNewSample->get_sample_rate() + 1) * 100 );
-		Hydrogen::get_instance()->get_audio_engine()->get_sampler()->preview_sample( pNewSample, length );
+		Engine::get_instance()->get_audio_engine()->get_sampler()->preview_sample( pNewSample, length );
 	}
 }
 
@@ -312,7 +312,7 @@ void AudioFileBrowser::on_m_pPlayBtn_clicked()
 void AudioFileBrowser::on_m_pStopBtn_clicked()
 {
 	Sample *pNewSample = Sample::load( sEmptySampleFilename );
-	Hydrogen::get_instance()->get_audio_engine()->get_sampler()->preview_sample( pNewSample, 100 );
+	Engine::get_instance()->get_audio_engine()->get_sampler()->preview_sample( pNewSample, 100 );
 	m_pStopBtn->setEnabled( false );
 }
 
@@ -320,7 +320,7 @@ void AudioFileBrowser::on_m_pStopBtn_clicked()
 
 void AudioFileBrowser::on_cancelBTN_clicked()
 {
-	Hydrogen::get_instance()->get_preferences()->__lastsampleDirectory = pathLineEdit->text();
+	Engine::get_instance()->get_preferences()->__lastsampleDirectory = pathLineEdit->text();
 	m_pselectedFile << "false" << "false" << "";
 	reject();
 }
@@ -355,7 +355,7 @@ void AudioFileBrowser::on_openBTN_clicked()
 			++i;++i;++i;
 		}
 	}
-	Hydrogen::get_instance()->get_preferences()->__lastsampleDirectory = pathLineEdit->text();
+	Engine::get_instance()->get_preferences()->__lastsampleDirectory = pathLineEdit->text();
 	accept();
 }
 
@@ -363,7 +363,7 @@ void AudioFileBrowser::on_openBTN_clicked()
 
 void AudioFileBrowser::on_playSamplescheckBox_clicked()
 {
-	Hydrogen::get_instance()->get_preferences()->__playsamplesonclicking = playSamplescheckBox->isChecked();
+	Engine::get_instance()->get_preferences()->__playsamplesonclicking = playSamplescheckBox->isChecked();
 }
 
 

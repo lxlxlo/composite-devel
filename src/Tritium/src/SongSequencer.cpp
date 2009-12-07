@@ -102,7 +102,7 @@ int SongSequencer::process(SeqScript& seq, const TransportPosition& pos, uint32_
 				ev.type = SeqEvent::NOTE_ON;
 				ev.note = *pNote;
 				ev.instrument_index =
-					Hydrogen::get_instance()->getSong()
+					Engine::get_instance()->getSong()
 					->get_instrument_list()->get_pos( pNote->get_instrument() );
 				if( pNote->get_length() < 0 ) {
 					length = default_note_length;

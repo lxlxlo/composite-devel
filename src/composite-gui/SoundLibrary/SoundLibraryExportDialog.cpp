@@ -81,7 +81,7 @@ void SoundLibraryExportDialog::on_exportBtn_clicked()
 	system( cmd.toLocal8Bit() );
 
 	QApplication::restoreOverrideCursor();
-	QMessageBox::information( this, "Hydrogen", "Drumkit exported." );
+	QMessageBox::information( this, "Composite", "Drumkit exported." );
 }
 
 void SoundLibraryExportDialog::on_drumkitPathTxt_textChanged( QString str )

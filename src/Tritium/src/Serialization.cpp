@@ -181,7 +181,7 @@ Song* SongReader::readSong( const QString& filename )
 
 	    QString sId = LocalFileMng::readXmlString( instrumentNode, "id", "" );			// instrument id
 	    QString sDrumkit = LocalFileMng::readXmlString( instrumentNode, "drumkit", "" );	// drumkit
-	    Hydrogen::get_instance()->setCurrentDrumkitname( sDrumkit ); 
+	    Engine::get_instance()->setCurrentDrumkitname( sDrumkit ); 
 	    QString sName = LocalFileMng::readXmlString( instrumentNode, "name", "" );		// name
 	    float fVolume = LocalFileMng::readXmlFloat( instrumentNode, "volume", 1.0 );	// volume
 	    bool bIsMuted = LocalFileMng::readXmlBool( instrumentNode, "isMuted", false );	// is muted
@@ -412,9 +412,9 @@ Song* SongReader::readSong( const QString& filename )
 #ifdef LADSPA_SUPPORT
     // reset FX
     for ( int fx = 0; fx < MAX_FX; ++fx ) {
-	//LadspaFX* pFX = Hydrogen::get_instance()->get_effects()->getLadspaFX( fx );
+	//LadspaFX* pFX = Engine::get_instance()->get_effects()->getLadspaFX( fx );
 	//delete pFX;
-	Hydrogen::get_instance()->get_effects()->setLadspaFX( NULL, fx );
+	Engine::get_instance()->get_effects()->setLadspaFX( NULL, fx );
     }
 #endif
 	
@@ -433,7 +433,7 @@ Song* SongReader::readSong( const QString& filename )
 		// FIXME: il caricamento va fatto fare all'engine, solo lui sa il samplerate esatto
 #ifdef LADSPA_SUPPORT
 		LadspaFX* pFX = LadspaFX::load( sFilename, sName, 44100 );
-		Hydrogen::get_instance()->get_effects()->setLadspaFX( pFX, nFX );
+		Engine::get_instance()->get_effects()->setLadspaFX( pFX, nFX );
 		if ( pFX ) {
 		    pFX->setEnabled( bEnabled );
 		    pFX->setVolume( fVolume );

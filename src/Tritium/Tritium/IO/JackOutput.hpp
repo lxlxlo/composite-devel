@@ -77,7 +77,7 @@ public:
 	int init( unsigned bufferSize );
 
 private:
-	Tritium::Hydrogen *m_pEngine;
+	Tritium::Engine *m_pEngine;
 	Tritium::JackClient *m_jack_client;
 
 	JackProcessCallback processCallback;

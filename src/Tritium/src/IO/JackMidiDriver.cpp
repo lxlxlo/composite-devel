@@ -115,7 +115,7 @@ void JackMidiDriver::open(void)
 	}
 
 	// Autoconnect port to an Output (readable) port
-	QString OutPort = Hydrogen::get_instance()->get_preferences()->m_sMidiPortName;
+	QString OutPort = Engine::get_instance()->get_preferences()->m_sMidiPortName;
 	int err = jack_connect(client.ref(),
 			       OutPort.toLatin1().constData(),
 			       jack_port_name(m_port));

@@ -45,7 +45,7 @@ NotePropertiesRuler::NotePropertiesRuler( QWidget *parent, PatternEditorPanel *p
 	//infoLog("INIT");
 	//setAttribute(Qt::WA_NoBackground);
 
-	m_nGridWidth = (Hydrogen::get_instance()->get_preferences())->getPatternEditorGridWidth();
+	m_nGridWidth = (Engine::get_instance()->get_preferences())->getPatternEditorGridWidth();
 	m_nEditorWidth = 20 + m_nGridWidth * ( MAX_NOTES * 4 );
 
 	if (m_mode == VELOCITY ) {
@@ -107,8 +107,8 @@ void NotePropertiesRuler::mousePressEvent(QMouseEvent *ev)
 	}
 	val = val / height();
 
-	int nSelectedInstrument = Hydrogen::get_instance()->getSelectedInstrumentNumber();
-	Song *pSong = (Hydrogen::get_instance())->getSong();
+	int nSelectedInstrument = Engine::get_instance()->getSelectedInstrumentNumber();
+	Song *pSong = (Engine::get_instance())->getSong();
 
 	Pattern::note_map_t::iterator pos;
 	for ( pos = m_pPattern->note_map.lower_bound( column ); pos != m_pPattern->note_map.upper_bound( column ); ++pos ) {
@@ -198,8 +198,8 @@ void NotePropertiesRuler::wheelEvent(QWheelEvent *ev)
 	column = column / width;
 	column = (column * 4 * MAX_NOTES) / ( nBase * pPatternEditor->getResolution() );
 
-	int nSelectedInstrument = Hydrogen::get_instance()->getSelectedInstrumentNumber();
-	Song *pSong = (Hydrogen::get_instance())->getSong();
+	int nSelectedInstrument = Engine::get_instance()->getSelectedInstrumentNumber();
+	Song *pSong = (Engine::get_instance())->getSong();
 
 	Pattern::note_map_t::iterator pos;
 	for ( pos = m_pPattern->note_map.lower_bound( column ); pos != m_pPattern->note_map.upper_bound( column ); ++pos ) {
@@ -296,7 +296,7 @@ void NotePropertiesRuler::createVelocityBackground(QPixmap *pixmap)
 		return;
 	}
 
-	UIStyle *pStyle = Hydrogen::get_instance()->get_preferences()->getDefaultUIStyle();
+	UIStyle *pStyle = Engine::get_instance()->get_preferences()->getDefaultUIStyle();
 
 	H2RGBColor valueColor(
 			(int)( pStyle->m_patternEditor_backgroundColor.getRed() * ( 1 - 0.3 ) ),
@@ -412,8 +412,8 @@ void NotePropertiesRuler::createVelocityBackground(QPixmap *pixmap)
 
 	// draw velocity lines
 	if (m_pPattern != NULL) {
-		int nSelectedInstrument = Hydrogen::get_instance()->getSelectedInstrumentNumber();
-		Song *pSong = Hydrogen::get_instance()->getSong();
+		int nSelectedInstrument = Engine::get_instance()->getSelectedInstrumentNumber();
+		Song *pSong = Engine::get_instance()->getSong();
 		Pattern::note_map_t::iterator pos;
 		for ( pos = m_pPattern->note_map.begin(); pos != m_pPattern->note_map.end(); ++pos ) {
 			Note *pNote = pos->second;
@@ -460,7 +460,7 @@ void NotePropertiesRuler::createPanBackground(QPixmap *pixmap)
 	}
 
 
-	UIStyle *pStyle = Hydrogen::get_instance()->get_preferences()->getDefaultUIStyle();
+	UIStyle *pStyle = Engine::get_instance()->get_preferences()->getDefaultUIStyle();
 
 	QColor backgroundColor( pStyle->m_patternEditor_backgroundColor.getRed(), pStyle->m_patternEditor_backgroundColor.getGreen(), pStyle->m_patternEditor_backgroundColor.getBlue() );
 
@@ -576,8 +576,8 @@ void NotePropertiesRuler::createPanBackground(QPixmap *pixmap)
 	}
 
 	if ( m_pPattern ) {
-		int nSelectedInstrument = Hydrogen::get_instance()->getSelectedInstrumentNumber();
-		Song *pSong = Hydrogen::get_instance()->getSong();
+		int nSelectedInstrument = Engine::get_instance()->getSelectedInstrumentNumber();
+		Song *pSong = Engine::get_instance()->getSong();
 
 		Pattern::note_map_t::iterator pos;
 		for ( pos = m_pPattern->note_map.begin(); pos != m_pPattern->note_map.end(); ++pos ) {
@@ -617,7 +617,7 @@ void NotePropertiesRuler::createLeadLagBackground(QPixmap *pixmap)
 	}
  
  
-	UIStyle *pStyle = Hydrogen::get_instance()->get_preferences()->getDefaultUIStyle();
+	UIStyle *pStyle = Engine::get_instance()->get_preferences()->getDefaultUIStyle();
 	
 	QColor backgroundColor( pStyle->m_patternEditor_backgroundColor.getRed(), pStyle->m_patternEditor_backgroundColor.getGreen(), pStyle->m_patternEditor_backgroundColor.getBlue() );
 	QColor blackKeysColor( 240, 240, 240 );
@@ -731,8 +731,8 @@ void NotePropertiesRuler::createLeadLagBackground(QPixmap *pixmap)
 	}
  
 	if ( m_pPattern ) {
-		int nSelectedInstrument = Hydrogen::get_instance()->getSelectedInstrumentNumber();
-		Song *pSong = Hydrogen::get_instance()->getSong();
+		int nSelectedInstrument = Engine::get_instance()->getSelectedInstrumentNumber();
+		Song *pSong = Engine::get_instance()->getSong();
  
 		Pattern::note_map_t::iterator pos;
 		for ( pos = m_pPattern->note_map.begin(); pos != m_pPattern->note_map.end(); ++pos ) {
@@ -780,7 +780,7 @@ void NotePropertiesRuler::createLeadLagBackground(QPixmap *pixmap)
 
 void NotePropertiesRuler::updateEditor()
 {
-	Hydrogen *pEngine = Hydrogen::get_instance();
+	Engine *pEngine = Engine::get_instance();
 	PatternList *pPatternList = pEngine->getSong()->get_pattern_list();
 	int nSelectedPatternNumber = pEngine->getSelectedPatternNumber();
 	if ( (nSelectedPatternNumber != -1) && ( (uint)nSelectedPatternNumber < pPatternList->get_size() ) ) {

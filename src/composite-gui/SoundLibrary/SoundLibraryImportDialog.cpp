@@ -85,7 +85,7 @@ SoundLibraryImportDialog::~SoundLibraryImportDialog()
 //update combo box
 void SoundLibraryImportDialog::updateRepositoryCombo()
 {
-	Tritium::Preferences* pref = Tritium::Hydrogen::get_instance()->get_preferences();
+	Tritium::Preferences* pref = Tritium::Engine::get_instance()->get_preferences();
 
 	/*
 		Read serverList from config and put servers into the comboBox
@@ -343,7 +343,7 @@ void SoundLibraryImportDialog::on_DownloadBtn_clicked()
 			QString sType = m_soundLibraryList[ i ].m_sType;
 			QString sLocalFile;
 
-			QString dataDir = Tritium::Hydrogen::get_instance()->get_preferences()->getDataDirectory();
+			QString dataDir = Tritium::Engine::get_instance()->get_preferences()->getDataDirectory();
 
 			if( sType == "drumkit") {
 				sLocalFile = QDir::tempPath() + "/" + QFileInfo( sURL ).fileName();
@@ -378,7 +378,7 @@ void SoundLibraryImportDialog::on_DownloadBtn_clicked()
 				if ( sType == "drumkit" ) {
 					Tritium::Drumkit::install( sLocalFile );
 					QApplication::restoreOverrideCursor();
-					QMessageBox::information( this, "Hydrogen", QString( trUtf8( "SoundLibrary imported in %1" ) ).arg( dataDir ) );
+					QMessageBox::information( this, "Composite", QString( trUtf8( "SoundLibrary imported in %1" ) ).arg( dataDir ) );
 				}
 
 				if ( sType == "song" || sType == "pattern") {
@@ -387,7 +387,7 @@ void SoundLibraryImportDialog::on_DownloadBtn_clicked()
 			}
 			catch( Tritium::H2Exception ex ) {
 				QApplication::restoreOverrideCursor();
-				QMessageBox::warning( this, "Hydrogen", trUtf8( "An error occurred importing the SoundLibrary."  ) );
+				QMessageBox::warning( this, "Composite", trUtf8( "An error occurred importing the SoundLibrary."  ) );
 			}
 
 			QApplication::setOverrideCursor(Qt::WaitCursor);
@@ -440,10 +440,10 @@ void SoundLibraryImportDialog::on_InstallBtn_clicked()
 {
 	QApplication::setOverrideCursor(Qt::WaitCursor);
 
-	QString dataDir = Tritium::Hydrogen::get_instance()->get_preferences()->getDataDirectory();
+	QString dataDir = Tritium::Engine::get_instance()->get_preferences()->getDataDirectory();
 	try {
 		Tritium::Drumkit::install( SoundLibraryPathTxt->text() );
-		QMessageBox::information( this, "Hydrogen", QString( trUtf8( "SoundLibrary imported in %1" ).arg( dataDir )  ) );
+		QMessageBox::information( this, "Composite", QString( trUtf8( "SoundLibrary imported in %1" ).arg( dataDir )  ) );
 		// update the drumkit list
 		HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->test_expandedItems();
 		HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->updateDrumkitList();
@@ -451,7 +451,7 @@ void SoundLibraryImportDialog::on_InstallBtn_clicked()
 	}
 	catch( Tritium::H2Exception ex ) {
 		QApplication::restoreOverrideCursor();
-		QMessageBox::warning( this, "Hydrogen", trUtf8( "An error occurred importing the SoundLibrary."  ) );
+		QMessageBox::warning( this, "Composite", trUtf8( "An error occurred importing the SoundLibrary."  ) );
 	}
 }
 

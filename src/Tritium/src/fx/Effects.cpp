@@ -84,7 +84,7 @@ void  Effects::setLadspaFX( LadspaFX* pFX, int nFX )
 	assert( nFX < MAX_FX );
 	//INFOLOG( "[setLadspaFX] FX: " + pFX->getPluginLabel() + ", " + to_string( nFX ) );
 
-	Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 
 	if ( m_FXList[ nFX ] ) {
@@ -95,12 +95,12 @@ void  Effects::setLadspaFX( LadspaFX* pFX, int nFX )
 	m_FXList[ nFX ] = pFX;
 	
 	if ( pFX != NULL ) {
-		Hydrogen::get_instance()->get_preferences()->setMostRecentFX( pFX->getPluginName() );
+		Engine::get_instance()->get_preferences()->setMostRecentFX( pFX->getPluginName() );
 		updateRecentGroup();
 	}
 
 
-	Hydrogen::get_instance()->get_audio_engine()->unlock();
+	Engine::get_instance()->get_audio_engine()->unlock();
 }
 
 
@@ -114,7 +114,7 @@ std::vector<LadspaFXInfo*> Effects::getPluginList()
 		return m_pluginList;
 	}
 
-	vector<QString> ladspaPathVect = Hydrogen::get_instance()->get_preferences()->getLadspaPath();
+	vector<QString> ladspaPathVect = Engine::get_instance()->get_preferences()->getLadspaPath();
 	INFOLOG( QString( "PATHS: %1" ).arg( ladspaPathVect.size() ) );
 	for ( vector<QString>::iterator i = ladspaPathVect.begin(); i != ladspaPathVect.end(); i++ ) {
 		QString sPluginDir = *i;
@@ -258,7 +258,7 @@ void Effects::updateRecentGroup()
 	
 
 	QString sRecent; // The recent fx names sit in the preferences object
-	foreach ( sRecent, Hydrogen::get_instance()->get_preferences()->getRecentFX() ) {
+	foreach ( sRecent, Engine::get_instance()->get_preferences()->getRecentFX() ) {
 		for ( std::vector<LadspaFXInfo*>::iterator i = m_pluginList.begin(); i < m_pluginList.end(); i++ ) {
 			if ( sRecent == (*i)->m_sName ) {
 				m_pRecentGroup->addLadspaInfo( *i );

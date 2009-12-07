@@ -76,8 +76,8 @@ void SoundLibraryPropertiesDialog::on_saveBtn_clicked()
 	 
 	if ( saveChanges_checkBox->isChecked() ){
 		//test if the drumkit is loaded 
-		if ( Hydrogen::get_instance()->getCurrentDrumkitname() != drumkitinfo->getName() ){
-			QMessageBox::information( this, "Hydrogen", trUtf8 ( "This is not possible, you can only save changes inside instruments to the current loaded sound library"));
+		if ( Engine::get_instance()->getCurrentDrumkitname() != drumkitinfo->getName() ){
+			QMessageBox::information( this, "Composite", trUtf8 ( "This is not possible, you can only save changes inside instruments to the current loaded sound library"));
 			saveChanges_checkBox->setChecked( false );
 			return;
 		}
@@ -86,15 +86,15 @@ void SoundLibraryPropertiesDialog::on_saveBtn_clicked()
 	
 	//load the selected drumkit to save it correct.... later the old drumkit will be reloaded 
 	if ( drumkitinfo != NULL && ( !saveChanges_checkBox->isChecked() ) ){
-		if ( Hydrogen::get_instance()->getCurrentDrumkitname() != drumkitinfo->getName() ){
-			Hydrogen::get_instance()->loadDrumkit( drumkitinfo );
-			Hydrogen::get_instance()->getSong()->set_modified( true );
+		if ( Engine::get_instance()->getCurrentDrumkitname() != drumkitinfo->getName() ){
+			Engine::get_instance()->loadDrumkit( drumkitinfo );
+			Engine::get_instance()->getSong()->set_modified( true );
 		}
 	}
 		
 	//check the drumkit name. if the name is a new one, one qmessagebox with question "are you sure" will displayed.
 	if ( nameTxt->text() != oldName  ){
-		int res = QMessageBox::information( this, "Hydrogen", tr( "Warning! Changing the drumkit name will result in creating a new drumkit with this name.\nAre you sure?"), tr("&Ok"), tr("&Cancel"), 0, 1 );
+		int res = QMessageBox::information( this, "Composite", tr( "Warning! Changing the drumkit name will result in creating a new drumkit with this name.\nAre you sure?"), tr("&Ok"), tr("&Cancel"), 0, 1 );
 		if ( res == 1 ) {
 			return;
 		}
@@ -123,9 +123,9 @@ void SoundLibraryPropertiesDialog::on_saveBtn_clicked()
 
 	//check pre loaded drumkit name  and reload the old drumkit 
 	if ( predrumkit != NULL ){
-		if ( predrumkit->getName() !=  Hydrogen::get_instance()->getCurrentDrumkitname() ){
-			Hydrogen::get_instance()->loadDrumkit( predrumkit );
-			Hydrogen::get_instance()->getSong()->set_modified( true );
+		if ( predrumkit->getName() !=  Engine::get_instance()->getCurrentDrumkitname() ){
+			Engine::get_instance()->loadDrumkit( predrumkit );
+			Engine::get_instance()->getSong()->set_modified( true );
 		}
 	}
 

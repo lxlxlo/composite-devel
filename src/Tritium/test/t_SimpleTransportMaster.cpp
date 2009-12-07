@@ -48,14 +48,14 @@ namespace THIS_NAMESPACE
 	Fixture() {
 	    Logger::create_instance();
 	    Preferences* prefs = new Preferences();
-	    Hydrogen::create_instance(prefs);
+	    Engine::create_instance(prefs);
 	    s = Song::load(song_file_name);
 	    x.set_current_song(s);
 	}
 	~Fixture() {
 	    x.set_current_song(0);
 	    delete s;
-	    delete Hydrogen::get_instance();
+	    delete Engine::get_instance();
 	    delete Logger::get_instance();
 	}
     };

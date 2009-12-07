@@ -103,9 +103,9 @@ bool Tritium::setAbsoluteFXLevel( int nLine, int fx_channel , int fx_param)
 {
 	//helper function to set fx levels
 			
-	Hydrogen::get_instance()->setSelectedInstrumentNumber( nLine );
+	Engine::get_instance()->setSelectedInstrumentNumber( nLine );
 
-	Hydrogen *engine = Hydrogen::get_instance();
+	Engine *engine = Engine::get_instance();
 	Song *song = engine->getSong();
 	InstrumentList *instrList = song->get_instrument_list();
 	Instrument *instr = instrList->get( nLine );
@@ -117,7 +117,7 @@ bool Tritium::setAbsoluteFXLevel( int nLine, int fx_channel , int fx_param)
 			instr->set_fx_level( 0 , fx_channel );
 	}
 		
-	Hydrogen::get_instance()->setSelectedInstrumentNumber(nLine);
+	Engine::get_instance()->setSelectedInstrumentNumber(nLine);
 	
 	return true;
 
@@ -125,7 +125,7 @@ bool Tritium::setAbsoluteFXLevel( int nLine, int fx_channel , int fx_param)
 
 bool ActionManager::handleAction( Action * pAction ){
 
-	Hydrogen *pEngine = Hydrogen::get_instance();
+	Engine *pEngine = Engine::get_instance();
 
 	/* 
 		return false if action is null 
@@ -160,7 +160,7 @@ bool ActionManager::handleAction( Action * pAction ){
 			break;
 
 		default:
-			ERRORLOG( "[Hydrogen::ActionManager(PLAY): Unhandled case" );
+			ERRORLOG( "[Engine::ActionManager(PLAY): Unhandled case" );
 		}
 
 		return true;
@@ -246,7 +246,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		bool ok;
 		int vol_param = pAction->getParameter2().toInt(&ok,10);
 			
-		Hydrogen *engine = Hydrogen::get_instance();
+		Engine *engine = Engine::get_instance();
 		Song *song = engine->getSong();
 
 
@@ -274,7 +274,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		int vol_param = pAction->getParameter2().toInt(&ok,10);
 			
 
-		Hydrogen *engine = Hydrogen::get_instance();
+		Engine *engine = Engine::get_instance();
 		Song *song = engine->getSong();
 
 
@@ -295,9 +295,9 @@ bool ActionManager::handleAction( Action * pAction ){
 		int nLine = pAction->getParameter1().toInt(&ok,10);
 		int vol_param = pAction->getParameter2().toInt(&ok,10);
 			
-		Hydrogen::get_instance()->setSelectedInstrumentNumber( nLine );
+		Engine::get_instance()->setSelectedInstrumentNumber( nLine );
 
-		Hydrogen *engine = Hydrogen::get_instance();
+		Engine *engine = Engine::get_instance();
 		Song *song = engine->getSong();
 		InstrumentList *instrList = song->get_instrument_list();
 
@@ -317,7 +317,7 @@ bool ActionManager::handleAction( Action * pAction ){
 			instr->set_volume( 0 );
 		}
 
-		Hydrogen::get_instance()->setSelectedInstrumentNumber(nLine);
+		Engine::get_instance()->setSelectedInstrumentNumber(nLine);
 	}
 
 	if( sActionString == "STRIP_VOLUME_ABSOLUTE" ){
@@ -327,9 +327,9 @@ bool ActionManager::handleAction( Action * pAction ){
 		int nLine = pAction->getParameter1().toInt(&ok,10);
 		int vol_param = pAction->getParameter2().toInt(&ok,10);
 			
-		Hydrogen::get_instance()->setSelectedInstrumentNumber( nLine );
+		Engine::get_instance()->setSelectedInstrumentNumber( nLine );
 
-		Hydrogen *engine = Hydrogen::get_instance();
+		Engine *engine = Engine::get_instance();
 		Song *song = engine->getSong();
 		InstrumentList *instrList = song->get_instrument_list();
 
@@ -343,7 +343,7 @@ bool ActionManager::handleAction( Action * pAction ){
 				instr->set_volume( 0 );
 		}
 
-		Hydrogen::get_instance()->setSelectedInstrumentNumber(nLine);
+		Engine::get_instance()->setSelectedInstrumentNumber(nLine);
 	}
 
 	if( sActionString == "SELECT_NEXT_PATTERN"){
@@ -369,7 +369,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		float pan_L;
 		float pan_R;
 
-		Hydrogen *engine = Hydrogen::get_instance();
+		Engine *engine = Engine::get_instance();
 		engine->setSelectedInstrumentNumber( nLine );
 		Song *song = engine->getSong();
 		InstrumentList *instrList = song->get_instrument_list();
@@ -408,7 +408,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		instr->set_pan_l( pan_L );
 		instr->set_pan_r( pan_R );
 
-		Hydrogen::get_instance()->setSelectedInstrumentNumber(nLine);
+		Engine::get_instance()->setSelectedInstrumentNumber(nLine);
 
 		return true;
 	}
@@ -427,7 +427,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		float pan_L;
 		float pan_R;
 
-		Hydrogen *engine = Hydrogen::get_instance();
+		Engine *engine = Engine::get_instance();
 		engine->setSelectedInstrumentNumber( nLine );
 		Song *song = engine->getSong();
 		InstrumentList *instrList = song->get_instrument_list();
@@ -470,7 +470,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		instr->set_pan_l( pan_L );
 		instr->set_pan_r( pan_R );
 
-		Hydrogen::get_instance()->setSelectedInstrumentNumber(nLine);
+		Engine::get_instance()->setSelectedInstrumentNumber(nLine);
 
 		return true;
 	}
@@ -482,7 +482,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		 * this is useful if the bpm is set by a rotary control knob
 		*/
 
-		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 		int mult = 1;	
 
@@ -512,14 +512,14 @@ bool ActionManager::handleAction( Action * pAction ){
 		}
 
 
-		Hydrogen::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->get_audio_engine()->unlock();
 
 		return true;
 	}
 
 
 	if( sActionString == "BPM_INCR" ){
-		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 		int mult = 1;	
 
@@ -531,7 +531,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		if (pSong->get_bpm()  < 300) {
 			pEngine->setBPM( pSong->get_bpm() + 1*mult );
 		}
-		Hydrogen::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->get_audio_engine()->unlock();
 
 		return true;
 	}
@@ -539,7 +539,7 @@ bool ActionManager::handleAction( Action * pAction ){
 
 
 	if( sActionString == "BPM_DECR" ){
-		Hydrogen::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 		int mult = 1;	
 
@@ -550,7 +550,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		if (pSong->get_bpm()  > 40 ) {
 			pEngine->setBPM( pSong->get_bpm() - 1*mult );
 		}
-		Hydrogen::get_instance()->get_audio_engine()->unlock();
+		Engine::get_instance()->get_audio_engine()->unlock();
 		
 		return true;
 	}

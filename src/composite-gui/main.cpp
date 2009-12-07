@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
 		Tritium::Logger::create_instance();
 		Tritium::Preferences *pPref = new Tritium::Preferences();
 		Tritium::Logger::get_instance()->set_logging_level( logLevelOpt );
-		// See below for Tritium::Hydrogen.
+		// See below for Tritium::Engine.
 
 
 		INFOLOG( QString("Using QT version ") + QString( qVersion() ) );
@@ -266,8 +266,8 @@ int main(int argc, char *argv[])
 			pSplash->show();
 		}
 
-		// Hydrogen here to honor all preferences.
-		Tritium::Hydrogen::create_instance(pPref);
+		// Engine here to honor all preferences.
+		Tritium::Engine::create_instance(pPref);
 		MainForm *pMainForm = new MainForm( pQApp, songFilename );
 		pMainForm->show();
 		pSplash->finish( pMainForm );
@@ -277,7 +277,7 @@ int main(int argc, char *argv[])
 		delete pSplash;
 		delete pMainForm;
 		delete pQApp;
-		// delete Tritium::Hydrogen::get_instance(); // Deleted by pMainForm
+		// delete Tritium::Engine::get_instance(); // Deleted by pMainForm
 
 		INFOLOG( "Quitting..." );
 		cout << "\nBye..." << endl;

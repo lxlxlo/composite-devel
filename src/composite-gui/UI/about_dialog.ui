@@ -10,7 +10,7 @@
    </rect>
   </property>
   <property name="windowTitle" >
-   <string>About Hydrogen</string>
+   <string>About Composite</string>
   </property>
   <widget class="QWidget" name="layoutWidget" >
    <property name="geometry" >

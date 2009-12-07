@@ -59,8 +59,8 @@ int FakeDriver::connect()
 {
 	INFOLOG( "connect" );
 
-        Hydrogen::get_instance()->get_transport()->locate(0);
-        Hydrogen::get_instance()->get_transport()->start();
+        Engine::get_instance()->get_transport()->locate(0);
+        Engine::get_instance()->get_transport()->start();
 
 	return 0;
 }

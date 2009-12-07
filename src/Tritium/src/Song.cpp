@@ -353,7 +353,7 @@ namespace Tritium
 	song->set_instrument_list( pList );
 		
 #ifdef JACK_SUPPORT
-	Hydrogen::get_instance()->renameJackPorts();
+	Engine::get_instance()->renameJackPorts();
 #endif
 
 	PatternList *patternList = new PatternList();
