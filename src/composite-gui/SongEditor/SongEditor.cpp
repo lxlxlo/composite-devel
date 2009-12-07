@@ -24,7 +24,7 @@
 #include <memory>
 
 #include <Tritium/Song.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Pattern.hpp>
 #include <Tritium/AudioEngine.hpp>

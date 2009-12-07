@@ -80,7 +80,7 @@
 #include <Tritium/InstrumentLayer.hpp>
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/Sample.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/Action.hpp>

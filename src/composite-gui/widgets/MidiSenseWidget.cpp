@@ -20,7 +20,7 @@
  */
 
 #include "MidiSenseWidget.hpp"
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Logger.hpp>
 
 

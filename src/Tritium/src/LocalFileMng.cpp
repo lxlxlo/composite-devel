@@ -26,7 +26,7 @@
 #include <Tritium/Logger.hpp>
 #include <Tritium/ADSR.hpp>
 #include <Tritium/DataPath.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/H2Exception.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentLayer.hpp>

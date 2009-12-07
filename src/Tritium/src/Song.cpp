@@ -45,7 +45,7 @@
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Note.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 
 #include <QDomDocument>
 

@@ -23,7 +23,7 @@
 #include <Tritium/LocalFileMng.hpp>
 #include <Tritium/SoundLibrary.hpp>
 
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Preferences.hpp>
 
 #include <Tritium/ADSR.hpp>

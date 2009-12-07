@@ -26,7 +26,7 @@
 #include "../InstrumentRack.hpp"
 #include "SoundLibraryPanel.hpp"
 #include <Tritium/SoundLibrary.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Logger.hpp>
 
 namespace Tritium

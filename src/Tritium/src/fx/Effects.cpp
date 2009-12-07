@@ -26,7 +26,7 @@
 #include <Tritium/fx/LadspaFX.hpp>
 #include <Tritium/AudioEngine.hpp>
 #include <Tritium/Logger.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 
 #include <algorithm>
 #include <QDir>

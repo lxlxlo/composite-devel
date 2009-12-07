@@ -20,7 +20,7 @@
  */
 
 #include <Tritium/Preferences.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/Pattern.hpp>

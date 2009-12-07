@@ -27,7 +27,7 @@
 #include <Tritium/Logger.hpp>
 #include <cassert>
 #include <cstdlib> // free()
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Preferences.hpp> // For preferred auto-connection
 #include <cerrno> // EEXIST for jack_connect()
 

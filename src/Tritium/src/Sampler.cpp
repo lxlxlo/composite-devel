@@ -32,7 +32,7 @@
 #include <Tritium/AudioEngine.hpp>
 #include <Tritium/DataPath.hpp>
 #include <Tritium/globals.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentLayer.hpp>
 #include <Tritium/Note.hpp>

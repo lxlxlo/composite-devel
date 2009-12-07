@@ -22,7 +22,7 @@
 
 #include "PatternFillDialog.hpp"
 
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/Pattern.hpp>
 

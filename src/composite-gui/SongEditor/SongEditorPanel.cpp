@@ -29,7 +29,7 @@
 
 #include "SongEditor.hpp"
 
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/AudioEngine.hpp>
 #include <Tritium/Pattern.hpp>

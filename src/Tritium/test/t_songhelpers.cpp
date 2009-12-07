@@ -25,7 +25,7 @@
  * these tests are written and work, they are retained with the
  * t_songhelpers.cpp name.
  */
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/Logger.hpp>
 #include <Tritium/Preferences.hpp>

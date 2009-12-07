@@ -21,7 +21,7 @@
 
 #include <QtGui>
 
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentLayer.hpp>

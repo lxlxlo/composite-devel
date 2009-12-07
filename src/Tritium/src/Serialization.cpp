@@ -29,7 +29,7 @@
 #include <Tritium/InstrumentLayer.hpp>
 #include <Tritium/ADSR.hpp>
 #include <Tritium/Pattern.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Sample.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/fx/Effects.hpp>

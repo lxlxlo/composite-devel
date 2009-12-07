@@ -27,7 +27,7 @@
 
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Preferences.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Transport.hpp>
 #include <Tritium/IO/MidiInput.hpp>
 #include <Tritium/IO/AudioOutput.hpp>

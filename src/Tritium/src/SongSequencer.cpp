@@ -22,7 +22,7 @@
 #include <cassert>
 #include <QtCore/QMutexLocker>
 
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/TransportPosition.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/SeqScript.hpp>

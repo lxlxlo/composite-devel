@@ -32,7 +32,7 @@
 #include <Tritium/SoundLibrary.hpp>
 #include <Tritium/AudioEngine.hpp>
 #include <Tritium/Logger.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 
 #include <cassert>
 

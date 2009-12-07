@@ -21,7 +21,7 @@
 
 #include <memory>
 #include <Tritium/EventQueue.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include "H2Transport.hpp"
 #include "SimpleTransportMaster.hpp"
 #include "JackTimeMaster.hpp"

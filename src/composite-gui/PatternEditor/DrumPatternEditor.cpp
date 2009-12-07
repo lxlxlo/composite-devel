@@ -25,7 +25,7 @@
 
 #include <Tritium/globals.hpp>
 #include <Tritium/Song.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/Instrument.hpp>

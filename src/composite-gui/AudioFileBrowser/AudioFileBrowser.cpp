@@ -31,7 +31,7 @@
 #include <Tritium/Sample.hpp>
 #include <Tritium/AudioEngine.hpp>
 #include <Tritium/Logger.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Sampler.hpp>
 
 #include <QModelIndex>

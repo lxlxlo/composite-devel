@@ -23,7 +23,7 @@
 
 #include <Tritium/AudioEngine.hpp>
 #include <Tritium/EventQueue.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/Note.hpp>

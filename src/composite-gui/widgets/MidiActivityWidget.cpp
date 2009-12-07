@@ -22,7 +22,7 @@
 #include "../Skin.hpp"
 #include "../HydrogenApp.hpp"
 #include "MidiActivityWidget.hpp"
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Logger.hpp>
 
 #include <QTimer>

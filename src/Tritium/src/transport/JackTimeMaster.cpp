@@ -23,7 +23,7 @@
 #include <QtCore/QMutexLocker>
 #include <Tritium/IO/AudioOutput.hpp>
 #include <Tritium/IO/JackOutput.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include "../IO/JackClient.hpp"
 #include "JackTimeMaster.hpp"
 

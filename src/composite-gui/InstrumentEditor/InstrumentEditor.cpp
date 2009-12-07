@@ -26,7 +26,7 @@
 #include <assert.h>
 
 #include <Tritium/Song.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/globals.hpp>
 #include <Tritium/ADSR.hpp>
 #include <Tritium/Sample.hpp>

@@ -20,7 +20,7 @@
  */
 #include "version.h"
 
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Transport.hpp>
 #include <Tritium/Playlist.hpp>
 #include <Tritium/AudioEngine.hpp>

@@ -24,7 +24,7 @@
 #include <Tritium/SoundLibrary.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Logger.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 
 #include <QList>
 #include <QInputDialog>

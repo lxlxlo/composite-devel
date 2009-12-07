@@ -23,7 +23,7 @@
 #include <Tritium/IO/MidiInput.hpp>
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/Preferences.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Transport.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentList.hpp>

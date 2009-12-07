@@ -31,7 +31,7 @@
 
 #include <Tritium/MidiMap.hpp>
 #include <Tritium/AudioEngine.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/globals.hpp>
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/Preferences.hpp>

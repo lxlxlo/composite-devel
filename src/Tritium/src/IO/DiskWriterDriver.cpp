@@ -23,7 +23,7 @@
 #include <Tritium/Logger.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/EventQueue.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Transport.hpp>
 #include <Tritium/TransportPosition.hpp>
 

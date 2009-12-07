@@ -27,7 +27,7 @@
 #include "math.h"
 #include "string.h"
 
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Sample.hpp>
 #include <Tritium/AudioEngine.hpp>
 #include <Tritium/Sampler.hpp>

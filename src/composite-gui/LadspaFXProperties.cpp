@@ -19,7 +19,7 @@
  *
  */
 
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/AudioEngine.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/fx/Effects.hpp>

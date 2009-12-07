@@ -24,7 +24,7 @@
 #include <Tritium/Song.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/AudioEngine.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 
 #include <vector>
 #include <cassert>

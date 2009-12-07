@@ -27,7 +27,7 @@
 #include <QMutex>
 #include <Tritium/globals.hpp>
 #include <Tritium/Preferences.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <vector>
 #include <cassert>
 

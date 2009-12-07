@@ -22,7 +22,7 @@
 #include "SongPropertiesDialog.hpp"
 #include "Skin.hpp"
 #include <Tritium/Song.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 
 #include <QPixmap>
 

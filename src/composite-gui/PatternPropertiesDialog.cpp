@@ -22,7 +22,7 @@
 #include "PatternPropertiesDialog.hpp"
 #include "Skin.hpp"
 
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Preferences.hpp>
 

@@ -28,7 +28,7 @@
 #include <unistd.h>
 #include <cstdlib>
 #include <cassert>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/Song.hpp>

@@ -43,7 +43,7 @@
 #include "Mixer/Mixer.hpp"
 #include "Mixer/MixerLine.hpp"
 
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/fx/LadspaFX.hpp>
 #include <Tritium/Preferences.hpp>

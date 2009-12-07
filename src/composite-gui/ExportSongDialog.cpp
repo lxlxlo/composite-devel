@@ -28,7 +28,7 @@
 #include "Skin.hpp"
 #include "HydrogenApp.hpp"
 #include <Tritium/Song.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/IO/AudioOutput.hpp>
 
 #include <memory>

@@ -35,7 +35,7 @@
 #include "widgets/midiTable.hpp"
 
 #include <Tritium/MidiMap.hpp>
-#include <Tritium/Hydrogen.hpp>
+#include <Tritium/Engine.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/IO/MidiInput.hpp>
 #include <Tritium/Logger.hpp>
