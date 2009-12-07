@@ -52,7 +52,7 @@ InstrumentLine::InstrumentLine(QWidget* pParent)
   : PixmapWidget(pParent, "InstrumentLine")
   , m_bIsSelected(false)
 {
-	int h = Engine::get_instance()->get_preferences()->getPatternEditorGridHeight();
+	int h = g_engine->get_preferences()->getPatternEditorGridHeight();
 	setFixedSize(181, h);
 
 	m_pNameLbl = new QLabel(this);
@@ -148,7 +148,7 @@ void InstrumentLine::setSoloed( bool soloed )
 
 void InstrumentLine::muteClicked()
 {
-	Engine *engine = Engine::get_instance();
+	Engine *engine = g_engine;
 	Song *song = engine->getSong();
 	InstrumentList *instrList = song->get_instrument_list();
 
@@ -167,7 +167,7 @@ void InstrumentLine::soloClicked()
 
 void InstrumentLine::mousePressEvent(QMouseEvent *ev)
 {
-	Engine::get_instance()->setSelectedInstrumentNumber( m_nInstrumentNumber );
+	g_engine->setSelectedInstrumentNumber( m_nInstrumentNumber );
 
 	if ( ev->button() == Qt::LeftButton ) {
 		const float velocity = 0.8f;
@@ -175,12 +175,12 @@ void InstrumentLine::mousePressEvent(QMouseEvent *ev)
 		const float pan_R = 0.5f;
 		const int nLength = -1;
 		const float fPitch = 0.0f;
-		Song *pSong = Engine::get_instance()->getSong();
+		Song *pSong = g_engine->getSong();
 		
 		Instrument *pInstr = pSong->get_instrument_list()->get( m_nInstrumentNumber );
 		
 		Note *pNote = new Note( pInstr, velocity, pan_L, pan_R, nLength, fPitch);
-		Engine::get_instance()->midi_noteOn(pNote);
+		g_engine->midi_noteOn(pNote);
 	}
 	else if (ev->button() == Qt::RightButton ) {
 		m_pFunctionPopup->popup( QPoint( ev->globalX(), ev->globalY() ) );
@@ -194,7 +194,7 @@ void InstrumentLine::mousePressEvent(QMouseEvent *ev)
 
 Tritium::Pattern* InstrumentLine::getCurrentPattern()
 {
-	Engine *pEngine = Engine::get_instance();
+	Engine *pEngine = g_engine;
 	PatternList *pPatternList = pEngine->getSong()->get_pattern_list();
 	assert( pPatternList != NULL );
 
@@ -211,9 +211,9 @@ Tritium::Pattern* InstrumentLine::getCurrentPattern()
 
 void InstrumentLine::functionClearNotes()
 {
-// 	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );	// lock the audio engine
+// 	g_engine->get_audio_engine()->lock( RIGHT_HERE );	// lock the audio engine
 
-	Engine * H = Engine::get_instance();
+	Engine * H = g_engine;
 	Pattern *pCurrentPattern = getCurrentPattern();
 
 	int nSelectedInstrument = m_nInstrumentNumber;
@@ -231,10 +231,10 @@ void InstrumentLine::functionClearNotes()
 // 		delete pNote;
 // 		pCurrentPattern->note_map.erase( pos );
 // 	}
-// 	Engine::get_instance()->get_audio_engine()->unlock();	// unlock the audio engine
+// 	g_engine->get_audio_engine()->unlock();	// unlock the audio engine
 
 	// this will force an update...
-	Engine::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
+	g_engine->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
 }
 
 
@@ -242,7 +242,7 @@ void InstrumentLine::functionClearNotes()
 
 void InstrumentLine::functionFillNotes()
 {
-	Engine *pEngine = Engine::get_instance();
+	Engine *pEngine = g_engine;
 
 	const float velocity = 0.8f;
 	const float pan_L = 0.5f;
@@ -262,7 +262,7 @@ void InstrumentLine::functionFillNotes()
 	int nResolution = 4 * MAX_NOTES / ( nBase * pPatternEditor->getResolution() );
 
 
-	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );	// lock the audio engine
+	g_engine->get_audio_engine()->lock( RIGHT_HERE );	// lock the audio engine
 
 
 	Song *pSong = pEngine->getSong();
@@ -297,10 +297,10 @@ void InstrumentLine::functionFillNotes()
 			}
 		}
 	}
-	Engine::get_instance()->get_audio_engine()->unlock();	// unlock the audio engine
+	g_engine->get_audio_engine()->unlock();	// unlock the audio engine
 
 	// this will force an update...
-	Engine::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
+	g_engine->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
 }
 
 
@@ -309,12 +309,12 @@ void InstrumentLine::functionFillNotes()
 
 void InstrumentLine::functionRandomizeVelocity()
 {
-	Engine *pEngine = Engine::get_instance();
+	Engine *pEngine = g_engine;
 
 	PatternEditorPanel *pPatternEditorPanel = CompositeApp::get_instance()->getPatternEditorPanel();
 	DrumPatternEditor *pPatternEditor = pPatternEditorPanel->getDrumPatternEditor();
 
-	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );	// lock the audio engine
+	g_engine->get_audio_engine()->lock( RIGHT_HERE );	// lock the audio engine
 
 	int nBase;
 	if ( pPatternEditor->isUsingTriplets() ) {
@@ -354,10 +354,10 @@ void InstrumentLine::functionRandomizeVelocity()
 			}
 		}
 	}
-	Engine::get_instance()->get_audio_engine()->unlock();	// unlock the audio engine
+	g_engine->get_audio_engine()->unlock();	// unlock the audio engine
 
 	// this will force an update...
-	Engine::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
+	g_engine->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
 
 }
 
@@ -367,14 +367,14 @@ void InstrumentLine::functionRandomizeVelocity()
 
 void InstrumentLine::functionDeleteInstrument()
 {
-	Engine *pEngine = Engine::get_instance();
+	Engine *pEngine = g_engine;
 	pEngine->removeInstrument( m_nInstrumentNumber, false );
 	
-	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	g_engine->get_audio_engine()->lock( RIGHT_HERE );
 #ifdef JACK_SUPPORT
 	pEngine->renameJackPorts();
 #endif
-	Engine::get_instance()->get_audio_engine()->unlock();
+	g_engine->get_audio_engine()->unlock();
 }
 
 
@@ -392,7 +392,7 @@ PatternEditorInstrumentList::PatternEditorInstrumentList( QWidget *parent, Patte
 	m_pPattern = NULL;
  	m_pPatternEditorPanel = pPatternEditorPanel;
 
-	m_nGridHeight = Engine::get_instance()->get_preferences()->getPatternEditorGridHeight();
+	m_nGridHeight = g_engine->get_preferences()->getPatternEditorGridHeight();
 
 	m_nEditorWidth = 181;
 	m_nEditorHeight = m_nGridHeight * MAX_INSTRUMENTS;
@@ -438,14 +438,14 @@ InstrumentLine* PatternEditorInstrumentList::createInstrumentLine()
 
 void PatternEditorInstrumentList::moveInstrumentLine( int nSourceInstrument , int nTargetInstrument )
 {
-		Engine *engine = Engine::get_instance();
-		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		Engine *engine = g_engine;
+		g_engine->get_audio_engine()->lock( RIGHT_HERE );
 
 		Song *pSong = engine->getSong();
 		InstrumentList *pInstrumentList = pSong->get_instrument_list();
 
 		if ( ( nTargetInstrument > (int)pInstrumentList->get_size() ) || ( nTargetInstrument < 0) ) {
-			Engine::get_instance()->get_audio_engine()->unlock();
+			g_engine->get_audio_engine()->unlock();
 			return;
 		}
 
@@ -472,7 +472,7 @@ void PatternEditorInstrumentList::moveInstrumentLine( int nSourceInstrument , in
 		engine->renameJackPorts();
 		#endif
 
-		Engine::get_instance()->get_audio_engine()->unlock();
+		g_engine->get_audio_engine()->unlock();
 		engine->setSelectedInstrumentNumber( nTargetInstrument );
 
 		pSong->set_modified( true );
@@ -485,7 +485,7 @@ void PatternEditorInstrumentList::updateInstrumentLines()
 {
 	//INFOLOG( "Update lines" );
 
-	Engine *pEngine = Engine::get_instance();
+	Engine *pEngine = g_engine;
 	Song *pSong = pEngine->getSong();
 	InstrumentList *pInstrList = pSong->get_instrument_list();
 	Mixer * mixer = CompositeApp::get_instance()->getMixer();
@@ -539,7 +539,7 @@ void PatternEditorInstrumentList::dragEnterEvent(QDragEnterEvent *event)
 {
 	INFOLOG( "[dragEnterEvent]" );
 	if ( event->mimeData()->hasFormat("text/plain") ) {
-		Song *song = (Engine::get_instance())->getSong();
+		Song *song = (g_engine)->getSong();
 		int nInstruments = song->get_instrument_list()->get_size();
 		if ( nInstruments < MAX_INSTRUMENTS ) {
 			event->acceptProposedAction();
@@ -559,7 +559,7 @@ void PatternEditorInstrumentList::dropEvent(QDropEvent *event)
 
 	if (sText.startsWith("move instrument:")) {
 
-		Engine *engine = Engine::get_instance();
+		Engine *engine = g_engine;
 		int nSourceInstrument = engine->getSelectedInstrumentNumber();
 
 		int nTargetInstrument = event->pos().y() / m_nGridHeight;
@@ -581,7 +581,7 @@ void PatternEditorInstrumentList::dropEvent(QDropEvent *event)
 		QString sInstrumentName = tokens.at( 1 );
 		
 		Instrument *pNewInstrument = Instrument::load_instrument( sDrumkitName, sInstrumentName );
-		Engine *pEngine = Engine::get_instance();
+		Engine *pEngine = g_engine;
 
 		// create a new valid ID for this instrument
 		int nID = -1;
@@ -595,14 +595,14 @@ void PatternEditorInstrumentList::dropEvent(QDropEvent *event)
 
 		pNewInstrument->set_id( QString("%1").arg( nID ) );
 
-		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		g_engine->get_audio_engine()->lock( RIGHT_HERE );
 		pEngine->getSong()->get_instrument_list()->add( pNewInstrument );
 
 		#ifdef JACK_SUPPORT
 		pEngine->renameJackPorts();
 		#endif
 
-		Engine::get_instance()->get_audio_engine()->unlock();
+		g_engine->get_audio_engine()->unlock();
 
 	
 		int nTargetInstrument = event->pos().y() / m_nGridHeight;
@@ -647,7 +647,7 @@ void PatternEditorInstrumentList::mouseMoveEvent(QMouseEvent *event)
 		return;
 	}
 
-	Engine *pEngine = Engine::get_instance();
+	Engine *pEngine = g_engine;
 	int nSelectedInstr = pEngine->getSelectedInstrumentNumber();
 	Instrument *pInstr = pEngine->getSong()->get_instrument_list()->get(nSelectedInstr);
 

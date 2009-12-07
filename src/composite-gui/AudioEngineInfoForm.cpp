@@ -94,7 +94,7 @@ void AudioEngineInfoForm::hideEvent ( QHideEvent* )
 
 void AudioEngineInfoForm::updateInfo()
 {
-	Engine *pEngine = Engine::get_instance();
+	Engine *pEngine = g_engine;
 	Song *song = pEngine->getSong();
 
 	// Song position
@@ -153,7 +153,7 @@ void AudioEngineInfoForm::updateInfo()
 
 		// Number of frames
 		nFramesLbl->setText(
-                    QString("%1").arg(Engine::get_instance()->get_transport()->get_current_frame())
+                    QString("%1").arg(g_engine->get_transport()->get_current_frame())
                     );
 	}
 	else {
@@ -174,7 +174,7 @@ void AudioEngineInfoForm::updateInfo()
 		midiDriverName->setText("No MIDI driver support");
 	}
 
-	m_pMidiDeviceName->setText( Engine::get_instance()->get_preferences()->m_sMidiPortName );
+	m_pMidiDeviceName->setText( g_engine->get_preferences()->m_sMidiPortName );
 
 
 	int nSelectedPatternNumber = pEngine->getSelectedPatternNumber();
@@ -195,7 +195,7 @@ void AudioEngineInfoForm::updateInfo()
 
 
 	QString currentPatternName;
-	PatternList *pPatternList = Engine::get_instance()->getCurrentPatternList();
+	PatternList *pPatternList = g_engine->getCurrentPatternList();
 	if (pPatternList) {
 		currentPatternLbl->setText( QString::number(pPatternList->get_size()) );
 	}
@@ -204,8 +204,8 @@ void AudioEngineInfoForm::updateInfo()
 	}
 
 	// SAMPLER
-	Sampler *pSampler = Engine::get_instance()->get_audio_engine()->get_sampler();
-	sampler_playingNotesLbl->setText(QString( "%1 / %2" ).arg(pSampler->get_playing_notes_number()).arg(Engine::get_instance()->get_preferences()->m_nMaxNotes));
+	Sampler *pSampler = g_engine->get_audio_engine()->get_sampler();
+	sampler_playingNotesLbl->setText(QString( "%1 / %2" ).arg(pSampler->get_playing_notes_number()).arg(g_engine->get_preferences()->m_nMaxNotes));
 
 }
 
@@ -220,8 +220,8 @@ void AudioEngineInfoForm::updateInfo()
 void AudioEngineInfoForm::updateAudioEngineState() {
 	// Audio Engine state
 	QString stateTxt;
-	int state = Engine::get_instance()->getState();
-	TransportPosition::State xstate = Engine::get_instance()->get_transport()->get_state();
+	int state = g_engine->getState();
+	TransportPosition::State xstate = g_engine->get_transport()->get_state();
 	switch (state) {
 	case STATE_UNINITIALIZED:
 		stateTxt = "Uninitialized";

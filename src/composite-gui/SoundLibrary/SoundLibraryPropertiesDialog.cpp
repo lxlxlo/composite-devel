@@ -76,7 +76,7 @@ void SoundLibraryPropertiesDialog::on_saveBtn_clicked()
 	 
 	if ( saveChanges_checkBox->isChecked() ){
 		//test if the drumkit is loaded 
-		if ( Engine::get_instance()->getCurrentDrumkitname() != drumkitinfo->getName() ){
+		if ( g_engine->getCurrentDrumkitname() != drumkitinfo->getName() ){
 			QMessageBox::information( this, "Composite", trUtf8 ( "This is not possible, you can only save changes inside instruments to the current loaded sound library"));
 			saveChanges_checkBox->setChecked( false );
 			return;
@@ -86,9 +86,9 @@ void SoundLibraryPropertiesDialog::on_saveBtn_clicked()
 	
 	//load the selected drumkit to save it correct.... later the old drumkit will be reloaded 
 	if ( drumkitinfo != NULL && ( !saveChanges_checkBox->isChecked() ) ){
-		if ( Engine::get_instance()->getCurrentDrumkitname() != drumkitinfo->getName() ){
-			Engine::get_instance()->loadDrumkit( drumkitinfo );
-			Engine::get_instance()->getSong()->set_modified( true );
+		if ( g_engine->getCurrentDrumkitname() != drumkitinfo->getName() ){
+			g_engine->loadDrumkit( drumkitinfo );
+			g_engine->getSong()->set_modified( true );
 		}
 	}
 		
@@ -123,9 +123,9 @@ void SoundLibraryPropertiesDialog::on_saveBtn_clicked()
 
 	//check pre loaded drumkit name  and reload the old drumkit 
 	if ( predrumkit != NULL ){
-		if ( predrumkit->getName() !=  Engine::get_instance()->getCurrentDrumkitname() ){
-			Engine::get_instance()->loadDrumkit( predrumkit );
-			Engine::get_instance()->getSong()->set_modified( true );
+		if ( predrumkit->getName() !=  g_engine->getCurrentDrumkitname() ){
+			g_engine->loadDrumkit( predrumkit );
+			g_engine->getSong()->set_modified( true );
 		}
 	}
 

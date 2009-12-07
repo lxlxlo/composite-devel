@@ -104,9 +104,9 @@ CompositeApp::CompositeApp( MainForm *pMainForm, Song *pFirstSong )
 
 
 	// Audio Engine must already be created
-	assert(Engine::get_instance());
-	Engine::get_instance()->setSong( pFirstSong );
-	Engine::get_instance()->get_preferences()->setLastSongFilename( pFirstSong->get_filename() );
+	assert(g_engine);
+	g_engine->setSong( pFirstSong );
+	g_engine->get_preferences()->setLastSongFilename( pFirstSong->get_filename() );
 
 	// set initial title
 	QString qsSongName( pFirstSong->get_name() );
@@ -117,7 +117,7 @@ CompositeApp::CompositeApp( MainForm *pMainForm, Song *pFirstSong )
 
         setWindowTitle( qsSongName  );
 
-	Preferences *pPref = Engine::get_instance()->get_preferences();
+	Preferences *pPref = g_engine->get_preferences();
 
 	setupSinglePanedInterface();
 
@@ -134,7 +134,7 @@ CompositeApp::CompositeApp( MainForm *pMainForm, Song *pFirstSong )
 	
 	m_pAppPlaylistListener = new AppPlaylistListener;
 	m_pAppPlaylistListener->q = this;
-	m_pAppPlaylistListener->d = Engine::get_instance()->get_playlist();
+	m_pAppPlaylistListener->d = g_engine->get_playlist();
 	m_pAppPlaylistListener->d->subscribe(m_pAppPlaylistListener);
 	// Unsubscription done by the destructor.
 	m_pPlaylistDialog = new PlaylistDialog( 0 );
@@ -155,7 +155,7 @@ CompositeApp::~CompositeApp()
 	delete m_pPlaylistDialog;
 	delete m_pAppPlaylistListener;
 
-	Engine *engine = Engine::get_instance();
+	Engine *engine = g_engine;
 	if (engine) {
 		Tritium::Song * song = engine->getSong();
 		// Engine calls removeSong on from its destructor, so here we just delete the objects:
@@ -185,7 +185,7 @@ CompositeApp* CompositeApp::get_instance() {
 
 void CompositeApp::setupSinglePanedInterface()
 {
-	Preferences *pPref = Engine::get_instance()->get_preferences();
+	Preferences *pPref = g_engine->get_preferences();
 
 	// MAINFORM
 	WindowProperties mainFormProp = pPref->getMainFormProperties();
@@ -290,15 +290,15 @@ void CompositeApp::setSong(Song* song)
 {
 
 
-	Song* oldSong = (Engine::get_instance())->getSong();
+	Song* oldSong = (g_engine)->getSong();
 	if (oldSong != NULL) {
-		(Engine::get_instance())->removeSong();
+		(g_engine)->removeSong();
 		delete oldSong;
 		oldSong = NULL;
 	}
 
-	Engine::get_instance()->setSong( song );
-	Engine::get_instance()->get_preferences()->setLastSongFilename( song->get_filename() );
+	g_engine->setSong( song );
+	g_engine->get_preferences()->setLastSongFilename( song->get_filename() );
 
 	m_pSongEditorPanel->updateAll();
 	m_pPatternEditorPanel->updateSLnameLabel();
@@ -391,13 +391,13 @@ void CompositeApp::showInfoSplash()
 	}
 	INFOLOG( "[showInfoSplash] Selected news: " + sFilename );
 
-	QString sLastRead = Engine::get_instance()->get_preferences()->getLastNews();
+	QString sLastRead = g_engine->get_preferences()->getLastNews();
 	if ( sLastRead != sFilename && !sFilename.isEmpty() ) {
 		QString sDocURI = sDocPath;
 		sDocURI.append( "/" ).append( sFilename );
 		SimpleHTMLBrowser *m_pFirstTimeInfo = new SimpleHTMLBrowser( m_pMainForm, sDocPath, sDocURI, SimpleHTMLBrowser::WELCOME );
 		if ( m_pFirstTimeInfo->exec() == QDialog::Accepted ) {
-			Engine::get_instance()->get_preferences()->setLastNews( sFilename );
+			g_engine->get_preferences()->setLastNews( sFilename );
 		}
 	}
 }
@@ -410,7 +410,7 @@ void CompositeApp::onDrumkitLoad( QString name ){
 void CompositeApp::onEventQueueTimer()
 {
 	// use the timer to do schedule instrument slaughter;
-	EventQueue *pQueue = Engine::get_instance()->get_event_queue();
+	EventQueue *pQueue = g_engine->get_event_queue();
 
 	Event event;
 	while ( ( event = pQueue->pop_event() ).type != EVENT_NONE ) {

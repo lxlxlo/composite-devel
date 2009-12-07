@@ -85,7 +85,7 @@ SoundLibraryImportDialog::~SoundLibraryImportDialog()
 //update combo box
 void SoundLibraryImportDialog::updateRepositoryCombo()
 {
-	Tritium::Preferences* pref = Tritium::Engine::get_instance()->get_preferences();
+	Tritium::Preferences* pref = Tritium::g_engine->get_preferences();
 
 	/*
 		Read serverList from config and put servers into the comboBox
@@ -343,7 +343,7 @@ void SoundLibraryImportDialog::on_DownloadBtn_clicked()
 			QString sType = m_soundLibraryList[ i ].m_sType;
 			QString sLocalFile;
 
-			QString dataDir = Tritium::Engine::get_instance()->get_preferences()->getDataDirectory();
+			QString dataDir = Tritium::g_engine->get_preferences()->getDataDirectory();
 
 			if( sType == "drumkit") {
 				sLocalFile = QDir::tempPath() + "/" + QFileInfo( sURL ).fileName();
@@ -440,7 +440,7 @@ void SoundLibraryImportDialog::on_InstallBtn_clicked()
 {
 	QApplication::setOverrideCursor(Qt::WaitCursor);
 
-	QString dataDir = Tritium::Engine::get_instance()->get_preferences()->getDataDirectory();
+	QString dataDir = Tritium::g_engine->get_preferences()->getDataDirectory();
 	try {
 		Tritium::Drumkit::install( SoundLibraryPathTxt->text() );
 		QMessageBox::information( this, "Composite", QString( trUtf8( "SoundLibrary imported in %1" ).arg( dataDir )  ) );

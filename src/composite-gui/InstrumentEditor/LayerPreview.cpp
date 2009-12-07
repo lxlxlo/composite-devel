@@ -141,11 +141,11 @@ void LayerPreview::paintEvent(QPaintEvent *ev)
 
 void LayerPreview::selectedInstrumentChangedEvent()
 {
-	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
-	Song *pSong = Engine::get_instance()->getSong();
+	g_engine->get_audio_engine()->lock( RIGHT_HERE );
+	Song *pSong = g_engine->getSong();
 	if (pSong != NULL) {
 		InstrumentList *pInstrList = pSong->get_instrument_list();
-		int nInstr = Engine::get_instance()->getSelectedInstrumentNumber();
+		int nInstr = g_engine->getSelectedInstrumentNumber();
 		if ( nInstr >= (int)pInstrList->get_size() ) {
 			nInstr = -1;
 		}
@@ -160,7 +160,7 @@ void LayerPreview::selectedInstrumentChangedEvent()
 	else {
 		m_pInstrument = NULL;
 	}
-	Engine::get_instance()->get_audio_engine()->unlock();
+	g_engine->get_audio_engine()->unlock();
 
 	// select the last valid layer
 	if ( m_pInstrument ) {
@@ -203,7 +203,7 @@ void LayerPreview::mousePressEvent(QMouseEvent *ev)
 
 		Note *note = new Note( m_pInstrument, fVelocity, fPan_L, fPan_R, nLength, fPitch );
 		note->set_instrument( m_pInstrument );
-		Engine::get_instance()->midi_noteOn(note);
+		g_engine->midi_noteOn(note);
 
 		for ( int i = 0; i < MAX_LAYERS; i++ ) {
 			InstrumentLayer *pLayer = m_pInstrument->get_layer( i );
@@ -235,7 +235,7 @@ void LayerPreview::mousePressEvent(QMouseEvent *ev)
 				nLength,
 				fPitch
 				);
-			Engine::get_instance()->midi_noteOn(note);
+			g_engine->midi_noteOn(note);
 		}
 
 		if ( pLayer ) {

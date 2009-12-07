@@ -46,6 +46,10 @@ using namespace std;
 void showInfo();
 void showUsage();
 
+/**
+ * Global pointer to the Tritium Engine
+ */
+Tritium::Engine* Tritium::g_engine;
 
 #define HAS_ARG 1
 static struct option long_opts[] = {
@@ -268,6 +272,7 @@ int main(int argc, char *argv[])
 
 		// Engine here to honor all preferences.
 		Tritium::Engine::create_instance(pPref);
+		Tritium::g_engine = Tritium::Engine::get_instance();
 		MainForm *pMainForm = new MainForm( pQApp, songFilename );
 		pMainForm->show();
 		pSplash->finish( pMainForm );
@@ -277,7 +282,7 @@ int main(int argc, char *argv[])
 		delete pSplash;
 		delete pMainForm;
 		delete pQApp;
-		// delete Tritium::Engine::get_instance(); // Deleted by pMainForm
+		// delete Tritium::g_engine; // Deleted by ~CompositeApp (via pMainForm)
 
 		INFOLOG( "Quitting..." );
 		cout << "\nBye..." << endl;

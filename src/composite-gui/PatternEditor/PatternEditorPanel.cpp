@@ -58,7 +58,7 @@ void PatternEditorPanel::updateSLnameLabel( )
 	QFont font;
 	font.setBold( true );
 	pSLlabel->setFont( font );
-	pSLlabel->setText( Engine::get_instance()->m_currentDrumkit  );
+	pSLlabel->setText( g_engine->m_currentDrumkit  );
 } 
 
 
@@ -70,7 +70,7 @@ PatternEditorPanel::PatternEditorPanel( QWidget *pParent )
 {
 	setAcceptDrops(true);
 
-	Preferences *pPref = Engine::get_instance()->get_preferences();
+	Preferences *pPref = g_engine->get_preferences();
 	
 
 // Editor TOP
@@ -95,7 +95,7 @@ PatternEditorPanel::PatternEditorPanel( QWidget *pParent )
 
 	//soundlibrary name
 	pSLlabel = new QLabel( NULL );
-	pSLlabel->setText( Engine::get_instance()->m_currentDrumkit );
+	pSLlabel->setText( g_engine->m_currentDrumkit );
 	pSLlabel->setFixedSize( 170, 20 );
 	pSLlabel->move( 10, 3 );
 	pSLlabel->setToolTip( trUtf8("Loaded Soundlibrary") );
@@ -586,16 +586,16 @@ void PatternEditorPanel::gridResolutionChanged( QString str )
 	//INFOLOG( to_string( nResolution ) );
 	m_pDrumPatternEditor->setResolution( nResolution, bUseTriplets );
 
-	Engine::get_instance()->get_preferences()->setPatternEditorGridResolution( nResolution );
-	Engine::get_instance()->get_preferences()->setPatternEditorUsingTriplets( bUseTriplets );
+	g_engine->get_preferences()->setPatternEditorGridResolution( nResolution );
+	g_engine->get_preferences()->setPatternEditorUsingTriplets( bUseTriplets );
 }
 
 
 
 void PatternEditorPanel::selectedPatternChangedEvent()
 {
-	PatternList *pPatternList = Engine::get_instance()->getSong()->get_pattern_list();
-	int nSelectedPatternNumber = Engine::get_instance()->getSelectedPatternNumber();
+	PatternList *pPatternList = g_engine->getSong()->get_pattern_list();
+	int nSelectedPatternNumber = g_engine->getSelectedPatternNumber();
 
 	if ( (nSelectedPatternNumber != -1) && ( (uint)nSelectedPatternNumber < pPatternList->get_size() ) ) {
 		// update pattern name text
@@ -630,7 +630,7 @@ void PatternEditorPanel::selectedPatternChangedEvent()
 
 void PatternEditorPanel::hearNotesBtnClick(Button *ref)
 {
-	Preferences *pref = ( Engine::get_instance()->get_preferences() );
+	Preferences *pref = ( g_engine->get_preferences() );
 	pref->setHearNewNotes( ref->isPressed() );
 
 	if (ref->isPressed() ) {
@@ -646,7 +646,7 @@ void PatternEditorPanel::hearNotesBtnClick(Button *ref)
 
 void PatternEditorPanel::recordEventsBtnClick(Button *ref)
 {
-	Preferences *pref = ( Engine::get_instance()->get_preferences() );
+	Preferences *pref = ( g_engine->get_preferences() );
 	pref->setRecordEvents( ref->isPressed() );
 
 	if (ref->isPressed() ) {
@@ -662,7 +662,7 @@ void PatternEditorPanel::recordEventsBtnClick(Button *ref)
 
 void PatternEditorPanel::quantizeEventsBtnClick(Button *ref)
 {
-	Preferences *pref = ( Engine::get_instance()->get_preferences() );
+	Preferences *pref = ( g_engine->get_preferences() );
 	pref->setQuantizeEvents( ref->isPressed() );
 
 	if (ref->isPressed() ) {
@@ -676,7 +676,7 @@ void PatternEditorPanel::quantizeEventsBtnClick(Button *ref)
 
 void PatternEditorPanel::stateChangedEvent(int state)
 {
-	Transport* xport = Engine::get_instance()->get_transport();
+	Transport* xport = g_engine->get_transport();
 	if ( (state == STATE_READY) && (xport->get_state() != TransportPosition::ROLLING) ) {
 		m_bEnablePatternResize = true;
 	}
@@ -687,7 +687,7 @@ void PatternEditorPanel::stateChangedEvent(int state)
 
 void PatternEditorPanel::transportEvent(TransportPosition::State state)
 {
-	int h2state = Engine::get_instance()->getState();
+	int h2state = g_engine->getState();
 	if( (h2state == STATE_READY) && (state != TransportPosition::ROLLING) ) {
 		m_bEnablePatternResize = true;
 	}
@@ -855,17 +855,17 @@ void PatternEditorPanel::patternSizeChanged( QString str )
 
 	resizeEvent( NULL );
 
-	Engine::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );
+	g_engine->get_event_queue()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );
 }
 
 
 
 void PatternEditorPanel::moveUpBtnClicked(Button *)
 {
-	Engine *engine = Engine::get_instance();
+	Engine *engine = g_engine;
 	int nSelectedInstrument = engine->getSelectedInstrumentNumber();
 
-	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	g_engine->get_audio_engine()->lock( RIGHT_HERE );
 
 	Song *pSong = engine->getSong();
 	InstrumentList *pInstrumentList = pSong->get_instrument_list();
@@ -889,13 +889,13 @@ void PatternEditorPanel::moveUpBtnClicked(Button *)
 			pSeq2->m_noteList = noteList;
 		}
 */
-		Engine::get_instance()->get_audio_engine()->unlock();
+		g_engine->get_audio_engine()->unlock();
 		engine->setSelectedInstrumentNumber( nSelectedInstrument - 1 );
 
 		pSong->set_modified( true );
 	}
 	else {
-		Engine::get_instance()->get_audio_engine()->unlock();
+		g_engine->get_audio_engine()->unlock();
 	}
 }
 
@@ -903,10 +903,10 @@ void PatternEditorPanel::moveUpBtnClicked(Button *)
 
 void PatternEditorPanel::moveDownBtnClicked(Button *)
 {
-	Engine *engine = Engine::get_instance();
+	Engine *engine = g_engine;
 	int nSelectedInstrument = engine->getSelectedInstrumentNumber();
 
-	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	g_engine->get_audio_engine()->lock( RIGHT_HERE );
 
 	Song *pSong = engine->getSong();
 	InstrumentList *pInstrumentList = pSong->get_instrument_list();
@@ -930,13 +930,13 @@ void PatternEditorPanel::moveDownBtnClicked(Button *)
 			pSeq2->m_noteList = noteList;
 		}
 */
-		Engine::get_instance()->get_audio_engine()->unlock();
+		g_engine->get_audio_engine()->unlock();
 		engine->setSelectedInstrumentNumber( nSelectedInstrument + 1 );
 
 		pSong->set_modified( true );
 	}
 	else {
-		Engine::get_instance()->get_audio_engine()->unlock();
+		g_engine->get_audio_engine()->unlock();
 	}
 
 }

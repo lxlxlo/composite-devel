@@ -56,7 +56,7 @@ PlaylistDialog::PlaylistDialog ( QWidget* pParent )
 
 	setupUi ( this );
 	INFOLOG ( "INIT" );
-	setWindowTitle ( trUtf8 ( "Play List Browser" ) + QString(" - ") + QString( Engine::get_instance()->get_playlist()->__playlistName  ) );
+	setWindowTitle ( trUtf8 ( "Play List Browser" ) + QString(" - ") + QString( g_engine->get_playlist()->__playlistName  ) );
 	setFixedSize ( width(), height() );
 	installEventFilter(this);
 
@@ -222,12 +222,12 @@ PlaylistDialog::PlaylistDialog ( QWidget* pParent )
 	
 
 //restore the playlist
-	if( Engine::get_instance()->m_PlayList.size() > 0 ){
-		for ( uint i = 0; i < Engine::get_instance()->m_PlayList.size(); ++i ){
+	if( g_engine->m_PlayList.size() > 0 ){
+		for ( uint i = 0; i < g_engine->m_PlayList.size(); ++i ){
 			QTreeWidgetItem* m_pPlaylistItem = new QTreeWidgetItem ( m_pPlaylistTree );
-			m_pPlaylistItem->setText ( 0, Engine::get_instance()->m_PlayList[i].m_hFile );
-			m_pPlaylistItem->setText ( 1, Engine::get_instance()->m_PlayList[i].m_hScript );
-			if ( Engine::get_instance()->m_PlayList[i].m_hScriptEnabled == "Use Script" ) {
+			m_pPlaylistItem->setText ( 0, g_engine->m_PlayList[i].m_hFile );
+			m_pPlaylistItem->setText ( 1, g_engine->m_PlayList[i].m_hScript );
+			if ( g_engine->m_PlayList[i].m_hScriptEnabled == "Use Script" ) {
 				m_pPlaylistItem->setCheckState( 2, Qt::Checked );
 			}else{
 				m_pPlaylistItem->setCheckState( 2, Qt::Unchecked );
@@ -236,8 +236,8 @@ PlaylistDialog::PlaylistDialog ( QWidget* pParent )
 
 
 		//restore the selected item		
-		int selected = Engine::get_instance()->get_playlist()->getActiveSongNumber();
-		int Selected = Engine::get_instance()->get_playlist()->getSelectedSongNr();
+		int selected = g_engine->get_playlist()->getActiveSongNumber();
+		int Selected = g_engine->get_playlist()->getSelectedSongNr();
 		if( selected == -1 && Selected == -1 ) return;
 		
 		int aselected = 0;
@@ -269,7 +269,7 @@ PlaylistDialog::~PlaylistDialog()
 
 void PlaylistDialog::addSong()
 {
-	static QString songDir = Engine::get_instance()->get_preferences()->getDataDirectory()  + "/songs";;
+	static QString songDir = g_engine->get_preferences()->getDataDirectory()  + "/songs";;
 
 	std::auto_ptr<QFileDialog> fd( new QFileDialog );
 	fd->setFileMode ( QFileDialog::ExistingFile );
@@ -290,7 +290,7 @@ void PlaylistDialog::addSong()
 
 void PlaylistDialog::addCurrentSong()
 {
-	Song *song = Engine::get_instance()->getSong();
+	Song *song = g_engine->getSong();
 	QString filename = song->get_filename();
 	
 
@@ -320,10 +320,10 @@ void PlaylistDialog::removeFromList()
 	{
 		if (m_pItem == 0){
 			m_pPlaylist->clear();
-			Engine::get_instance()->m_PlayList.clear();
-			Engine::get_instance()->get_playlist()->setSelectedSongNr( -1 );
-			Engine::get_instance()->get_playlist()->setActiveSongNumber( -1 );
-			Engine::get_instance()->get_playlist()->__playlistName = "";
+			g_engine->m_PlayList.clear();
+			g_engine->get_playlist()->setSelectedSongNr( -1 );
+			g_engine->get_playlist()->setActiveSongNumber( -1 );
+			g_engine->get_playlist()->__playlistName = "";
 			setWindowTitle ( trUtf8 ( "Play List Browser" ) );
 			return;
 		}else
@@ -331,10 +331,10 @@ void PlaylistDialog::removeFromList()
 			///avoid segfault if the last item will be removed!!
 			delete m_pPlaylistItem;
 			updatePlayListVector();
-			if (  Engine::get_instance()->get_playlist()->getActiveSongNumber() == index ){
-				Engine::get_instance()->get_playlist()->setActiveSongNumber( -1 );
-			}else if (  Engine::get_instance()->get_playlist()->getActiveSongNumber() > index  ){
-				Engine::get_instance()->get_playlist()->setActiveSongNumber(  Engine::get_instance()->get_playlist()->getActiveSongNumber() -1 );
+			if (  g_engine->get_playlist()->getActiveSongNumber() == index ){
+				g_engine->get_playlist()->setActiveSongNumber( -1 );
+			}else if (  g_engine->get_playlist()->getActiveSongNumber() > index  ){
+				g_engine->get_playlist()->setActiveSongNumber(  g_engine->get_playlist()->getActiveSongNumber() -1 );
 			}
 			
 		}
@@ -347,10 +347,10 @@ void PlaylistDialog::clearPlaylist()
 	QTreeWidget* m_pPlaylist = m_pPlaylistTree;
 	
 	m_pPlaylist->clear();
-	Engine::get_instance()->m_PlayList.clear();
-	Engine::get_instance()->get_playlist()->setSelectedSongNr( -1 );
-	Engine::get_instance()->get_playlist()->setActiveSongNumber( -1 );
-	Engine::get_instance()->get_playlist()->__playlistName = "";
+	g_engine->m_PlayList.clear();
+	g_engine->get_playlist()->setSelectedSongNr( -1 );
+	g_engine->get_playlist()->setActiveSongNumber( -1 );
+	g_engine->get_playlist()->__playlistName = "";
 	setWindowTitle ( trUtf8 ( "Play List Browser" ) );
 	return;	
 }
@@ -375,7 +375,7 @@ void PlaylistDialog::updatePlayListNode ( QString file )
 void PlaylistDialog::loadList()
 {
 
-	static QString sDirectory =  Engine::get_instance()->get_preferences()->getDataDirectory()  + "playlists/" ;
+	static QString sDirectory =  g_engine->get_preferences()->getDataDirectory()  + "playlists/" ;
 
 	std::auto_ptr<QFileDialog> fd( new QFileDialog );
 	fd->setFileMode ( QFileDialog::ExistingFile );
@@ -394,16 +394,16 @@ void PlaylistDialog::loadList()
 		}
 
 	
-		if(Engine::get_instance()->m_PlayList.size() > 0){
+		if(g_engine->m_PlayList.size() > 0){
 
 			QTreeWidget* m_pPlaylist = m_pPlaylistTree;
 			m_pPlaylist->clear();
 
-			for ( uint i = 0; i < Engine::get_instance()->m_PlayList.size(); ++i ){
+			for ( uint i = 0; i < g_engine->m_PlayList.size(); ++i ){
 				QTreeWidgetItem* m_pPlaylistItem = new QTreeWidgetItem ( m_pPlaylistTree );
-				m_pPlaylistItem->setText ( 0, Engine::get_instance()->m_PlayList[i].m_hFile );
-				m_pPlaylistItem->setText ( 1, Engine::get_instance()->m_PlayList[i].m_hScript );
-				if ( Engine::get_instance()->m_PlayList[i].m_hScriptEnabled == "Use Script" ) {
+				m_pPlaylistItem->setText ( 0, g_engine->m_PlayList[i].m_hFile );
+				m_pPlaylistItem->setText ( 1, g_engine->m_PlayList[i].m_hScript );
+				if ( g_engine->m_PlayList[i].m_hScriptEnabled == "Use Script" ) {
 					m_pPlaylistItem->setCheckState( 2, Qt::Checked );
 				}else{
 					m_pPlaylistItem->setCheckState( 2, Qt::Unchecked );
@@ -412,9 +412,9 @@ void PlaylistDialog::loadList()
 
 			QTreeWidgetItem* m_pPlaylistItem = m_pPlaylist->topLevelItem ( 0 );
 			m_pPlaylist->setCurrentItem ( m_pPlaylistItem );
-			Engine::get_instance()->get_playlist()->setSelectedSongNr( 0 );
-			Engine::get_instance()->get_playlist()->__playlistName = filename;
-			setWindowTitle ( trUtf8 ( "Play List Browser" ) + QString(" - ") + QString( Engine::get_instance()->get_playlist()->__playlistName  ) );
+			g_engine->get_playlist()->setSelectedSongNr( 0 );
+			g_engine->get_playlist()->__playlistName = filename;
+			setWindowTitle ( trUtf8 ( "Play List Browser" ) + QString(" - ") + QString( g_engine->get_playlist()->__playlistName  ) );
 		}
 
 	}
@@ -424,9 +424,9 @@ void PlaylistDialog::loadList()
 void PlaylistDialog::newScript()
 {
 
-	Preferences *pPref = Engine::get_instance()->get_preferences();
+	Preferences *pPref = g_engine->get_preferences();
 
-	QString sDirectory = ( Engine::get_instance()->get_preferences()->getDataDirectory()  + "scripts/");
+	QString sDirectory = ( g_engine->get_preferences()->getDataDirectory()  + "scripts/");
 	std::auto_ptr<QFileDialog> fd( new QFileDialog );
 	fd->setFileMode ( QFileDialog::AnyFile );
 	fd->setFilter ( trUtf8 ( "Hydrogen Scripts (*.sh)" ) );
@@ -505,7 +505,7 @@ void PlaylistDialog::newScript()
 void PlaylistDialog::saveListAs()
 {
 
-	QString sDirectory =  Engine::get_instance()->get_preferences()->getDataDirectory()  + "playlists/";
+	QString sDirectory =  g_engine->get_preferences()->getDataDirectory()  + "playlists/";
 	std::auto_ptr<QFileDialog> fd( new QFileDialog );
 	fd->setFileMode ( QFileDialog::AnyFile );
 	fd->setFilter ( trUtf8 ( "Hydrogen Playlist (*.h2playlist)" ) );
@@ -536,8 +536,8 @@ void PlaylistDialog::saveListAs()
 		ERRORLOG( "Error saving the playlist" );
 	}else
 	{
-		Engine::get_instance()->get_playlist()->__playlistName = filename;
-		setWindowTitle ( trUtf8 ( "Play List Browser" ) + QString(" - ") + QString( Engine::get_instance()->get_playlist()->__playlistName  ) );
+		g_engine->get_playlist()->__playlistName = filename;
+		setWindowTitle ( trUtf8 ( "Play List Browser" ) + QString(" - ") + QString( g_engine->get_playlist()->__playlistName  ) );
 	}
 }
 
@@ -545,13 +545,13 @@ void PlaylistDialog::saveListAs()
 void PlaylistDialog::saveList()
 {
 
-	if ( Engine::get_instance()->get_playlist()->__playlistName == "") {
+	if ( g_engine->get_playlist()->__playlistName == "") {
 		// just in case!
 		return saveListAs();
 	}
 
 	LocalFileMng fileMng;
-	int err = fileMng.savePlayList( Engine::get_instance()->get_playlist()->__playlistName.toStdString() );
+	int err = fileMng.savePlayList( g_engine->get_playlist()->__playlistName.toStdString() );
 	if ( err != 0 ) {
 		ERRORLOG( "Error saving the playlist" );
 	}
@@ -568,7 +568,7 @@ void PlaylistDialog::loadScript()
 		return;
 	}
 
-	static QString lastUsedDir =  Engine::get_instance()->get_preferences()->getDataDirectory()  + "scripts/";
+	static QString lastUsedDir =  g_engine->get_preferences()->getDataDirectory()  + "scripts/";
 
 	std::auto_ptr<QFileDialog> fd( new QFileDialog );
 	fd->setFileMode ( QFileDialog::ExistingFile );
@@ -620,7 +620,7 @@ void PlaylistDialog::removeScript()
 
 void PlaylistDialog::editScript()
 {
-	Preferences *pPref = Engine::get_instance()->get_preferences();
+	Preferences *pPref = g_engine->get_preferences();
 	if( pPref->getDefaultEditor().isEmpty() ){
 		QMessageBox::information ( this, "Composite", trUtf8 ( "No Default Editor Set. Please set your Default Editor\nDo not use a console based Editor\nSorry, but this will not work for the moment." ) );
 
@@ -670,7 +670,7 @@ void PlaylistDialog::o_upBClicked()
 {	
 	timer->stop();
 
-	Playlist* pList = Engine::get_instance()->get_playlist();
+	Playlist* pList = g_engine->get_playlist();
 
 	QTreeWidget* m_pPlaylist = m_pPlaylistTree;
 	QTreeWidgetItem* m_pPlaylistItem = m_pPlaylistTree->currentItem();
@@ -703,7 +703,7 @@ void PlaylistDialog::o_upBClicked()
 void PlaylistDialog::o_downBClicked()
 {
 	timer->stop();
-	Playlist* pList = Engine::get_instance()->get_playlist();
+	Playlist* pList = g_engine->get_playlist();
 
 	QTreeWidget* m_pPlaylist = m_pPlaylistTree;
 	int length = m_pPlaylist->topLevelItemCount();
@@ -753,7 +753,7 @@ void PlaylistDialog::on_m_pPlaylistTree_itemClicked ( QTreeWidgetItem * item, in
 
 void PlaylistDialog::nodePlayBTN( Button* ref )
 {
-	Engine *engine = Engine::get_instance();
+	Engine *engine = g_engine;
 	CompositeApp *pH2App = CompositeApp::get_instance();
 
 	if (ref->isPressed()) {
@@ -786,7 +786,7 @@ void PlaylistDialog::nodePlayBTN( Button* ref )
 
 		QTreeWidget* m_pPlaylist = m_pPlaylistTree;
 		int index = m_pPlaylist->indexOfTopLevelItem ( m_pPlaylistItem );
-		Engine::get_instance()->get_playlist()->setActiveSongNumber( index );
+		g_engine->get_playlist()->setActiveSongNumber( index );
 	
 		pH2App->setSong ( pSong );
 		engine->setSelectedPatternNumber ( 0 );
@@ -803,21 +803,21 @@ void PlaylistDialog::nodePlayBTN( Button* ref )
 void PlaylistDialog::nodeStopBTN( Button* /*ref*/ )
 {
 	m_pPlayBtn->setPressed(false);
-	Engine::get_instance()->sequencer_stop();
-	Engine::get_instance()->setPatternPos ( 0 );
+	g_engine->sequencer_stop();
+	g_engine->setPatternPos ( 0 );
 }
 
 
 void PlaylistDialog::ffWDBtnClicked( Button* /*ref*/)
 {
-	Engine *pEngine = Engine::get_instance();
+	Engine *pEngine = g_engine;
 	pEngine->setPatternPos( pEngine->getPatternPos() + 1 );
 }
 
 
 void PlaylistDialog::rewindBtnClicked( Button* /*ref*/ )
 {
-	Engine *pEngine = Engine::get_instance();
+	Engine *pEngine = g_engine;
 	pEngine->setPatternPos( pEngine->getPatternPos() - 1 );
 }
 
@@ -835,11 +835,11 @@ void PlaylistDialog::on_m_pPlaylistTree_itemDoubleClicked ()
 
 	QTreeWidget* m_pPlaylist = m_pPlaylistTree;
 	int index = m_pPlaylist->indexOfTopLevelItem ( m_pPlaylistItem );
-	Engine::get_instance()->get_playlist()->setSelectedSongNr( index );
-	Engine::get_instance()->get_playlist()->setActiveSongNumber( index );
+	g_engine->get_playlist()->setSelectedSongNr( index );
+	g_engine->get_playlist()->setActiveSongNumber( index );
 	
 	CompositeApp *pH2App = CompositeApp::get_instance();
-	Engine *engine = Engine::get_instance();
+	Engine *engine = g_engine;
 	
 
 	engine->get_transport()->stop();
@@ -897,7 +897,7 @@ void PlaylistDialog::updatePlayListVector()
 	QTreeWidget* m_pPlaylist = m_pPlaylistTree;
 	int length = m_pPlaylist->topLevelItemCount();
 
-	Engine::get_instance()->m_PlayList.clear();
+	g_engine->m_PlayList.clear();
 
 
 
@@ -916,7 +916,7 @@ void PlaylistDialog::updatePlayListVector()
 		playListItem.m_hScript = m_pPlaylistItem->text ( 1 );
 		playListItem.m_hScriptEnabled = execval;
 
-		Engine::get_instance()->m_PlayList.push_back( playListItem );
+		g_engine->m_PlayList.push_back( playListItem );
 	}
 	timer->start( 1000 );
 }
@@ -926,7 +926,7 @@ void PlaylistDialog::updateActiveSongNumber()
 {
 	QTreeWidget* m_pPlaylist = m_pPlaylistTree;
 
-	for ( uint i = 0; i < Engine::get_instance()->m_PlayList.size(); ++i ){
+	for ( uint i = 0; i < g_engine->m_PlayList.size(); ++i ){
 		if ( !m_pPlaylist->topLevelItem( i ) )
 			break;
 		( m_pPlaylist->topLevelItem( i ) )->setBackground( 0, QBrush() );
@@ -935,7 +935,7 @@ void PlaylistDialog::updateActiveSongNumber()
 		
 	}
 		
-	int selected = Engine::get_instance()->get_playlist()->getActiveSongNumber();
+	int selected = g_engine->get_playlist()->getActiveSongNumber();
 	if ( selected == -1 )
 		return;
 	
@@ -958,16 +958,16 @@ bool PlaylistDialog::eventFilter ( QObject * /*o*/, QEvent * e )
 		switch ( k->key() )
 		{
 			case  Qt::Key_F5 :
-				if( Engine::get_instance()->m_PlayList.size() == 0)
+				if( g_engine->m_PlayList.size() == 0)
 					break;
-				Engine::get_instance()->get_playlist()->setPrevSongPlaylist();
+				g_engine->get_playlist()->setPrevSongPlaylist();
 				return TRUE;
 				break;
 
 			case  Qt::Key_F6 :
-				if( Engine::get_instance()->m_PlayList.size() == 0)
+				if( g_engine->m_PlayList.size() == 0)
 					break;
-				Engine::get_instance()->get_playlist()->setNextSongPlaylist();
+				g_engine->get_playlist()->setNextSongPlaylist();
 				return TRUE;
 				break;
 		}

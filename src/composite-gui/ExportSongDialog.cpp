@@ -46,7 +46,7 @@ ExportSongDialog::ExportSongDialog(QWidget* parent)
 
 	CompositeApp::get_instance()->addEventListener( this );
 
-	m_pSamplerateLbl->setText( trUtf8( "Sample rate: %1" ).arg( Engine::get_instance()->get_audio_output()->getSampleRate() ) );
+	m_pSamplerateLbl->setText( trUtf8( "Sample rate: %1" ).arg( g_engine->get_audio_output()->getSampleRate() ) );
 	m_pProgressBar->setValue( 0 );
 }
 
@@ -73,7 +73,7 @@ void ExportSongDialog::on_browseBtn_clicked()
 	fd->setWindowTitle( trUtf8( "Export song" ) );
 //	fd->setIcon( QPixmap( Skin::getImagePath() + "/icon16.png" ) );
 
-	QString defaultFilename( Engine::get_instance()->getSong()->get_name() );
+	QString defaultFilename( g_engine->getSong()->get_name() );
 	defaultFilename.replace( '*', "_" );
 	defaultFilename += ".wav";
 
@@ -105,14 +105,14 @@ void ExportSongDialog::on_okBtn_clicked()
 
 	QString filename = exportNameTxt->text();
 	m_bExporting = true;
-	Engine::get_instance()->startExportSong( filename );
+	g_engine->startExportSong( filename );
 }
 
 
 
 void ExportSongDialog::on_closeBtn_clicked()
 {
-	Engine::get_instance()->stopExportSong();
+	g_engine->stopExportSong();
 	m_bExporting = false;
 	accept();
 
@@ -137,7 +137,7 @@ void ExportSongDialog::progressEvent( int nValue )
 	if ( nValue == 100 ) {
 	  	//INFOLOG("SONO A 100");
 		
-		Engine::get_instance()->stopExportSong();
+		g_engine->stopExportSong();
 		m_bExporting = false;
 		QFile check( exportNameTxt->text() );
 		if ( ! check.exists() ) {

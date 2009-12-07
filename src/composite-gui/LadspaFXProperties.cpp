@@ -129,10 +129,10 @@ void LadspaFXProperties::faderChanged( Fader * ref )
 	ref->setPeak_L( ref->getValue() );
 	ref->setPeak_R( ref->getValue() );
 
-	Song *pSong = (Engine::get_instance() )->getSong();
+	Song *pSong = (g_engine )->getSong();
 
 #ifdef LADSPA_SUPPORT
-	LadspaFX *pFX = Engine::get_instance()->get_effects()->getLadspaFX( m_nLadspaFX );
+	LadspaFX *pFX = g_engine->get_effects()->getLadspaFX( m_nLadspaFX );
 
 	for ( uint i = 0; i < m_pInputControlFaders.size(); i++ ) {
 		if (ref == m_pInputControlFaders[ i ] ) {
@@ -167,7 +167,7 @@ void LadspaFXProperties::updateControls()
 	INFOLOG( "*** [updateControls] ***" );
 	m_pTimer->stop();
 
-	LadspaFX *pFX = Engine::get_instance()->get_effects()->getLadspaFX( m_nLadspaFX );
+	LadspaFX *pFX = g_engine->get_effects()->getLadspaFX( m_nLadspaFX );
 
 	// svuoto i vettori..
 	if ( m_pInputControlNames.size() != 0 ) {
@@ -344,24 +344,24 @@ void LadspaFXProperties::selectFXBtnClicked()
 		if ( !sSelectedFX.isEmpty() ) {
 			LadspaFX *pFX = NULL;
 
-			vector<Tritium::LadspaFXInfo*> pluginList = Engine::get_instance()->get_effects()->getPluginList();
+			vector<Tritium::LadspaFXInfo*> pluginList = g_engine->get_effects()->getPluginList();
 			for (uint i = 0; i < pluginList.size(); i++) {
 				Tritium::LadspaFXInfo *pFXInfo = pluginList[i];
 				if (pFXInfo->m_sName == sSelectedFX ) {
-					int nSampleRate = Engine::get_instance()->get_audio_output()->getSampleRate();
+					int nSampleRate = g_engine->get_audio_output()->getSampleRate();
 					pFX = LadspaFX::load( pFXInfo->m_sFilename, pFXInfo->m_sLabel, nSampleRate );
 					pFX->setEnabled( true );
 					break;
 				}
 			}
-			//Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
-			Song *pSong = (Engine::get_instance() )->getSong();
+			//g_engine->get_audio_engine()->lock( RIGHT_HERE );
+			Song *pSong = (g_engine )->getSong();
 			pSong->set_modified(true);
 
-			Engine::get_instance()->get_effects()->setLadspaFX( pFX, m_nLadspaFX );
+			g_engine->get_effects()->setLadspaFX( pFX, m_nLadspaFX );
 
-			//Engine::get_instance()->get_audio_engine()->unlock();
-			Engine::get_instance()->restartLadspaFX();
+			//g_engine->get_audio_engine()->unlock();
+			g_engine->restartLadspaFX();
 			updateControls();
 		}
 		else {	// no plugin selected
@@ -378,8 +378,8 @@ void LadspaFXProperties::updateOutputControls()
 #ifdef LADSPA_SUPPORT
 
 //	INFOLOG( "[updateOutputControls]" );
-//	Song *pSong = (Engine::get_instance() )->getSong();
-	LadspaFX *pFX = Engine::get_instance()->get_effects()->getLadspaFX(m_nLadspaFX);
+//	Song *pSong = (g_engine )->getSong();
+	LadspaFX *pFX = g_engine->get_effects()->getLadspaFX(m_nLadspaFX);
 
 	if (pFX) {
 		m_pActivateBtn->setEnabled(true);
@@ -424,12 +424,12 @@ void LadspaFXProperties::updateOutputControls()
 void LadspaFXProperties::activateBtnClicked()
 {
 #ifdef LADSPA_SUPPORT
-//	Song *pSong = (Engine::get_instance() )->getSong();
-	LadspaFX *pFX = Engine::get_instance()->get_effects()->getLadspaFX(m_nLadspaFX);
+//	Song *pSong = (g_engine )->getSong();
+	LadspaFX *pFX = g_engine->get_effects()->getLadspaFX(m_nLadspaFX);
 	if (pFX) {
-		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		g_engine->get_audio_engine()->lock( RIGHT_HERE );
 		pFX->setEnabled( !pFX->isEnabled() );
-		Engine::get_instance()->get_audio_engine()->unlock();
+		g_engine->get_audio_engine()->unlock();
 	}
 #endif
 }

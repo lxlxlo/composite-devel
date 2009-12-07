@@ -374,7 +374,7 @@ PlayerControl::PlayerControl(QWidget *parent)
 	m_pJackMasterBtn->move(56, 26);
 	//~ jack time master
 
-	m_pEngine = Engine::get_instance();
+	m_pEngine = g_engine;
 
 	// CPU load widget
 	m_pCpuLoadWidget = new CpuLoadWidget( pJackPanel );
@@ -454,7 +454,7 @@ PlayerControl::~PlayerControl() {
 
 void PlayerControl::updatePlayerControl()
 {
-	Preferences *pPref = Engine::get_instance()->get_preferences();
+	Preferences *pPref = g_engine->get_preferences();
 	CompositeApp *pH2App = CompositeApp::get_instance();
 	m_pShowMixerBtn->setPressed( pH2App->getMixer()->isVisible() );
 	m_pShowInstrumentRackBtn->setPressed( pH2App->getInstrumentRack()->isVisible() );
@@ -538,7 +538,7 @@ void PlayerControl::updatePlayerControl()
 				else
 				{
 					m_pJackMasterBtn->setPressed(false);
-					Engine::get_instance()->clearJackTimeMaster();	
+					g_engine->clearJackTimeMaster();	
 					pPref->m_bJackMasterMode = Preferences::NO_JACK_TIME_MASTER;
 				}
 				//m_pJackTransportBtn->setPressed(true);
@@ -553,7 +553,7 @@ void PlayerControl::updatePlayerControl()
 	//~ jack transport master
 
 	// time
-	float fFrames = Engine::get_instance()->get_transport()->get_current_frame();
+	float fFrames = g_engine->get_transport()->get_current_frame();
 	float fSampleRate = m_pEngine->get_audio_output()->getSampleRate();
 	if ( fSampleRate != 0 ) {
 		float fSeconds = fFrames / fSampleRate;
@@ -588,7 +588,7 @@ void PlayerControl::updatePlayerControl()
 	switch (beatstocountondisplay){
 		case 1 :
 			if (bcDisplaystatus == 1){
-				Engine::get_instance()->get_preferences()->m_bbc = Preferences::BC_OFF;
+				g_engine->get_preferences()->m_bbc = Preferences::BC_OFF;
 				bcDisplaystatus = 0;
 			}
 			sprintf(bcstatus, "R");
@@ -596,8 +596,8 @@ void PlayerControl::updatePlayerControl()
 				
 			break;
 		default:
-			if (Engine::get_instance()->get_preferences()->m_bbc == Preferences::BC_OFF){
-				Engine::get_instance()->get_preferences()->m_bbc = Preferences::BC_ON;
+			if (g_engine->get_preferences()->m_bbc == Preferences::BC_OFF){
+				g_engine->get_preferences()->m_bbc = Preferences::BC_ON;
 				bcDisplaystatus = 1;
 			}
 			sprintf(bcstatus, "%02d ", beatstocountondisplay -1);
@@ -701,9 +701,9 @@ void PlayerControl::bpmChanged() {
 
 	m_pEngine->getSong()->set_modified( true );
 
-	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	g_engine->get_audio_engine()->lock( RIGHT_HERE );
 	m_pEngine->setBPM( fNewBpmValue );
-	Engine::get_instance()->get_audio_engine()->unlock();
+	g_engine->get_audio_engine()->unlock();
 }
 
 
@@ -711,7 +711,7 @@ void PlayerControl::bpmChanged() {
 //beatcounter
 void PlayerControl::bconoffBtnClicked( Button* )
 {
-	Preferences *pPref = Engine::get_instance()->get_preferences();
+	Preferences *pPref = g_engine->get_preferences();
 	if (m_pBConoffBtn->isPressed()) {
 		pPref->m_bbc = Preferences::BC_ON;
 		(CompositeApp::get_instance())->setStatusBarMessage(trUtf8(" BC Panel on"), 5000);
@@ -728,7 +728,7 @@ void PlayerControl::bconoffBtnClicked( Button* )
 
 void PlayerControl::bcSetPlayBtnClicked( Button* )
 {
-	Preferences *pPref = Engine::get_instance()->get_preferences();
+	Preferences *pPref = g_engine->get_preferences();
 	if (m_pBCSetPlayBtn->isPressed()) {
 		pPref->m_mmcsetplay = Preferences::SET_PLAY_ON;
 		(CompositeApp::get_instance())->setStatusBarMessage(trUtf8(" Count BPM and start PLAY"), 5000);
@@ -804,18 +804,18 @@ void PlayerControl::bctButtonClicked( Button* tBtn)
 
 void PlayerControl::jackTransportBtnClicked( Button* )
 {
-	Preferences *pPref = Engine::get_instance()->get_preferences();
+	Preferences *pPref = g_engine->get_preferences();
 
 	if (m_pJackTransportBtn->isPressed()) {
-		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		g_engine->get_audio_engine()->lock( RIGHT_HERE );
 		pPref->m_bJackTransportMode = Preferences::USE_JACK_TRANSPORT;
-		Engine::get_instance()->get_audio_engine()->unlock();
+		g_engine->get_audio_engine()->unlock();
 		(CompositeApp::get_instance())->setStatusBarMessage(trUtf8("Jack-transport mode = On"), 5000);
 	}
 	else {
-		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		g_engine->get_audio_engine()->lock( RIGHT_HERE );
 		pPref->m_bJackTransportMode = Preferences::NO_JACK_TRANSPORT;
-		Engine::get_instance()->get_audio_engine()->unlock();
+		g_engine->get_audio_engine()->unlock();
 		(CompositeApp::get_instance())->setStatusBarMessage(trUtf8("Jack-transport mode = Off"), 5000);
 	}
 
@@ -841,13 +841,13 @@ void PlayerControl::jackTimeMasterEvent( int data )
 void PlayerControl::jackMasterBtnClicked( Button* )
 {	
 #ifdef JACK_SUPPORT
-	Preferences *pPref = Engine::get_instance()->get_preferences();
+	Preferences *pPref = g_engine->get_preferences();
 
 	// This function just manipulates the Engine.
 	// The widget updates itself by the EventListener
 	if (m_pJackMasterBtn->isPressed()) {
 		// Set as time master.
-		Engine::get_instance()->setJackTimeMaster(false);
+		g_engine->setJackTimeMaster(false);
 		pPref->m_bJackMasterMode = Preferences::USE_JACK_TIME_MASTER;
 		CompositeApp::get_instance()->setStatusBarMessage(trUtf8(" Jack-Time-Master mode = On"), 5000);
 	}
@@ -855,7 +855,7 @@ void PlayerControl::jackMasterBtnClicked( Button* )
 		// Clear time master.
 		pPref->m_bJackMasterMode = Preferences::NO_JACK_TIME_MASTER;
 		(CompositeApp::get_instance())->setStatusBarMessage(trUtf8(" Jack-Time-Master mode = Off"), 5000);
-		Engine::get_instance()->clearJackTimeMaster();
+		g_engine->clearJackTimeMaster();
 	}
 
 	if (pPref->m_sAudioDriver != "Jack") {
@@ -876,9 +876,9 @@ void PlayerControl::bpmClicked()
 
 		m_pEngine->getSong()->set_modified( true );
 
-		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		g_engine->get_audio_engine()->lock( RIGHT_HERE );
 		m_pEngine->setBPM( fNewVal );
-		Engine::get_instance()->get_audio_engine()->unlock();
+		g_engine->get_audio_engine()->unlock();
 	}
 	else {
 		// user entered nothing or pressed Cancel
@@ -919,7 +919,7 @@ void PlayerControl::onBpmTimerEvent()
 
 void PlayerControl::FFWDBtnClicked( Button* )
 {
-	Engine *pEngine = Engine::get_instance();
+	Engine *pEngine = g_engine;
 	pEngine->setPatternPos( pEngine->getPatternPos() + 1 );
 }
 
@@ -927,7 +927,7 @@ void PlayerControl::FFWDBtnClicked( Button* )
 
 void PlayerControl::RewindBtnClicked( Button* )
 {
-	Engine *pEngine = Engine::get_instance();
+	Engine *pEngine = g_engine;
 	pEngine->setPatternPos( pEngine->getPatternPos() - 1 );
 }
 
@@ -935,7 +935,7 @@ void PlayerControl::RewindBtnClicked( Button* )
 
 void PlayerControl::songLoopBtnClicked( Button* )
 {
-	Engine *pEngine = Engine::get_instance();
+	Engine *pEngine = g_engine;
 	Song *song = pEngine->getSong();
 	song->set_loop_enabled( ! song->is_loop_enabled() );
 	song->set_modified( true );
@@ -950,7 +950,7 @@ void PlayerControl::songLoopBtnClicked( Button* )
 
 void PlayerControl::metronomeButtonClicked(Button* ref)
 {
-	Engine::get_instance()->get_preferences()->m_bUseMetronome = ref->isPressed();
+	g_engine->get_preferences()->m_bUseMetronome = ref->isPressed();
 }
 
 

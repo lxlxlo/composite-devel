@@ -238,6 +238,18 @@ private:
 
 };
 
+/**
+ * \brief Global pointer to engine (convenience)
+ *
+ * This pointer is provided for the convenience of client applications
+ * that wish to have a single, global instance of the Tritium engine.
+ * This is just a declaration.  You must create the actual variable
+ * and instance somewhere else.
+ *
+ * This global variable IS NOT used internally by Tritium at all.
+ */
+extern Engine* g_engine;
+
 } // namespace Tritium
 
 #endif  // TRITIUM_ENGINE_HPP

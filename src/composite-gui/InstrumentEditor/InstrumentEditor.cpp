@@ -337,12 +337,12 @@ InstrumentEditor::~InstrumentEditor()
 
 void InstrumentEditor::selectedInstrumentChangedEvent()
 {
-	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+	g_engine->get_audio_engine()->lock( RIGHT_HERE );
 
-	Song *pSong = Engine::get_instance()->getSong();
+	Song *pSong = g_engine->getSong();
 	if (pSong != NULL) {
 		InstrumentList *pInstrList = pSong->get_instrument_list();
-		int nInstr = Engine::get_instance()->getSelectedInstrumentNumber();
+		int nInstr = g_engine->getSelectedInstrumentNumber();
 		if ( nInstr >= (int)pInstrList->get_size() ) {
 			nInstr = -1;
 		}
@@ -358,7 +358,7 @@ void InstrumentEditor::selectedInstrumentChangedEvent()
 	else {
 		m_pInstrument = NULL;
 	}
-	Engine::get_instance()->get_audio_engine()->unlock();
+	g_engine->get_audio_engine()->unlock();
 
 	// update layer list
 	if (m_pInstrument) {
@@ -547,8 +547,8 @@ void InstrumentEditor::buttonClicked( Button* pButton )
 		loadLayer();
 	}
 	else if ( pButton == m_pRemoveLayerBtn ) {
-		//Engine *pEngine = Engine::get_instance();
-		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+		//Engine *pEngine = g_engine;
+		g_engine->get_audio_engine()->lock( RIGHT_HERE );
 
 		if ( m_pInstrument ) {
 			Tritium::InstrumentLayer *pLayer = m_pInstrument->get_layer( m_nSelectedLayer );
@@ -557,7 +557,7 @@ void InstrumentEditor::buttonClicked( Button* pButton )
 				delete pLayer;
 			}
 		}
-		Engine::get_instance()->get_audio_engine()->unlock();
+		g_engine->get_audio_engine()->unlock();
 		selectedInstrumentChangedEvent();    // update all
 		m_pLayerPreview->updateAll();
 	}
@@ -572,7 +572,7 @@ void InstrumentEditor::loadLayer()
 {
 	static QString lastUsedDir = QDir::homePath();
 
-	Engine *engine = Engine::get_instance();
+	Engine *engine = g_engine;
 
 	AudioFileBrowser *fb = new AudioFileBrowser( NULL );
 	QStringList filename;
@@ -608,7 +608,7 @@ void InstrumentEditor::loadLayer()
 	
 			Tritium::Instrument *pInstr = NULL;
 	
-			Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
+			g_engine->get_audio_engine()->lock( RIGHT_HERE );
 			Song *song = engine->getSong();
 			InstrumentList *instrList = song->get_instrument_list();
 			pInstr = instrList->get( engine->getSelectedInstrumentNumber() );
@@ -648,7 +648,7 @@ void InstrumentEditor::loadLayer()
 	
 			pInstr->set_drumkit_name( "" );   // external sample, no drumkit info
 	
-			Engine::get_instance()->get_audio_engine()->unlock();
+			g_engine->get_audio_engine()->unlock();
 
 		}
 	}
@@ -698,7 +698,7 @@ void InstrumentEditor::labelClicked( ClickableLabel* /*pRef*/ )
 			selectedInstrumentChangedEvent();
 
 			// this will force an update...
-			Engine::get_instance()->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
+			g_engine->get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
 
 		}
 		else {
