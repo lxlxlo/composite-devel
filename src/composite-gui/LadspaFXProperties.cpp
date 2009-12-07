@@ -28,7 +28,7 @@
 #include <Tritium/Logger.hpp>
 
 #include "LadspaFXProperties.hpp"
-#include "HydrogenApp.hpp"
+#include "CompositeApp.hpp"
 #include "LadspaFXSelector.hpp"
 #include "Skin.hpp"
 #include "widgets/Fader.hpp"

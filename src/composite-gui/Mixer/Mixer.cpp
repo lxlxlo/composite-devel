@@ -23,7 +23,7 @@
 #include "MixerLine.hpp"
 
 #include "../Skin.hpp"
-#include "../HydrogenApp.hpp"
+#include "../CompositeApp.hpp"
 #include "../LadspaFXProperties.hpp"
 #include "../InstrumentEditor/InstrumentEditorPanel.hpp"
 #include "../widgets/Button.hpp"
@@ -157,7 +157,7 @@ Mixer::Mixer( QWidget* pParent )
 	connect( m_pUpdateTimer, SIGNAL( timeout() ), this, SLOT( updateMixer() ) );
 	m_pUpdateTimer->start(50);
 
-	HydrogenApp::get_instance()->addEventListener( this );
+	CompositeApp::get_instance()->addEventListener( this );
 }
 
 
@@ -202,7 +202,7 @@ void Mixer::muteClicked(MixerLine* ref)
 
 	Instrument *pInstr = instrList->get(nLine);
 	pInstr->set_muted( isMuteClicked);
-	//(HydrogenApp::get_instance())->setSelectedInstrument(nLine);
+	//(CompositeApp::get_instance())->setSelectedInstrument(nLine);
 	Engine::get_instance()->setSelectedInstrumentNumber(nLine);
 }
 
@@ -643,7 +643,7 @@ void Mixer::knobChanged(MixerLine* ref, int nKnob) {
 	Instrument *pInstr = instrList->get(nLine);
 	pInstr->set_fx_level( ref->getFXLevel(nKnob), nKnob );
 	QString sInfo = trUtf8( "Set FX %1 level ").arg( nKnob + 1 );
-	( HydrogenApp::get_instance() )->setStatusBarMessage( sInfo+ QString( "[%1]" ).arg( ref->getFXLevel(nKnob), 0, 'f', 2 ), 2000 );
+	( CompositeApp::get_instance() )->setStatusBarMessage( sInfo+ QString( "[%1]" ).arg( ref->getFXLevel(nKnob), 0, 'f', 2 ), 2000 );
 
 	Engine::get_instance()->setSelectedInstrumentNumber(nLine);
 }
@@ -708,11 +708,11 @@ void Mixer::showPeaksBtnClicked(Button* ref)
 
 	if ( ref->isPressed() ) {
 		pPref->setInstrumentPeaks( true );
-		( HydrogenApp::get_instance() )->setStatusBarMessage( trUtf8( "Show instrument peaks = On"), 2000 );
+		( CompositeApp::get_instance() )->setStatusBarMessage( trUtf8( "Show instrument peaks = On"), 2000 );
 	}
 	else {
 		pPref->setInstrumentPeaks( false );
-		( HydrogenApp::get_instance() )->setStatusBarMessage( trUtf8( "Show instrument peaks = Off"), 2000 );
+		( CompositeApp::get_instance() )->setStatusBarMessage( trUtf8( "Show instrument peaks = Off"), 2000 );
 	}
 }
 
@@ -745,8 +745,8 @@ void Mixer::ladspaEditBtnClicked( LadspaFXMixerLine *ref )
 #ifdef LADSPA_SUPPORT
 	for (uint nFX = 0; nFX < MAX_FX; nFX++) {
 		if (ref == m_pLadspaFXLine[ nFX ] ) {
-			HydrogenApp::get_instance()->getLadspaFXProperties(nFX)->hide();
-			HydrogenApp::get_instance()->getLadspaFXProperties(nFX)->show();
+			CompositeApp::get_instance()->getLadspaFXProperties(nFX)->hide();
+			CompositeApp::get_instance()->getLadspaFXProperties(nFX)->show();
 		}
 	}
 	Engine::get_instance()->getSong()->set_modified(true);
@@ -767,7 +767,7 @@ void Mixer::ladspaVolumeChanged( LadspaFXMixerLine* ref)
 			if (pFX) {
 				pFX->setVolume( ref->getVolume() );
 				QString sInfo = trUtf8( "Set LADSPA FX ( %1 ) volume").arg( QString(pFX->getPluginName() ) );
-				HydrogenApp::get_instance()->setStatusBarMessage( sInfo+ QString( " [%1]" ).arg( ref->getVolume(), 0, 'f', 2 ), 2000 );
+				CompositeApp::get_instance()->setStatusBarMessage( sInfo+ QString( " [%1]" ).arg( ref->getVolume(), 0, 'f', 2 ), 2000 );
 			}
 		}
 	}

@@ -25,7 +25,7 @@
 #include <Tritium/Logger.hpp>
 
 #include "../Skin.hpp"
-#include "../HydrogenApp.hpp"
+#include "../CompositeApp.hpp"
 
 #include <QTimer>
 #include <QMouseEvent>
@@ -66,7 +66,7 @@ CpuLoadWidget::CpuLoadWidget( QWidget *pParent )
 	connect( timer, SIGNAL( timeout() ), this, SLOT( updateCpuLoadWidget() ) );
 	timer->start(200);	// update player control at 5 fps
 
-	HydrogenApp::get_instance()->addEventListener( this );
+	CompositeApp::get_instance()->addEventListener( this );
 }
 
 

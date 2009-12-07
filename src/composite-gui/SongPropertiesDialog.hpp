@@ -25,7 +25,7 @@
 #include "config.h"
 
 #include "ui_SongPropertiesDialog_UI.h"
-#include "HydrogenApp.hpp"
+#include "CompositeApp.hpp"
 
 /**
  * Song Properties Dialog

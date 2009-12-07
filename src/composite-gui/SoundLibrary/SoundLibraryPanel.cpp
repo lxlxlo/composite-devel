@@ -30,7 +30,7 @@
 #include "SoundLibraryPropertiesDialog.hpp"
 #include "SoundLibraryExportDialog.hpp"
 
-#include "../HydrogenApp.hpp"
+#include "../CompositeApp.hpp"
 #include "../widgets/Button.hpp"
 #include "../widgets/PixmapWidget.hpp"
 #include "../Skin.hpp"
@@ -537,8 +537,8 @@ void SoundLibraryPanel::on_drumkitLoadAction()
 
 	Engine::get_instance()->loadDrumkit( drumkitInfo );
 	Engine::get_instance()->getSong()->set_modified( true );
-	HydrogenApp::get_instance()->onDrumkitLoad( drumkitInfo->getName() );
-	HydrogenApp::get_instance()->getPatternEditorPanel()->getDrumPatternEditor()->updateEditor();
+	CompositeApp::get_instance()->onDrumkitLoad( drumkitInfo->getName() );
+	CompositeApp::get_instance()->getPatternEditorPanel()->getDrumPatternEditor()->updateEditor();
 
 	InstrumentEditorPanel::get_instance()->updateInstrumentEditor();
 
@@ -740,7 +740,7 @@ void SoundLibraryPanel::on_songLoadAction()
 	recentFiles.insert( recentFiles.begin(), sFilename );
 	pPref->setRecentFiles( recentFiles );
 
-	HydrogenApp* h2app = HydrogenApp::get_instance();
+	CompositeApp* h2app = CompositeApp::get_instance();
 
 	h2app->setSong( pSong );
 
@@ -789,7 +789,7 @@ void SoundLibraryPanel::on_patternLoadAction()
 		song->set_modified( true );
 	}
 
-	HydrogenApp::get_instance()->getSongEditorPanel()->updateAll();
+	CompositeApp::get_instance()->getSongEditorPanel()->updateAll();
 }
 
 

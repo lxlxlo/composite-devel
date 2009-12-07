@@ -29,7 +29,7 @@ using namespace Tritium;
 
 #include <cassert>
 
-#include "../HydrogenApp.hpp"
+#include "../CompositeApp.hpp"
 
 #include "NotePropertiesRuler.hpp"
 #include "PatternEditorPanel.hpp"
@@ -66,7 +66,7 @@ NotePropertiesRuler::NotePropertiesRuler( QWidget *parent, PatternEditorPanel *p
 	updateEditor();
 	show();
 
-	HydrogenApp::get_instance()->addEventListener( this );
+	CompositeApp::get_instance()->addEventListener( this );
 }
 
 
@@ -124,7 +124,7 @@ void NotePropertiesRuler::mousePressEvent(QMouseEvent *ev)
 
 			char valueChar[100];
 			sprintf( valueChar, "%#.2f",  val);
-			HydrogenApp::get_instance()->setStatusBarMessage( QString("Set note velocity [%1]").arg( valueChar ), 2000 );
+			CompositeApp::get_instance()->setStatusBarMessage( QString("Set note velocity [%1]").arg( valueChar ), 2000 );
 		}
 		else if ( m_mode == PAN ){
 			float pan_L, pan_R;
@@ -151,12 +151,12 @@ void NotePropertiesRuler::mousePressEvent(QMouseEvent *ev)
 				char valueChar[100];
 				if (pNote->get_leadlag() < 0.0) {
 					sprintf( valueChar, "%.2f",  ( pNote->get_leadlag() * -5)); // FIXME: '5' taken from fLeadLagFactor calculation in hydrogen.cpp
-					HydrogenApp::get_instance()->setStatusBarMessage( QString("Leading beat by: %1 ticks").arg( valueChar ), 2000 );
+					CompositeApp::get_instance()->setStatusBarMessage( QString("Leading beat by: %1 ticks").arg( valueChar ), 2000 );
 				} else if (pNote->get_leadlag() > 0.0) {
 					sprintf( valueChar, "%.2f",  ( pNote->get_leadlag() * 5)); // FIXME: '5' taken from fLeadLagFactor calculation in hydrogen.cpp
-					HydrogenApp::get_instance()->setStatusBarMessage( QString("Lagging beat by: %1 ticks").arg( valueChar ), 2000 );
+					CompositeApp::get_instance()->setStatusBarMessage( QString("Lagging beat by: %1 ticks").arg( valueChar ), 2000 );
 				} else {
-					HydrogenApp::get_instance()->setStatusBarMessage( QString("Note on beat"), 2000 );
+					CompositeApp::get_instance()->setStatusBarMessage( QString("Note on beat"), 2000 );
 				}
 
 			}
@@ -222,7 +222,7 @@ void NotePropertiesRuler::wheelEvent(QWheelEvent *ev)
 
 			char valueChar[100];
 			sprintf( valueChar, "%#.2f",  val);
-			( HydrogenApp::get_instance() )->setStatusBarMessage( QString("Set note velocity [%1]").arg( valueChar ), 2000 );
+			( CompositeApp::get_instance() )->setStatusBarMessage( QString("Set note velocity [%1]").arg( valueChar ), 2000 );
 		}
 		else if ( m_mode == PAN ){
 			float pan_L, pan_R;
@@ -258,12 +258,12 @@ void NotePropertiesRuler::wheelEvent(QWheelEvent *ev)
 			char valueChar[100];
 			if (pNote->get_leadlag() < 0.0) {
 				sprintf( valueChar, "%.2f",  ( pNote->get_leadlag() * -5)); // FIXME: '5' taken from fLeadLagFactor calculation in hydrogen.cpp
-				HydrogenApp::get_instance()->setStatusBarMessage( QString("Leading beat by: %1 ticks").arg( valueChar ), 2000 );
+				CompositeApp::get_instance()->setStatusBarMessage( QString("Leading beat by: %1 ticks").arg( valueChar ), 2000 );
 			} else if (pNote->get_leadlag() > 0.0) {
 				sprintf( valueChar, "%.2f",  ( pNote->get_leadlag() * 5)); // FIXME: '5' taken from fLeadLagFactor calculation in hydrogen.cpp
-				HydrogenApp::get_instance()->setStatusBarMessage( QString("Lagging beat by: %1 ticks").arg( valueChar ), 2000 );
+				CompositeApp::get_instance()->setStatusBarMessage( QString("Lagging beat by: %1 ticks").arg( valueChar ), 2000 );
 			} else {
-				HydrogenApp::get_instance()->setStatusBarMessage( QString("Note on beat"), 2000 );
+				CompositeApp::get_instance()->setStatusBarMessage( QString("Note on beat"), 2000 );
 			}
 		}
 

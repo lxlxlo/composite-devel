@@ -26,7 +26,7 @@
 
 #include "ExportSongDialog.hpp"
 #include "Skin.hpp"
-#include "HydrogenApp.hpp"
+#include "CompositeApp.hpp"
 #include <Tritium/Song.hpp>
 #include <Tritium/Engine.hpp>
 #include <Tritium/IO/AudioOutput.hpp>
@@ -44,7 +44,7 @@ ExportSongDialog::ExportSongDialog(QWidget* parent)
 	setWindowTitle( trUtf8( "Export song" ) );
 //	setIcon( QPixmap( Skin::getImagePath() + "/icon16.png" ) );
 
-	HydrogenApp::get_instance()->addEventListener( this );
+	CompositeApp::get_instance()->addEventListener( this );
 
 	m_pSamplerateLbl->setText( trUtf8( "Sample rate: %1" ).arg( Engine::get_instance()->get_audio_output()->getSampleRate() ) );
 	m_pProgressBar->setValue( 0 );
@@ -54,7 +54,7 @@ ExportSongDialog::ExportSongDialog(QWidget* parent)
 
 ExportSongDialog::~ExportSongDialog()
 {
-	HydrogenApp::get_instance()->removeEventListener( this );
+	CompositeApp::get_instance()->removeEventListener( this );
 }
 
 

@@ -32,7 +32,7 @@
 using namespace Tritium;
 
 #include "../Skin.hpp"
-#include "../HydrogenApp.hpp"
+#include "../CompositeApp.hpp"
 #include "InstrumentEditorPanel.hpp"
 #include "LayerPreview.hpp"
 
@@ -58,7 +58,7 @@ LayerPreview::LayerPreview( QWidget* pParent )
 
 	m_speakerPixmap.load( Skin::getImagePath() + "/instrumentEditor/speaker.png" );
 
-	HydrogenApp::get_instance()->addEventListener( this );
+	CompositeApp::get_instance()->addEventListener( this );
 }
 
 

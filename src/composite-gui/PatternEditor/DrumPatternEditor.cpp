@@ -35,7 +35,7 @@
 #include <Tritium/AudioEngine.hpp>
 #include <Tritium/Logger.hpp>
 
-#include "../HydrogenApp.hpp"
+#include "../CompositeApp.hpp"
 #include "../Mixer/Mixer.hpp"
 #include "../Skin.hpp"
 
@@ -68,7 +68,7 @@ DrumPatternEditor::DrumPatternEditor(QWidget* parent, PatternEditorPanel *panel)
 
 	resize( nEditorWidth, m_nEditorHeight );
 
-	HydrogenApp::get_instance()->addEventListener( this );
+	CompositeApp::get_instance()->addEventListener( this );
 	
 }
 

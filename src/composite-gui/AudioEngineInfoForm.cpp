@@ -23,7 +23,7 @@
 
 #include <QtGui>
 
-#include "HydrogenApp.hpp"
+#include "CompositeApp.hpp"
 
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Preferences.hpp>
@@ -53,7 +53,7 @@ AudioEngineInfoForm::AudioEngineInfoForm(QWidget* parent)
 	timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(updateInfo()));
 
-	HydrogenApp::get_instance()->addEventListener( this );
+	CompositeApp::get_instance()->addEventListener( this );
 	updateAudioEngineState();
 }
 

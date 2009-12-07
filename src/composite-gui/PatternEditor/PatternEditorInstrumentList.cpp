@@ -35,7 +35,7 @@ using namespace Tritium;
 
 #include "PatternEditorPanel.hpp"
 #include "DrumPatternEditor.hpp"
-#include "../HydrogenApp.hpp"
+#include "../CompositeApp.hpp"
 #include "../Mixer/Mixer.hpp"
 #include "../widgets/Button.hpp"
 
@@ -160,7 +160,7 @@ void InstrumentLine::muteClicked()
 
 void InstrumentLine::soloClicked()
 {
-	HydrogenApp::get_instance()->getMixer()->soloClicked( m_nInstrumentNumber );
+	CompositeApp::get_instance()->getMixer()->soloClicked( m_nInstrumentNumber );
 }
 
 
@@ -250,7 +250,7 @@ void InstrumentLine::functionFillNotes()
 	const float fPitch = 0.0f;
 	const int nLength = -1;
 
-	PatternEditorPanel *pPatternEditorPanel = HydrogenApp::get_instance()->getPatternEditorPanel();
+	PatternEditorPanel *pPatternEditorPanel = CompositeApp::get_instance()->getPatternEditorPanel();
 	DrumPatternEditor *pPatternEditor = pPatternEditorPanel->getDrumPatternEditor();
 	int nBase;
 	if ( pPatternEditor->isUsingTriplets() ) {
@@ -311,7 +311,7 @@ void InstrumentLine::functionRandomizeVelocity()
 {
 	Engine *pEngine = Engine::get_instance();
 
-	PatternEditorPanel *pPatternEditorPanel = HydrogenApp::get_instance()->getPatternEditorPanel();
+	PatternEditorPanel *pPatternEditorPanel = CompositeApp::get_instance()->getPatternEditorPanel();
 	DrumPatternEditor *pPatternEditor = pPatternEditorPanel->getDrumPatternEditor();
 
 	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );	// lock the audio engine
@@ -488,7 +488,7 @@ void PatternEditorInstrumentList::updateInstrumentLines()
 	Engine *pEngine = Engine::get_instance();
 	Song *pSong = pEngine->getSong();
 	InstrumentList *pInstrList = pSong->get_instrument_list();
-	Mixer * mixer = HydrogenApp::get_instance()->getMixer();
+	Mixer * mixer = CompositeApp::get_instance()->getMixer();
 
 	unsigned nSelectedInstr = pEngine->getSelectedInstrumentNumber();
 

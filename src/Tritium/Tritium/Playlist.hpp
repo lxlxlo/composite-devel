@@ -39,9 +39,9 @@ namespace Tritium
 ///
 
 /**
- * This class gives an interactive experience between HydrogenApp and
+ * This class gives an interactive experience between CompositeApp and
  * the Playlist object without requiring the Playlist to have a
- * pointer to HydrogenApp.
+ * pointer to CompositeApp.
  */
     class Song;
 

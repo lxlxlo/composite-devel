@@ -39,7 +39,7 @@ using namespace Tritium;
 #include "SongEditorPanel.hpp"
 #include "SoundLibrary/SoundLibraryPanel.hpp"
 #include "../PatternEditor/PatternEditorPanel.hpp"
-#include "../HydrogenApp.hpp"
+#include "../CompositeApp.hpp"
 #include "../InstrumentRack.hpp"
 #include "../widgets/Button.hpp"
 #include "../PatternFillDialog.hpp"
@@ -153,7 +153,7 @@ void SongEditor::mousePressEvent( QMouseEvent *ev )
 	Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 
 
-	SongEditorActionMode actionMode = HydrogenApp::get_instance()->getSongEditorPanel()->getActionMode();
+	SongEditorActionMode actionMode = CompositeApp::get_instance()->getSongEditorPanel()->getActionMode();
 	if ( actionMode == SELECT_ACTION ) {
 
 		bool bOverExistingPattern = false;
@@ -664,7 +664,7 @@ SongEditorPatternList::SongEditorPatternList( QWidget *parent )
 	m_pPatternPopup->addAction( trUtf8("Load Pattern"),  this, SLOT( patternPopup_load() ) );
 	m_pPatternPopup->addAction( trUtf8("Save Pattern"),  this, SLOT( patternPopup_save() ) );
 
-	HydrogenApp::get_instance()->addEventListener( this );
+	CompositeApp::get_instance()->addEventListener( this );
 
 	createBackground();
 	update();
@@ -969,7 +969,7 @@ void SongEditorPatternList::patternPopup_load()
 	engine->setSelectedPatternNumber( listsize -1 );
 	patternPopup_delete();
 	engine->setSelectedPatternNumber( tmpselectedpatternpos );
-	HydrogenApp::get_instance()->getSongEditorPanel()->updateAll();
+	CompositeApp::get_instance()->getSongEditorPanel()->updateAll();
 
 }
 
@@ -1005,16 +1005,16 @@ void SongEditorPatternList::patternPopup_save()
 #else
 	usleep ( 10000 );
 #endif 
-	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->test_expandedItems();
-	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->updateDrumkitList();
+	CompositeApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->test_expandedItems();
+	CompositeApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->updateDrumkitList();
 }
 
 
 
 void SongEditorPatternList::patternPopup_edit()
 {
-	HydrogenApp::get_instance()->getPatternEditorPanel()->show();
-	HydrogenApp::get_instance()->getPatternEditorPanel()->setFocus();
+	CompositeApp::get_instance()->getPatternEditorPanel()->show();
+	CompositeApp::get_instance()->getPatternEditorPanel()->setFocus();
 }
 
 
@@ -1131,7 +1131,7 @@ void SongEditorPatternList::patternPopup_delete()
 // "unlock" I am not sure, but think this is unnecessarily. -wolke-
 //	Engine::get_instance()->get_audio_engine()->unlock();
 
-	( HydrogenApp::get_instance() )->getSongEditorPanel()->updateAll();
+	( CompositeApp::get_instance() )->getSongEditorPanel()->updateAll();
 }
 
 
@@ -1162,7 +1162,7 @@ void SongEditorPatternList::patternPopup_copy()
 	}
 	delete dialog;
 
-	HydrogenApp::get_instance()->getSongEditorPanel()->updateAll();
+	CompositeApp::get_instance()->getSongEditorPanel()->updateAll();
 }
 
 void SongEditorPatternList::patternPopup_fill()
@@ -1171,7 +1171,7 @@ void SongEditorPatternList::patternPopup_fill()
 	int nSelectedPattern = pEngine->getSelectedPatternNumber();
 	FillRange range;
 	PatternFillDialog *dialog = new PatternFillDialog( this, &range );
-	SongEditorPanel *pSEPanel = HydrogenApp::get_instance()->getSongEditorPanel();
+	SongEditorPanel *pSEPanel = CompositeApp::get_instance()->getSongEditorPanel();
 
 
 	// use a PatternFillDialog to get the range and mode data
@@ -1320,7 +1320,7 @@ void SongEditorPatternList::dropEvent(QDropEvent *event)
 			createBackground();
 			update();
 		}
-		HydrogenApp::get_instance()->getSongEditorPanel()->updateAll();
+		CompositeApp::get_instance()->getSongEditorPanel()->updateAll();
 		event->acceptProposedAction();
 		
 	}
@@ -1354,7 +1354,7 @@ void SongEditorPatternList::movePatternLine( int nSourcePattern , int nTargetPat
 			pPatternList->replace( pSourcePattern, nTargetPattern );
 		}
 		engine->setSelectedPatternNumber( nTargetPattern );
-		HydrogenApp::get_instance()->getSongEditorPanel()->updateAll();
+		CompositeApp::get_instance()->getSongEditorPanel()->updateAll();
 		
 }
 

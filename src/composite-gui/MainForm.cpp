@@ -38,7 +38,7 @@ using namespace Tritium;
 #include "AboutDialog.hpp"
 #include "AudioEngineInfoForm.hpp"
 #include "ExportSongDialog.hpp"
-#include "HydrogenApp.hpp"
+#include "CompositeApp.hpp"
 #include "InstrumentRack.hpp"
 #include "Skin.hpp"
 #include "MainForm.hpp"
@@ -107,7 +107,7 @@ MainForm::MainForm( QApplication *app, const QString& songFilename )
 		}
 	}
 
-	h2app = new HydrogenApp( this, song );
+	h2app = new CompositeApp( this, song );
 	h2app->addEventListener( this );
 
 	createMenuBar();
@@ -286,7 +286,7 @@ void MainForm::action_file_new()
 	song->set_filename( "" );
 	h2app->setSong(song);
  	Engine::get_instance()->setSelectedPatternNumber( 0 );
-	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
+	CompositeApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
 }
 
 
@@ -449,7 +449,7 @@ void MainForm::action_file_export_pattern_as()
 		if ( realname.endsWith( ".h2pattern" ) )
 			realname.replace( ".h2pattern", "" );
 		pat->set_name(realname);
-		HydrogenApp::get_instance()->getSongEditorPanel()->updateAll();
+		CompositeApp::get_instance()->getSongEditorPanel()->updateAll();
 		int err = fileMng.savePattern ( song , selectedpattern, patternname, realname, 2 );
 		if ( err != 0 )
 		{
@@ -460,8 +460,8 @@ void MainForm::action_file_export_pattern_as()
 	h2app->setStatusBarMessage ( trUtf8 ( "Pattern saved." ), 10000 );
 	
 	//update SoundlibraryPanel
-	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->test_expandedItems();
-	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->updateDrumkitList();
+	CompositeApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->test_expandedItems();
+	CompositeApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->updateDrumkitList();
 }
 
 
@@ -502,7 +502,7 @@ void MainForm::action_file_open()
 		openSongFile( filename );
 	}
 
-	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
+	CompositeApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
 }
 
 
@@ -548,7 +548,7 @@ void MainForm::action_file_openPattern()
 		song->set_modified( true );
 	}
 
-	HydrogenApp::get_instance()->getSongEditorPanel()->updateAll();
+	CompositeApp::get_instance()->getSongEditorPanel()->updateAll();
 }
 
 /// \todo parametrizzare il metodo action_file_open ed eliminare il seguente...
@@ -608,7 +608,7 @@ void MainForm::action_window_showPlaylistDialog()
 
 void MainForm::action_window_showMixer()
 {
-	bool isVisible = HydrogenApp::get_instance()->getMixer()->isVisible();
+	bool isVisible = CompositeApp::get_instance()->getMixer()->isVisible();
 	h2app->showMixer( !isVisible );
 }
 
@@ -723,8 +723,8 @@ void MainForm::action_instruments_saveLibrary()
 {
 	SoundLibrarySaveDialog dialog( this );
 	dialog.exec();
-	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->test_expandedItems();
-	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->updateDrumkitList();
+	CompositeApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->test_expandedItems();
+	CompositeApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->updateDrumkitList();
 }
 
 
@@ -762,7 +762,7 @@ void MainForm::action_file_export()
 
 void MainForm::action_window_showDrumkitManagerPanel()
 {
-	InstrumentRack *pPanel = HydrogenApp::get_instance()->getInstrumentRack();
+	InstrumentRack *pPanel = CompositeApp::get_instance()->getInstrumentRack();
 	pPanel->setHidden( pPanel->isVisible() );
 }
 
@@ -1159,7 +1159,7 @@ bool MainForm::eventFilter( QObject * /*o*/, QEvent *e )
 					break;
 				engine->get_playlist()->setPrevSongPlaylist();
 				songnumber = engine->get_playlist()->getActiveSongNumber();
-				HydrogenApp::get_instance()->setScrollStatusBarMessage( trUtf8( "Playlist: Set song No. %1" ).arg( songnumber +1 ), 5000 );
+				CompositeApp::get_instance()->setScrollStatusBarMessage( trUtf8( "Playlist: Set song No. %1" ).arg( songnumber +1 ), 5000 );
 				return TRUE;
 				break;
 
@@ -1168,7 +1168,7 @@ bool MainForm::eventFilter( QObject * /*o*/, QEvent *e )
 					break;
 				engine->get_playlist()->setNextSongPlaylist();
 				songnumber = engine->get_playlist()->getActiveSongNumber();
-				HydrogenApp::get_instance()->setScrollStatusBarMessage( trUtf8( "Playlist: Set song No. %1" ).arg( songnumber +1 ), 5000 );
+				CompositeApp::get_instance()->setScrollStatusBarMessage( trUtf8( "Playlist: Set song No. %1" ).arg( songnumber +1 ), 5000 );
 				return TRUE;
 				break;
 
@@ -1191,9 +1191,9 @@ bool MainForm::eventFilter( QObject * /*o*/, QEvent *e )
 			case Qt::Key_L :
 				engine->togglePlaysSelected();
 				QString msg = Engine::get_instance()->get_preferences()->patternModePlaysSelected() ? "Single pattern mode" : "Stacked pattern mode";
-				HydrogenApp::get_instance()->setStatusBarMessage( msg, 5000 );
-				HydrogenApp::get_instance()->getSongEditorPanel()->setModeActionBtn( Engine::get_instance()->get_preferences()->patternModePlaysSelected() );
-				HydrogenApp::get_instance()->getSongEditorPanel()->updateAll();
+				CompositeApp::get_instance()->setStatusBarMessage( msg, 5000 );
+				CompositeApp::get_instance()->getSongEditorPanel()->setModeActionBtn( Engine::get_instance()->get_preferences()->patternModePlaysSelected() );
+				CompositeApp::get_instance()->getSongEditorPanel()->updateAll();
 				
 				return TRUE;
 			
@@ -1312,8 +1312,8 @@ void MainForm::action_file_songProperties()
 
 void MainForm::action_window_showPatternEditor()
 {
-	bool isVisible = HydrogenApp::get_instance()->getPatternEditorPanel()->isVisible();
-	HydrogenApp::get_instance()->getPatternEditorPanel()->setHidden( isVisible );
+	bool isVisible = CompositeApp::get_instance()->getPatternEditorPanel()->isVisible();
+	CompositeApp::get_instance()->getPatternEditorPanel()->setHidden( isVisible );
 }
 
 QString MainForm::getAutoSaveFilename()
@@ -1371,7 +1371,7 @@ void MainForm::onPlaylistDisplayTimer()
 		songname = Engine::get_instance()->getSong()->get_name();
 	}
 	QString message = (trUtf8("Playlist: Song No. %1").arg( songnumber + 1)) + QString("  ---  Songname: ") + songname + QString("  ---  Author: ") + Engine::get_instance()->getSong()->get_author();
-	HydrogenApp::get_instance()->setScrollStatusBarMessage( message, 2000 );
+	CompositeApp::get_instance()->setScrollStatusBarMessage( message, 2000 );
 }
 
 // Returns true if unsaved changes are successfully handled (saved, discarded, etc.)

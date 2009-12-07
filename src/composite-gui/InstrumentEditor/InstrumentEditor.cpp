@@ -38,7 +38,7 @@
 #include <Tritium/Logger.hpp>
 using namespace Tritium;
 
-#include "../HydrogenApp.hpp"
+#include "../CompositeApp.hpp"
 #include "../Skin.hpp"
 #include "../widgets/Rotary.hpp"
 #include "../widgets/ClickableLabel.hpp"
@@ -321,7 +321,7 @@ InstrumentEditor::InstrumentEditor( QWidget* pParent )
 
 	selectLayer( m_nSelectedLayer );
 
-	HydrogenApp::get_instance()->addEventListener(this);
+	CompositeApp::get_instance()->addEventListener(this);
 
 	selectedInstrumentChangedEvent(); 	// force an update
 }

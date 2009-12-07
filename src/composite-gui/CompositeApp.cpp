@@ -21,7 +21,7 @@
 
 #include "version.h"
 
-#include "HydrogenApp.hpp"
+#include "CompositeApp.hpp"
 #include "Skin.hpp"
 #include "PreferencesDialog.hpp"
 #include "MainForm.hpp"
@@ -56,12 +56,12 @@
 
 using namespace Tritium;
 
-HydrogenApp* HydrogenApp::m_pInstance = NULL;
+CompositeApp* CompositeApp::m_pInstance = NULL;
 
 class AppPlaylistListener : public Tritium::PlaylistListener
 {
 public:
-    HydrogenApp* q;
+    CompositeApp* q;
     Tritium::Playlist *d;
 
     AppPlaylistListener() : q(0), d(0) {}
@@ -84,7 +84,7 @@ public:
     }
 };
 
-HydrogenApp::HydrogenApp( MainForm *pMainForm, Song *pFirstSong )
+CompositeApp::CompositeApp( MainForm *pMainForm, Song *pFirstSong )
  : m_pMainForm( pMainForm )
  , m_pMixer( NULL )
  , m_pPatternEditorPanel( NULL )
@@ -144,9 +144,9 @@ HydrogenApp::HydrogenApp( MainForm *pMainForm, Song *pFirstSong )
 
 
 
-HydrogenApp::~HydrogenApp()
+CompositeApp::~CompositeApp()
 {
-	INFOLOG( "[~HydrogenApp]" );
+	INFOLOG( "[~CompositeApp]" );
 	m_pEventQueueTimer->stop();
 
 	delete m_pHelpBrowser;
@@ -172,10 +172,10 @@ HydrogenApp::~HydrogenApp()
 
 
 
-/// Return an HydrogenApp m_pInstance
-HydrogenApp* HydrogenApp::get_instance() {
+/// Return an CompositeApp m_pInstance
+CompositeApp* CompositeApp::get_instance() {
 	if (m_pInstance == NULL) {
-		std::cerr << "Error! HydrogenApp::get_instance (m_pInstance = NULL)" << std::endl;
+		std::cerr << "Error! CompositeApp::get_instance (m_pInstance = NULL)" << std::endl;
 	}
 	return m_pInstance;
 }
@@ -183,7 +183,7 @@ HydrogenApp* HydrogenApp::get_instance() {
 
 
 
-void HydrogenApp::setupSinglePanedInterface()
+void CompositeApp::setupSinglePanedInterface()
 {
 	Preferences *pPref = Engine::get_instance()->get_preferences();
 
@@ -277,7 +277,7 @@ void HydrogenApp::setupSinglePanedInterface()
 }
 
 
-void HydrogenApp::closeFXProperties()
+void CompositeApp::closeFXProperties()
 {
 #ifdef LADSPA_SUPPORT
 	for (uint nFX = 0; nFX < MAX_FX; nFX++) {
@@ -286,7 +286,7 @@ void HydrogenApp::closeFXProperties()
 #endif
 }
 
-void HydrogenApp::setSong(Song* song)
+void CompositeApp::setSong(Song* song)
 {
 
 
@@ -315,14 +315,14 @@ void HydrogenApp::setSong(Song* song)
 
 
 
-void HydrogenApp::showMixer(bool show)
+void CompositeApp::showMixer(bool show)
 {
 	m_pMixer->setVisible( show );
 }
 
 
 
-void HydrogenApp::showPreferencesDialog()
+void CompositeApp::showPreferencesDialog()
 {
 	PreferencesDialog preferencesDialog(m_pMainForm);
 	preferencesDialog.exec();
@@ -331,36 +331,36 @@ void HydrogenApp::showPreferencesDialog()
 
 
 
-void HydrogenApp::setStatusBarMessage( const QString& msg, int msec )
+void CompositeApp::setStatusBarMessage( const QString& msg, int msec )
 {
 	getPlayerControl()->showMessage( msg, msec );
 }
 
-void HydrogenApp::setWindowTitle( const QString& title){
+void CompositeApp::setWindowTitle( const QString& title){
     m_pMainForm->setWindowTitle( ( "Composite " + QString( get_version().c_str()) + QString( " - " ) + title ) );
 }
 
-void HydrogenApp::setScrollStatusBarMessage( const QString& msg, int msec, bool test )
+void CompositeApp::setScrollStatusBarMessage( const QString& msg, int msec, bool test )
 {
 	getPlayerControl()->showScrollMessage( msg, msec , test);
 }
 
 
 
-void HydrogenApp::showAudioEngineInfoForm()
+void CompositeApp::showAudioEngineInfoForm()
 {
 	m_pAudioEngineInfoForm->hide();
 	m_pAudioEngineInfoForm->show();
 }
 
-void HydrogenApp::showPlaylistDialog()
+void CompositeApp::showPlaylistDialog()
 {
 	m_pPlaylistDialog->hide();
 	m_pPlaylistDialog->show();
 }
 
 
-void HydrogenApp::showInfoSplash()
+void CompositeApp::showInfoSplash()
 {
 	QString sDocPath( DataPath::get_data_path().append( "/doc/infoSplash" ) );
 
@@ -402,12 +402,12 @@ void HydrogenApp::showInfoSplash()
 	}
 }
 
-void HydrogenApp::onDrumkitLoad( QString name ){
+void CompositeApp::onDrumkitLoad( QString name ){
 	setStatusBarMessage( trUtf8( "Drumkit loaded: [%1]" ).arg( name ), 2000 );
 	m_pPatternEditorPanel->updateSLnameLabel( );
 }
 
-void HydrogenApp::onEventQueueTimer()
+void CompositeApp::onEventQueueTimer()
 {
 	// use the timer to do schedule instrument slaughter;
 	EventQueue *pQueue = Engine::get_instance()->get_event_queue();
@@ -479,7 +479,7 @@ void HydrogenApp::onEventQueueTimer()
 }
 
 
-void HydrogenApp::addEventListener( EventListener* pListener )
+void CompositeApp::addEventListener( EventListener* pListener )
 {
 	if (pListener) {
 		m_eventListeners.push_back( pListener );
@@ -487,7 +487,7 @@ void HydrogenApp::addEventListener( EventListener* pListener )
 }
 
 
-void HydrogenApp::removeEventListener( EventListener* pListener )
+void CompositeApp::removeEventListener( EventListener* pListener )
 {
 	for ( uint i = 0; i < m_eventListeners.size(); i++ ) {
 		if ( pListener == m_eventListeners[ i ] ) {

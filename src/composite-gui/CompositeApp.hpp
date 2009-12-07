@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef COMPOSITE_HYDROGENAPP_HPP
-#define COMPOSITE_HYDROGENAPP_HPP
+#ifndef COMPOSITE_COMPOSITEAPP_HPP
+#define COMPOSITE_COMPOSITEAPP_HPP
 
 #include "config.h"
 
@@ -54,16 +54,16 @@ class PlaylistDialog;
 class AppPlaylistListener;
 //class AudioFileBrowser;
 
-class HydrogenApp : public QObject
+class CompositeApp : public QObject
 {
 	Q_OBJECT
 	public:
-		HydrogenApp( MainForm* pMainForm, Tritium::Song *pFirstSong );
+		CompositeApp( MainForm* pMainForm, Tritium::Song *pFirstSong );
 
-		/// Returns the instance of HydrogenApp class
-		static HydrogenApp* get_instance();
+		/// Returns the instance of CompositeApp class
+		static CompositeApp* get_instance();
 
-		virtual ~HydrogenApp();
+		virtual ~CompositeApp();
 
 		void setSong( Tritium::Song* pSong );
 
@@ -102,7 +102,7 @@ class HydrogenApp : public QObject
 		void onEventQueueTimer();
 
 	private:
-		static HydrogenApp *m_pInstance;	///< HydrogenApp instance
+		static CompositeApp *m_pInstance;	///< CompositeApp instance
 
 #ifdef LADSPA_SUPPORT
 		LadspaFXProperties *m_pLadspaFXProperties[MAX_FX];
@@ -133,4 +133,4 @@ class HydrogenApp : public QObject
 };
 
 
-#endif // COMPOSITE_HYDROGENAPP_HPP
+#endif // COMPOSITE_COMPOSITEAPP_HPP

@@ -31,7 +31,7 @@ using namespace Tritium;
 
 #include "PatternEditorRuler.hpp"
 #include "PatternEditorPanel.hpp"
-#include "../HydrogenApp.hpp"
+#include "../CompositeApp.hpp"
 #include "../Skin.hpp"
 
 
@@ -69,7 +69,7 @@ PatternEditorRuler::PatternEditorRuler( QWidget* parent )
 	m_pTimer = new QTimer(this);
 	connect(m_pTimer, SIGNAL(timeout()), this, SLOT(updateEditor()));
 
-	HydrogenApp::get_instance()->addEventListener( this );
+	CompositeApp::get_instance()->addEventListener( this );
 }
 
 

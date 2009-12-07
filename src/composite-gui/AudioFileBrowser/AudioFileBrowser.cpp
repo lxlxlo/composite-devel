@@ -20,7 +20,7 @@
  */
 
 #include "AudioFileBrowser.hpp"
-#include "../HydrogenApp.hpp"
+#include "../CompositeApp.hpp"
 #include "InstrumentEditor/InstrumentEditor.hpp"
 #include "SampleWaveDisplay.hpp"
 #include "../widgets/Button.hpp"

@@ -25,7 +25,7 @@
 #include "SoundLibraryPanel.hpp"
 
 #include "../widgets/DownloadWidget.hpp"
-#include "../HydrogenApp.hpp"
+#include "../CompositeApp.hpp"
 #include "../InstrumentRack.hpp"
 
 #include <Tritium/LocalFileMng.hpp>
@@ -398,8 +398,8 @@ void SoundLibraryImportDialog::on_DownloadBtn_clicked()
 			}
 
 			// update the drumkit list
-			HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->test_expandedItems();
-			HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->updateDrumkitList();
+			CompositeApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->test_expandedItems();
+			CompositeApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->updateDrumkitList();
 			updateSoundLibraryList();
 			QApplication::restoreOverrideCursor();
 			return;
@@ -445,8 +445,8 @@ void SoundLibraryImportDialog::on_InstallBtn_clicked()
 		Tritium::Drumkit::install( SoundLibraryPathTxt->text() );
 		QMessageBox::information( this, "Composite", QString( trUtf8( "SoundLibrary imported in %1" ).arg( dataDir )  ) );
 		// update the drumkit list
-		HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->test_expandedItems();
-		HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->updateDrumkitList();
+		CompositeApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->test_expandedItems();
+		CompositeApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->updateDrumkitList();
 		QApplication::restoreOverrideCursor();
 	}
 	catch( Tritium::H2Exception ex ) {

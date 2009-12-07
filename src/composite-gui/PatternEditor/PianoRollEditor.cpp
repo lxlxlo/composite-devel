@@ -33,7 +33,7 @@
 #include <Tritium/Logger.hpp>
 using namespace Tritium;
 
-#include "../HydrogenApp.hpp"
+#include "../CompositeApp.hpp"
 
 PianoRollEditor::PianoRollEditor( QWidget *pParent )
  : QWidget( pParent )
@@ -59,7 +59,7 @@ PianoRollEditor::PianoRollEditor( QWidget *pParent )
 
 	createBackground();
 
-	HydrogenApp::get_instance()->addEventListener( this );
+	CompositeApp::get_instance()->addEventListener( this );
 }
 
 

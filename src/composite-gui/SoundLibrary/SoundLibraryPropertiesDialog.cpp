@@ -21,7 +21,7 @@
 
 #include <QtGui>
 
-#include "../HydrogenApp.hpp"
+#include "../CompositeApp.hpp"
 #include "SoundLibraryPropertiesDialog.hpp"
 #include "../InstrumentRack.hpp"
 #include "SoundLibraryPanel.hpp"
@@ -131,8 +131,8 @@ void SoundLibraryPropertiesDialog::on_saveBtn_clicked()
 
 	//reload if necessary
 	if ( reload == true ){
-		HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->test_expandedItems();
-		HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->updateDrumkitList();
+		CompositeApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->test_expandedItems();
+		CompositeApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->updateDrumkitList();
 	}
 
 	accept();

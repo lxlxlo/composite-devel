@@ -26,7 +26,7 @@
 #include <getopt.h>
 
 #include "SplashScreen.hpp"
-#include "HydrogenApp.hpp"
+#include "CompositeApp.hpp"
 #include "MainForm.hpp"
 
 #include <Tritium/MidiMap.hpp>

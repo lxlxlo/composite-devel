@@ -25,7 +25,7 @@
 
 #include "../InstrumentEditor/InstrumentEditor.hpp"
 #include "../widgets/Fader.hpp"
-#include "../HydrogenApp.hpp"
+#include "../CompositeApp.hpp"
 #include "../Skin.hpp"
 #include "../widgets/Rotary.hpp"
 #include "../widgets/Button.hpp"
@@ -242,7 +242,7 @@ void MixerLine::faderChanged(Fader *ref)
 	char m_pFaderPos[100];
 	float value = ref->getValue();
 	sprintf( m_pFaderPos, "%#.2f",  value);
-	( HydrogenApp::get_instance() )->setStatusBarMessage( trUtf8( "Set instrument volume [%1]" ).arg( m_pFaderPos ), 2000 );
+	( CompositeApp::get_instance() )->setStatusBarMessage( trUtf8( "Set instrument volume [%1]" ).arg( m_pFaderPos ), 2000 );
 }
 
 
@@ -379,7 +379,7 @@ void MixerLine::panChanged(Rotary *ref)
 
 	char m_pFaderPos[100];
 	sprintf( m_pFaderPos, "%#.2fL, %#.2fR",  pan_L, pan_R);
-	HydrogenApp::get_instance()->setStatusBarMessage( trUtf8( "Set instr. pan [%1]" ).arg( m_pFaderPos ), 2000 );
+	CompositeApp::get_instance()->setStatusBarMessage( trUtf8( "Set instr. pan [%1]" ).arg( m_pFaderPos ), 2000 );
 
 	m_pPanRotary->setToolTip( QString("Pan ") + QString( m_pFaderPos ) );
 }
@@ -563,7 +563,7 @@ void MasterMixerLine::faderChanged(MasterFader *ref)
 	char m_pMasterFaderPos[100];
 	float value = ref->getValue();
 	sprintf( m_pMasterFaderPos, "%#.2f",  value);
-	( HydrogenApp::get_instance() )->setStatusBarMessage( trUtf8( "Set master volume [%1]" ).arg( m_pMasterFaderPos ), 2000 );
+	( CompositeApp::get_instance() )->setStatusBarMessage( trUtf8( "Set master volume [%1]" ).arg( m_pMasterFaderPos ), 2000 );
 }
 
 
@@ -708,7 +708,7 @@ void MasterMixerLine::rotaryChanged( Rotary *pRef )
 
 	Engine::get_instance()->get_audio_engine()->unlock();
 
-	( HydrogenApp::get_instance() )->setStatusBarMessage( sMsg, 2000 );
+	( CompositeApp::get_instance() )->setStatusBarMessage( sMsg, 2000 );
 }
 
 

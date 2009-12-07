@@ -21,7 +21,7 @@
 
 
 #include "PlaylistDialog.hpp"
-#include "../HydrogenApp.hpp"
+#include "../CompositeApp.hpp"
 #include "../InstrumentRack.hpp"
 #include "SoundLibrary/SoundLibraryPanel.hpp"
 #include "widgets/PixmapWidget.hpp"
@@ -754,7 +754,7 @@ void PlaylistDialog::on_m_pPlaylistTree_itemClicked ( QTreeWidgetItem * item, in
 void PlaylistDialog::nodePlayBTN( Button* ref )
 {
 	Engine *engine = Engine::get_instance();
-	HydrogenApp *pH2App = HydrogenApp::get_instance();
+	CompositeApp *pH2App = CompositeApp::get_instance();
 
 	if (ref->isPressed()) {
 		QTreeWidgetItem* m_pPlaylistItem = m_pPlaylistTree->currentItem();
@@ -838,7 +838,7 @@ void PlaylistDialog::on_m_pPlaylistTree_itemDoubleClicked ()
 	Engine::get_instance()->get_playlist()->setSelectedSongNr( index );
 	Engine::get_instance()->get_playlist()->setActiveSongNumber( index );
 	
-	HydrogenApp *pH2App = HydrogenApp::get_instance();
+	CompositeApp *pH2App = CompositeApp::get_instance();
 	Engine *engine = Engine::get_instance();
 	
 
@@ -859,7 +859,7 @@ void PlaylistDialog::on_m_pPlaylistTree_itemDoubleClicked ()
 
 	pH2App->setStatusBarMessage( trUtf8( "Playlist: Set song No. %1" ).arg( index +1 ), 5000 );
 
-	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
+	CompositeApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
 
 ///exec script
 ///this is very very simple and only an experiment

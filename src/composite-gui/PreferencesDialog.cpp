@@ -22,7 +22,7 @@
 
 #include "Skin.hpp"
 #include "PreferencesDialog.hpp"
-#include "HydrogenApp.hpp"
+#include "CompositeApp.hpp"
 #include "MainForm.hpp"
 
 #include "qmessagebox.h"
@@ -518,7 +518,7 @@ void PreferencesDialog::on_midiPortComboBox_activated( int /*index*/ )
 
 void PreferencesDialog::on_styleComboBox_activated( int /*index*/ )
 {
-	QApplication *pQApp = (HydrogenApp::get_instance())->getMainForm()->m_pQApp;
+	QApplication *pQApp = (CompositeApp::get_instance())->getMainForm()->m_pQApp;
 	QString sStyle = styleComboBox->currentText();
 	pQApp->setStyle( sStyle );
 

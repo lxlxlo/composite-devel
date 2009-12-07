@@ -30,7 +30,7 @@
 #include "EventListener.hpp"
 #include "config.h"
 
-class HydrogenApp;
+class CompositeApp;
 
 ///
 /// Main window
@@ -104,7 +104,7 @@ class MainForm : public QMainWindow, public EventListener
 		bool handleUnsavedChanges();
 
 	private:
-		HydrogenApp* h2app;
+		CompositeApp* h2app;
 
 		QMenu *m_pRecentFilesMenu;
 		QAction *m_pRecentFileAction0;

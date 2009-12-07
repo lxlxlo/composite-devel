@@ -31,7 +31,7 @@
 using namespace Tritium;
 
 
-#include "HydrogenApp.hpp"
+#include "CompositeApp.hpp"
 #include "PatternEditorPanel.hpp"
 #include "PatternEditorInstrumentList.hpp"
 #include "PatternEditorRuler.hpp"
@@ -509,7 +509,7 @@ PatternEditorPanel::PatternEditorPanel( QWidget *pParent )
 
 	pVBox->addWidget( pMainPanel );
 
-	HydrogenApp::get_instance()->addEventListener( this );
+	CompositeApp::get_instance()->addEventListener( this );
 
 	selectedPatternChangedEvent(); // force an update
 
@@ -634,10 +634,10 @@ void PatternEditorPanel::hearNotesBtnClick(Button *ref)
 	pref->setHearNewNotes( ref->isPressed() );
 
 	if (ref->isPressed() ) {
-		( HydrogenApp::get_instance() )->setStatusBarMessage( trUtf8( "Hear new notes = On" ), 2000 );
+		( CompositeApp::get_instance() )->setStatusBarMessage( trUtf8( "Hear new notes = On" ), 2000 );
 	}
 	else {
-		( HydrogenApp::get_instance() )->setStatusBarMessage( trUtf8( "Hear new notes = Off" ), 2000 );
+		( CompositeApp::get_instance() )->setStatusBarMessage( trUtf8( "Hear new notes = Off" ), 2000 );
 	}
 
 }
@@ -650,10 +650,10 @@ void PatternEditorPanel::recordEventsBtnClick(Button *ref)
 	pref->setRecordEvents( ref->isPressed() );
 
 	if (ref->isPressed() ) {
-		( HydrogenApp::get_instance() )->setStatusBarMessage( trUtf8( "Record keyboard/midi events = On" ), 2000 );
+		( CompositeApp::get_instance() )->setStatusBarMessage( trUtf8( "Record keyboard/midi events = On" ), 2000 );
 	}
 	else {
-		( HydrogenApp::get_instance() )->setStatusBarMessage( trUtf8( "Record keyboard/midi events = Off" ), 2000 );
+		( CompositeApp::get_instance() )->setStatusBarMessage( trUtf8( "Record keyboard/midi events = Off" ), 2000 );
 	}
 
 
@@ -666,10 +666,10 @@ void PatternEditorPanel::quantizeEventsBtnClick(Button *ref)
 	pref->setQuantizeEvents( ref->isPressed() );
 
 	if (ref->isPressed() ) {
-		( HydrogenApp::get_instance() )->setStatusBarMessage( trUtf8( "Quantize incoming keyboard/midi events = On" ), 2000 );
+		( CompositeApp::get_instance() )->setStatusBarMessage( trUtf8( "Quantize incoming keyboard/midi events = On" ), 2000 );
 	}
 	else {
-		( HydrogenApp::get_instance() )->setStatusBarMessage( trUtf8( "Quantize incoming keyboard/midi events = Off" ), 2000 );
+		( CompositeApp::get_instance() )->setStatusBarMessage( trUtf8( "Quantize incoming keyboard/midi events = Off" ), 2000 );
 	}
 }
 

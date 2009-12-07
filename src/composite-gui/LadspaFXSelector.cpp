@@ -20,7 +20,7 @@
  */
 
 #include "LadspaFXSelector.hpp"
-#include "HydrogenApp.hpp"
+#include "CompositeApp.hpp"
 #include <Tritium/Engine.hpp>
 #include "Skin.hpp"
 #include <Tritium/Song.hpp>

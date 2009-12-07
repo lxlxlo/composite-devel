@@ -23,7 +23,7 @@
 #include "Skin.hpp"
 #include "PlayerControl.hpp"
 #include "InstrumentRack.hpp"
-#include "HydrogenApp.hpp"
+#include "CompositeApp.hpp"
 
 #include "widgets/LCD.hpp"
 #include "widgets/Button.hpp"
@@ -455,7 +455,7 @@ PlayerControl::~PlayerControl() {
 void PlayerControl::updatePlayerControl()
 {
 	Preferences *pPref = Engine::get_instance()->get_preferences();
-	HydrogenApp *pH2App = HydrogenApp::get_instance();
+	CompositeApp *pH2App = CompositeApp::get_instance();
 	m_pShowMixerBtn->setPressed( pH2App->getMixer()->isVisible() );
 	m_pShowInstrumentRackBtn->setPressed( pH2App->getInstrumentRack()->isVisible() );
 
@@ -615,12 +615,12 @@ void PlayerControl::updatePlayerControl()
 void PlayerControl::playBtnClicked(Button* ref) {
 	if (ref->isPressed()) {
 		m_pEngine->sequencer_play();
-		(HydrogenApp::get_instance())->setStatusBarMessage(trUtf8("Playing."), 5000);
+		(CompositeApp::get_instance())->setStatusBarMessage(trUtf8("Playing."), 5000);
 	}
 	else {
 //		m_pPlayBtn->setPressed(true);
 		m_pEngine->sequencer_stop();
-		(HydrogenApp::get_instance())->setStatusBarMessage(trUtf8("Pause."), 5000);
+		(CompositeApp::get_instance())->setStatusBarMessage(trUtf8("Pause."), 5000);
 	}
 }
 
@@ -633,7 +633,7 @@ void PlayerControl::stopBtnClicked(Button* /*ref*/)
 	m_pPlayBtn->setPressed(false);
 	m_pEngine->sequencer_stop();
 	m_pEngine->setPatternPos( 0 );
-	(HydrogenApp::get_instance())->setStatusBarMessage(trUtf8("Stopped."), 5000);
+	(CompositeApp::get_instance())->setStatusBarMessage(trUtf8("Stopped."), 5000);
 }
 
 
@@ -650,13 +650,13 @@ void PlayerControl::switchModeBtnClicked(Button* /*ref*/)
 		m_pEngine->getSong()->set_mode( Song::SONG_MODE );
 		m_pSongModeBtn->setPressed(true);
 		m_pLiveModeBtn->setPressed(false);
-		(HydrogenApp::get_instance())->setStatusBarMessage(trUtf8("Song mode selected."), 5000);
+		(CompositeApp::get_instance())->setStatusBarMessage(trUtf8("Song mode selected."), 5000);
 	}
 	else {
 		m_pEngine->getSong()->set_mode( Song::PATTERN_MODE );
 		m_pSongModeBtn->setPressed(false);
 		m_pLiveModeBtn->setPressed(true);
-		(HydrogenApp::get_instance())->setStatusBarMessage(trUtf8("Pattern mode selected."), 5000);
+		(CompositeApp::get_instance())->setStatusBarMessage(trUtf8("Pattern mode selected."), 5000);
 	}
 }
 
@@ -671,7 +671,7 @@ void PlayerControl::songModeBtnClicked(Button* /*ref*/)
 	m_pEngine->getSong()->set_mode( Song::SONG_MODE );
 	m_pSongModeBtn->setPressed(true);
 	m_pLiveModeBtn->setPressed(false);
-	(HydrogenApp::get_instance())->setStatusBarMessage(trUtf8("Song mode selected."), 5000);
+	(CompositeApp::get_instance())->setStatusBarMessage(trUtf8("Song mode selected."), 5000);
 }
 
 
@@ -685,7 +685,7 @@ void PlayerControl::liveModeBtnClicked(Button* /*ref*/)
 	//m_pEngine->sequencer_setNextPattern( m_pEngine->getSelectedPatternNumber() );	// imposto il pattern correntemente selezionato come il prossimo da suonare
 	m_pSongModeBtn->setPressed(false);
 	m_pLiveModeBtn->setPressed(true);
-	(HydrogenApp::get_instance())->setStatusBarMessage(trUtf8("Pattern mode selected."), 5000);
+	(CompositeApp::get_instance())->setStatusBarMessage(trUtf8("Pattern mode selected."), 5000);
 }
 
 
@@ -714,13 +714,13 @@ void PlayerControl::bconoffBtnClicked( Button* )
 	Preferences *pPref = Engine::get_instance()->get_preferences();
 	if (m_pBConoffBtn->isPressed()) {
 		pPref->m_bbc = Preferences::BC_ON;
-		(HydrogenApp::get_instance())->setStatusBarMessage(trUtf8(" BC Panel on"), 5000);
+		(CompositeApp::get_instance())->setStatusBarMessage(trUtf8(" BC Panel on"), 5000);
 		m_pControlsBCPanel->show();
 		
 	}
 	else {
 		pPref->m_bbc = Preferences::BC_OFF;
-		(HydrogenApp::get_instance())->setStatusBarMessage(trUtf8(" BC Panel off"), 5000);
+		(CompositeApp::get_instance())->setStatusBarMessage(trUtf8(" BC Panel off"), 5000);
 		m_pControlsBCPanel->hide();
 	}
 	
@@ -731,12 +731,12 @@ void PlayerControl::bcSetPlayBtnClicked( Button* )
 	Preferences *pPref = Engine::get_instance()->get_preferences();
 	if (m_pBCSetPlayBtn->isPressed()) {
 		pPref->m_mmcsetplay = Preferences::SET_PLAY_ON;
-		(HydrogenApp::get_instance())->setStatusBarMessage(trUtf8(" Count BPM and start PLAY"), 5000);
+		(CompositeApp::get_instance())->setStatusBarMessage(trUtf8(" Count BPM and start PLAY"), 5000);
 		
 	}
 	else {
 		pPref->m_mmcsetplay = Preferences::SET_PLAY_OFF;
-		(HydrogenApp::get_instance())->setStatusBarMessage(trUtf8(" Count and set BPM"), 5000);
+		(CompositeApp::get_instance())->setStatusBarMessage(trUtf8(" Count and set BPM"), 5000);
 	}
 		
 }
@@ -810,13 +810,13 @@ void PlayerControl::jackTransportBtnClicked( Button* )
 		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 		pPref->m_bJackTransportMode = Preferences::USE_JACK_TRANSPORT;
 		Engine::get_instance()->get_audio_engine()->unlock();
-		(HydrogenApp::get_instance())->setStatusBarMessage(trUtf8("Jack-transport mode = On"), 5000);
+		(CompositeApp::get_instance())->setStatusBarMessage(trUtf8("Jack-transport mode = On"), 5000);
 	}
 	else {
 		Engine::get_instance()->get_audio_engine()->lock( RIGHT_HERE );
 		pPref->m_bJackTransportMode = Preferences::NO_JACK_TRANSPORT;
 		Engine::get_instance()->get_audio_engine()->unlock();
-		(HydrogenApp::get_instance())->setStatusBarMessage(trUtf8("Jack-transport mode = Off"), 5000);
+		(CompositeApp::get_instance())->setStatusBarMessage(trUtf8("Jack-transport mode = Off"), 5000);
 	}
 
 	if (pPref->m_sAudioDriver != "Jack") {
@@ -849,12 +849,12 @@ void PlayerControl::jackMasterBtnClicked( Button* )
 		// Set as time master.
 		Engine::get_instance()->setJackTimeMaster(false);
 		pPref->m_bJackMasterMode = Preferences::USE_JACK_TIME_MASTER;
-		HydrogenApp::get_instance()->setStatusBarMessage(trUtf8(" Jack-Time-Master mode = On"), 5000);
+		CompositeApp::get_instance()->setStatusBarMessage(trUtf8(" Jack-Time-Master mode = On"), 5000);
 	}
 	else {
 		// Clear time master.
 		pPref->m_bJackMasterMode = Preferences::NO_JACK_TIME_MASTER;
-		(HydrogenApp::get_instance())->setStatusBarMessage(trUtf8(" Jack-Time-Master mode = Off"), 5000);
+		(CompositeApp::get_instance())->setStatusBarMessage(trUtf8(" Jack-Time-Master mode = Off"), 5000);
 		Engine::get_instance()->clearJackTimeMaster();
 	}
 
@@ -941,10 +941,10 @@ void PlayerControl::songLoopBtnClicked( Button* )
 	song->set_modified( true );
 
 	if ( song->is_loop_enabled() ) {
-		HydrogenApp::get_instance()->setStatusBarMessage(trUtf8("Loop song = On"), 5000);
+		CompositeApp::get_instance()->setStatusBarMessage(trUtf8("Loop song = On"), 5000);
 	}
 	else {
-		HydrogenApp::get_instance()->setStatusBarMessage(trUtf8("Loop song = Off"), 5000);
+		CompositeApp::get_instance()->setStatusBarMessage(trUtf8("Loop song = Off"), 5000);
 	}
 }
 
@@ -958,7 +958,7 @@ void PlayerControl::metronomeButtonClicked(Button* ref)
 void PlayerControl::showButtonClicked( Button* pRef )
 {
 	//INFOLOG( "[showButtonClicked]" );
-	HydrogenApp *pH2App = HydrogenApp::get_instance();
+	CompositeApp *pH2App = CompositeApp::get_instance();
 
 	if ( pRef == m_pShowMixerBtn ) {
 		bool isVisible = pH2App->getMixer()->isVisible();
@@ -1036,7 +1036,7 @@ MetronomeWidget::MetronomeWidget(QWidget *pParent)
  , m_state( METRO_OFF )
 {
 //	INFOLOG( "INIT" );
-	HydrogenApp::get_instance()->addEventListener( this );
+	CompositeApp::get_instance()->addEventListener( this );
 
 	m_metro_off.load( Skin::getImagePath() + "/playerControlPanel/metronome_off.png" );
 	m_metro_on_firstbeat.load( Skin::getImagePath() + "/playerControlPanel/metronome_up.png" );

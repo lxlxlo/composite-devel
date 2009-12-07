@@ -20,7 +20,7 @@
  */
 
 #include "../Skin.hpp"
-#include "../HydrogenApp.hpp"
+#include "../CompositeApp.hpp"
 #include "MidiActivityWidget.hpp"
 #include <Tritium/Engine.hpp>
 #include <Tritium/Logger.hpp>
@@ -59,7 +59,7 @@ MidiActivityWidget::MidiActivityWidget( QWidget * parent )
 	connect( timer, SIGNAL( timeout() ), this, SLOT( updateMidiActivityWidget() ) );
 	timer->start(200);	// update at 5 fps
 
-	HydrogenApp::get_instance()->addEventListener(this);
+	CompositeApp::get_instance()->addEventListener(this);
 }
 
 

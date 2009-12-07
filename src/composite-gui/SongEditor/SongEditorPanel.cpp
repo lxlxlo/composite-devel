@@ -20,7 +20,7 @@
  */
 #include "SongEditorPanel.hpp"
 
-#include "../HydrogenApp.hpp"
+#include "../CompositeApp.hpp"
 #include "../PatternPropertiesDialog.hpp"
 #include "../SongPropertiesDialog.hpp"
 #include "../widgets/Button.hpp"
@@ -238,7 +238,7 @@ SongEditorPanel::SongEditorPanel(QWidget *pParent)
 
 	updateAll();
 
-	HydrogenApp::get_instance()->addEventListener( this );
+	CompositeApp::get_instance()->addEventListener( this );
 
 	m_pTimer = new QTimer(this);
 	connect(m_pTimer, SIGNAL(timeout()), this, SLOT( updatePlayHeadPosition() ) );

@@ -28,7 +28,7 @@
 #include <QTimer>
 #include <QPixmap>
 
-#include "HydrogenApp.hpp"
+#include "CompositeApp.hpp"
 
 /**
  * Fader and VuMeter widget
