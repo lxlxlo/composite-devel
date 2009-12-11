@@ -25,6 +25,8 @@
 
 namespace Tritium {
 
+    class Engine;
+
     class Action
     {
     public:
@@ -58,11 +60,10 @@ namespace Tritium {
 	QString parameter2;
     };
 
-    bool setAbsoluteFXLevel( int nLine, int fx_channel , int fx_param);
-
     class ActionManager
     {
     private:
+	Engine* m_engine;
 	QStringList actionList;
 	QStringList eventList;
 
@@ -77,7 +78,7 @@ namespace Tritium {
 	    return eventList;
 	}
 
-	ActionManager();
+	ActionManager(Engine* parent);
 	~ActionManager();
     };
 

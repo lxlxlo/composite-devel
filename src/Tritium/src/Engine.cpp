@@ -1374,7 +1374,7 @@ Engine::Engine(Preferences* prefs) :
 	INFOLOG( "[Engine]" );
 
 	d->m_event_queue = new EventQueue;
-	d->m_action_manager = new ActionManager;
+	d->m_action_manager = new ActionManager(this);
 
 	__instance = this;
 	d->engineInstance = this;

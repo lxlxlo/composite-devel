@@ -36,6 +36,18 @@
 
 using namespace Tritium;
 
+namespace Tritium
+{
+	/* Internal helper function
+	 */
+	static bool setAbsoluteFXLevel(
+		Engine* engine,
+		int nLine,
+		int fx_channel,
+		int fx_param);
+}
+
+
 /* Class Action */
 Action::Action( QString s )
 {
@@ -47,8 +59,10 @@ Action::Action( QString s )
 
 /* Class ActionManager */
 
-ActionManager::ActionManager()
+ActionManager::ActionManager(Engine* parent) :
+    m_engine(parent)
 {
+	assert( dynamic_cast<Engine*>(parent) );
 	actionList <<""
 	<< "PLAY" 
 	<< "PLAY_TOGGLE"
@@ -98,13 +112,16 @@ ActionManager::~ActionManager()
 {
 }
 
-bool Tritium::setAbsoluteFXLevel( int nLine, int fx_channel , int fx_param)
+static bool Tritium::setAbsoluteFXLevel(
+	Engine* engine,
+	int nLine,
+	int fx_channel,
+	int fx_param)
 {
 	//helper function to set fx levels
 			
-	Engine::get_instance()->setSelectedInstrumentNumber( nLine );
+	engine->setSelectedInstrumentNumber( nLine );
 
-	Engine *engine = Engine::get_instance();
 	Song *song = engine->getSong();
 	InstrumentList *instrList = song->get_instrument_list();
 	Instrument *instr = instrList->get( nLine );
@@ -116,7 +133,7 @@ bool Tritium::setAbsoluteFXLevel( int nLine, int fx_channel , int fx_param)
 			instr->set_fx_level( 0 , fx_channel );
 	}
 		
-	Engine::get_instance()->setSelectedInstrumentNumber(nLine);
+	engine->setSelectedInstrumentNumber(nLine);
 	
 	return true;
 
@@ -124,7 +141,7 @@ bool Tritium::setAbsoluteFXLevel( int nLine, int fx_channel , int fx_param)
 
 bool ActionManager::handleAction( Action * pAction ){
 
-	Engine *pEngine = Engine::get_instance();
+	Engine *pEngine = m_engine;
 
 	/* 
 		return false if action is null 
@@ -211,28 +228,28 @@ bool ActionManager::handleAction( Action * pAction ){
 		bool ok;
 		int nLine = pAction->getParameter1().toInt(&ok,10);
 		int fx_param = pAction->getParameter2().toInt(&ok,10);
-		setAbsoluteFXLevel( nLine, 0 , fx_param );
+		setAbsoluteFXLevel( m_engine, nLine, 0 , fx_param );
 	}
 
 	if( sActionString == "EFFECT2_LEVEL_ABSOLUTE" ){
 		bool ok;
 		int nLine = pAction->getParameter1().toInt(&ok,10);
 		int fx_param = pAction->getParameter2().toInt(&ok,10);
-		setAbsoluteFXLevel( nLine, 1 , fx_param );
+		setAbsoluteFXLevel( m_engine, nLine, 1 , fx_param );
 	}
 
 	if( sActionString == "EFFECT3_LEVEL_ABSOLUTE" ){
 		bool ok;
 		int nLine = pAction->getParameter1().toInt(&ok,10);
 		int fx_param = pAction->getParameter2().toInt(&ok,10);
-		setAbsoluteFXLevel( nLine, 2 , fx_param );
+		setAbsoluteFXLevel( m_engine, nLine, 2 , fx_param );
 	}
 
 	if( sActionString == "EFFECT4_LEVEL_ABSOLUTE" ){
 		bool ok;
 		int nLine = pAction->getParameter1().toInt(&ok,10);
 		int fx_param = pAction->getParameter2().toInt(&ok,10);
-		setAbsoluteFXLevel( nLine, 3 , fx_param );
+		setAbsoluteFXLevel( m_engine, nLine, 3 , fx_param );
 	}
 	
 
@@ -245,7 +262,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		bool ok;
 		int vol_param = pAction->getParameter2().toInt(&ok,10);
 			
-		Engine *engine = Engine::get_instance();
+		Engine *engine = m_engine;
 		Song *song = engine->getSong();
 
 
@@ -273,7 +290,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		int vol_param = pAction->getParameter2().toInt(&ok,10);
 			
 
-		Engine *engine = Engine::get_instance();
+		Engine *engine = m_engine;
 		Song *song = engine->getSong();
 
 
@@ -294,9 +311,9 @@ bool ActionManager::handleAction( Action * pAction ){
 		int nLine = pAction->getParameter1().toInt(&ok,10);
 		int vol_param = pAction->getParameter2().toInt(&ok,10);
 			
-		Engine::get_instance()->setSelectedInstrumentNumber( nLine );
+		m_engine->setSelectedInstrumentNumber( nLine );
 
-		Engine *engine = Engine::get_instance();
+		Engine *engine = m_engine;
 		Song *song = engine->getSong();
 		InstrumentList *instrList = song->get_instrument_list();
 
@@ -316,7 +333,7 @@ bool ActionManager::handleAction( Action * pAction ){
 			instr->set_volume( 0 );
 		}
 
-		Engine::get_instance()->setSelectedInstrumentNumber(nLine);
+		m_engine->setSelectedInstrumentNumber(nLine);
 	}
 
 	if( sActionString == "STRIP_VOLUME_ABSOLUTE" ){
@@ -326,9 +343,9 @@ bool ActionManager::handleAction( Action * pAction ){
 		int nLine = pAction->getParameter1().toInt(&ok,10);
 		int vol_param = pAction->getParameter2().toInt(&ok,10);
 			
-		Engine::get_instance()->setSelectedInstrumentNumber( nLine );
+		m_engine->setSelectedInstrumentNumber( nLine );
 
-		Engine *engine = Engine::get_instance();
+		Engine *engine = m_engine;
 		Song *song = engine->getSong();
 		InstrumentList *instrList = song->get_instrument_list();
 
@@ -342,7 +359,7 @@ bool ActionManager::handleAction( Action * pAction ){
 				instr->set_volume( 0 );
 		}
 
-		Engine::get_instance()->setSelectedInstrumentNumber(nLine);
+		m_engine->setSelectedInstrumentNumber(nLine);
 	}
 
 	if( sActionString == "SELECT_NEXT_PATTERN"){
@@ -368,7 +385,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		float pan_L;
 		float pan_R;
 
-		Engine *engine = Engine::get_instance();
+		Engine *engine = m_engine;
 		engine->setSelectedInstrumentNumber( nLine );
 		Song *song = engine->getSong();
 		InstrumentList *instrList = song->get_instrument_list();
@@ -407,7 +424,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		instr->set_pan_l( pan_L );
 		instr->set_pan_r( pan_R );
 
-		Engine::get_instance()->setSelectedInstrumentNumber(nLine);
+		m_engine->setSelectedInstrumentNumber(nLine);
 
 		return true;
 	}
@@ -426,7 +443,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		float pan_L;
 		float pan_R;
 
-		Engine *engine = Engine::get_instance();
+		Engine *engine = m_engine;
 		engine->setSelectedInstrumentNumber( nLine );
 		Song *song = engine->getSong();
 		InstrumentList *instrList = song->get_instrument_list();
@@ -469,7 +486,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		instr->set_pan_l( pan_L );
 		instr->set_pan_r( pan_R );
 
-		Engine::get_instance()->setSelectedInstrumentNumber(nLine);
+		m_engine->setSelectedInstrumentNumber(nLine);
 
 		return true;
 	}
@@ -481,7 +498,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		 * this is useful if the bpm is set by a rotary control knob
 		*/
 
-		Engine::get_instance()->lock( RIGHT_HERE );
+		m_engine->lock( RIGHT_HERE );
 
 		int mult = 1;	
 
@@ -511,14 +528,14 @@ bool ActionManager::handleAction( Action * pAction ){
 		}
 
 
-		Engine::get_instance()->unlock();
+		m_engine->unlock();
 
 		return true;
 	}
 
 
 	if( sActionString == "BPM_INCR" ){
-		Engine::get_instance()->lock( RIGHT_HERE );
+		m_engine->lock( RIGHT_HERE );
 
 		int mult = 1;	
 
@@ -530,7 +547,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		if (pSong->get_bpm()  < 300) {
 			pEngine->setBPM( pSong->get_bpm() + 1*mult );
 		}
-		Engine::get_instance()->unlock();
+		m_engine->unlock();
 
 		return true;
 	}
@@ -538,7 +555,7 @@ bool ActionManager::handleAction( Action * pAction ){
 
 
 	if( sActionString == "BPM_DECR" ){
-		Engine::get_instance()->lock( RIGHT_HERE );
+		m_engine->lock( RIGHT_HERE );
 
 		int mult = 1;	
 
@@ -549,7 +566,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		if (pSong->get_bpm()  > 40 ) {
 			pEngine->setBPM( pSong->get_bpm() - 1*mult );
 		}
-		Engine::get_instance()->unlock();
+		m_engine->unlock();
 		
 		return true;
 	}
