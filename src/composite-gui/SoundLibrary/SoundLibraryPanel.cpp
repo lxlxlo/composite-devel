@@ -145,7 +145,7 @@ SoundLibraryPanel::~SoundLibraryPanel()
 
 void SoundLibraryPanel::updateDrumkitList()
 {
-	QString currentSL = g_engine->m_currentDrumkit ; 
+	QString currentSL = g_engine->getCurrentDrumkitname() ; 
 
 	LocalFileMng mng;
 
@@ -559,7 +559,7 @@ void SoundLibraryPanel::restore_background_color()
 {
 	std::vector<QString> systemList = Drumkit::getSystemDrumkitList();
 	std::vector<QString> userList = Drumkit::getUserDrumkitList();
-	QString curlib =  g_engine->m_currentDrumkit;
+	QString curlib =  g_engine->getCurrentDrumkitname();
  
 	for (uint i = 0; i < systemList.size() ; i++){
 		if (  !__system_drumkits_item->child( i ) )
@@ -580,7 +580,7 @@ void SoundLibraryPanel::change_background_color()
 {
 	std::vector<QString> systemList = Drumkit::getSystemDrumkitList();
 	std::vector<QString> userList = Drumkit::getUserDrumkitList();
-	QString curlib =  g_engine->m_currentDrumkit;
+	QString curlib =  g_engine->getCurrentDrumkitname();
  
 	for (uint i = 0; i < systemList.size() ; i++){
 		if (  !__system_drumkits_item->child( i ) )

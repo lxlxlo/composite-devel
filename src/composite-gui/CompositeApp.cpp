@@ -134,7 +134,7 @@ CompositeApp::CompositeApp( MainForm *pMainForm, Song *pFirstSong )
 	
 	m_pAppPlaylistListener = new AppPlaylistListener;
 	m_pAppPlaylistListener->q = this;
-	m_pAppPlaylistListener->d = g_engine->get_playlist();
+	m_pAppPlaylistListener->d = &g_engine->get_playlist();
 	m_pAppPlaylistListener->d->subscribe(m_pAppPlaylistListener);
 	// Unsubscription done by the destructor.
 	m_pPlaylistDialog = new PlaylistDialog( 0 );

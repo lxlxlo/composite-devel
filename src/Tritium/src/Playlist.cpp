@@ -67,14 +67,14 @@ void Playlist::setNextSongByNumber(int SongNumber)
 	
 	int realNumber = SongNumber;
 	
-	if ( realNumber > (int)Engine::get_instance()->m_PlayList.size() -1 || (int)Engine::get_instance()->m_PlayList.size() == 0 )
+	if ( realNumber > (int)Engine::get_instance()->get_internal_playlist().size() -1 || (int)Engine::get_instance()->get_internal_playlist().size() == 0 )
 		return;	
 
 	setSelectedSongNr(  realNumber );
 	setActiveSongNumber( realNumber );
 
 	QString selected;
-	selected = Engine::get_instance()->m_PlayList[ realNumber ].m_hFile;
+	selected = Engine::get_instance()->get_internal_playlist()[ realNumber ].m_hFile;
 
 	loadSong( selected );
 	execScript( realNumber );
@@ -100,13 +100,13 @@ void Playlist::setNextSongPlaylist()
 	}
 
 	index = index +1;
-	if ( (int) index > (int)Engine::get_instance()->m_PlayList.size() -1 || index < 0) 
+	if ( (int) index > (int)Engine::get_instance()->get_internal_playlist().size() -1 || index < 0) 
 		return;
 	setSelectedSongNr( index );
 	setActiveSongNumber( index );
 
 	QString selected;
-	selected = Engine::get_instance()->m_PlayList[ index ].m_hFile;
+	selected = Engine::get_instance()->get_internal_playlist()[ index ].m_hFile;
 
 	loadSong( selected );
 	execScript( index );
@@ -139,7 +139,7 @@ void Playlist::setPrevSongPlaylist()
 	setActiveSongNumber( index );
 
 	QString selected;
-	selected = Engine::get_instance()->m_PlayList[ index ].m_hFile;
+	selected = Engine::get_instance()->get_internal_playlist()[ index ].m_hFile;
 
 	loadSong( selected );
 	execScript( index );
@@ -203,8 +203,8 @@ void Playlist::execScript( int index)
 	QString file;
 	QString script;
 
-	file = Engine::get_instance()->m_PlayList[ index ].m_hScript;
-	script = Engine::get_instance()->m_PlayList[ index ].m_hScriptEnabled;
+	file = Engine::get_instance()->get_internal_playlist()[ index ].m_hScript;
+	script = Engine::get_instance()->get_internal_playlist()[ index ].m_hScriptEnabled;
 
 	if( file == "no Script" || script == "Script not used")
 		return;

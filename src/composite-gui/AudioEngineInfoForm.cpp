@@ -222,19 +222,19 @@ void AudioEngineInfoForm::updateAudioEngineState() {
 	int state = g_engine->getState();
 	TransportPosition::State xstate = g_engine->get_transport()->get_state();
 	switch (state) {
-	case STATE_UNINITIALIZED:
+	case Engine::StateUninitialized:
 		stateTxt = "Uninitialized";
 		break;
 
-	case STATE_INITIALIZED:
+	case Engine::StateInitialized:
 		stateTxt = "Initialized";
 		break;
 
-	case STATE_PREPARED:
+	case Engine::StatePrepared:
 		stateTxt = "Prepared";
 		break;
 
-	case STATE_READY:
+	case Engine::StateReady:
 		if( xstate == TransportPosition::ROLLING ) {
 			stateTxt = "Ready/Playing";
 		} else {

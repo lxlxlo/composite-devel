@@ -68,7 +68,7 @@ void jackDriverShutdown( void *arg )
 
 
 
-JackOutput::JackOutput( JackClient* parent, JackProcessCallback processCallback )
+JackOutput::JackOutput( JackClient* parent, JackProcessCallback processCallback, void* arg )
     : AudioOutput(),
       m_jack_client(parent)
 {
@@ -76,6 +76,7 @@ JackOutput::JackOutput( JackClient* parent, JackProcessCallback processCallback 
 	__track_out_enabled = Engine::get_instance()->get_preferences()->m_bJackTrackOuts;	// allow per-track output
 
 	this->processCallback = processCallback;
+	this->processCallback_arg = arg;
 
 	track_port_count = 0;
 
@@ -241,7 +242,7 @@ int JackOutput::init( unsigned /*nBufferSize*/ )
 	/* tell the JACK server to call `process()' whenever
 	   there is work to be done.
 	*/
-	m_jack_client->setAudioProcessCallback(this->processCallback);
+	m_jack_client->setAudioProcessCallback(this->processCallback, this->processCallback_arg);
 
 	#warning "XXX TO-DO: These need to be moved to JackClient"
 	m_jack_client->deactivate();

@@ -141,8 +141,7 @@ void MidiInput::handleControlChangeMessage( const MidiMessage& msg )
 
 	aH->handleAction( pAction );
 
-	pEngine->lastMidiEvent = "CC";
-	pEngine->lastMidiEventParameter = msg.m_nData1;
+	pEngine->set_last_midi_event("CC", msg.m_nData1);
 	
 
 }
@@ -172,8 +171,7 @@ void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
 	ActionManager * aH = pEngine->get_action_manager();
 	MidiMap * mM = Engine::get_instance()->get_preferences()->get_midi_map();
 
-	pEngine->lastMidiEvent = "NOTE";
-	pEngine->lastMidiEventParameter = msg.m_nData1;
+	pEngine->set_last_midi_event("NOTE", msg.m_nData1);
 	
 	bool action = aH->handleAction( mM->getNoteAction( msg.m_nData1 ) );
 	
@@ -280,7 +278,7 @@ void MidiInput::handleSysexMessage( const MidiMessage& msg )
 	ActionManager * aH = pEngine->get_action_manager();
 	MidiMap * mM = Engine::get_instance()->get_preferences()->get_midi_map();
 
-	pEngine->lastMidiEventParameter = msg.m_nData1;
+	pEngine->set_last_midi_event("SYSEX", msg.m_nData1);
 
 
 
@@ -296,48 +294,48 @@ if ( msg.m_sysexData.size() == 6 ) {
 
 			case 1:	// STOP
 			{ 
-				pEngine->lastMidiEvent = "MMC_STOP";
+				pEngine->set_last_midi_event("MMC_STOP");
 				aH->handleAction(mM->getMMCAction("MMC_STOP"));
 				break;
 			}
 
 			case 2:	// PLAY
 			{
-				pEngine->lastMidiEvent = "MMC_PLAY";
+				pEngine->set_last_midi_event("MMC_PLAY");
 				aH->handleAction(mM->getMMCAction("MMC_PLAY"));
 				break;
 			}
 
 			case 3:	//DEFERRED PLAY
 			{
-				pEngine->lastMidiEvent = "MMC_PLAY";
+				pEngine->set_last_midi_event("MMC_PLAY");
 				aH->handleAction(mM->getMMCAction("MMC_PLAY"));
 				break;
 			}
 
 			case 4:	// FAST FWD
-				pEngine->lastMidiEvent = "MMC_FAST_FWD";
+				pEngine->set_last_midi_event("MMC_FAST_FWD");
 				aH->handleAction(mM->getMMCAction("MMC_FAST_FWD"));
 				
 				break;
 
 			case 5:	// REWIND
-				pEngine->lastMidiEvent = "MMC_REWIND";
+				pEngine->set_last_midi_event("MMC_REWIND");
 				aH->handleAction(mM->getMMCAction("MMC_REWIND"));
 				break;
 
 			case 6:	// RECORD STROBE (PUNCH IN)
-				pEngine->lastMidiEvent = "MMC_RECORD_STROBE";
+				pEngine->set_last_midi_event("MMC_RECORD_STROBE");
 				aH->handleAction(mM->getMMCAction("MMC_RECORD_STROBE"));
 				break;
 
 			case 7:	// RECORD EXIT (PUNCH OUT)
-				pEngine->lastMidiEvent = "MMC_RECORD_EXIT";
+				pEngine->set_last_midi_event("MMC_RECORD_EXIT");
 				aH->handleAction(mM->getMMCAction("MMC_RECORD_EXIT"));
 				break;
 
 			case 9:	//PAUSE
-				pEngine->lastMidiEvent = "MMC_PAUSE";
+				pEngine->set_last_midi_event("MMC_PAUSE");
 				aH->handleAction(mM->getMMCAction("MMC_PAUSE"));
 				break;
 

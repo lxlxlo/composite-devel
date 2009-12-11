@@ -35,7 +35,7 @@ typedef int  ( *audioProcessCallback )( uint32_t, void * );
 class NullDriver : public AudioOutput
 {
 public:
-	NullDriver( audioProcessCallback processCallback );
+	NullDriver( audioProcessCallback processCallback, void* );
 	~NullDriver();
 
 	int init( unsigned nBufferSize );

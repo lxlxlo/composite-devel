@@ -1154,19 +1154,19 @@ bool MainForm::eventFilter( QObject * /*o*/, QEvent *e )
 				break;
 			
 			case  Qt::Key_F5 :
-				if( engine->m_PlayList.size() == 0)
+				if( engine->get_internal_playlist().size() == 0)
 					break;
-				engine->get_playlist()->setPrevSongPlaylist();
-				songnumber = engine->get_playlist()->getActiveSongNumber();
+				engine->get_playlist().setPrevSongPlaylist();
+				songnumber = engine->get_playlist().getActiveSongNumber();
 				CompositeApp::get_instance()->setScrollStatusBarMessage( trUtf8( "Playlist: Set song No. %1" ).arg( songnumber +1 ), 5000 );
 				return TRUE;
 				break;
 
 			case  Qt::Key_F6 :
-				if( engine->m_PlayList.size() == 0)
+				if( engine->get_internal_playlist().size() == 0)
 					break;
-				engine->get_playlist()->setNextSongPlaylist();
-				songnumber = engine->get_playlist()->getActiveSongNumber();
+				engine->get_playlist().setNextSongPlaylist();
+				songnumber = engine->get_playlist().getActiveSongNumber();
 				CompositeApp::get_instance()->setScrollStatusBarMessage( trUtf8( "Playlist: Set song No. %1" ).arg( songnumber +1 ), 5000 );
 				return TRUE;
 				break;
@@ -1356,9 +1356,9 @@ void MainForm::onAutoSaveTimer()
 
 void MainForm::onPlaylistDisplayTimer()
 {
-	if( g_engine->m_PlayList.size() == 0)
+	if( g_engine->get_internal_playlist().size() == 0)
 		return;
-	int songnumber = g_engine->get_playlist()->getActiveSongNumber();
+	int songnumber = g_engine->get_playlist().getActiveSongNumber();
 	QString songname;
 	if ( songnumber == -1 )
 			return;

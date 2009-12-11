@@ -27,9 +27,10 @@
 namespace Tritium
 {
 
-FakeDriver::FakeDriver( audioProcessCallback processCallback )
+FakeDriver::FakeDriver( audioProcessCallback processCallback, void* arg )
 		: AudioOutput()
 		, m_processCallback( processCallback )
+		, m_processCallback_arg( arg )
 		, m_pOut_L( NULL )
 		, m_pOut_R( NULL )
 {

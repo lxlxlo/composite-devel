@@ -138,7 +138,7 @@ bool ActionManager::handleAction( Action * pAction ){
 	if( sActionString == "PLAY" )
 	{
 		int nState = pEngine->getState();
-		if ( nState == STATE_READY ){
+		if ( nState == Engine::StateReady ){
 			pEngine->get_transport()->start();
 		}
 		return true;

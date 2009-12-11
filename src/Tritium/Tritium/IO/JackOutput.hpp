@@ -48,7 +48,7 @@ class JackClient;
 class JackOutput : public AudioOutput
 {
 public:
-	JackOutput( JackClient* parent, JackProcessCallback processCallback );
+	JackOutput( JackClient* parent, JackProcessCallback processCallback, void* arg );
 	~JackOutput();
 
 	int connect();
@@ -81,6 +81,7 @@ private:
 	Tritium::JackClient *m_jack_client;
 
 	JackProcessCallback processCallback;
+	void* processCallback_arg;
 	jack_port_t *output_port_1;
 	jack_port_t *output_port_2;
 	QString output_port_name_1;

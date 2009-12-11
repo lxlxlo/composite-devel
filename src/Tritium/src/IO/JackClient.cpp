@@ -41,6 +41,7 @@ jack_client_t* JackClient::ref(void)
 JackClient::JackClient(bool init_jack)
 	: m_client(0),
 	  m_audio_process(0),
+	  m_audio_process_arg(0),
 	  m_nonaudio_process(0)
 {
 	INFOLOG( "INIT" );
@@ -173,13 +174,14 @@ void JackClient::deactivate()
 }
 		
 
-int JackClient::setAudioProcessCallback(JackProcessCallback process)
+int JackClient::setAudioProcessCallback(JackProcessCallback process, void* arg)
 {
 	deactivate();
-	int rv = jack_set_process_callback(m_client, process, 0);
+	int rv = jack_set_process_callback(m_client, process, arg);
 	if (!rv) {
 		INFOLOG("JACK Callback changed.");
 		m_audio_process = process;
+		m_audio_process_arg = arg;
 	}
 	return rv;
 }
@@ -190,7 +192,8 @@ int JackClient::setNonAudioProcessCallback(JackProcessCallback process)
 	int rv = 0;
 	if (!m_audio_process) {
 		INFOLOG("No current audio process callback... setting the non-audio one.");
-		rv = jack_set_process_callback(m_client, process, 0);
+		assert(m_audio_process_arg);
+		rv = jack_set_process_callback(m_client, process, m_audio_process_arg);
 	}
 	if (!rv) {
 		INFOLOG("Non-audio process callback changed.");

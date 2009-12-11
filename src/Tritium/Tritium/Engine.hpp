@@ -28,14 +28,6 @@
 #include <list>
 #include <cassert>
 
-// Engine states  (It's ok to use ==, <, and > when testing)
-#define STATE_UNINITIALIZED	1     // Not even the constructors have been called.
-#define STATE_INITIALIZED	2     // Not ready, but most pointers are now valid or NULL
-#define STATE_PREPARED		3     // Drivers are set up, but not ready to process audio.
-#define STATE_READY		4     // Ready to process audio
-/*
-#define STATE_PLAYING		5     // Currently playing a sequence.
-*/
 
 /**
  * Convenience macro for locking the Engine.
@@ -44,258 +36,297 @@
 #define RIGHT_HERE __FILE__, __LINE__, __PRETTY_FUNCTION__
 #endif
 
-inline int randomValue( int max );
-
 namespace Tritium
 {
 
-class ActionManager;
-class AudioEngine;
-class AudioOutput;
-class Drumkit;
-class Effects;
-class EventQueue;
-class MidiInput;
-class MidiMap;
-class Playlist;
-class Preferences;
-class Sampler;
-class Transport;
+    class ActionManager;
+    class AudioEngine;
+    class AudioOutput;
+    class Drumkit;
+    class Effects;
+    class EventQueue;
+    class MidiInput;
+    class MidiMap;
+    class Playlist;
+    class Preferences;
+    class Sampler;
+    class Transport;
 
-///
-/// The main audio engine
-///
-class Engine
-{
-public:
-	// The preferences object must be created and
-	// initialized before Engine is created
-	// (for now).  Engine takes ownership and
-	// will delete it.
-	static void create_instance(Preferences* prefs);  // Also creates other instances, like AudioEngine
-	static Engine* get_instance() { assert(__instance); return __instance; };
+    class EnginePrivate;
 
-	~Engine();
+    /**
+     * \brief This is the main Tritium Engine.
+     */
+    class Engine
+    {
+    public:
+        // The preferences object must be created and
+        // initialized before Engine is created
+        // (for now).  Engine takes ownership and
+        // will delete it.
+        static void create_instance(Preferences* prefs);
+        static Engine* get_instance() { assert(__instance); return __instance; };
 
-// ***** ACCESS TO TRANSPORT ******
-	Transport* get_transport(); // Never returns null
+        ~Engine();
 
-// ***** SEQUENCER ********
-	/// Start the internal sequencer
-	void sequencer_play();
+	///////////////////////////////////////
+	// ACCESS TO MAJOR COMPONENTS
+	///////////////////////////////////////
 
-	/// Stop the internal sequencer
-	void sequencer_stop();
-
-	void midi_noteOn( Note *note );
-	void midi_noteOff( Note *note );
-
-	///Last received midi message
-	QString lastMidiEvent;
-	int lastMidiEventParameter;
-
-
-	void sequencer_setNextPattern( int pos, bool appendPattern, bool deletePattern );
-	void togglePlaysSelected( void );
-// ***** ~SEQUENCER ********
-
-	Preferences* get_preferences();
-	ActionManager* get_action_manager();
-	Sampler* get_sampler();
-	EventQueue* get_event_queue();
-	Playlist* get_playlist();
+        Transport* get_transport(); // Never returns null
+        Preferences* get_preferences();
+        AudioOutput* get_audio_output();
+        MidiInput* get_midi_input();
+        ActionManager* get_action_manager();
+        Sampler* get_sampler();
+        EventQueue* get_event_queue();
+        Playlist& get_playlist();
 #ifdef LADSPA_SUPPORT
-	Effects* get_effects();
+        Effects* get_effects();
 #endif
 
-	/// Global locks
-	/* Mutex locking and unlocking
+	///////////////////////////////////////
+	// ENGINE STATE AND ERRORS
+	///////////////////////////////////////
+
+	/**
+	 * \brief The status of the Engine.
 	 *
-	 * Easy usage:  Use the RIGHT_HERE macro like this...
-	 *     Engine::get_instance()->lock( RIGHT_HERE );
-	 *
-	 * More complex usage:  The parameters file and function
-	 * need to be pointers to null-terminated strings that are
-	 * persistent for the entire session.  This does *not*
-	 * include the return value of std::string::c_str(), or
-	 * QString::toLocal8Bit().data().
-	 *
-	 * Tracing the locks:  Enable the Logger::AELockTracing
-	 * logging level.  When you do, there will be a performance
-	 * penalty because the strings will be converted to a
-	 * QString.  At the moment, you'll have to do that with
-	 * your debugger.
-	 *
-	 * Notes: The order of the parameters match GCC's
-	 * implementation of the assert() macros.
+	 * It's OK to use ==, <, and > when testing.
 	 */
-	void lock( const char* file, unsigned int line, const char* function );
-	bool try_lock( const char* file, unsigned int line, const char* function ); /// Return true on success (locked).
-	void unlock();
+	typedef enum {
+	    StateUninitialized = 1, ///< Not even contructors have been called
+	    StateInitialized = 2,   ///< Not ready, but most pointers are valid
+	    StatePrepared = 3,      ///< Drivers set up, but not ready for audio
+	    StateReady = 4,         ///< Ready to process audio
+	} state_t;
 
-	/// Set current song
-	void setSong( Song *newSong );
+        state_t getState();
 
-	/// Return the current song
-	Song* getSong();
-	void removeSong();
+        typedef enum {
+            UNKNOWN_DRIVER,
+            ERROR_STARTING_DRIVER,
+            JACK_SERVER_SHUTDOWN,
+            JACK_CANNOT_ACTIVATE_CLIENT,
+            JACK_CANNOT_CONNECT_OUTPUT_PORT,
+            JACK_ERROR_IN_PORT_REGISTER,
+        } error_t;
 
-	void addRealtimeNote ( int instrument, float velocity, float pan_L=1.0, float pan_R=1.0, float pitch=0.0, bool forcePlay=false, bool use_frame = false, uint32_t frame = 0 );
-
-
-	float getMasterPeak_L();
-	void setMasterPeak_L( float value );
-
-	float getMasterPeak_R();
-	void setMasterPeak_R( float value );
-
-	void getLadspaFXPeak( int nFX, float *fL, float *fR );
-	void setLadspaFXPeak( int nFX, float fL, float fR );
+        void raiseError( error_t nErrorCode );
 
 
-	unsigned long getTickPosition();
-	unsigned long getRealtimeFrames();
+	///////////////////////////////////////
+	// THE BIG LOCK
+	///////////////////////////////////////
+        /* Mutex locking and unlocking
+         *
+         * Easy usage:  Use the RIGHT_HERE macro like this...
+         *     Engine::get_instance()->lock( RIGHT_HERE );
+         *
+         * More complex usage:  The parameters file and function
+         * need to be pointers to null-terminated strings that are
+         * persistent for the entire session.  This does *not*
+         * include the return value of std::string::c_str(), or
+         * QString::toLocal8Bit().data().
+         *
+         * Tracing the locks:  Enable the Logger::AELockTracing
+         * logging level.  When you do, there will be a performance
+         * penalty because the strings will be converted to a
+         * QString.  At the moment, you'll have to do that with
+         * your debugger.
+         *
+         * Notes: The order of the parameters match GCC's
+         * implementation of the assert() macros.
+         */
+        void lock( const char* file, unsigned int line, const char* function );
+        bool try_lock( const char* file, unsigned int line, const char* function );
+        void unlock();
 
+	///////////////////////////////////////
+	// SEQUENCER CONTROLS
+	///////////////////////////////////////
 
-	PatternList * getCurrentPatternList();
+        /// Start the internal sequencer
+        void sequencer_play();
 
-	PatternList * getNextPatterns();
+        /// Stop the internal sequencer
+        void sequencer_stop();
 
-	int getPatternPos();
-	void setPatternPos( int pos );
-	
-	long getTickForPosition( int );
+        void __panic();
 
-	void restartDrivers();
+        void midi_noteOn( Note *note );
+        void midi_noteOff( Note *note );
 
-	void startExportSong( const QString& filename );
-	void stopExportSong();
+        void sequencer_setNextPattern(
+	    int pos,
+	    bool appendPattern,
+	    bool deletePattern );
+        void togglePlaysSelected();
 
-	AudioOutput* get_audio_output();
-	MidiInput* get_midi_input();
+        void addRealtimeNote (
+	    int instrument,
+	    float velocity,
+	    float pan_L=1.0,
+	    float pan_R=1.0,
+	    float pitch=0.0,
+	    bool forcePlay=false,
+	    bool use_frame = false,
+	    uint32_t frame = 0 );
 
-	int getState();
+        unsigned long getTickPosition();
+        unsigned long getRealtimeFrames();
 
-	float getProcessTime();
-	float getMaxProcessTime();
+        PatternList * getCurrentPatternList();
+        PatternList * getNextPatterns();
 
-	int loadDrumkit( Drumkit *drumkitInfo );
-	
-	/// delete an instrument. If `conditional` is true, and there are patterns that
-	/// use this instrument, it's not deleted anyway
-	void removeInstrument( int instrumentnumber, bool conditional );
+        int getPatternPos();
+        void setPatternPos( int pos );
 
-	//return the name of the current drumkit
-	QString m_currentDrumkit;
+        long getTickForPosition( int );
 
-	const QString& getCurrentDrumkitname() {
-		return m_currentDrumkit;
-	}
+        int getSelectedPatternNumber();
+        void setSelectedPatternNumber( int nPat );
 
-	void setCurrentDrumkitname( const QString& currentdrumkitname ) {
-		this->m_currentDrumkit = currentdrumkitname;
-	}
+        int getSelectedInstrumentNumber();
+        void setSelectedInstrumentNumber( int nInstrument );
 
-	void raiseError( unsigned nErrorCode );
+        /// jack time master
+	// Returns true if we have become the master
+        bool setJackTimeMaster(bool if_none_already = false);
+        void clearJackTimeMaster();
+        /* Note:  There's no way to know for sure
+	   if we are _actually_ the JACK time master. */
+        bool getJackTimeMaster();
+        ///~jack time master
 
+	// TODO: Remove this function.  This is a workaround
+	// for the old code which manipulated the internal
+	// class members.  This should be done somewhere
+	// else than in Tritium::Engine.
+	void set_last_midi_event(const QString& ev, int param = -1);
+	bool have_last_midi_event(); // i.e. event is non-empty
+	void get_last_midi_event(QString* event, int* param);
 
-	void previewSample( Sample *pSample );
-	void previewInstrument( Instrument *pInstr );
+	///////////////////////////////////////
+	// SONG CONTROLS
+	///////////////////////////////////////
 
-	enum ErrorMessages {
-		UNKNOWN_DRIVER,
-		ERROR_STARTING_DRIVER,
-		JACK_SERVER_SHUTDOWN,
-		JACK_CANNOT_ACTIVATE_CLIENT,
-		JACK_CANNOT_CONNECT_OUTPUT_PORT,
-		JACK_ERROR_IN_PORT_REGISTER
-	};
+        /// Set current song
+        void setSong( Song *newSong );
 
-	void onTapTempoAccelEvent();
-	void setTapTempo( float fInterval );
-	void setBPM( float fBPM );
+        /// Return the current song
+        Song* getSong();
+        void removeSong();
 
-	void restartLadspaFX();
+	///////////////////////////////////////
+	// MIXER CONTROLS
+	///////////////////////////////////////
 
-	int getSelectedPatternNumber();
-	void setSelectedPatternNumber( int nPat );
+        float getMasterPeak_L();
+        void setMasterPeak_L( float value );
 
-	int getSelectedInstrumentNumber();
-	void setSelectedInstrumentNumber( int nInstrument );
+        float getMasterPeak_R();
+        void setMasterPeak_R( float value );
+
+        void getLadspaFXPeak( int nFX, float *fL, float *fR );
+        void setLadspaFXPeak( int nFX, float fL, float fR );
+
+	///////////////////////////////////////
+	// AUDIO DRIVER CONTROLS
+	///////////////////////////////////////
+
+        void restartDrivers();
+
+        void startExportSong( const QString& filename );
+        void stopExportSong();
+
+        float getProcessTime();
+        float getMaxProcessTime();
+
 #ifdef JACK_SUPPORT
-	void renameJackPorts();
+        void renameJackPorts();
 #endif
 
-	///playlist vector
-	struct HPlayListNode
-	{
-		QString m_hFile;
-		QString m_hScript;
-		QString m_hScriptEnabled;
-	};
+	///////////////////////////////////////
+	// SAMPLER CONTROL
+	///////////////////////////////////////
 
-	std::vector<HPlayListNode> m_PlayList;
-	
-	///beatconter
-	void setbeatsToCount( int beatstocount);
-	int getbeatsToCount();
-	void setNoteLength( float notelength);
-	float getNoteLength();
-	int getBcStatus();
-	void handleBeatCounter();
-	void setBcOffsetAdjust();
+        int loadDrumkit( Drumkit *drumkitInfo );
 
-	/// jack time master
-	bool setJackTimeMaster(bool if_none_already = false);  // Returns true if we became master
-	void clearJackTimeMaster();
-	bool getJackTimeMaster();    /* Note:  There's no way to know for sure
-	                                if we are _actually_ the JACK time master. */
-	///~jack time master
+        /// delete an instrument. If `conditional` is true, and there
+        /// are patterns that use this instrument, it's not deleted
+        /// anyway
+        void removeInstrument( int instrumentnumber, bool conditional );
 
-	void __panic();
-	
+        const QString& getCurrentDrumkitname();
+        void setCurrentDrumkitname( const QString& currentdrumkitname );
 
-private:
-	static Engine* __instance;
+        void previewSample( Sample *pSample );
+        void previewInstrument( Instrument *pInstr );
 
-	Sampler* __sampler;
+	///////////////////////////////////////
+	// TEMPO CONTROLS
+	///////////////////////////////////////
 
-	/// Mutex for syncronized access to the Song object and the AudioEngine.
-	QMutex __engine_mutex;
+        void onTapTempoAccelEvent();
+        void setTapTempo( float fInterval );
+        void setBPM( float fBPM );
 
-	struct _locker_struct {
-		const char* file;
-		unsigned int line;
-		const char* function;
-	} __locker;
+        ///beatconter
+        void setbeatsToCount( int beatstocount);
+        int getbeatsToCount();
+        void setNoteLength( float notelength);
+        float getNoteLength();
+        int getBcStatus();
+        void handleBeatCounter();
+        void setBcOffsetAdjust();
 
-	// used for song export
-	Song::SongMode m_oldEngineMode;
-	bool m_bOldLoopEnabled;
+	///////////////////////////////////////
+	// EFFECTS
+	///////////////////////////////////////
 
-	std::list<Instrument*> __instrument_death_row; /// Deleting instruments too soon leads to potential crashes.
+        void restartLadspaFX();
 
+	///////////////////////////////////////
+	// PLAYLIST
+	///////////////////////////////////////
 
-	/// Private constructor
-	Engine(Preferences* prefs);
+        ///playlist vector
+        struct HPlayListNode
+        {
+            QString m_hFile;
+            QString m_hScript;
+            QString m_hScriptEnabled;
+        };
 
-	void __kill_instruments();
+	typedef std::vector<HPlayListNode> playlist_t;
 
-};
+	// TODO: This is a workaround function.  It needs to be
+	// removed and replaced by something that is a little
+	// better designed.  Why have Tritium::Playlist if
+	// everyone is manipulating the internale playlist_t vector?
+	playlist_t& get_internal_playlist();
 
-/**
- * \brief Global pointer to engine (convenience)
- *
- * This pointer is provided for the convenience of client applications
- * that wish to have a single, global instance of the Tritium engine.
- * This is just a declaration.  You must create the actual variable
- * and instance somewhere else.
- *
- * This global variable IS NOT used internally by Tritium at all.
- */
-extern Engine* g_engine;
+    private:
+        static Engine* __instance;
+        EnginePrivate* d;
+
+        /// Private constructor (for Singleton pattern)
+        Engine(Preferences* prefs);
+    };
+
+    /**
+     * \brief Global pointer to engine (convenience)
+     *
+     * This pointer is provided for the convenience of client applications
+     * that wish to have a single, global instance of the Tritium engine.
+     * This is just a declaration.  You must create the actual variable
+     * and instance somewhere else.
+     *
+     * This global variable IS NOT used internally by Tritium at all.
+     */
+    extern Engine* g_engine;
 
 } // namespace Tritium
 
 #endif  // TRITIUM_ENGINE_HPP
-

@@ -930,14 +930,14 @@ int LocalFileMng::savePlayList( const std::string& patternname)
 	writeXmlString( rootNode, "LIB_ID", "in_work" );
 		
 	QDomNode playlistNode = doc.createElement( "Songs" );
-	for ( uint i = 0; i < Engine::get_instance()->m_PlayList.size(); ++i ){
+	for ( uint i = 0; i < Engine::get_instance()->get_internal_playlist().size(); ++i ){
 		QDomNode nextNode = doc.createElement( "next" );
 		
-		LocalFileMng::writeXmlString ( nextNode, "song", Engine::get_instance()->m_PlayList[i].m_hFile );
+		LocalFileMng::writeXmlString ( nextNode, "song", Engine::get_instance()->get_internal_playlist()[i].m_hFile );
 		
-		LocalFileMng::writeXmlString ( nextNode, "script", Engine::get_instance()->m_PlayList[i].m_hScript );
+		LocalFileMng::writeXmlString ( nextNode, "script", Engine::get_instance()->get_internal_playlist()[i].m_hScript );
 		
-		LocalFileMng::writeXmlString ( nextNode, "enabled", Engine::get_instance()->m_PlayList[i].m_hScriptEnabled );
+		LocalFileMng::writeXmlString ( nextNode, "enabled", Engine::get_instance()->get_internal_playlist()[i].m_hScriptEnabled );
 		
 		playlistNode.appendChild( nextNode );
 	}
@@ -972,7 +972,7 @@ int LocalFileMng::loadPlayList( const std::string& patternname)
 
 	QDomDocument doc = LocalFileMng::openXmlDocument( QString( patternname.c_str() ) );
 	
-	Engine::get_instance()->m_PlayList.clear();
+	Engine::get_instance()->get_internal_playlist().clear();
 
 	QDomNode rootNode = doc.firstChildElement( "playlist" );	// root element
 	if ( rootNode.isNull() ) {
@@ -983,14 +983,14 @@ int LocalFileMng::loadPlayList( const std::string& patternname)
 
 	if ( ! playlistNode.isNull() ) {
 		// new code :)
-		Engine::get_instance()->m_PlayList.clear();
+		Engine::get_instance()->get_internal_playlist().clear();
 		QDomNode nextNode = playlistNode.firstChildElement( "next" );
 		while (  ! nextNode.isNull() ) {
 			Engine::HPlayListNode playListItem;
 			playListItem.m_hFile = LocalFileMng::readXmlString( nextNode, "song", "" );
 			playListItem.m_hScript = LocalFileMng::readXmlString( nextNode, "script", "" );
 			playListItem.m_hScriptEnabled = LocalFileMng::readXmlString( nextNode, "enabled", "" );
-			Engine::get_instance()->m_PlayList.push_back( playListItem );	
+			Engine::get_instance()->get_internal_playlist().push_back( playListItem );	
 			nextNode = nextNode.nextSiblingElement( "next" );
 		}
 	}

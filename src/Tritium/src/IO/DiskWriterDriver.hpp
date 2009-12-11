@@ -44,10 +44,15 @@ public:
 	QString m_sFilename;
 	unsigned m_nBufferSize;
 	audioProcessCallback m_processCallback;
+	void* m_processCallback_arg;
 	float* m_pOut_L;
 	float* m_pOut_R;
 
-	DiskWriterDriver( audioProcessCallback processCallback, unsigned nSamplerate, const QString& sFilename );
+	DiskWriterDriver(
+		audioProcessCallback processCallback,
+		void* arg,
+		unsigned nSamplerate,
+		const QString& sFilename );
 	~DiskWriterDriver();
 
 	int init( unsigned nBufferSize );

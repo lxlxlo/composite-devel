@@ -78,7 +78,7 @@ void DiskWriterDriverThread::run()
         uint32_t report_interval = pDriver->m_nBufferSize * 64;
 
 	while ( (!m_abort)
-		&& (pDriver->m_processCallback( pDriver->m_nBufferSize, NULL ) == 0) ) {
+		&& (pDriver->m_processCallback( pDriver->m_nBufferSize, pDriver->m_processCallback_arg ) == 0) ) {
 		// process...
 		for ( unsigned i = 0; i < pDriver->m_nBufferSize; i++ ) {
 			if(pData_L[i] > 1){
@@ -133,11 +133,16 @@ void DiskWriterDriverThread::run()
 
 
 
-DiskWriterDriver::DiskWriterDriver( audioProcessCallback processCallback, unsigned nSamplerate, const QString& sFilename )
+DiskWriterDriver::DiskWriterDriver(
+	audioProcessCallback processCallback,
+	void* arg,
+	unsigned nSamplerate,
+	const QString& sFilename )
 		: AudioOutput()
 		, m_nSampleRate( nSamplerate )
 		, m_sFilename( sFilename )
 		, m_processCallback( processCallback )
+		, m_processCallback_arg( arg )
 {
 	INFOLOG( "INIT" );
 }

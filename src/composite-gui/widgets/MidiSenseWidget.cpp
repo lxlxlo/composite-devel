@@ -39,8 +39,7 @@ MidiSenseWidget::MidiSenseWidget(QWidget* pParent) : QDialog( pParent )
 	setLayout( pVBox );
 	
 	Tritium::Engine *pEngine = Tritium::g_engine;
-	pEngine->lastMidiEvent = "";
-	pEngine->lastMidiEventParameter = 0;
+	pEngine->set_last_midi_event("", 0);
 	
 	m_pUpdateTimer = new QTimer( this );
 	connect( m_pUpdateTimer, SIGNAL( timeout() ), this, SLOT( updateMidi() ) );
@@ -55,11 +54,9 @@ MidiSenseWidget::~MidiSenseWidget(){
 
 void MidiSenseWidget::updateMidi(){
 	Tritium::Engine *pEngine = Tritium::g_engine;
-	if(	!pEngine->lastMidiEvent.isEmpty() ){
-		lastMidiEvent = pEngine->lastMidiEvent;
-		lastMidiEventParameter = pEngine->lastMidiEventParameter;
-		close();
+	if( pEngine->have_last_midi_event() ) {
+	    pEngine->get_last_midi_event(&lastMidiEvent, &lastMidiEventParameter);
+	    close();
 	}
-
 }
 

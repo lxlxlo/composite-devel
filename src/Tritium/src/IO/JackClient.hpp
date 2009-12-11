@@ -48,7 +48,7 @@ public:
     ~JackClient(void);
 
     jack_client_t* ref(void);
-    int setAudioProcessCallback(JackProcessCallback process);
+    int setAudioProcessCallback(JackProcessCallback process, void* arg);
     int setNonAudioProcessCallback(JackProcessCallback process);
     int clearAudioProcessCallback(void);
     int clearNonAudioProcessCallback(void);
@@ -67,7 +67,9 @@ private:
     jack_client_t* m_client;
     std::set<void*> m_children;
     JackProcessCallback m_audio_process;
+    void* m_audio_process_arg;
     JackProcessCallback m_nonaudio_process;
+    // void* m_nonaudio_process_arg; // always use m_audio_process_arg
 
     friend class Engine;
 };

@@ -36,7 +36,7 @@ typedef int  ( *audioProcessCallback )( uint32_t, void * );
 class FakeDriver : public AudioOutput
 {
 public:
-	FakeDriver( audioProcessCallback processCallback );
+	FakeDriver( audioProcessCallback processCallback, void* arg );
 	~FakeDriver();
 
 	int init( unsigned nBufferSize );
@@ -52,6 +52,7 @@ public:
 
 private:
 	audioProcessCallback m_processCallback;
+	void* m_processCallback_arg;
 	unsigned m_nBufferSize;
 	float* m_pOut_L;
 	float* m_pOut_R;

@@ -85,7 +85,7 @@ void DrumPatternEditor::updateEditor()
 
 	// check engine state
 	int state = engine->getState();
-	if ( state != STATE_READY ) {
+	if ( state != Engine::StateReady ) {
 		ERRORLOG( "FIXME: skipping pattern editor update (state shoud be READY or PLAYING)" );
 		return;
 	}

@@ -57,7 +57,7 @@ void PatternEditorPanel::updateSLnameLabel( )
 	QFont font;
 	font.setBold( true );
 	pSLlabel->setFont( font );
-	pSLlabel->setText( g_engine->m_currentDrumkit  );
+	pSLlabel->setText( g_engine->getCurrentDrumkitname() );
 } 
 
 
@@ -94,7 +94,7 @@ PatternEditorPanel::PatternEditorPanel( QWidget *pParent )
 
 	//soundlibrary name
 	pSLlabel = new QLabel( NULL );
-	pSLlabel->setText( g_engine->m_currentDrumkit );
+	pSLlabel->setText( g_engine->getCurrentDrumkitname() );
 	pSLlabel->setFixedSize( 170, 20 );
 	pSLlabel->move( 10, 3 );
 	pSLlabel->setToolTip( trUtf8("Loaded Soundlibrary") );
@@ -676,7 +676,7 @@ void PatternEditorPanel::quantizeEventsBtnClick(Button *ref)
 void PatternEditorPanel::stateChangedEvent(int state)
 {
 	Transport* xport = g_engine->get_transport();
-	if ( (state == STATE_READY) && (xport->get_state() != TransportPosition::ROLLING) ) {
+	if ( (state == Engine::StateReady) && (xport->get_state() != TransportPosition::ROLLING) ) {
 		m_bEnablePatternResize = true;
 	}
 	else {
@@ -687,7 +687,7 @@ void PatternEditorPanel::stateChangedEvent(int state)
 void PatternEditorPanel::transportEvent(TransportPosition::State state)
 {
 	int h2state = g_engine->getState();
-	if( (h2state == STATE_READY) && (state != TransportPosition::ROLLING) ) {
+	if( (h2state == Engine::StateReady) && (state != TransportPosition::ROLLING) ) {
 		m_bEnablePatternResize = true;
 	}
 	else {
