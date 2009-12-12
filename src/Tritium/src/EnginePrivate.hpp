@@ -36,30 +36,35 @@
 namespace Tritium
 {
 
-/**
- * This class provides a thread-safe queue that can be written from
- * anywhere to allow note on/off events.  It's primarily intended for
- * GUI input, and not something like a MIDI input.  (However, MIDI
- * input will probably use it temporarily.
- *
- * It provides a process() method that allows the events to be given
- * to the master sequencer queue.
- */
+    class Engine;
+
+    /**
+     * This class provides a thread-safe queue that can be written from
+     * anywhere to allow note on/off events.  It's primarily intended for
+     * GUI input, and not something like a MIDI input.  (However, MIDI
+     * input will probably use it temporarily.
+     *
+     * It provides a process() method that allows the events to be given
+     * to the master sequencer queue.
+     */
     class GuiInputQueue
     {
     private:
         typedef std::list<SeqEvent> EvList;
+	Engine *m_engine;
         EvList __events;
         QMutex __mutex;
 
     public:
+	GuiInputQueue(Engine* parent) : m_engine(parent) {}
+
         int process( SeqScript& seq, const TransportPosition& pos, uint32_t nframes ) {
             // Set up quantization.
             uint32_t quant_frame;
 
             {
                 // TODO:  This seems too complicated for what we're doing...
-                Preferences *pref = Engine::get_instance()->get_preferences();
+                Preferences *pref = m_engine->get_preferences();
                 TransportPosition quant(pos);
                 quant.ceil(TransportPosition::TICK);
 
@@ -96,7 +101,7 @@ namespace Tritium
             ev.note = *pNote;
             ev.quantize = quantize;
             ev.instrument_index =
-                Engine::get_instance()->getSong()
+                m_engine->getSong()
                 ->get_instrument_list()->get_pos( pNote->get_instrument() );
             __events.push_back(ev);
         }
@@ -109,7 +114,7 @@ namespace Tritium
             ev.note = *pNote;
             ev.quantize = quantize;
             ev.instrument_index =
-                Engine::get_instance()->getSong()
+                m_engine->getSong()
                 ->get_instrument_list()->get_pos( pNote->get_instrument() );
             __events.push_back(ev);
         }
@@ -306,7 +311,7 @@ namespace Tritium
 	    m_effects(0),
 #endif
 	    m_queue(),
-	    m_GuiInput(),
+	    m_GuiInput(parent),
 	    m_SongSequencer(),
 	    m_BeatCounter(parent),
 	    m_pAudioDriver(0),
