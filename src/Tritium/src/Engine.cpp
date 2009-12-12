@@ -1369,7 +1369,7 @@ Engine::Engine(Preferences* prefs) :
     d(0)
 {
 	assert(prefs);
-	d = new EnginePrivate(prefs);
+	d = new EnginePrivate(this, prefs);
 
 	INFOLOG( "[Engine]" );
 

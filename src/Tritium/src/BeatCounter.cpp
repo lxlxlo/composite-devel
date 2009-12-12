@@ -33,7 +33,8 @@ using namespace Tritium;
 //100,000 ms in 1 second.
 #define US_DIVIDER .000001
 
-BeatCounter::BeatCounter() :
+BeatCounter::BeatCounter(Engine* parent) :
+    m_engine(parent),
     m_ntaktoMeterCompute( 1 ),
     m_nbeatsToCount( 4 ),
     eventCount( 1 ),
@@ -67,7 +68,7 @@ void BeatCounter::setOffsetAdjust()
 {
     //individual fine tuning for the beatcounter
     //to adjust  ms_offset from different people and controller
-    Preferences *pref = Engine::get_instance()->get_preferences();
+    Preferences *pref = m_engine->get_preferences();
 
     m_nCoutOffset = pref->m_countOffset;
     m_nStartOffset = pref->m_startOffset;
@@ -75,8 +76,7 @@ void BeatCounter::setOffsetAdjust()
 
 void BeatCounter::trigger()
 {
-    Engine* H2 = Engine::get_instance();
-    Transport* transport = H2->get_transport();
+    Transport* transport = m_engine->get_transport();
     TransportPosition Xpos;
 
     // Get first time value:
@@ -128,8 +128,8 @@ void BeatCounter::trigger()
 		/ 100;
 	    if ( beatCountBpm > 500)
 		beatCountBpm = 500; 
-	    H2->setBPM( beatCountBpm );
-	    if (Engine::get_instance()->get_preferences()->m_mmcsetplay
+	    m_engine->setBPM( beatCountBpm );
+	    if (m_engine->get_preferences()->m_mmcsetplay
 		== Preferences::SET_PLAY_OFF) {
 		beatCount = 1; 
 		eventCount = 1;
@@ -216,7 +216,7 @@ void BeatCounter::setTapTempo( float fInterval )
     fOldBpm2 = fOldBpm1;
     fOldBpm1 = fBPM;
 
-    Engine::get_instance()->setBPM( fBPM );
+    m_engine->setBPM( fBPM );
 }
 
 void BeatCounter::onTapTempoAccelEvent()

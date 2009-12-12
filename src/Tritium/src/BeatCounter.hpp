@@ -26,10 +26,12 @@
 
 namespace Tritium
 {
+    class Engine;
+
     class BeatCounter
     {
     public:
-	BeatCounter();
+	BeatCounter(Engine *parent);
 	~BeatCounter();
 
 	void setBeatsToCount(int beats) {
@@ -55,6 +57,7 @@ namespace Tritium
 	void onTapTempoAccelEvent();
 
     private:
+	Engine *m_engine;
 
 	// BeatCounter Variables
 	float m_ntaktoMeterCompute;	  	///< beatcounter note length

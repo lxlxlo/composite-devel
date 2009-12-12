@@ -277,8 +277,20 @@ namespace Tritium
 	/////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////
 
-	EnginePrivate(Preferences* prefs) :
+	EnginePrivate(Engine* parent, Preferences* prefs) :
+	    lastMidiEvent(),
+	    lastMidiEventParameter(-1),
+	    m_currentDrumkit(),
+	    m_Playlist(),
 	    __sampler(0),
+	    __engine_mutex(),
+	    m_oldEngineMode(Song::SONG_MODE),
+	    m_bOldLoopEnabled(false),
+	    __instrument_death_row(),
+	    m_fMasterPeak_L(0.0),
+	    m_fMasterPeak_R(0.0),
+	    m_fProcessTime(0.0),
+	    m_fMaxProcessTime(0.0),
 	    m_preferences(prefs),
 	    m_action_manager(0),
 	    m_sampler(0),
@@ -291,19 +303,23 @@ namespace Tritium
 #ifdef LADSPA_SUPPORT
 	    m_effects(0),
 #endif
+	    m_queue(),
+	    m_GuiInput(),
+	    m_SongSequencer(),
+	    m_BeatCounter(parent),
 	    m_pAudioDriver(0),
 	    m_pMidiDriver(0),
+	    mutex_OutputPointer(),
 	    m_pSong(0),
 	    m_pMetronomeInstrument(0),
-	    engineInstance(0),
-	    m_fMasterPeak_L(0.0),
-	    m_fMasterPeak_R(0.0),
-	    m_fProcessTime(0.0),
-	    m_fMaxProcessTime(0.0),
 	    m_nFreeRollingFrameCounter(0),
 	    m_pMainBuffer_L(0),
 	    m_pMainBuffer_R(0),
-	    m_audioEngineState(Engine::StateUninitialized)
+	    engineInstance(parent),
+	    m_audioEngineState(Engine::StateUninitialized),
+	    m_nSelectedPatternNumber(-1),
+	    m_nSelectedInstrumentNumber(-1),
+	    m_sendPatternChange(false)
 	    {
 		__locker.file = 0;
 		__locker.line = 0;
