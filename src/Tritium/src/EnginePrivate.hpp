@@ -176,6 +176,8 @@ namespace Tritium
         // Stuff from the old Tritium::Engine
         /////////////////////////////////////////
 
+        Engine* m_engine;
+
         ///Last received midi message
         QString lastMidiEvent;
         int lastMidiEventParameter;
@@ -258,7 +260,6 @@ namespace Tritium
         float *m_pMainBuffer_L;
         float *m_pMainBuffer_R;
 
-        Engine* engineInstance;   ///< Engine class instance (used for log)
 
 	Engine::state_t  m_audioEngineState;   ///< Audio engine state
 
@@ -278,6 +279,7 @@ namespace Tritium
 	/////////////////////////////////////////////////////////////////
 
 	EnginePrivate(Engine* parent, Preferences* prefs) :
+	    m_engine(parent),
 	    lastMidiEvent(),
 	    lastMidiEventParameter(-1),
 	    m_currentDrumkit(),
@@ -315,7 +317,6 @@ namespace Tritium
 	    m_nFreeRollingFrameCounter(0),
 	    m_pMainBuffer_L(0),
 	    m_pMainBuffer_R(0),
-	    engineInstance(parent),
 	    m_audioEngineState(Engine::StateUninitialized),
 	    m_nSelectedPatternNumber(-1),
 	    m_nSelectedInstrumentNumber(-1),
