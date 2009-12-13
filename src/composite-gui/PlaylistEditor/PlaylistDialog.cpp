@@ -388,7 +388,7 @@ void PlaylistDialog::loadList()
 	if ( fd->exec() == QDialog::Accepted ){
 		filename = fd->selectedFiles().first();
 
-		LocalFileMng fileMng;
+		LocalFileMng fileMng(g_engine);
 		int err = fileMng.loadPlayList( filename.toLocal8Bit().constData() );
 		if ( err != 0 ) {
 			ERRORLOG( "Error saving the playlist" );
@@ -532,7 +532,7 @@ void PlaylistDialog::saveListAs()
 		return;
 	}
 
-	LocalFileMng fileMng;
+	LocalFileMng fileMng(g_engine);
 	int err = fileMng.savePlayList( filename.toLocal8Bit().constData() );
 	if ( err != 0 ) {
 		ERRORLOG( "Error saving the playlist" );
@@ -552,7 +552,7 @@ void PlaylistDialog::saveList()
 		return saveListAs();
 	}
 
-	LocalFileMng fileMng;
+	LocalFileMng fileMng(g_engine);
 	int err = fileMng.savePlayList( g_engine->get_playlist().__playlistName.toStdString() );
 	if ( err != 0 ) {
 		ERRORLOG( "Error saving the playlist" );
@@ -778,8 +778,8 @@ void PlaylistDialog::nodePlayBTN( Button* ref )
 			xport->stop();
 		}
 	
-		LocalFileMng mng;
-		Song *pSong = Song::load ( selected );
+		LocalFileMng mng(g_engine);
+		Song *pSong = Song::load ( g_engine, selected );
 		if ( pSong == NULL ){
 			QMessageBox::information ( this, "Composite", trUtf8 ( "Error loading song." ) );
 			m_pPlayBtn->setPressed(false);
@@ -848,8 +848,8 @@ void PlaylistDialog::on_m_pPlaylistTree_itemDoubleClicked ()
 
 	m_pPlayBtn->setPressed(false);
 
-	LocalFileMng mng;
-	Song *pSong = Song::load ( selected );
+	LocalFileMng mng(g_engine);
+	Song *pSong = Song::load ( g_engine, selected );
 	if ( pSong == NULL ){
 		QMessageBox::information ( this, "Composite", trUtf8 ( "Error loading song." ) );
 		return;

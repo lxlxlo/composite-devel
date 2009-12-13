@@ -94,7 +94,7 @@ SongReader::~SongReader()
 /// Reads a song.
 /// return NULL = error reading song file.
 ///
-Song* SongReader::readSong( const QString& filename )
+Song* SongReader::readSong( Engine* engine, const QString& filename )
 {
     INFOLOG( filename );
     Song* song = NULL;
@@ -167,7 +167,7 @@ Song* SongReader::readSong( const QString& filename )
 
     //  Instrument List
 	
-    LocalFileMng localFileMng;
+    LocalFileMng localFileMng(engine);
     InstrumentList *instrumentList = new InstrumentList();
 
     QDomNode instrumentListNode = songNode.firstChildElement( "instrumentList" );
@@ -181,7 +181,7 @@ Song* SongReader::readSong( const QString& filename )
 
 	    QString sId = LocalFileMng::readXmlString( instrumentNode, "id", "" );			// instrument id
 	    QString sDrumkit = LocalFileMng::readXmlString( instrumentNode, "drumkit", "" );	// drumkit
-	    Engine::get_instance()->setCurrentDrumkitname( sDrumkit ); 
+	    engine->setCurrentDrumkitname( sDrumkit ); 
 	    QString sName = LocalFileMng::readXmlString( instrumentNode, "name", "" );		// name
 	    float fVolume = LocalFileMng::readXmlFloat( instrumentNode, "volume", 1.0 );	// volume
 	    bool bIsMuted = LocalFileMng::readXmlBool( instrumentNode, "isMuted", false );	// is muted
@@ -412,9 +412,9 @@ Song* SongReader::readSong( const QString& filename )
 #ifdef LADSPA_SUPPORT
     // reset FX
     for ( int fx = 0; fx < MAX_FX; ++fx ) {
-	//LadspaFX* pFX = Engine::get_instance()->get_effects()->getLadspaFX( fx );
+	//LadspaFX* pFX = engine->get_effects()->getLadspaFX( fx );
 	//delete pFX;
-	Engine::get_instance()->get_effects()->setLadspaFX( NULL, fx );
+	engine->get_effects()->setLadspaFX( NULL, fx );
     }
 #endif
 	
@@ -433,7 +433,7 @@ Song* SongReader::readSong( const QString& filename )
 		// FIXME: il caricamento va fatto fare all'engine, solo lui sa il samplerate esatto
 #ifdef LADSPA_SUPPORT
 		LadspaFX* pFX = LadspaFX::load( sFilename, sName, 44100 );
-		Engine::get_instance()->get_effects()->setLadspaFX( pFX, nFX );
+		engine->get_effects()->setLadspaFX( pFX, nFX );
 		if ( pFX ) {
 		    pFX->setEnabled( bEnabled );
 		    pFX->setVolume( fVolume );

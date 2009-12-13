@@ -49,7 +49,7 @@ namespace THIS_NAMESPACE
 	    Logger::create_instance();
 	    Preferences* prefs = new Preferences();
 	    Engine::create_instance(prefs);
-	    s = Song::load(song_file_name);
+	    s = Song::load(Engine::get_instance(), song_file_name);
 	    x.set_current_song(s);
 	}
 	~Fixture() {

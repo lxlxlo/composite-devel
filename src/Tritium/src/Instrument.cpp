@@ -141,9 +141,9 @@ void Instrument::set_adsr( ADSR* adsr )
  * `placeholder` instrument (an Instrument that has everything but the
  * actual samples).
  */
-void Instrument::load_from_placeholder( Instrument* placeholder, bool is_live )
+void Instrument::load_from_placeholder( Engine* engine, Instrument* placeholder, bool is_live )
 {
-    LocalFileMng mgr;
+    LocalFileMng mgr(engine);
     QString path =
 	mgr.getDrumkitDirectory( placeholder->get_drumkit_name() )
 	+ placeholder->get_drumkit_name()
@@ -161,12 +161,12 @@ void Instrument::load_from_placeholder( Instrument* placeholder, bool is_live )
 	    if ( pSample == NULL ) {
 		ERRORLOG( "Error loading sample. Creating a new empty layer." );
 		if ( is_live )
-		    Engine::get_instance()->lock( RIGHT_HERE );
+		    engine->lock( RIGHT_HERE );
 				
 		this->set_layer( NULL, nLayer );
 				
 		if ( is_live )
-		    Engine::get_instance()->unlock();
+		    engine->unlock();
 		delete pOldLayer;
 		continue;
 	    }
@@ -176,29 +176,29 @@ void Instrument::load_from_placeholder( Instrument* placeholder, bool is_live )
 	    pLayer->set_pitch(pNewLayer->get_pitch()); 
 
 	    if ( is_live )
-		Engine::get_instance()->lock( RIGHT_HERE );
+		engine->lock( RIGHT_HERE );
 			
 	    this->set_layer( pLayer, nLayer );	// set the new layer
 			
 	    if ( is_live )
-		Engine::get_instance()->unlock();
+		engine->unlock();
 	    delete pOldLayer;		// delete the old layer
 
 	} else {
 	    InstrumentLayer *pOldLayer = this->get_layer( nLayer );
 	    if ( is_live )
-		Engine::get_instance()->lock( RIGHT_HERE );
+		engine->lock( RIGHT_HERE );
 			
 	    this->set_layer( NULL, nLayer );
 			
 	    if ( is_live )
-		Engine::get_instance()->unlock();
+		engine->unlock();
 	    delete pOldLayer;		// delete the old layer
 	}
 
     }
     if ( is_live )
-	Engine::get_instance()->lock( RIGHT_HERE );
+	engine->lock( RIGHT_HERE );
 	
     // update instrument properties
     this->set_gain( placeholder->get_gain() );
@@ -217,7 +217,7 @@ void Instrument::load_from_placeholder( Instrument* placeholder, bool is_live )
     this->set_mute_group( placeholder->get_mute_group() );
 	
     if ( is_live )
-	Engine::get_instance()->unlock();
+	engine->unlock();
 }
 
 /**
@@ -232,12 +232,13 @@ Instrument * Instrument::create_empty()
  * \brief Create a new Instrument and load samples from the drumkit/instrument.
  */
 Instrument * Instrument::load_instrument(
+    Engine* engine,
     const QString& drumkit_name,
     const QString& instrument_name
     )
 {
     Instrument * I = create_empty();
-    I->load_from_name( drumkit_name, instrument_name, false );
+    I->load_from_name( engine, drumkit_name, instrument_name, false );
     return I;
 }
 
@@ -245,6 +246,7 @@ Instrument * Instrument::load_instrument(
  * \brief Loads instrument from path into a `live` Instrument object.
  */
 void Instrument::load_from_name(
+    Engine* engine,
     const QString& drumkit_name,
     const QString& instrument_name,
     bool is_live
@@ -252,7 +254,7 @@ void Instrument::load_from_name(
 {
     Instrument * pInstr = NULL;
 	
-    LocalFileMng mgr;
+    LocalFileMng mgr(engine);
     QString sDrumkitPath = mgr.getDrumkitDirectory( drumkit_name );
 
     // find the drumkit
@@ -272,7 +274,7 @@ void Instrument::load_from_name(
     }
 	
     if ( pInstr != NULL ) {
-	load_from_placeholder( pInstr, is_live );
+	load_from_placeholder( engine, pInstr, is_live );
     }
     delete pDrumkitInfo;
 }

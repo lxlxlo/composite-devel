@@ -579,7 +579,7 @@ void PatternEditorInstrumentList::dropEvent(QDropEvent *event)
 		QString sDrumkitName = tokens.at( 0 );
 		QString sInstrumentName = tokens.at( 1 );
 		
-		Instrument *pNewInstrument = Instrument::load_instrument( sDrumkitName, sInstrumentName );
+		Instrument *pNewInstrument = Instrument::load_instrument( g_engine, sDrumkitName, sInstrumentName );
 		Engine *pEngine = g_engine;
 
 		// create a new valid ID for this instrument

@@ -308,12 +308,12 @@ namespace Tritium
     }
 
     ///Load a song from file
-    Song* Song::load( const QString& filename )
+    Song* Song::load( Engine* engine, const QString& filename )
     {
 	Song *song = NULL;
 
 	SongReader reader;
-	song = reader.readSong( filename );
+	song = reader.readSong( engine, filename );
 
 	return song;
     }
@@ -321,11 +321,11 @@ namespace Tritium
 
 
     /// Save a song to file
-    bool Song::save( const QString& filename )
+    bool Song::save( Engine* engine, const QString& filename )
     {
 	SongWriter writer;
 	int err;
-	err = writer.writeSong( this, filename );
+	err = writer.writeSong( engine, this, filename );
 
 	if( err ) {
 	    return false;
@@ -335,7 +335,7 @@ namespace Tritium
 
 
     /// Create default song
-    Song* Song::get_default_song(){
+    Song* Song::get_default_song(Engine* engine){
 	Song *song = new Song( "empty", "Tritium", 120, 0.5 );
 
 	song->set_metronome_volume( 0.5 );
@@ -353,7 +353,7 @@ namespace Tritium
 	song->set_instrument_list( pList );
 		
 #ifdef JACK_SUPPORT
-	Engine::get_instance()->renameJackPorts();
+	engine->renameJackPorts();
 #endif
 
 	PatternList *patternList = new PatternList();
@@ -374,7 +374,7 @@ namespace Tritium
     }
 
     /// Return an empty song
-    Song* Song::get_empty_song()
+    Song* Song::get_empty_song(Engine* engine)
     {
 	QString dataDir = DataPath::get_data_path();	
 	QString filename = dataDir + "/DefaultSong.h2song";
@@ -384,13 +384,13 @@ namespace Tritium
 	    filename = dataDir + "/DefaultSong.h2song";
 	}
 	
-	Song *song = Song::load( filename );
+	Song *song = Song::load( engine, filename );
 	
 	/* if file DefaultSong.h2song not accessible
 	 * create a simple default song.
 	 */
 	if(!song){
-	    song = Song::get_default_song();
+	    song = Song::get_default_song(engine);
 	}
 
 	return song;

@@ -946,8 +946,8 @@ void SongEditorPatternList::patternPopup_load()
 		return;
 	}
 
-	LocalFileMng mng;
-	LocalFileMng fileMng;
+	LocalFileMng mng(g_engine);
+	LocalFileMng fileMng(g_engine);
 	Pattern* err = fileMng.loadPattern( filename );
 	if ( err == 0 ) {
 		ERRORLOG( "Error loading the pattern" );
@@ -983,7 +983,7 @@ void SongEditorPatternList::patternPopup_save()
 
 	QString patternname = pat->get_name();
 
-	LocalFileMng fileMng;
+	LocalFileMng fileMng(g_engine);
 	int err = fileMng.savePattern( song , nSelectedPattern, patternname, patternname, 1 );
 	if ( err == 1 ) {
 		int res = QMessageBox::information( this, "Composite", tr( "The pattern-file exists. \nOverwrite the existing pattern?"), tr("&Ok"), tr("&Cancel"), 0, 1 );
@@ -1301,7 +1301,7 @@ void SongEditorPatternList::dropEvent(QDropEvent *event)
 
 		int nTargetPattern = event->pos().y() / m_nGridHeight;
 
-		LocalFileMng mng;
+		LocalFileMng mng(g_engine);
 		Pattern* err = mng.loadPattern( sPatternName );
 		if ( err == 0 ) {
 			ERRORLOG( "Error loading the pattern" );

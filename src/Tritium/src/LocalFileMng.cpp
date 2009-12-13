@@ -61,9 +61,11 @@
 namespace Tritium
 {
 
-LocalFileMng::LocalFileMng()
+LocalFileMng::LocalFileMng(Engine* parent) :
+	m_engine(parent)
 {
 //	infoLog("INIT");
+	assert(parent);
 }
 
 
@@ -124,8 +126,7 @@ QString LocalFileMng::getPatternNameFromPatternDir( const QString& patternDirNam
 
 Pattern* LocalFileMng::loadPattern( const QString& directory )
 {
-
-	InstrumentList* instrList = Engine::get_instance()->getSong()->get_instrument_list();
+	InstrumentList* instrList = m_engine->getSong()->get_instrument_list();
 	Pattern *pPattern = NULL;
 	QString patternInfoFile = directory;
 
@@ -207,13 +208,12 @@ int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString&
 {
 	//int mode = 1 save, int mode = 2 save as
 	// INSTRUMENT NODE
-
 	Instrument *instr = song->get_instrument_list()->get( 0 );
 	assert( instr );
 
 	Pattern *pat = song->get_pattern_list()->get( selectedpattern );
 
-	QString sPatternDir = Engine::get_instance()->get_preferences()->getDataDirectory() + "patterns/" +  instr->get_drumkit_name();
+	QString sPatternDir = m_engine->get_preferences()->getDataDirectory() + "patterns/" +  instr->get_drumkit_name();
 
 	INFOLOG( "[savePattern]" + sPatternDir );
 
@@ -350,7 +350,7 @@ void LocalFileMng::fileCopy( const QString& sOrigFilename, const QString& sDestF
 std::vector<QString> LocalFileMng::getSongList()
 {
 	std::vector<QString> list;
-	QString sDirectory = Engine::get_instance()->get_preferences()->getDataDirectory();
+	QString sDirectory = m_engine->get_preferences()->getDataDirectory();
 
 	if( ! sDirectory.endsWith("/") ) { 
 		sDirectory += "/songs/";
@@ -431,7 +431,7 @@ std::vector<QString> LocalFileMng::getAllPatternName()
 
 std::vector<QString> LocalFileMng::getAllCategoriesFromPattern()
 {
-	Preferences *pPref = Tritium::Engine::get_instance()->get_preferences();
+	Preferences *pPref = m_engine->get_preferences();
 	std::list<QString>::const_iterator cur_testpatternCategories;
 
 	std::vector<QString> categorylist;
@@ -485,7 +485,7 @@ std::vector<QString> LocalFileMng::getPatternsForDrumkit( const QString& sDrumki
 {
 	std::vector<QString> list;
 
-	QDir dir( Engine::get_instance()->get_preferences()->getDataDirectory() + "/patterns/" + sDrumkit );
+	QDir dir( m_engine->get_preferences()->getDataDirectory() + "/patterns/" + sDrumkit );
 
 	if ( !dir.exists() ) {
 		INFOLOG( QString( "No patterns for drumkit '%1'." ).arg( sDrumkit ) );
@@ -576,7 +576,7 @@ std::vector<QString> mergeQStringVectors( std::vector<QString> firstVector , std
 
 std::vector<QString> LocalFileMng::getPatternDirList()
 {
-	return getDrumkitsFromDirectory( Engine::get_instance()->get_preferences()->getDataDirectory() + "patterns" );
+	return getDrumkitsFromDirectory( m_engine->get_preferences()->getDataDirectory() + "patterns" );
 }
 
 
@@ -590,8 +590,8 @@ int  LocalFileMng::mergeAllPatternList( std::vector<QString> current )
 
 std::vector<QString> LocalFileMng::getUserDrumkitList()
 {
-	std::vector<QString> oldLocation = getDrumkitsFromDirectory( Engine::get_instance()->get_preferences()->getDataDirectory() );
-	std::vector<QString> newLocation = getDrumkitsFromDirectory( Engine::get_instance()->get_preferences()->getDataDirectory() + "drumkits" );
+	std::vector<QString> oldLocation = getDrumkitsFromDirectory( m_engine->get_preferences()->getDataDirectory() );
+	std::vector<QString> newLocation = getDrumkitsFromDirectory( m_engine->get_preferences()->getDataDirectory() + "drumkits" );
 	return mergeQStringVectors( newLocation ,  oldLocation );
 }
 
@@ -604,7 +604,7 @@ std::vector<QString> LocalFileMng::getSystemDrumkitList()
 QString LocalFileMng::getDrumkitDirectory( const QString& drumkitName )
 {
 	// search in system drumkit
-	std::vector<QString> systemDrumkits = Drumkit::getSystemDrumkitList();
+	std::vector<QString> systemDrumkits = Drumkit::getSystemDrumkitList(m_engine);
 	for ( unsigned i = 0; i < systemDrumkits.size(); i++ ) {
 		if ( systemDrumkits[ i ].endsWith(drumkitName) ) {
 			QString path = QString( DataPath::get_data_path() ) + "/drumkits/";
@@ -613,10 +613,10 @@ QString LocalFileMng::getDrumkitDirectory( const QString& drumkitName )
 	}
 
 	// search in user drumkit
-	std::vector<QString> userDrumkits = Drumkit::getUserDrumkitList();
+	std::vector<QString> userDrumkits = Drumkit::getUserDrumkitList(m_engine);
 	for ( unsigned i = 0; i < userDrumkits.size(); i++ ) {
 		if ( userDrumkits[ i ].endsWith(drumkitName) ) {
-			QString path = Engine::get_instance()->get_preferences()->getDataDirectory();
+			QString path = m_engine->get_preferences()->getDataDirectory();
 			return userDrumkits[ i ].remove(userDrumkits[ i ].length() - drumkitName.length(),drumkitName.length());
 		}
 	}
@@ -788,7 +788,7 @@ int LocalFileMng::saveDrumkit( Drumkit *info )
 
 	QVector<QString> tempVector(16);
 
-	QString sDrumkitDir = Engine::get_instance()->get_preferences()->getDataDirectory() + "drumkits/" + info->getName();
+	QString sDrumkitDir = m_engine->get_preferences()->getDataDirectory() + "drumkits/" + info->getName();
 
 	// check if the directory exists
 	QDir dir( sDrumkitDir );
@@ -930,14 +930,14 @@ int LocalFileMng::savePlayList( const std::string& patternname)
 	writeXmlString( rootNode, "LIB_ID", "in_work" );
 		
 	QDomNode playlistNode = doc.createElement( "Songs" );
-	for ( uint i = 0; i < Engine::get_instance()->get_internal_playlist().size(); ++i ){
+	for ( uint i = 0; i < m_engine->get_internal_playlist().size(); ++i ){
 		QDomNode nextNode = doc.createElement( "next" );
 		
-		LocalFileMng::writeXmlString ( nextNode, "song", Engine::get_instance()->get_internal_playlist()[i].m_hFile );
+		LocalFileMng::writeXmlString ( nextNode, "song", m_engine->get_internal_playlist()[i].m_hFile );
 		
-		LocalFileMng::writeXmlString ( nextNode, "script", Engine::get_instance()->get_internal_playlist()[i].m_hScript );
+		LocalFileMng::writeXmlString ( nextNode, "script", m_engine->get_internal_playlist()[i].m_hScript );
 		
-		LocalFileMng::writeXmlString ( nextNode, "enabled", Engine::get_instance()->get_internal_playlist()[i].m_hScriptEnabled );
+		LocalFileMng::writeXmlString ( nextNode, "enabled", m_engine->get_internal_playlist()[i].m_hScriptEnabled );
 		
 		playlistNode.appendChild( nextNode );
 	}
@@ -972,7 +972,7 @@ int LocalFileMng::loadPlayList( const std::string& patternname)
 
 	QDomDocument doc = LocalFileMng::openXmlDocument( QString( patternname.c_str() ) );
 	
-	Engine::get_instance()->get_internal_playlist().clear();
+	m_engine->get_internal_playlist().clear();
 
 	QDomNode rootNode = doc.firstChildElement( "playlist" );	// root element
 	if ( rootNode.isNull() ) {
@@ -983,14 +983,14 @@ int LocalFileMng::loadPlayList( const std::string& patternname)
 
 	if ( ! playlistNode.isNull() ) {
 		// new code :)
-		Engine::get_instance()->get_internal_playlist().clear();
+		m_engine->get_internal_playlist().clear();
 		QDomNode nextNode = playlistNode.firstChildElement( "next" );
 		while (  ! nextNode.isNull() ) {
 			Engine::HPlayListNode playListItem;
 			playListItem.m_hFile = LocalFileMng::readXmlString( nextNode, "song", "" );
 			playListItem.m_hScript = LocalFileMng::readXmlString( nextNode, "script", "" );
 			playListItem.m_hScriptEnabled = LocalFileMng::readXmlString( nextNode, "enabled", "" );
-			Engine::get_instance()->get_internal_playlist().push_back( playListItem );	
+			m_engine->get_internal_playlist().push_back( playListItem );	
 			nextNode = nextNode.nextSiblingElement( "next" );
 		}
 	}
@@ -1264,7 +1264,7 @@ SongWriter::~SongWriter()
 
 
 // Returns 0 on success, passes the TinyXml error code otherwise.
-int SongWriter::writeSong( Song *song, const QString& filename )
+int SongWriter::writeSong( Engine* engine, Song *song, const QString& filename )
 {
 	INFOLOG( "Saving song " + filename );
 	int rv = 0; // return value
@@ -1437,7 +1437,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 		QDomNode fxNode = doc.createElement( "fx" );
 
 #ifdef LADSPA_SUPPORT
-		LadspaFX *pFX = Engine::get_instance()->get_effects()->getLadspaFX( nFX );
+		LadspaFX *pFX = engine->get_effects()->getLadspaFX( nFX );
 		if ( pFX ) {
 			LocalFileMng::writeXmlString( fxNode, "name", pFX->getPluginLabel() );
 			LocalFileMng::writeXmlString( fxNode, "filename", pFX->getLibraryPath() );

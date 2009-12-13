@@ -182,20 +182,16 @@ int Playlist::getActiveSongNumber()
 
 void Playlist::loadSong( QString songName )
 {
-	Engine *engine = m_engine;
-	
+	m_engine->get_transport()->stop();
 
-	engine->get_transport()->stop();
-
-	LocalFileMng mng;
-	Song *pSong = Song::load ( songName );
+	Song *pSong = Song::load ( m_engine, songName );
 	if ( pSong == NULL ){
 		return;
 	}
 
 	if(m_listener)
 		m_listener->set_song(pSong);
-	engine->setSelectedPatternNumber ( 0 );
+	m_engine->setSelectedPatternNumber ( 0 );
 }
 
 

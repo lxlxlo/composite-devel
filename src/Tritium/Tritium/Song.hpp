@@ -39,6 +39,7 @@ class InstrumentList;
 class Pattern;
 class Song;
 class PatternList;
+class Engine;
 
 /**
  *\brief Song (sequence) class.
@@ -55,8 +56,8 @@ public:
 	SONG_MODE
     };
 
-    static Song* get_empty_song();
-    static Song* get_default_song();
+    static Song* get_empty_song(Engine* engine);
+    static Song* get_default_song(Engine* engine);
 
     Song( const QString& name, const QString& author, float bpm, float volume );
     ~Song();
@@ -96,8 +97,8 @@ public:
     pattern_group_t* get_pattern_group_vector();
     void set_pattern_group_vector( pattern_group_t* vect );
 
-    static Song* load( const QString& sFilename );
-    bool save( const QString& sFilename );
+    static Song* load( Engine* engine, const QString& sFilename );
+    bool save( Engine* engine, const QString& sFilename );
 
     InstrumentList* get_instrument_list();
     void set_instrument_list( InstrumentList *list );

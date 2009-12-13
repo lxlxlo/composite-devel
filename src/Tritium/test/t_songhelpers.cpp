@@ -48,7 +48,7 @@ namespace THIS_NAMESPACE
 	    Preferences *prefs = new Preferences();
 	    Engine::create_instance(prefs);
 	    BOOST_MESSAGE(song_file_name);
-	    s = Song::load(song_file_name);
+	    s = Song::load(Engine::get_instance(), song_file_name);
 	    BOOST_REQUIRE( s != 0 );
 	}
 

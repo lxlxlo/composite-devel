@@ -81,10 +81,10 @@ MainForm::MainForm( QApplication *app, const QString& songFilename )
 	// Load default song
 	Song *song = NULL;
 	if ( !songFilename.isEmpty() ) {
-		song = Song::load( songFilename );
+		song = Song::load( g_engine, songFilename );
 		if (song == NULL) {
 			//QMessageBox::warning( this, "Composite", trUtf8("Error loading song.") );
-			song = Song::get_empty_song();
+			song = Song::get_empty_song(g_engine);
 			song->set_filename( "" );
 		}
 	}
@@ -93,15 +93,15 @@ MainForm::MainForm( QApplication *app, const QString& songFilename )
 		bool restoreLastSong = pref->isRestoreLastSongEnabled();
 		QString filename = pref->getLastSongFilename();
 		if ( restoreLastSong && ( !filename.isEmpty() )) {
-			song = Song::load( filename );
+			song = Song::load( g_engine, filename );
 			if (song == NULL) {
 				//QMessageBox::warning( this, "Composite", trUtf8("Error restoring last song.") );
-				song = Song::get_empty_song();
+				song = Song::get_empty_song(g_engine);
 				song->set_filename( "" );
 			}
 		}
 		else {
-			song = Song::get_empty_song();
+			song = Song::get_empty_song(g_engine);
 			song->set_filename( "" );
 		}
 	}
@@ -281,7 +281,7 @@ void MainForm::action_file_new()
 		return;
 	}
 
-	Song * song = Song::get_empty_song();
+	Song * song = Song::get_empty_song(g_engine);
 	song->set_filename( "" );
 	h2app->setSong(song);
  	g_engine->setSelectedPatternNumber( 0 );
@@ -348,9 +348,9 @@ void MainForm::action_file_save()
 		return action_file_save_as();
 	}
 
-	LocalFileMng mng;
+	LocalFileMng mng(g_engine);
 	bool saved = false;
-	saved = song->save( filename );
+	saved = song->save( g_engine, filename );
 	
 
 	if(! saved) {
@@ -422,7 +422,7 @@ void MainForm::action_file_export_pattern_as()
 
 	fd->selectFile ( defaultPatternname );
 
-	LocalFileMng fileMng;
+	LocalFileMng fileMng(g_engine);
 	QString filename;
 	if ( fd->exec() == QDialog::Accepted )
 	{
@@ -532,8 +532,8 @@ void MainForm::action_file_openPattern()
 	QString patternname = filename;
 
 
-	LocalFileMng mng;
-	LocalFileMng fileMng;
+	LocalFileMng mng(g_engine);
+	LocalFileMng fileMng(g_engine);
 	Pattern* err = fileMng.loadPattern ( patternname );
 	if ( err == 0 )
 	{
@@ -949,8 +949,8 @@ void MainForm::openSongFile( const QString& sFilename )
 	engine->get_transport()->stop();
 
 	h2app->closeFXProperties();
-	LocalFileMng mng;
-	Song *pSong = Song::load( sFilename );
+	LocalFileMng mng(g_engine);
+	Song *pSong = Song::load( g_engine, sFilename );
 	if ( pSong == NULL ) {
 		QMessageBox::information( this, "Composite", trUtf8("Error loading song.") );
 		return;
@@ -1338,7 +1338,7 @@ void MainForm::onAutoSaveTimer()
 	assert( pSong );
 	QString sOldFilename = pSong->get_filename();
 
-	pSong->save( getAutoSaveFilename() );
+	pSong->save( g_engine, getAutoSaveFilename() );
 
 	pSong->set_filename(sOldFilename);
 

@@ -147,7 +147,7 @@ void SoundLibraryPanel::updateDrumkitList()
 {
 	QString currentSL = g_engine->getCurrentDrumkitname() ; 
 
-	LocalFileMng mng;
+	LocalFileMng mng(g_engine);
 
 	__sound_library_tree->clear();
 
@@ -174,7 +174,7 @@ void SoundLibraryPanel::updateDrumkitList()
 	__user_drumkit_info_list.clear();
 
 	//User drumkit list
-	std::vector<QString> userList = Drumkit::getUserDrumkitList();
+	std::vector<QString> userList = Drumkit::getUserDrumkitList(g_engine);
 	for (uint i = 0; i < userList.size(); ++i) {
 		QString absPath =  userList[i];
 		Drumkit *pInfo = mng.loadDrumkit( absPath );
@@ -205,7 +205,7 @@ void SoundLibraryPanel::updateDrumkitList()
 
 
 	//System drumkit list
-	std::vector<QString> systemList = Drumkit::getSystemDrumkitList();
+	std::vector<QString> systemList = Drumkit::getSystemDrumkitList(g_engine);
 
 	for (uint i = 0; i < systemList.size(); i++) {
 		QString absPath = systemList[i];
@@ -338,7 +338,7 @@ void SoundLibraryPanel::on_DrumkitList_itemActivated(
 		QString sDrumkitName = item->parent()->text(0);
 		INFOLOG( QString(sDrumkitName) + ", instr:" + sInstrName );
 
-		Instrument *pInstrument = Instrument::load_instrument( sDrumkitName, sInstrName );
+		Instrument *pInstrument = Instrument::load_instrument( g_engine, sDrumkitName, sInstrName );
 		pInstrument->set_muted( false );
 
 		g_engine->get_sampler()->preview_instrument( pInstrument );
@@ -451,7 +451,7 @@ void SoundLibraryPanel::on_DrumkitList_mouseMove( QMouseEvent *event)
 
 		if ( __sound_library_tree->currentItem()->parent()->parent() == __pattern_item ) {
 
-			LocalFileMng mng;
+			LocalFileMng mng(g_engine);
 		
 			QString patternName = __sound_library_tree->currentItem()->text( 0 ) + ".h2pattern";
 			QString drumkitname = __sound_library_tree->currentItem()->toolTip ( 0 );
@@ -557,8 +557,8 @@ void SoundLibraryPanel::update_background_color()
 
 void SoundLibraryPanel::restore_background_color()
 {
-	std::vector<QString> systemList = Drumkit::getSystemDrumkitList();
-	std::vector<QString> userList = Drumkit::getUserDrumkitList();
+	std::vector<QString> systemList = Drumkit::getSystemDrumkitList(g_engine);
+	std::vector<QString> userList = Drumkit::getUserDrumkitList(g_engine);
 	QString curlib =  g_engine->getCurrentDrumkitname();
  
 	for (uint i = 0; i < systemList.size() ; i++){
@@ -578,8 +578,8 @@ void SoundLibraryPanel::restore_background_color()
 
 void SoundLibraryPanel::change_background_color()
 {
-	std::vector<QString> systemList = Drumkit::getSystemDrumkitList();
-	std::vector<QString> userList = Drumkit::getUserDrumkitList();
+	std::vector<QString> systemList = Drumkit::getSystemDrumkitList(g_engine);
+	std::vector<QString> userList = Drumkit::getUserDrumkitList(g_engine);
 	QString curlib =  g_engine->getCurrentDrumkitname();
  
 	for (uint i = 0; i < systemList.size() ; i++){
@@ -614,7 +614,7 @@ void SoundLibraryPanel::on_drumkitDeleteAction()
 	}
 
 	bool bIsUserSoundLibrary = false;
-	std::vector<QString> userList = Drumkit::getUserDrumkitList();
+	std::vector<QString> userList = Drumkit::getUserDrumkitList(g_engine);
 	for ( uint i = 0; i < userList.size(); ++i ) {
 		if ( userList[ i ].endsWith( sSoundLibrary ) ) {
 			bIsUserSoundLibrary = true;
@@ -633,7 +633,7 @@ void SoundLibraryPanel::on_drumkitDeleteAction()
 	}
 
 	QApplication::setOverrideCursor(Qt::WaitCursor);
-	Drumkit::removeDrumkit( sSoundLibrary );
+	Drumkit::removeDrumkit( g_engine, sSoundLibrary );
 	test_expandedItems();
 	updateDrumkitList();
 	QApplication::restoreOverrideCursor();
@@ -725,8 +725,8 @@ void SoundLibraryPanel::on_songLoadAction()
 	Engine *engine = g_engine;
 	engine->get_transport()->stop();
 
-	Tritium::LocalFileMng mng;
-	Song *pSong = Song::load( sFilename );
+	Tritium::LocalFileMng mng(g_engine);
+	Song *pSong = Song::load( g_engine, sFilename );
 	if ( pSong == NULL ) {
 		QMessageBox::information( this, "Composite", trUtf8("Error loading song.") );
 		return;
@@ -751,7 +751,7 @@ void SoundLibraryPanel::on_songLoadAction()
 
 void SoundLibraryPanel::on_patternLoadAction()
 {
-	LocalFileMng mng;
+	LocalFileMng mng(g_engine);
 
 	QString patternName = __sound_library_tree->currentItem()->text( 0 ) + ".h2pattern";
 	QString drumkitname = __sound_library_tree->currentItem()->toolTip ( 0 );
@@ -794,7 +794,7 @@ void SoundLibraryPanel::on_patternLoadAction()
 
 void SoundLibraryPanel::on_patternDeleteAction()
 {
-	LocalFileMng mng;
+	LocalFileMng mng(g_engine);
 
 	QString patternName = __sound_library_tree->currentItem()->text( 0 ) + ".h2pattern";
 	QString drumkitname = __sound_library_tree->currentItem()->toolTip ( 0 );

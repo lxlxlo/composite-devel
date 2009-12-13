@@ -31,6 +31,7 @@ namespace Tritium
     class ADSR;
     class Sample;
     class InstrumentLayer;
+    class Engine;
 
     /**
      * Class for managing a single voice inside the sampler.  The
@@ -52,14 +53,17 @@ namespace Tritium
 	~Instrument();
 
 	static Instrument* load_instrument(
+	    Engine* engine,
 	    const QString& drumkit_name,
 	    const QString& instrument_name
 	    );
 	void load_from_placeholder(
+	    Engine* engine,
 	    Instrument* placeholder,
 	    bool is_live = true
 	    );
 	void load_from_name(
+	    Engine* engine,
 	    const QString& drumkit_name,
 	    const QString& instrument_name,
 	    bool is_live = true

@@ -24,6 +24,7 @@
 
 #include <Tritium/SoundLibrary.hpp>
 #include <Tritium/Logger.hpp>
+#include <Tritium/Engine.hpp>
 
 SoundLibrarySaveDialog::SoundLibrarySaveDialog( QWidget* pParent )
  : QDialog( pParent )
@@ -55,6 +56,7 @@ void SoundLibrarySaveDialog::on_saveBtn_clicked()
 	}
 
 	Tritium::Drumkit::save(
+			Tritium::g_engine,
 			nameTxt->text(),
 			authorTxt->text(),
 			infoTxt->toHtml(),

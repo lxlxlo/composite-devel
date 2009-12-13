@@ -30,6 +30,7 @@ namespace Tritium
     class Song;
     class Pattern;
     class InstrumentList;
+    class Engine;
 
     /**
      * \brief Load a Hydrogen .h2song into memory.
@@ -39,7 +40,7 @@ namespace Tritium
     public:
 	SongReader();
 	~SongReader();
-	Song* readSong( const QString& filename );
+	Song* readSong( Engine* engine, const QString& filename );
 
     private:
 	QString m_sSongVersion;

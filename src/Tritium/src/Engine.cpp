@@ -1765,7 +1765,7 @@ int Engine::loadDrumkit( Drumkit *drumkitInfo )
 
 	INFOLOG( drumkitInfo->getName() );
 	d->m_currentDrumkit = drumkitInfo->getName();
-	LocalFileMng fileMng;
+	LocalFileMng fileMng(this);
 	QString sDrumkitPath = fileMng.getDrumkitDirectory( drumkitInfo->getName() );
 
 
@@ -1824,7 +1824,7 @@ int Engine::loadDrumkit( Drumkit *drumkitInfo )
 
 		// creo i nuovi layer in base al nuovo strumento
 		// Moved code from here right into the Instrument class - Jakob Lund.
-		pInstr->load_from_placeholder( pNewInstr );
+		pInstr->load_from_placeholder( this, pNewInstr );
 	}
 
 

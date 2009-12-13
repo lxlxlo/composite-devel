@@ -43,7 +43,7 @@ public:
 private:
 };
 
-
+class Engine;
 
 /**
 \ingroup H2CORE
@@ -56,23 +56,23 @@ public:
 	~Drumkit();
 
 	/// Loads a single Drumkit
-	static Drumkit* load( const QString& sFilename );
+	static Drumkit* load( Engine* engine, const QString& sFilename );
 
 	/// Lists the User drumkit list
-	static std::vector<QString> getUserDrumkitList();
+	static std::vector<QString> getUserDrumkitList(Engine* engine);
 
 	/// Lists the System drumkit list
-	static std::vector<QString> getSystemDrumkitList();
+	static std::vector<QString> getSystemDrumkitList(Engine* engine);
 
 	/// Installs a drumkit
-	static void install( const QString& filename );
+	static void install( Engine* engine, const QString& filename );
 
 	// Save a drumkit
-	static void save( const QString& sName, const QString& sAuthor, const QString& sInfo, const QString& sLicense );
+	static void save( Engine* engine, const QString& sName, const QString& sAuthor, const QString& sInfo, const QString& sLicense );
 
 
 	/// Remove a Drumkit from the disk
-	static void removeDrumkit( const QString& sDrumkitName );
+	static void removeDrumkit( Engine* engine, const QString& sDrumkitName );
 
 	InstrumentList *getInstrumentList() {
 		return m_pInstrumentList;

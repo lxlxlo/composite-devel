@@ -106,6 +106,7 @@ void SoundLibraryPropertiesDialog::on_saveBtn_clicked()
 
 	//save the drumkit	
 	Tritium::Drumkit::save(
+			g_engine,
 			nameTxt->text(),
 			authorTxt->text(),
 			infoTxt->toHtml(),

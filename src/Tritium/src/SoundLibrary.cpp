@@ -82,26 +82,26 @@ Drumkit::~Drumkit()
 
 
 
-Drumkit* Drumkit::load( const QString& sFilename )
+Drumkit* Drumkit::load( Engine* eng, const QString& sFilename )
 {
-	LocalFileMng mng;
+	LocalFileMng mng(eng);
 	return mng.loadDrumkit( sFilename );
 
 }
 
 
 
-std::vector<QString> Drumkit::getUserDrumkitList()
+std::vector<QString> Drumkit::getUserDrumkitList(Engine* eng)
 {
-	LocalFileMng mng;
+	LocalFileMng mng(eng);
 	return mng.getUserDrumkitList();
 }
 
 
 
-std::vector<QString> Drumkit::getSystemDrumkitList()
+std::vector<QString> Drumkit::getSystemDrumkitList(Engine* eng)
 {
-	LocalFileMng mng;
+	LocalFileMng mng(eng);
 	return mng.getSystemDrumkitList();
 }
 
@@ -141,10 +141,10 @@ void Drumkit::dump()
 }
 
 #ifdef LIBARCHIVE_SUPPORT
-void Drumkit::install( const QString& filename )
+void Drumkit::install( Engine* engine, const QString& filename )
 {
 	INFOLOG( "[Drumkit::install] drumkit = " + filename );
-	QString dataDir = Engine::get_instance()->get_preferences()->getDataDirectory() + "drumkits/";
+	QString dataDir = engine->get_preferences()->getDataDirectory() + "drumkits/";
 
 	int r;
 	struct archive *drumkitFile;
@@ -189,10 +189,10 @@ void Drumkit::install( const QString& filename )
 #else //use libtar
 
 #ifndef WIN32
-void Drumkit::install( const QString& filename )
+void Drumkit::install( Engine* engine, const QString& filename )
 {
         INFOLOG( "[Drumkit::install] drumkit = " + filename );
-        QString dataDir = Engine::get_instance()->get_preferences()->getDataDirectory() + "drumkits/";
+        QString dataDir = engine->get_preferences()->getDataDirectory() + "drumkits/";
 
         // GUNZIP !!!
         QString gunzippedName = filename.left( filename.indexOf( "." ) );
@@ -236,7 +236,7 @@ void Drumkit::install( const QString& filename )
 
 #endif
 
-void Drumkit::save( const QString& sName, const QString& sAuthor, const QString& sInfo, const QString& sLicense )
+void Drumkit::save( Engine* engine, const QString& sName, const QString& sAuthor, const QString& sInfo, const QString& sLicense )
 {
 	INFOLOG( "Saving drumkit" );
 
@@ -246,7 +246,7 @@ void Drumkit::save( const QString& sName, const QString& sAuthor, const QString&
 	pDrumkitInfo->setInfo( sInfo );
 	pDrumkitInfo->setLicense( sLicense );
 
-	Song *pSong = Engine::get_instance()->getSong();
+	Song *pSong = engine->getSong();
 	InstrumentList *pSongInstrList = pSong->get_instrument_list();
 	InstrumentList *pInstrumentList = new InstrumentList();
 
@@ -289,7 +289,7 @@ void Drumkit::save( const QString& sName, const QString& sAuthor, const QString&
 
 	pDrumkitInfo->setInstrumentList( pInstrumentList );
 
-	LocalFileMng fileMng;
+	LocalFileMng fileMng(engine);
 	int err = fileMng.saveDrumkit( pDrumkitInfo );
 	if ( err != 0 ) {
 		ERRORLOG( "Error saving the drumkit" );
@@ -305,11 +305,11 @@ void Drumkit::save( const QString& sName, const QString& sAuthor, const QString&
 
 
 
-void Drumkit::removeDrumkit( const QString& sDrumkitName )
+void Drumkit::removeDrumkit( Engine* engine, const QString& sDrumkitName )
 {
 	INFOLOG( "Removing drumkit: " + sDrumkitName );
 
-	QString dataDir = Engine::get_instance()->get_preferences()->getDataDirectory() + "drumkits/";
+	QString dataDir = engine->get_preferences()->getDataDirectory() + "drumkits/";
 	dataDir += sDrumkitName;
 	QString cmd = QString( "rm -rf \"" ) + dataDir + "\"";
 	INFOLOG( cmd );

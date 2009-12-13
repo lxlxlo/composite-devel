@@ -248,14 +248,14 @@ bool SoundLibraryImportDialog::isSoundLibraryItemAlreadyInstalled( SoundLibraryI
 	soundLibraryItemName = soundLibraryItemName.left( soundLibraryItemName.lastIndexOf( "." ) );
 
 	if ( sInfo.m_sType == "drumkit" ) {
-		std::vector<QString> systemList = Tritium::Drumkit::getSystemDrumkitList();
+		std::vector<QString> systemList = Tritium::Drumkit::getSystemDrumkitList(Tritium::g_engine);
 		for ( uint i = 0; i < systemList.size(); ++i ) {
 			if ( systemList[ i ].endsWith(soundLibraryItemName) ) {
 				return true;
 			}
 		}
 
-		std::vector<QString> userList = Tritium::Drumkit::getUserDrumkitList();
+		std::vector<QString> userList = Tritium::Drumkit::getUserDrumkitList(Tritium::g_engine);
 		for ( uint i = 0; i < userList.size(); ++i ) {
 			if ( userList[ i ].endsWith(soundLibraryItemName) ) {
 				return true;
@@ -264,7 +264,7 @@ bool SoundLibraryImportDialog::isSoundLibraryItemAlreadyInstalled( SoundLibraryI
 	}
 
 	if ( sInfo.m_sType == "pattern" ) {
-		Tritium::LocalFileMng mng;
+		Tritium::LocalFileMng mng(Tritium::g_engine);
 		std::vector<QString> patternList = mng.getAllPatternName();
 		for ( uint i = 0; i < patternList.size(); ++i ) {
 			if ( patternList[ i ] == soundLibraryItemName ) {
@@ -274,7 +274,7 @@ bool SoundLibraryImportDialog::isSoundLibraryItemAlreadyInstalled( SoundLibraryI
 	}
 
 	if ( sInfo.m_sType == "song" ) {
-		Tritium::LocalFileMng mng;
+		Tritium::LocalFileMng mng(Tritium::g_engine);
 		std::vector<QString> songList = mng.getSongList();
 		for ( uint i = 0; i < songList.size(); ++i ) {
 			if ( songList[ i ] == soundLibraryItemName ) {
@@ -376,7 +376,7 @@ void SoundLibraryImportDialog::on_DownloadBtn_clicked()
 
 			try {
 				if ( sType == "drumkit" ) {
-					Tritium::Drumkit::install( sLocalFile );
+					Tritium::Drumkit::install( Tritium::g_engine, sLocalFile );
 					QApplication::restoreOverrideCursor();
 					QMessageBox::information( this, "Composite", QString( trUtf8( "SoundLibrary imported in %1" ) ).arg( dataDir ) );
 				}
@@ -442,7 +442,7 @@ void SoundLibraryImportDialog::on_InstallBtn_clicked()
 
 	QString dataDir = Tritium::g_engine->get_preferences()->getDataDirectory();
 	try {
-		Tritium::Drumkit::install( SoundLibraryPathTxt->text() );
+		Tritium::Drumkit::install( Tritium::g_engine, SoundLibraryPathTxt->text() );
 		QMessageBox::information( this, "Composite", QString( trUtf8( "SoundLibrary imported in %1" ).arg( dataDir )  ) );
 		// update the drumkit list
 		CompositeApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->test_expandedItems();

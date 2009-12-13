@@ -71,7 +71,7 @@ void SoundLibraryExportDialog::on_exportBtn_clicked()
 
 	QString drumkitName = drumkitList->currentText();
 
-	Tritium::LocalFileMng fileMng;
+	Tritium::LocalFileMng fileMng(g_engine);
 	QString drumkitDir = fileMng.getDrumkitDirectory( drumkitName );
 
 	QString saveDir = drumkitPathTxt->text();
@@ -131,11 +131,11 @@ void SoundLibraryExportDialog::updateDrumkitList()
 	drumkitInfoList.clear();
 
 	//LocalFileMng mng;
-	std::vector<QString> userList = Drumkit::getUserDrumkitList();
+	std::vector<QString> userList = Drumkit::getUserDrumkitList(g_engine);
 	for (uint i = 0; i < userList.size(); i++) {
 		QString absPath =  userList[i];
 
-		Drumkit *info = Drumkit::load( absPath );
+		Drumkit *info = Drumkit::load( g_engine, absPath );
 		if (info) {
 			drumkitInfoList.push_back( info );
 			drumkitList->addItem( info->getName() );
@@ -143,10 +143,10 @@ void SoundLibraryExportDialog::updateDrumkitList()
 	}
 
 
-	std::vector<QString> systemList = Drumkit::getSystemDrumkitList();
+	std::vector<QString> systemList = Drumkit::getSystemDrumkitList(g_engine);
 	for (uint i = 0; i < systemList.size(); i++) {
 		QString absPath = systemList[i];
-		Drumkit *info = Drumkit::load( absPath );
+		Drumkit *info = Drumkit::load( g_engine, absPath );
 		if (info) {
 			drumkitInfoList.push_back( info );
 			drumkitList->addItem( info->getName() );

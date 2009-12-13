@@ -38,6 +38,7 @@ class Sequence;
 class Pattern;
 class Song;
 class Drumkit;
+class Engine;
 
 /**
  *
@@ -45,7 +46,7 @@ class Drumkit;
 class LocalFileMng
 {
 public:
-	LocalFileMng();
+	LocalFileMng(Engine* parent);
 	~LocalFileMng();
 	
 	std::vector<QString> getDrumkitsFromDirectory( QString );
@@ -89,6 +90,7 @@ public:
 	static QDomDocument openXmlDocument( const QString& filename );
 
 private:
+	Engine* m_engine;
 	void fileCopy( const QString& sOrigFilename, const QString& sDestFilename );
 	std::vector<QString> m_allPatternList;
 };
@@ -105,7 +107,7 @@ public:
 	~SongWriter();
 
 	// Returns 0 on success.
-	int writeSong( Song *song, const QString& filename );
+	int writeSong( Engine* engine, Song *song, const QString& filename );
 };
 
 } // namespace Tritium
