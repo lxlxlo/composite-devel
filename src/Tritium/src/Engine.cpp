@@ -202,7 +202,7 @@ void EnginePrivate::audioEngine_init()
 #endif
 	m_sampler = new Sampler();
 #ifdef LADSPA_SUPPORT
-	m_effects = new Effects();
+	m_effects = new Effects(m_engine);
 #endif
 	m_playlist = new Playlist();
 

@@ -41,10 +41,12 @@ using namespace std;
 namespace Tritium
 {
 
-Effects::Effects()
-		: m_pRootGroup( NULL )
-		, m_pRecentGroup( NULL )
+Effects::Effects(Engine* parent) :
+	m_engine(parent),
+	m_pRootGroup( NULL ),
+	m_pRecentGroup( NULL )
 {
+	assert(parent);
 	for ( int nFX = 0; nFX < MAX_FX; ++nFX ) {
 		m_FXList[ nFX ] = NULL;
 	}
@@ -83,7 +85,7 @@ void  Effects::setLadspaFX( LadspaFX* pFX, int nFX )
 	assert( nFX < MAX_FX );
 	//INFOLOG( "[setLadspaFX] FX: " + pFX->getPluginLabel() + ", " + to_string( nFX ) );
 
-	Engine::get_instance()->lock( RIGHT_HERE );
+	m_engine->lock( RIGHT_HERE );
 
 
 	if ( m_FXList[ nFX ] ) {
@@ -94,12 +96,12 @@ void  Effects::setLadspaFX( LadspaFX* pFX, int nFX )
 	m_FXList[ nFX ] = pFX;
 	
 	if ( pFX != NULL ) {
-		Engine::get_instance()->get_preferences()->setMostRecentFX( pFX->getPluginName() );
+		m_engine->get_preferences()->setMostRecentFX( pFX->getPluginName() );
 		updateRecentGroup();
 	}
 
 
-	Engine::get_instance()->unlock();
+	m_engine->unlock();
 }
 
 
@@ -113,7 +115,7 @@ std::vector<LadspaFXInfo*> Effects::getPluginList()
 		return m_pluginList;
 	}
 
-	vector<QString> ladspaPathVect = Engine::get_instance()->get_preferences()->getLadspaPath();
+	vector<QString> ladspaPathVect = m_engine->get_preferences()->getLadspaPath();
 	INFOLOG( QString( "PATHS: %1" ).arg( ladspaPathVect.size() ) );
 	for ( vector<QString>::iterator i = ladspaPathVect.begin(); i != ladspaPathVect.end(); i++ ) {
 		QString sPluginDir = *i;
@@ -257,7 +259,7 @@ void Effects::updateRecentGroup()
 	
 
 	QString sRecent; // The recent fx names sit in the preferences object
-	foreach ( sRecent, Engine::get_instance()->get_preferences()->getRecentFX() ) {
+	foreach ( sRecent, m_engine->get_preferences()->getRecentFX() ) {
 		for ( std::vector<LadspaFXInfo*>::iterator i = m_pluginList.begin(); i < m_pluginList.end(); i++ ) {
 			if ( sRecent == (*i)->m_sName ) {
 				m_pRecentGroup->addLadspaInfo( *i );

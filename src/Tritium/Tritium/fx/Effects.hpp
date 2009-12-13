@@ -33,13 +33,15 @@
 namespace Tritium
 {
 
+class Engine;
+
 /**
  *
  */
 class Effects
 {
 public:
-	Effects();
+	Effects(Engine* parent);
 	~Effects();
 
 	LadspaFX* getLadspaFX( int nFX );
@@ -49,6 +51,7 @@ public:
 	LadspaFXGroup* getLadspaFXGroup();
 
 private:
+	Engine* m_engine;
 	std::vector<LadspaFXInfo*> m_pluginList;
 	LadspaFXGroup* m_pRootGroup;
 	LadspaFXGroup* m_pRecentGroup;
