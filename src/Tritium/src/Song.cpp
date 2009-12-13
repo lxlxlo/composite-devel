@@ -115,10 +115,10 @@ namespace Tritium
 	delete d;
     }
 
-    void Song::purge_instrument( Instrument * I )
+    void Song::purge_instrument( Instrument * I, Engine* engine )
     {
 	for ( int nPattern = 0; nPattern < (int)d->pattern_list->get_size(); ++nPattern ) {
-	    d->pattern_list->get( nPattern )->purge_instrument( I );
+	    d->pattern_list->get( nPattern )->purge_instrument( I, engine );
 	}
     }
 

@@ -1872,7 +1872,7 @@ void Engine::removeInstrument( int instrumentnumber, bool conditional )
 			}
 		}
 	} else {
-		getSong()->purge_instrument( pInstr );
+		getSong()->purge_instrument( pInstr, this );
 	}
 
 	Song *pSong = getSong();

@@ -66,7 +66,7 @@ public:
        Remove all the notes in the song that play on instrument I.
        The function is real-time safe (it locks the audio data while deleting notes)
     */
-    void purge_instrument( Instrument* I );
+    void purge_instrument( Instrument* I, Engine* engine );
 
     void set_volume( float volume );
     float get_volume();

@@ -218,7 +218,7 @@ void InstrumentLine::functionClearNotes()
 	int nSelectedInstrument = m_nInstrumentNumber;
 	Instrument *pSelectedInstrument = H->getSong()->get_instrument_list()->get( nSelectedInstrument );
 	
-	pCurrentPattern->purge_instrument( pSelectedInstrument );
+	pCurrentPattern->purge_instrument( pSelectedInstrument, H );
 // 	Pattern::note_map_t::iterator pos;
 // 	for ( pos = pCurrentPattern->note_map.begin(); pos != pCurrentPattern->note_map.end(); ++pos ) {
 // 		Note *pNote = pos->second;

@@ -53,7 +53,7 @@ Pattern::~Pattern()
 }
 
 
-void Pattern::purge_instrument( Instrument * I )
+void Pattern::purge_instrument( Instrument * I, Engine* engine )
 {
 	bool locked = false;
 	std::list< Note* > slate;
@@ -65,7 +65,7 @@ void Pattern::purge_instrument( Instrument * I )
 		
 		if ( pNote->get_instrument() == I ) {
 			if ( !locked ) {
-				Tritium::Engine::get_instance()->lock( RIGHT_HERE );
+				engine->lock( RIGHT_HERE );
 				locked = true;
 			}
 			slate.push_back( pNote );
@@ -77,7 +77,7 @@ void Pattern::purge_instrument( Instrument * I )
 	}
 	
 	if ( locked ) {
-		Tritium::Engine::get_instance()->unlock();
+		engine->unlock();
 		while ( slate.size() ) {
 			delete slate.front();
 			slate.pop_front();

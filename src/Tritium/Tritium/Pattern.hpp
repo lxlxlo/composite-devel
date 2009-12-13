@@ -30,6 +30,7 @@ namespace Tritium
 
 class Note;
 class Instrument;
+class Engine;
 
 ///
 /// The Pattern is a Note container.
@@ -47,7 +48,7 @@ public:
 	  Delete notes that pertain to instrument I.
 	  The function is thread safe (it locks the audio data while deleting notes)
 	*/
-	void purge_instrument( Instrument * I );
+	void purge_instrument( Instrument * I, Engine* engine );
 	
 	/**
 	  Check if there are any notes pertaining to I
