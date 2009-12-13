@@ -56,7 +56,7 @@ namespace Tritium
         QMutex __mutex;
 
     public:
-	GuiInputQueue(Engine* parent) : m_engine(parent) {}
+	GuiInputQueue(Engine* parent) : m_engine(parent) { assert(parent); }
 
         int process( SeqScript& seq, const TransportPosition& pos, uint32_t nframes ) {
             // Set up quantization.
@@ -327,6 +327,7 @@ namespace Tritium
 	    m_nSelectedInstrumentNumber(-1),
 	    m_sendPatternChange(false)
 	    {
+		assert(parent);
 		__locker.file = 0;
 		__locker.line = 0;
 		__locker.function = 0;

@@ -55,6 +55,7 @@ BeatCounter::BeatCounter(Engine* parent) :
     fOldBpm7( -1 ),
     fOldBpm8( -1 )
 {
+    assert(parent);
     memset((void*)beatDiffs, 0, sizeof(beatDiffs));
     gettimeofday( &oldTimeVal, 0 );
     currentTime = lastTime = oldTimeVal;

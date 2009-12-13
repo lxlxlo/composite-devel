@@ -62,7 +62,7 @@ Action::Action( QString s )
 ActionManager::ActionManager(Engine* parent) :
     m_engine(parent)
 {
-	assert( dynamic_cast<Engine*>(parent) );
+	assert(parent);
 	actionList <<""
 	<< "PLAY" 
 	<< "PLAY_TOGGLE"
