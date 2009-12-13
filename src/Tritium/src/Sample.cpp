@@ -32,12 +32,18 @@ using namespace std;
 namespace Tritium
 {
 
-Sample::Sample( unsigned frames, const QString& filename, float* data_l, float* data_r )
-		: __data_l( data_l )
-		, __data_r( data_r )
-		, __sample_rate( 44100 )
-		, __filename( filename )
-		, __n_frames( frames )
+Sample::Sample(
+	unsigned frames,
+	const QString& filename,
+	unsigned sample_rate,
+	float* data_l,
+	float* data_r
+	)
+	: __data_l( data_l )
+	, __data_r( data_r )
+	, __sample_rate( sample_rate )
+	, __filename( filename )
+	, __n_frames( frames )
 {
 		//INFOLOG("INIT " + m_sFilename + ". nFrames: " + toString( nFrames ) );
 }
@@ -119,10 +125,13 @@ Sample* Sample::load_wave( const QString& filename )
 	delete[] pTmpBuffer;
 
 
-	Sample *pSample = new Sample( soundInfo.frames, filename );
-	pSample->__data_l = data_l;
-	pSample->__data_r = data_r;
-	pSample->__sample_rate = soundInfo.samplerate;
+	Sample *pSample = new Sample(
+		soundInfo.frames,
+		filename,
+		soundInfo.samplerate,
+		data_l,
+		data_r
+		);
 	return pSample;
 }
 

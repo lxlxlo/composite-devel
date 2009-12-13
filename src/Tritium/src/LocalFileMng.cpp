@@ -723,7 +723,7 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 			if ( ! filenameNode.isNull() ) {
 				//warningLog( "Using back compatibility code. filename node found" );
 				QString sFilename = LocalFileMng::readXmlString( instrumentNode, "filename", "" );
-				Sample *pSample = new Sample( 0, sFilename );
+				Sample *pSample = new Sample( 0, sFilename, 0 );
 				InstrumentLayer *pLayer = new InstrumentLayer( pSample );
 				pInstrument->set_layer( pLayer, 0 );
 			}
@@ -743,7 +743,7 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 					float fGain = LocalFileMng::readXmlFloat( layerNode, "gain", 1.0, false, false );
 					float fPitch = LocalFileMng::readXmlFloat( layerNode, "pitch", 0.0, false, false );
 
-					Sample *pSample = new Sample( 0, sFilename );
+					Sample *pSample = new Sample( 0, sFilename, 0 );
 					InstrumentLayer *pLayer = new InstrumentLayer( pSample );
 					pLayer->set_velocity_range( fMin, fMax );
 					pLayer->set_gain( fGain );

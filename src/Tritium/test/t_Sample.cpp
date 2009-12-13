@@ -99,7 +99,7 @@ TEST_CASE( 010_defaults )
 	CK(that->get_data_r());
 	CK(that->get_sample_rate() == sample_rate);
 	CK(that->get_size() == 2 * sample_count * sizeof(float));
-	CK(that->get_n_frames() == sample_count);
+	CK(that->get_n_frames() == ((unsigned)sample_count));
 
 	++iter;
     }

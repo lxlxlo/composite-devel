@@ -34,7 +34,14 @@ namespace Tritium
 class Sample
 {
 public:
-	Sample( unsigned frames, const QString& filename, float* data_L = NULL, float* data_R = NULL );
+	Sample(
+		unsigned frames,
+		const QString& filename,
+		unsigned sample_rate,
+		float* data_L = NULL,
+		float* data_R = NULL
+		);
+
 	~Sample();
 
 	float* get_data_l() {
