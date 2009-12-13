@@ -64,9 +64,7 @@ namespace Tritium
         // initialized before Engine is created
         // (for now).  Engine takes ownership and
         // will delete it.
-        static void create_instance(Preferences* prefs);
-        static Engine* get_instance() { assert(__instance); return __instance; };
-
+        Engine(Preferences* prefs);
         ~Engine();
 
 	///////////////////////////////////////
@@ -121,7 +119,7 @@ namespace Tritium
         /* Mutex locking and unlocking
          *
          * Easy usage:  Use the RIGHT_HERE macro like this...
-         *     Engine::get_instance()->lock( RIGHT_HERE );
+         *     engine->lock( RIGHT_HERE );
          *
          * More complex usage:  The parameters file and function
          * need to be pointers to null-terminated strings that are
@@ -308,11 +306,7 @@ namespace Tritium
 	playlist_t& get_internal_playlist();
 
     private:
-        static Engine* __instance;
         EnginePrivate* d;
-
-        /// Private constructor (for Singleton pattern)
-        Engine(Preferences* prefs);
     };
 
     /**

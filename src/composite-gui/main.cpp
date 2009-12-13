@@ -270,8 +270,7 @@ int main(int argc, char *argv[])
 		}
 
 		// Engine here to honor all preferences.
-		Tritium::Engine::create_instance(pPref);
-		Tritium::g_engine = Tritium::Engine::get_instance();
+		Tritium::g_engine = new Tritium::Engine(pPref);
 		MainForm *pMainForm = new MainForm( pQApp, songFilename );
 		pMainForm->show();
 		pSplash->finish( pMainForm );

@@ -1359,12 +1359,6 @@ void EnginePrivate::audioEngine_restartAudioDrivers()
 //
 //----------------------------------------------------------------------------
 
-/// static reference of Engine class (Singleton)
-Engine* Engine::__instance = NULL;
-
-
-
-
 Engine::Engine(Preferences* prefs) :
     d(0)
 {
@@ -1376,7 +1370,6 @@ Engine::Engine(Preferences* prefs) :
 	d->m_event_queue = new EventQueue;
 	d->m_action_manager = new ActionManager(this);
 
-	__instance = this;
 	d->m_pTransport = new H2Transport(this);
 
 	d->audioEngine_init();
@@ -1403,19 +1396,6 @@ Engine::~Engine()
 	removeSong();
 	delete d;
 	d = 0;
-	__instance = 0;
-}
-
-
-
-void Engine::create_instance(Preferences *prefs)
-{
-	Logger::create_instance();
-	if( __instance == 0 ) {
-		__instance = new Engine(prefs);
-	}
-	// See audioEngine_init() for:
-	// Sampler, Effects, Playlist
 }
 
 Preferences* Engine::get_preferences()
