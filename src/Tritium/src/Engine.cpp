@@ -1377,7 +1377,7 @@ Engine::Engine(Preferences* prefs) :
 	d->m_action_manager = new ActionManager(this);
 
 	__instance = this;
-	d->m_pTransport = new H2Transport;
+	d->m_pTransport = new H2Transport(this);
 
 	d->audioEngine_init();
 	d->audioEngine_startAudioDrivers();

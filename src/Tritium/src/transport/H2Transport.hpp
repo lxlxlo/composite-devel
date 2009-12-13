@@ -25,6 +25,7 @@
 
 namespace Tritium
 {
+    class Engine;
     class H2TransportPrivate;
     class Song;
     class JackClient;
@@ -37,7 +38,7 @@ namespace Tritium
      *
      * int process(uint32_t nFrames) {
      *     TransportPosition pos;        // Defined in TransportMasterInterface.h
-     *     Transport* xport = Engine::get_instance()->get_transport();
+     *     Transport* xport = m_engine->get_transport();
      *     xport->get_position(&pos);
      *
      *     // Sequence notes based on [Bar:beat.tick] + bbt_offset
@@ -77,7 +78,7 @@ namespace Tritium
         // * set current transport model
         // * possibly set parameters on transport models.
 
-        H2Transport();
+        H2Transport(Engine* parent);
         virtual ~H2Transport();
 
     private:

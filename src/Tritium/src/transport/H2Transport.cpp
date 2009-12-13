@@ -31,6 +31,7 @@ using namespace Tritium;
 class Tritium::H2TransportPrivate
 {
 public:
+    Engine* engine;
     std::auto_ptr<Transport> xport;
 
     /* This is used as a heartbeat signal with the JACK transport.
@@ -44,10 +45,12 @@ public:
     Song* pSong;  // Cached pointer for JTM
 };
 
-H2Transport::H2Transport() :
+H2Transport::H2Transport(Engine* parent) :
     d(0)    
 {
+    assert(parent);
     d = new H2TransportPrivate;
+    d->engine = parent;
     d->xport.reset( new SimpleTransportMaster );
     d->presumed_jtm = false;
     d->heartbeat_jtm = false;
@@ -73,13 +76,13 @@ int H2Transport::locate(uint32_t bar, uint32_t beat, uint32_t tick)
 
 void H2Transport::start(void)
 {
-    Engine::get_instance()->get_event_queue()->push_event( EVENT_TRANSPORT, (int)TransportPosition::ROLLING );
+    d->engine->get_event_queue()->push_event( EVENT_TRANSPORT, (int)TransportPosition::ROLLING );
     if(d->xport.get()) d->xport->start();
 }
 
 void H2Transport::stop(void)
 {
-    Engine::get_instance()->get_event_queue()->push_event( EVENT_TRANSPORT, (int)TransportPosition::STOPPED );
+    d->engine->get_event_queue()->push_event( EVENT_TRANSPORT, (int)TransportPosition::STOPPED );
     if(d->xport.get()) d->xport->stop();
 }
 
@@ -91,7 +94,7 @@ void H2Transport::get_position(TransportPosition* pos)
 void H2Transport::processed_frames(uint32_t nFrames)
 {
     if( d->heartbeat_jtm == false && d->presumed_jtm == true ) {
-	Engine::get_instance()->get_event_queue()->push_event( EVENT_JACK_TIME_MASTER, JACK_TIME_MASTER_NO_MORE );
+	d->engine->get_event_queue()->push_event( EVENT_JACK_TIME_MASTER, JACK_TIME_MASTER_NO_MORE );
 	d->presumed_jtm = false;
     }
     d->heartbeat_jtm = false;
@@ -135,7 +138,7 @@ bool H2Transport::setJackTimeMaster(JackClient* parent, bool if_none_already)
 
     rv = d->jtm->setMaster(if_none_already);
     if( rv ) {
-	Engine::get_instance()->get_event_queue()->push_event( EVENT_JACK_TIME_MASTER, JACK_TIME_MASTER_NOW );
+	d->engine->get_event_queue()->push_event( EVENT_JACK_TIME_MASTER, JACK_TIME_MASTER_NOW );
     }
     return rv;
 }
@@ -144,7 +147,7 @@ void H2Transport::clearJackTimeMaster()
 {
     if( d->jtm.get() ) {
 	d->jtm->clearMaster();
-	Engine::get_instance()->get_event_queue()->push_event( EVENT_JACK_TIME_MASTER, JACK_TIME_MASTER_NO_MORE );
+	d->engine->get_event_queue()->push_event( EVENT_JACK_TIME_MASTER, JACK_TIME_MASTER_NO_MORE );
     }
 }
 
