@@ -31,24 +31,6 @@
 
 using namespace Tritium;
 
-bool jack_is_up(JackClient* oJackClient)
-{
-    bool rv;
-    AudioOutput* ao = Engine::get_instance()->get_audio_output();
-    try {
-	if( ao
-	    && dynamic_cast<JackOutput*>(ao)
-	    && oJackClient->ref() /* client pointer */ ) {
-	    rv = true;
-	} else {
-	    rv = false;
-	}
-    } catch (...) {
-	rv = false;
-    }
-    return rv;
-}
-
 JackTimeMaster::JackTimeMaster(JackClient* parent) :
     m_jack_client(parent),
     m_pSong( 0 ),
@@ -64,7 +46,7 @@ JackTimeMaster::~JackTimeMaster()
 bool JackTimeMaster::setMaster(bool if_none_already)
 {
     QMutexLocker mx(&m_mutex);
-    if( ! jack_is_up(m_jack_client) ) return false;
+    if( ! m_jack_client->jack_is_up() ) return false;
 
     int rv = jack_set_timebase_callback( m_jack_client->ref(),
 					 (if_none_already) ? 1 : 0,
@@ -76,7 +58,7 @@ bool JackTimeMaster::setMaster(bool if_none_already)
 void JackTimeMaster::clearMaster(void)
 {
     QMutexLocker mx(&m_mutex);
-    if( ! jack_is_up(m_jack_client) ) return;
+    if( ! m_jack_client->jack_is_up() ) return;
     jack_release_timebase(m_jack_client->ref()); // ignore return
 }
 

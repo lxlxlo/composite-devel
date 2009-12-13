@@ -24,6 +24,7 @@
 
 #include "JackClient.hpp"
 #include <Tritium/Logger.hpp>
+#include <Tritium/IO/JackOutput.hpp>
 #include <jack/jack.h>
 #include <cassert>
 
@@ -145,6 +146,24 @@ JackClient::~JackClient()
 void JackClient::raise_error(Engine::error_t err)
 {
 	m_engine->raiseError(err);
+}
+
+bool JackClient::jack_is_up()
+{
+    bool rv;
+    AudioOutput* ao = m_engine->get_audio_output();
+    try {
+	if( ao
+	    && dynamic_cast<JackOutput*>(ao)
+	    && ref() /* client pointer */ ) {
+	    rv = true;
+	} else {
+	    rv = false;
+	}
+    } catch (...) {
+	rv = false;
+    }
+    return rv;
 }
 
 void JackClient::close(void)

@@ -63,6 +63,7 @@ public:
     void close(void);
 
     void raise_error(Engine::error_t err);
+    bool jack_is_up();
 
 private:
     Engine* m_engine;
