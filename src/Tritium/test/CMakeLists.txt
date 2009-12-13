@@ -22,6 +22,7 @@ IF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
     t_SimpleTransportMaster
     t_songhelpers
     t_TransportPosition
+    t_Sample
     )
 
   ADD_DEFINITIONS("-DBOOST_TEST_DYN_LINK")
