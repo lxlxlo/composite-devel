@@ -30,12 +30,13 @@
 namespace Tritium
 {
 
+class Engine;
 typedef int  ( *audioProcessCallback )( uint32_t, void * );
 
 class NullDriver : public AudioOutput
 {
 public:
-	NullDriver( audioProcessCallback processCallback, void* );
+	NullDriver( Engine* parent, audioProcessCallback processCallback, void* );
 	~NullDriver();
 
 	int init( unsigned nBufferSize );

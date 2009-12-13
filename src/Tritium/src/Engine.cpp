@@ -198,7 +198,7 @@ void EnginePrivate::audioEngine_init()
 	m_audioEngineState = Engine::StateInitialized;
 
 #ifdef JACK_SUPPORT
-	m_jack_client = new JackClient(false);
+	m_jack_client = new JackClient(m_engine, false);
 #endif
 	m_sampler = new Sampler(m_engine);
 #ifdef LADSPA_SUPPORT
@@ -1139,7 +1139,7 @@ AudioOutput* EnginePrivate::createDriver( const QString& sDriver )
 #ifdef JACK_SUPPORT
 		m_jack_client->open();
 		#warning "Could `new JackOutput` really return NullDriver?"
-		pDriver = new JackOutput( m_jack_client, engine_process_callback, this );
+		pDriver = new JackOutput( m_engine, m_jack_client, engine_process_callback, this );
 		JackOutput *jao = dynamic_cast<JackOutput*>(pDriver);
 		if ( jao == 0 ) {
 			delete pDriver;
@@ -1152,7 +1152,7 @@ AudioOutput* EnginePrivate::createDriver( const QString& sDriver )
 #endif
 	} else if ( sDriver == "Fake" ) {
 		WARNINGLOG( "*** Using FAKE audio driver ***" );
-		pDriver = new FakeDriver( engine_process_callback, this );
+		pDriver = new FakeDriver( m_engine, engine_process_callback, this );
 	} else {
 		ERRORLOG( "Unknown driver " + sDriver );
 		audioEngine_raiseError( Engine::UNKNOWN_DRIVER );
@@ -1208,7 +1208,7 @@ void EnginePrivate::audioEngine_startAudioDrivers()
 			ERRORLOG( "Using the NULL output audio driver" );
 
 			// use the NULL output driver
-			m_pAudioDriver = new NullDriver( engine_process_callback, this );
+			m_pAudioDriver = new NullDriver( m_engine, engine_process_callback, this );
 			m_pAudioDriver->init( 0 );
 		}
 	} else {
@@ -1219,7 +1219,7 @@ void EnginePrivate::audioEngine_startAudioDrivers()
 			ERRORLOG( "Using the NULL output audio driver" );
 
 			// use the NULL output driver
-			m_pAudioDriver = new NullDriver( engine_process_callback, this );
+			m_pAudioDriver = new NullDriver( m_engine, engine_process_callback, this );
 			m_pAudioDriver->init( 0 );
 		}
 	}
@@ -1267,7 +1267,7 @@ void EnginePrivate::audioEngine_startAudioDrivers()
 
 			mx.relock();
 			delete m_pAudioDriver;
-			m_pAudioDriver = new NullDriver( engine_process_callback, this );
+			m_pAudioDriver = new NullDriver( m_engine, engine_process_callback, this );
 			mx.unlock();
 			m_pAudioDriver->init( 0 );
 			m_pAudioDriver->connect();
@@ -1653,7 +1653,7 @@ void Engine::startExportSong( const QString& filename )
 	*/
 
 
-	d->m_pAudioDriver = new DiskWriterDriver( engine_process_callback, d, nSamplerate, filename );
+	d->m_pAudioDriver = new DiskWriterDriver( d->m_engine, engine_process_callback, d, nSamplerate, filename );
 
 	get_sampler()->stop_playing_notes();
 

@@ -21,8 +21,12 @@
 #ifndef TRITIUM_AUDIOOUTPUT_HPP
 #define TRITIUM_AUDIOOUTPUT_HPP
 
+#include <cassert>
+
 namespace Tritium
 {
+
+class Engine;
 
 ///
 /// Base abstract class for audio output classes.
@@ -30,7 +34,11 @@ namespace Tritium
 class AudioOutput
 {
 public:
-	AudioOutput() : __track_out_enabled( false ) { }
+	AudioOutput(Engine* parent) :
+		m_engine(parent),
+		__track_out_enabled( false ) {
+		assert(parent);
+	}
 
 	virtual ~AudioOutput() { }
 
@@ -47,6 +55,7 @@ public:
 	}
 
 protected:
+	Engine* m_engine;
 	bool __track_out_enabled;	///< True if is capable of per-track audio output
 
 };

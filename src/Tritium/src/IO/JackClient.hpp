@@ -31,6 +31,7 @@
 
 #include <jack/types.h>
 #include <Tritium/H2Exception.hpp>
+#include <Tritium/Engine.hpp>
 #include <QtCore/QString>
 #include <vector>
 #include <set>
@@ -39,12 +40,10 @@
 namespace Tritium
 {
 
-class Engine;
-
 class JackClient
 {
 public:
-    JackClient(bool init_jack = true);
+    JackClient(Engine* parent, bool init_jack = true);
     ~JackClient(void);
 
     jack_client_t* ref(void);
@@ -63,7 +62,10 @@ public:
     void open(void);
     void close(void);
 
+    void raise_error(Engine::error_t err);
+
 private:
+    Engine* m_engine;
     jack_client_t* m_client;
     std::set<void*> m_children;
     JackProcessCallback m_audio_process;

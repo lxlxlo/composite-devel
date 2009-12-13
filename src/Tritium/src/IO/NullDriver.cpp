@@ -27,9 +27,10 @@
 namespace Tritium
 {
 
-    NullDriver::NullDriver( audioProcessCallback /*processCallback*/, void* /*arg*/ )
-		: AudioOutput()
+NullDriver::NullDriver( Engine* parent, audioProcessCallback /*processCallback*/, void* /*arg*/ )
+		: AudioOutput(parent)
 {
+	assert(parent);
 }
 
 

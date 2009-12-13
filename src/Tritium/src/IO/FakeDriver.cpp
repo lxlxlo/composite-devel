@@ -27,14 +27,15 @@
 namespace Tritium
 {
 
-FakeDriver::FakeDriver( audioProcessCallback processCallback, void* arg )
-		: AudioOutput()
+FakeDriver::FakeDriver( Engine* parent, audioProcessCallback processCallback, void* arg )
+		: AudioOutput(parent)
 		, m_processCallback( processCallback )
 		, m_processCallback_arg( arg )
 		, m_pOut_L( NULL )
 		, m_pOut_R( NULL )
 {
 	INFOLOG( "INIT" );
+	assert(parent);
 }
 
 
@@ -60,8 +61,8 @@ int FakeDriver::connect()
 {
 	INFOLOG( "connect" );
 
-        Engine::get_instance()->get_transport()->locate(0);
-        Engine::get_instance()->get_transport()->start();
+        m_engine->get_transport()->locate(0);
+        m_engine->get_transport()->start();
 
 	return 0;
 }

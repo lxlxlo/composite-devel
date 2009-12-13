@@ -31,7 +31,7 @@
 
 namespace Tritium
 {
-
+class Engine;
 typedef int  ( *audioProcessCallback )( uint32_t, void * );
 
 ///
@@ -49,6 +49,7 @@ public:
 	float* m_pOut_R;
 
 	DiskWriterDriver(
+		Engine* parent,
 		audioProcessCallback processCallback,
 		void* arg,
 		unsigned nSamplerate,
@@ -73,6 +74,8 @@ public:
 	float* getOut_R() {
 		return m_pOut_R;
 	}
+
+	Engine* get_engine();
 
 private:
 

@@ -61,19 +61,18 @@ int jackDriverBufferSize( jack_nframes_t nframes, void * /*arg*/ )
 void jackDriverShutdown( void *arg )
 {
 	JackClient* client = static_cast<JackClient*>(arg);
-	if(client) client->clearAudioProcessCallback();
-	Engine::get_instance()->raiseError( Engine::JACK_SERVER_SHUTDOWN );
+	if(client) {
+		client->clearAudioProcessCallback();
+		client->raise_error( Engine::JACK_SERVER_SHUTDOWN );
+	}
 }
 
-
-
-
-JackOutput::JackOutput( JackClient* parent, JackProcessCallback processCallback, void* arg )
-    : AudioOutput(),
+JackOutput::JackOutput( Engine* e_parent, JackClient* parent, JackProcessCallback processCallback, void* arg )
+    : AudioOutput(e_parent),
       m_jack_client(parent)
 {
 	INFOLOG( "INIT" );
-	__track_out_enabled = Engine::get_instance()->get_preferences()->m_bJackTrackOuts;	// allow per-track output
+	__track_out_enabled = m_engine->get_preferences()->m_bJackTrackOuts;	// allow per-track output
 
 	this->processCallback = processCallback;
 	this->processCallback_arg = arg;
@@ -106,7 +105,7 @@ int JackOutput::connect()
 
 	m_jack_client->subscribe((void*)this);
 	if ( !client ) {
-		Engine::get_instance()->raiseError( Engine::JACK_CANNOT_ACTIVATE_CLIENT );
+		m_engine->raiseError( Engine::JACK_CANNOT_ACTIVATE_CLIENT );
 		return 1;
 	}
 
@@ -128,13 +127,13 @@ int JackOutput::connect()
 		const char ** portnames = jack_get_ports ( client, NULL, NULL, JackPortIsInput );
 		if ( !portnames || !portnames[0] || !portnames[1] ) {
 			ERRORLOG( "Could't locate two Jack input port" );
-			Engine::get_instance()->raiseError( Engine::JACK_CANNOT_CONNECT_OUTPUT_PORT );
+			m_engine->raiseError( Engine::JACK_CANNOT_CONNECT_OUTPUT_PORT );
 			return 2;
 		}
 		if ( jack_connect( client, jack_port_name( output_port_1 ), portnames[0] ) != 0 ||
 		        jack_connect( client, jack_port_name( output_port_2 ), portnames[1] ) != 0 ) {
 			ERRORLOG( "Could't connect to first pair of Jack input ports" );
-			Engine::get_instance()->raiseError( Engine::JACK_CANNOT_CONNECT_OUTPUT_PORT );
+			m_engine->raiseError( Engine::JACK_CANNOT_CONNECT_OUTPUT_PORT );
 			return 2;
 		}
 		free( portnames );
@@ -229,8 +228,8 @@ float* JackOutput::getTrackOut_R( unsigned nTrack )
 
 int JackOutput::init( unsigned /*nBufferSize*/ )
 {
-	output_port_name_1 = Engine::get_instance()->get_preferences()->m_sJackPortName1;
-	output_port_name_2 = Engine::get_instance()->get_preferences()->m_sJackPortName2;
+	output_port_name_1 = m_engine->get_preferences()->m_sJackPortName1;
+	output_port_name_2 = m_engine->get_preferences()->m_sJackPortName2;
 
 	jack_client_t* client = m_jack_client->ref();
 
@@ -269,7 +268,7 @@ int JackOutput::init( unsigned /*nBufferSize*/ )
 	output_port_2 = jack_port_register ( client, "out_R", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0 );
 
 	if ( ( output_port_1 == NULL ) || ( output_port_2 == NULL ) ) {
-		( Engine::get_instance() )->raiseError( Engine::JACK_ERROR_IN_PORT_REGISTER );
+		( m_engine )->raiseError( Engine::JACK_ERROR_IN_PORT_REGISTER );
 		return 4;
 	}
 
@@ -291,7 +290,7 @@ void JackOutput::makeTrackOutputs( Song * song )
 {
 
 	/// Disable Track Outputs
-	if( Engine::get_instance()->get_preferences()->m_bJackTrackOuts == false )
+	if( m_engine->get_preferences()->m_bJackTrackOuts == false )
 			return;
 	///
 
@@ -337,7 +336,7 @@ void JackOutput::setTrackOutput( int n, Instrument * instr )
 			track_output_ports_L[m] = jack_port_register ( client, ( chName + "L" ).toLocal8Bit(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0 );
 			track_output_ports_R[m] = jack_port_register ( client, ( chName + "R" ).toLocal8Bit(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0 );
 			if ( track_output_ports_R[m] == NULL || track_output_ports_L[m] == NULL ) {
-				Engine::get_instance()->raiseError( Engine::JACK_ERROR_IN_PORT_REGISTER );
+				m_engine->raiseError( Engine::JACK_ERROR_IN_PORT_REGISTER );
 			}
 		}
 		track_port_count = n + 1;

@@ -28,6 +28,7 @@
 namespace Tritium
 {
 
+class Engine;
 typedef int  ( *audioProcessCallback )( uint32_t, void * );
 
 /**
@@ -36,7 +37,7 @@ typedef int  ( *audioProcessCallback )( uint32_t, void * );
 class FakeDriver : public AudioOutput
 {
 public:
-	FakeDriver( audioProcessCallback processCallback, void* arg );
+	FakeDriver( Engine* parent, audioProcessCallback processCallback, void* arg );
 	~FakeDriver();
 
 	int init( unsigned nBufferSize );

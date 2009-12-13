@@ -51,7 +51,8 @@ DiskWriterDriverThread * diskWriterDriverThread;
 void DiskWriterDriverThread::run()
 {
 	INFOLOG( "DiskWriterDriver thread start" );
-        Transport* xport = Engine::get_instance()->get_transport();
+	Engine* engine = pDriver->get_engine();
+        Transport* xport = engine->get_transport();
         TransportPosition xpos;
 
 	// always rolling, no user interaction
@@ -110,16 +111,16 @@ void DiskWriterDriverThread::run()
                 // position actually refers to the *next* process cycle.
                 xport->get_position(&xpos);
 		if ( (xpos.frame % report_interval) == 0 ) {
-			int nPatterns = Engine::get_instance()->getSong()->get_pattern_group_vector()->size();
-			int nCurrentPatternPos = Engine::get_instance()->getPatternPos();
+			int nPatterns = engine->getSong()->get_pattern_group_vector()->size();
+			int nCurrentPatternPos = engine->getPatternPos();
 			assert( nCurrentPatternPos != -1 );
 
 			float fPercent = ( float ) nCurrentPatternPos / ( float )nPatterns * 100.0;
-			Engine::get_instance()->get_event_queue()->push_event( EVENT_PROGRESS, ( int )fPercent );
+			engine->get_event_queue()->push_event( EVENT_PROGRESS, ( int )fPercent );
 			INFOLOG( QString( "DiskWriterDriver: %1%, transport frames:%2" ).arg( fPercent ).arg( xpos.frame ) );
 		}
 	}
-	Engine::get_instance()->get_event_queue()->push_event( EVENT_PROGRESS, 100 );
+	engine->get_event_queue()->push_event( EVENT_PROGRESS, 100 );
 
 	delete[] pData;
 	pData = NULL;
@@ -134,17 +135,19 @@ void DiskWriterDriverThread::run()
 
 
 DiskWriterDriver::DiskWriterDriver(
+	Engine* parent,
 	audioProcessCallback processCallback,
 	void* arg,
 	unsigned nSamplerate,
 	const QString& sFilename )
-		: AudioOutput()
+		: AudioOutput(parent)
 		, m_nSampleRate( nSamplerate )
 		, m_sFilename( sFilename )
 		, m_processCallback( processCallback )
 		, m_processCallback_arg( arg )
 {
 	INFOLOG( "INIT" );
+	assert(parent);
 }
 
 
@@ -208,7 +211,10 @@ unsigned DiskWriterDriver::getSampleRate()
 	return m_nSampleRate;
 }
 
-
+Engine* DiskWriterDriver::get_engine()
+{
+	return m_engine;
+}
 
 
 };

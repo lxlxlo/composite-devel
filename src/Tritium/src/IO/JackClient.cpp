@@ -38,13 +38,15 @@ jack_client_t* JackClient::ref(void)
 	return m_client;
 }
 
-JackClient::JackClient(bool init_jack)
-	: m_client(0),
-	  m_audio_process(0),
-	  m_audio_process_arg(0),
-	  m_nonaudio_process(0)
+JackClient::JackClient(Engine* parent, bool init_jack) :
+    m_engine(parent),
+    m_client(0),
+    m_audio_process(0),
+    m_audio_process_arg(0),
+    m_nonaudio_process(0)
 {
 	INFOLOG( "INIT" );
+	assert(parent);
 	if(init_jack)
 	    open();
 }
@@ -138,6 +140,11 @@ JackClient::~JackClient()
 {
 	INFOLOG( "DESTROY" );
 	close();
+}
+
+void JackClient::raise_error(Engine::error_t err)
+{
+	m_engine->raiseError(err);
 }
 
 void JackClient::close(void)
