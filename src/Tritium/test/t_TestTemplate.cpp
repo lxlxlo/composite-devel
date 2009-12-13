@@ -31,6 +31,7 @@
 // CHANGE THIS TO MATCH YOUR FILE:
 #define THIS_NAMESPACE t_Foo
 #include "test_macros.hpp"
+#include "test_config.hpp"
 
 namespace Tritium {}  // please compile! :-)
 

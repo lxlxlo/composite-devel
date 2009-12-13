@@ -11,6 +11,9 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 IF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
   FILE(GLOB_RECURSE test_HEADERS *.h ../Tritium/*.h ../src/*.h)
 
+  CONFIGURE_FILE(test_config.hpp.in ${CMAKE_CURRENT_BINARY_DIR}/test_config.hpp @ONLY)
+  INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+
   LIST(APPEND test_LIST
     t_TestTemplate
     t_SeqEvent
@@ -31,6 +34,7 @@ IF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
   FOREACH(T ${test_LIST})
     ADD_EXECUTABLE(${T}
       ${T}.cpp
+      ${CMAKE_CURRENT_BINARY_DIR}/test_config.hpp
       ${test_INCLUDES}
       ${tritium_INCLUDES}
       )
@@ -56,19 +60,4 @@ IF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
     ADD_TEST(${T} ${T})
   ENDFOREACH()
 
-  ###
-  ### Test-specific properties
-  ###
-  ### Note the this /overrides/ the props set above.
-  ###
-  SET_SOURCE_FILES_PROPERTIES(t_songhelpers.cpp
-    PROPERTIES
-    COMPILE_FLAGS
-      "-DBOOST_TEST_MAIN -DT_SONGHELPERS_H2SONG=\"\\\"${CMAKE_CURRENT_SOURCE_DIR}/t_songhelpers.h2song\\\"\""
-    )
-  SET_SOURCE_FILES_PROPERTIES(t_SimpleTransportMaster.cpp
-    PROPERTIES
-    COMPILE_FLAGS
-      "-DBOOST_TEST_MAIN -DT_SIMPLETRANSPORTMASTER_H2SONG=\"\\\"${CMAKE_CURRENT_SOURCE_DIR}/t_SimpleTransportMaster.h2song\\\"\""
-    )
 ENDIF(Boost_UNIT_TEST_FRAMEWORK_FOUND)

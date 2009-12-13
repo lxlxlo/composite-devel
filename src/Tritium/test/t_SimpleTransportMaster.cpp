@@ -33,12 +33,13 @@
 #define THIS_NAMESPACE t_SimpleTransportMaster
 #include "test_macros.hpp"
 #include "test_utils.hpp"
+#include "test_config.hpp"
 
 using namespace Tritium;
 
 namespace THIS_NAMESPACE
 {
-    const char song_file_name[] = T_SIMPLETRANSPORTMASTER_H2SONG;
+    const char song_file_name[] = TEST_DATA_DIR "/t_SimpleTransportMaster.h2song";
 
     struct Fixture
     {
