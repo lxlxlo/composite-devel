@@ -84,11 +84,12 @@ using namespace Tritium;
 
 JackProcessCallback jackMidiFallbackProcess; // implemented in Engine.cpp
 
-JackMidiDriver::JackMidiDriver(JackClient* parent)
-	: MidiInput( "JackMidiDriver" ),
+JackMidiDriver::JackMidiDriver(JackClient* parent, Engine* e_parent)
+	: MidiInput( e_parent, "JackMidiDriver" ),
 	  m_jack_client(parent),
 	  m_port(0)
 {
+	assert(e_parent);
 	INFOLOG( "CREATE" );
 }
 
@@ -115,7 +116,7 @@ void JackMidiDriver::open(void)
 	}
 
 	// Autoconnect port to an Output (readable) port
-	QString OutPort = Engine::get_instance()->get_preferences()->m_sMidiPortName;
+	QString OutPort = m_engine->get_preferences()->m_sMidiPortName;
 	int err = jack_connect(client.ref(),
 			       OutPort.toLatin1().constData(),
 			       jack_port_name(m_port));

@@ -47,7 +47,7 @@ class JackClient;
 class JackMidiDriver : public MidiInput
 {
 public:
-	JackMidiDriver(JackClient* parent);
+	JackMidiDriver(JackClient* parent, Engine* e_parent);
 	~JackMidiDriver();
 
 	// Reimplemented from MidiInput

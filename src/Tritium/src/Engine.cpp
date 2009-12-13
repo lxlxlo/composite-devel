@@ -1227,7 +1227,7 @@ void EnginePrivate::audioEngine_startAudioDrivers()
 	if ( preferencesMng->m_sMidiDriver == "JackMidi" ) {
 #ifdef JACK_SUPPORT
 		m_jack_client->open();
-		m_pMidiDriver = new JackMidiDriver(m_jack_client);
+		m_pMidiDriver = new JackMidiDriver(m_jack_client, m_engine);
 		m_pMidiDriver->open();
 		m_pMidiDriver->setActive( true );
 #endif

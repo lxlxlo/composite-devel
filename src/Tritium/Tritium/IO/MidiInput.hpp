@@ -29,6 +29,8 @@
 namespace Tritium
 {
 
+class Engine;
+
 class MidiMessage
 {
 public:
@@ -85,7 +87,7 @@ public:
 class MidiInput
 {
 public:
-	MidiInput( const QString class_name );
+	MidiInput( Engine* parent, const QString class_name );
 	virtual ~MidiInput();
 
 	virtual void open() = 0;
@@ -106,6 +108,7 @@ public:
 	virtual int processNonAudio(uint32_t nframes); // Assumes processing in other thread.
 
 protected:
+	Engine* m_engine;
 	bool m_bActive;
 
 	void handleNoteOnMessage( const MidiMessage& msg );

@@ -30,13 +30,16 @@
 #include <Tritium/Note.hpp>
 #include <Tritium/Action.hpp>
 #include <Tritium/MidiMap.hpp>
+#include <cassert>
 
 namespace Tritium
 {
 
-MidiInput::MidiInput( const QString class_name )
-		: m_bActive( false )
+MidiInput::MidiInput( Engine* parent, const QString class_name ) :
+	m_engine(parent),
+	m_bActive( false )
 {
+	assert(parent);
 	//INFOLOG( "INIT" );
 	
 }
@@ -49,7 +52,7 @@ MidiInput::~MidiInput()
 
 void MidiInput::handleMidiMessage( const MidiMessage& msg )
 {
-	Engine::get_instance()->get_event_queue()->push_event( EVENT_MIDI_ACTIVITY, -1 );
+	m_engine->get_event_queue()->push_event( EVENT_MIDI_ACTIVITY, -1 );
 
 //	infoLog( "[handleMidiMessage]" );
 //	infoLog( "[handleMidiMessage] channel: " + to_string( msg.m_nChannel ) );
@@ -80,7 +83,7 @@ void MidiInput::handleMidiMessage( const MidiMessage& msg )
 
 	case MidiMessage::PROGRAM_CHANGE:
 		INFOLOG( QString( "[handleMidiMessage] PROGRAM_CHANGE event, seting next pattern to %1" ).arg( msg.m_nData1 ) );
-		Engine::get_instance()->sequencer_setNextPattern(msg.m_nData1, false, false);
+		m_engine->sequencer_setNextPattern(msg.m_nData1, false, false);
 		break;
 
 	case MidiMessage::CHANNEL_PRESSURE:
@@ -97,7 +100,7 @@ void MidiInput::handleMidiMessage( const MidiMessage& msg )
 
 	case MidiMessage::START:
 		INFOLOG( "START event" );
-		Engine::get_instance()->get_transport()->start();
+		m_engine->get_transport()->start();
 		break;
 
 	case MidiMessage::CONTINUE:
@@ -106,7 +109,7 @@ void MidiInput::handleMidiMessage( const MidiMessage& msg )
 
 	case MidiMessage::STOP:
 		INFOLOG( "STOP event" );
-		Engine::get_instance()->get_transport()->stop();
+		m_engine->get_transport()->stop();
 		break;
 
 	case MidiMessage::SONG_POS:
@@ -130,9 +133,8 @@ void MidiInput::handleControlChangeMessage( const MidiMessage& msg )
 {
 	//INFOLOG( QString( "[handleMidiMessage] CONTROL_CHANGE Parameter: %1, Value: %2" ).arg( msg.m_nData1 ).arg( msg.m_nData2 ) );
 	
-	Engine *pEngine = Engine::get_instance();
-	ActionManager * aH = pEngine->get_action_manager();
-	MidiMap * mM = Engine::get_instance()->get_preferences()->get_midi_map();
+	ActionManager * aH = m_engine->get_action_manager();
+	MidiMap * mM = m_engine->get_preferences()->get_midi_map();
 
 	Action * pAction; 
 
@@ -141,7 +143,7 @@ void MidiInput::handleControlChangeMessage( const MidiMessage& msg )
 
 	aH->handleAction( pAction );
 
-	pEngine->set_last_midi_event("CC", msg.m_nData1);
+	m_engine->set_last_midi_event("CC", msg.m_nData1);
 	
 
 }
@@ -151,7 +153,7 @@ void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
 	INFOLOG( "handleNoteOnMessage" );
 
 
-	int nMidiChannelFilter = Engine::get_instance()->get_preferences()->m_nMidiChannelFilter;
+	int nMidiChannelFilter = m_engine->get_preferences()->m_nMidiChannelFilter;
 	int nChannel = msg.m_nChannel;
 	int nNote = msg.m_nData1;
 	float fVelocity = msg.m_nData2 / 127.0;
@@ -167,15 +169,14 @@ void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
 		bIsChannelValid = ( nChannel == nMidiChannelFilter );
 	}
 
-	Engine *pEngine = Engine::get_instance();
-	ActionManager * aH = pEngine->get_action_manager();
-	MidiMap * mM = Engine::get_instance()->get_preferences()->get_midi_map();
+	ActionManager * aH = m_engine->get_action_manager();
+	MidiMap * mM = m_engine->get_preferences()->get_midi_map();
 
-	pEngine->set_last_midi_event("NOTE", msg.m_nData1);
+	m_engine->set_last_midi_event("NOTE", msg.m_nData1);
 	
 	bool action = aH->handleAction( mM->getNoteAction( msg.m_nData1 ) );
 	
-	if ( action && Engine::get_instance()->get_preferences()->m_bMidiDiscardNoteAfterAction)
+	if ( action && m_engine->get_preferences()->m_bMidiDiscardNoteAfterAction)
 	{
 		return;
 	}
@@ -191,7 +192,7 @@ void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
 			int patternNumber = nNote - 36;
 			INFOLOG( QString( "next pattern = %1" ).arg( patternNumber ) );
 
-			pEngine->sequencer_setNextPattern( patternNumber, false, false );
+			m_engine->sequencer_setNextPattern( patternNumber, false, false );
 		} else {
 			static const float fPan_L = 1.0f;
 			static const float fPan_R = 1.0f;
@@ -204,7 +205,7 @@ void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
 				nInstrument = MAX_INSTRUMENTS - 1;
 			}
 
-			pEngine->addRealtimeNote( nInstrument, fVelocity, fPan_L, fPan_R, 0.0, true, msg.m_use_frame, msg.m_frame );
+			m_engine->addRealtimeNote( nInstrument, fVelocity, fPan_L, fPan_R, 0.0, true, msg.m_use_frame, msg.m_frame );
 		}
 	}
 }
@@ -214,12 +215,11 @@ void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
 void MidiInput::handleNoteOffMessage( const MidiMessage& msg )
 {
 	INFOLOG( "handleNoteOffMessage" );
-	if ( Engine::get_instance()->get_preferences()->m_bMidiNoteOffIgnore ) {
+	if ( m_engine->get_preferences()->m_bMidiNoteOffIgnore ) {
 		return;
 	}
 
-	Engine *pEngine = Engine::get_instance();
-	Song *pSong = pEngine->getSong();
+	Song *pSong = m_engine->getSong();
 
 	int nNote = msg.m_nData1;
 	int nInstrument = nNote - 36;
@@ -239,12 +239,12 @@ void MidiInput::handleNoteOffMessage( const MidiMessage& msg )
 	// XXX TO-DO: Position is ignored
 	// if (msg.m_use_frame) {
 	//     TransportPosition xpos;
-	//     pEngine->get_transport()->get_position(&xpos);
+	//     m_engine->get_transport()->get_position(&xpos);
 	//     nPosition = xpos.tick_in_bar();
 	// }
 	Note *pNewNote = new Note( pInstr, fVelocity, fPan_L, fPan_R, nLength, fPitch );
 
-	pEngine->midi_noteOff( pNewNote );
+	m_engine->midi_noteOff( pNewNote );
 }
 
 
@@ -274,11 +274,10 @@ void MidiInput::handleSysexMessage( const MidiMessage& msg )
 	*/
 	
 	
-	Engine *pEngine = Engine::get_instance();
-	ActionManager * aH = pEngine->get_action_manager();
-	MidiMap * mM = Engine::get_instance()->get_preferences()->get_midi_map();
+	ActionManager * aH = m_engine->get_action_manager();
+	MidiMap * mM = m_engine->get_preferences()->get_midi_map();
 
-	pEngine->set_last_midi_event("SYSEX", msg.m_nData1);
+	m_engine->set_last_midi_event("SYSEX", msg.m_nData1);
 
 
 
@@ -294,48 +293,48 @@ if ( msg.m_sysexData.size() == 6 ) {
 
 			case 1:	// STOP
 			{ 
-				pEngine->set_last_midi_event("MMC_STOP");
+				m_engine->set_last_midi_event("MMC_STOP");
 				aH->handleAction(mM->getMMCAction("MMC_STOP"));
 				break;
 			}
 
 			case 2:	// PLAY
 			{
-				pEngine->set_last_midi_event("MMC_PLAY");
+				m_engine->set_last_midi_event("MMC_PLAY");
 				aH->handleAction(mM->getMMCAction("MMC_PLAY"));
 				break;
 			}
 
 			case 3:	//DEFERRED PLAY
 			{
-				pEngine->set_last_midi_event("MMC_PLAY");
+				m_engine->set_last_midi_event("MMC_PLAY");
 				aH->handleAction(mM->getMMCAction("MMC_PLAY"));
 				break;
 			}
 
 			case 4:	// FAST FWD
-				pEngine->set_last_midi_event("MMC_FAST_FWD");
+				m_engine->set_last_midi_event("MMC_FAST_FWD");
 				aH->handleAction(mM->getMMCAction("MMC_FAST_FWD"));
 				
 				break;
 
 			case 5:	// REWIND
-				pEngine->set_last_midi_event("MMC_REWIND");
+				m_engine->set_last_midi_event("MMC_REWIND");
 				aH->handleAction(mM->getMMCAction("MMC_REWIND"));
 				break;
 
 			case 6:	// RECORD STROBE (PUNCH IN)
-				pEngine->set_last_midi_event("MMC_RECORD_STROBE");
+				m_engine->set_last_midi_event("MMC_RECORD_STROBE");
 				aH->handleAction(mM->getMMCAction("MMC_RECORD_STROBE"));
 				break;
 
 			case 7:	// RECORD EXIT (PUNCH OUT)
-				pEngine->set_last_midi_event("MMC_RECORD_EXIT");
+				m_engine->set_last_midi_event("MMC_RECORD_EXIT");
 				aH->handleAction(mM->getMMCAction("MMC_RECORD_EXIT"));
 				break;
 
 			case 9:	//PAUSE
-				pEngine->set_last_midi_event("MMC_PAUSE");
+				m_engine->set_last_midi_event("MMC_PAUSE");
 				aH->handleAction(mM->getMMCAction("MMC_PAUSE"));
 				break;
 
