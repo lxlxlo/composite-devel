@@ -111,13 +111,14 @@ void SamplerPrivate::handle_note_off(const SeqEvent& ev)
 	}
 }
 
-Sampler::Sampler() :
+Sampler::Sampler(Engine* parent) :
 		__main_out_L( 0 )
 		, __main_out_R( 0 )
 {
 	INFOLOG( "INIT" );
+	assert(parent);
 
-	d = new SamplerPrivate(this);
+	d = new SamplerPrivate(this, parent);
 
 	__main_out_L = new float[ MAX_BUFFER_SIZE ];
 	__main_out_R = new float[ MAX_BUFFER_SIZE ];
@@ -160,7 +161,7 @@ void Sampler::process( SeqScriptConstIterator beg,
 		       uint32_t nFrames )
 {
 	//infoLog( "[process]" );
-	AudioOutput* audio_output = Engine::get_instance()->get_audio_output();
+	AudioOutput* audio_output = d->engine->get_audio_output();
 	assert( audio_output );
 
 	memset( __main_out_L, 0, nFrames * sizeof( float ) );
@@ -170,7 +171,7 @@ void Sampler::process( SeqScriptConstIterator beg,
 	// audioEngine_process_clearAudioBuffers()
 
 	// Max notes limit
-	int m_nMaxNotes = Engine::get_instance()->get_preferences()->m_nMaxNotes;
+	int m_nMaxNotes = d->engine->get_preferences()->m_nMaxNotes;
 	while ( ( int )d->current_notes.size() > m_nMaxNotes ) {
 		d->current_notes.front().get_instrument()->dequeue();
 		d->current_notes.pop_front();
@@ -249,7 +250,7 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
 	if ( pInstr->is_muted() ) {                             // is instrument muted?
 		cost_L = 0.0;
 		cost_R = 0.0;
-                if ( Engine::get_instance()->get_preferences()->m_nJackTrackOutputMode == 0 ) {
+                if ( engine->get_preferences()->m_nJackTrackOutputMode == 0 ) {
 		// Post-Fader
 			cost_track_L = 0.0;
 			cost_track_R = 0.0;
@@ -266,7 +267,7 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
 		fSendFXLevel_L = cost_L;
 
 		cost_L = cost_L * pInstr->get_volume();		// instrument volume
-                if ( Engine::get_instance()->get_preferences()->m_nJackTrackOutputMode == 0 ) {
+                if ( engine->get_preferences()->m_nJackTrackOutputMode == 0 ) {
 		// Post-Fader
 			cost_track_L = cost_L * 2;
 		}
@@ -285,7 +286,7 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
 		fSendFXLevel_R = cost_R;
 
 		cost_R = cost_R * pInstr->get_volume();		// instrument volume
-                if ( Engine::get_instance()->get_preferences()->m_nJackTrackOutputMode == 0 ) {
+                if ( engine->get_preferences()->m_nJackTrackOutputMode == 0 ) {
 		// Post-Fader
 			cost_track_R = cost_R * 2;
 		}
@@ -297,7 +298,7 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
 	}
 
 	// direct track outputs only use velocity
-	if ( Engine::get_instance()->get_preferences()->m_nJackTrackOutputMode == 1 ) {
+	if ( engine->get_preferences()->m_nJackTrackOutputMode == 1 ) {
 		cost_track_L = cost_track_L * note.get_velocity();
 		cost_track_L = cost_track_L * fLayerGain;
 		cost_track_R = cost_track_L;
@@ -361,7 +362,7 @@ int SamplerPrivate::render_note_no_resample(
     float fSendFXLevel_R
 )
 {
-	AudioOutput* audio_output = Engine::get_instance()->get_audio_output();
+	AudioOutput* audio_output = engine->get_audio_output();
 	int retValue = 1; // the note is ended
 
 	int nAvail_bytes = pSample->get_n_frames() - ( int )note.m_fSamplePosition;   // verifico 
@@ -472,7 +473,7 @@ int SamplerPrivate::render_note_no_resample(
 #ifdef LADSPA_SUPPORT
 	// LADSPA
 	for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
-		LadspaFX *pFX = Engine::get_instance()->get_effects()->getLadspaFX( nFX );
+		LadspaFX *pFX = engine->get_effects()->getLadspaFX( nFX );
 
 		float fLevel = note.get_instrument()->get_fx_level( nFX );
 
@@ -518,7 +519,7 @@ int SamplerPrivate::render_note_resample(
     float fSendFXLevel_R
 )
 {
-	AudioOutput* audio_output = Engine::get_instance()->get_audio_output();
+	AudioOutput* audio_output = engine->get_audio_output();
 	float fNotePitch = note.get_pitch() + fLayerPitch;
 	fNotePitch += note.m_noteKey.m_nOctave * 12 + note.m_noteKey.m_key;
 
@@ -653,7 +654,7 @@ int SamplerPrivate::render_note_resample(
 #ifdef LADSPA_SUPPORT
 	// LADSPA
 	for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
-		LadspaFX *pFX = Engine::get_instance()->get_effects()->getLadspaFX( nFX );
+		LadspaFX *pFX = engine->get_effects()->getLadspaFX( nFX );
 		float fLevel = note.get_instrument()->get_fx_level( nFX );
 		if ( ( pFX ) && ( fLevel != 0.0 ) ) {
 			fLevel = fLevel * pFX->getVolume();
@@ -737,7 +738,7 @@ void Sampler::stop_playing_notes( Instrument* instrument )
 /// Preview, uses only the first layer
 void Sampler::preview_sample( Sample* sample, int length )
 {
-	Engine::get_instance()->lock( RIGHT_HERE );
+	d->engine->lock( RIGHT_HERE );
 
 	InstrumentLayer *pLayer = d->preview_instrument->get_layer( 0 );
 
@@ -750,7 +751,7 @@ void Sampler::preview_sample( Sample* sample, int length )
 	note_on( previewNote );
 	delete pOldSample;
 
-	Engine::get_instance()->unlock();
+	d->engine->unlock();
 }
 
 
@@ -758,7 +759,7 @@ void Sampler::preview_sample( Sample* sample, int length )
 void Sampler::preview_instrument( Instrument* instr )
 {
 	Instrument * old_preview;
-	Engine::get_instance()->lock( RIGHT_HERE );
+	d->engine->lock( RIGHT_HERE );
 
 	stop_playing_notes( d->preview_instrument );
 
@@ -768,6 +769,6 @@ void Sampler::preview_instrument( Instrument* instr )
 	Note *previewNote = new Note( d->preview_instrument, 0, 1.0, 0.5, 0.5, 0 );
 
 	note_on( previewNote );	// exclusive note
-	Engine::get_instance()->unlock();
+	d->engine->unlock();
 	delete old_preview;
 }

@@ -38,6 +38,7 @@ class Note;
 class Sample;
 class Instrument;
 class AudioOutput;
+class Engine;
 
 struct SamplerPrivate;
 struct TransportPosition;
@@ -51,7 +52,7 @@ public:
 	float *__main_out_L;	///< sampler main out (left channel)
 	float *__main_out_R;	///< sampler main out (right channel)
 
-	Sampler();
+	Sampler(Engine* parent);
 	~Sampler();
 
 	void process( SeqScriptConstIterator beg,

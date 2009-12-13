@@ -200,7 +200,7 @@ void EnginePrivate::audioEngine_init()
 #ifdef JACK_SUPPORT
 	m_jack_client = new JackClient(false);
 #endif
-	m_sampler = new Sampler();
+	m_sampler = new Sampler(m_engine);
 #ifdef LADSPA_SUPPORT
 	m_effects = new Effects(m_engine);
 #endif

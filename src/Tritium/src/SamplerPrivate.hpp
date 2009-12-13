@@ -23,6 +23,7 @@
 
 #include <Tritium/Sampler.hpp>
 #include <Tritium/Note.hpp>
+#include <cassert>
 
 namespace Tritium
 {
@@ -31,6 +32,7 @@ namespace Tritium
     struct SamplerPrivate
     {
 	Sampler& parent;
+	Engine* engine;
 	typedef std::list<Note> NoteList;
 	NoteList current_notes;                // Replaces __playing_notes_queue
 	Instrument* preview_instrument;         // Replaces __preview_instrument
@@ -38,10 +40,11 @@ namespace Tritium
 	float* track_out_L[ MAX_INSTRUMENTS ];  // Replaces __track_out_L
 	float* track_out_R[ MAX_INSTRUMENTS ];  // Replaces __track_out_R
 #endif
-	SamplerPrivate(Sampler* par) :
+	SamplerPrivate(Sampler* par, Engine* e_par) :
 	    parent( *par ),
+	    engine(e_par),
 	    preview_instrument( 0 )
-	    {}
+	    { assert(e_par); }
 
 	// Add/Remove notes from current_notes based on event 'ev'
 	void handle_event(const SeqEvent& ev);
