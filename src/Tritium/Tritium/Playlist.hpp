@@ -23,11 +23,7 @@
 #ifndef TRITIUM_PLAYLIST_HPP
 #define TRITIUM_PLAYLIST_HPP
 
-#include <QDialog>
 #include <QMutex>
-#include <Tritium/globals.hpp>
-#include <Tritium/Preferences.hpp>
-#include <Tritium/Engine.hpp>
 #include <vector>
 #include <cassert>
 
@@ -38,13 +34,14 @@ namespace Tritium
 /// handle playlist  
 ///
 
-/**
- * This class gives an interactive experience between CompositeApp and
- * the Playlist object without requiring the Playlist to have a
- * pointer to CompositeApp.
- */
+    class Engine;
     class Song;
 
+    /**
+     * This class gives an interactive experience between CompositeApp and
+     * the Playlist object without requiring the Playlist to have a
+     * pointer to CompositeApp.
+     */
     class PlaylistListener
     {
     public:
@@ -66,7 +63,7 @@ namespace Tritium
     {
         
     public:
-        Playlist();
+        Playlist(Engine* parent);
         ~Playlist();
 
         /**
@@ -92,6 +89,7 @@ namespace Tritium
         QString __playlistName;
 
     private:
+	Engine* m_engine;
         PlaylistListener* m_listener;
         QMutex m_listener_mutex;
 

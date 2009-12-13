@@ -37,9 +37,11 @@ using namespace Tritium;
 int selectedSongNumber = -1;
 int activeSongNumber = -1;
 
-Playlist::Playlist()
-	: m_listener(0)
+Playlist::Playlist(Engine* parent) :
+	m_engine(parent),
+	m_listener(0)
 {
+	assert(parent);
 	//INFOLOG( "[Playlist]" );
 	__playlistName = "";
 
@@ -67,14 +69,14 @@ void Playlist::setNextSongByNumber(int SongNumber)
 	
 	int realNumber = SongNumber;
 	
-	if ( realNumber > (int)Engine::get_instance()->get_internal_playlist().size() -1 || (int)Engine::get_instance()->get_internal_playlist().size() == 0 )
+	if ( realNumber > (int)m_engine->get_internal_playlist().size() -1 || (int)m_engine->get_internal_playlist().size() == 0 )
 		return;	
 
 	setSelectedSongNr(  realNumber );
 	setActiveSongNumber( realNumber );
 
 	QString selected;
-	selected = Engine::get_instance()->get_internal_playlist()[ realNumber ].m_hFile;
+	selected = m_engine->get_internal_playlist()[ realNumber ].m_hFile;
 
 	loadSong( selected );
 	execScript( realNumber );
@@ -100,13 +102,13 @@ void Playlist::setNextSongPlaylist()
 	}
 
 	index = index +1;
-	if ( (int) index > (int)Engine::get_instance()->get_internal_playlist().size() -1 || index < 0) 
+	if ( (int) index > (int)m_engine->get_internal_playlist().size() -1 || index < 0) 
 		return;
 	setSelectedSongNr( index );
 	setActiveSongNumber( index );
 
 	QString selected;
-	selected = Engine::get_instance()->get_internal_playlist()[ index ].m_hFile;
+	selected = m_engine->get_internal_playlist()[ index ].m_hFile;
 
 	loadSong( selected );
 	execScript( index );
@@ -139,7 +141,7 @@ void Playlist::setPrevSongPlaylist()
 	setActiveSongNumber( index );
 
 	QString selected;
-	selected = Engine::get_instance()->get_internal_playlist()[ index ].m_hFile;
+	selected = m_engine->get_internal_playlist()[ index ].m_hFile;
 
 	loadSong( selected );
 	execScript( index );
@@ -180,7 +182,7 @@ int Playlist::getActiveSongNumber()
 
 void Playlist::loadSong( QString songName )
 {
-	Engine *engine = Engine::get_instance();
+	Engine *engine = m_engine;
 	
 
 	engine->get_transport()->stop();
@@ -203,8 +205,8 @@ void Playlist::execScript( int index)
 	QString file;
 	QString script;
 
-	file = Engine::get_instance()->get_internal_playlist()[ index ].m_hScript;
-	script = Engine::get_instance()->get_internal_playlist()[ index ].m_hScriptEnabled;
+	file = m_engine->get_internal_playlist()[ index ].m_hScript;
+	script = m_engine->get_internal_playlist()[ index ].m_hScriptEnabled;
 
 	if( file == "no Script" || script == "Script not used")
 		return;

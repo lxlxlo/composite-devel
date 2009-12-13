@@ -204,7 +204,7 @@ void EnginePrivate::audioEngine_init()
 #ifdef LADSPA_SUPPORT
 	m_effects = new Effects(m_engine);
 #endif
-	m_playlist = new Playlist();
+	m_playlist = new Playlist(m_engine);
 
 	m_engine->get_event_queue()->push_event( EVENT_STATE, Engine::StateInitialized );
 
