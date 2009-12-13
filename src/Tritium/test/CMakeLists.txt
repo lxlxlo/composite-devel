@@ -12,6 +12,7 @@ IF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
   FILE(GLOB_RECURSE test_HEADERS *.h ../Tritium/*.h ../src/*.h)
 
   LIST(APPEND test_LIST
+    t_TestTemplate
     t_SeqEvent
     t_SeqScript
     t_SeqScriptPrivate

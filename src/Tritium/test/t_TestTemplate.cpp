@@ -19,11 +19,20 @@
  *
  */
 
+/**
+ * t_TestTemplate.cpp
+ *
+ * This is just the template for a test.  If the template is not
+ * executable, it will not be kept up-to-date.
+ */
+
 // YOUR INCLUDES HERE
 
 // CHANGE THIS TO MATCH YOUR FILE:
 #define THIS_NAMESPACE t_Foo
-#include "test_macros.h"
+#include "test_macros.hpp"
+
+namespace Tritium {}  // please compile! :-)
 
 using namespace Tritium;
 
@@ -49,8 +58,7 @@ TEST_CASE( 010_defaults )
 
 TEST_CASE( 020_something )
 {
-    // This will always fail:
-    CK( false );
+    CK( true );
 }
 
 TEST_END()
