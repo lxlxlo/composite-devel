@@ -29,7 +29,7 @@
 // YOUR INCLUDES HERE
 
 // CHANGE THIS TO MATCH YOUR FILE:
-#define THIS_NAMESPACE t_Foo
+#define THIS_NAMESPACE t_TestTemplate
 #include "test_macros.hpp"
 #include "test_config.hpp"
 
