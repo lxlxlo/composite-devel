@@ -38,7 +38,7 @@ using namespace Tritium;
 
 namespace THIS_NAMESPACE
 {
-    const char song_file_name[] = TEST_DATA_DIR "/t_songhelpers.h2song";
+    const char song_file_name[] = TEST_DATA_DIR "/t_Song.h2song";
 
     struct Fixture
     {

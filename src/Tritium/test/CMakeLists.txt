@@ -20,7 +20,7 @@ IF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
     t_SeqScript
     t_SeqScriptPrivate
     t_SimpleTransportMaster
-    t_songhelpers
+    t_Song
     t_TransportPosition
     t_Sample
     )
