@@ -86,9 +86,9 @@ TEST_CASE( 010_defaults )
     CK( z->get_filename() == "" );
 
     // Pattern and Instrument
-    CK( z->get_pattern_list() == 0 );
-    CK( z->get_pattern_group_vector() == 0 );
-    CK( z->get_instrument_list() == 0 );
+    CK( z->get_pattern_list()->get_size() == 0 );
+    CK( z->get_pattern_group_vector()->size() == 0 );
+    CK( z->get_instrument_list()->get_size() == 0 );
     CK( z->get_notes() == "" );
     CK( z->is_loop_enabled() == false );
     CK( z->get_humanize_time_value() == 0.0 );
@@ -97,7 +97,7 @@ TEST_CASE( 010_defaults )
     CK( z->get_mode() == Song::PATTERN_MODE );
 
     // "songhelper" methods
-    CK( z->song_bar_count() == 0 ); // XXX This segfaults, and the rest prob do, too.
+    CK( z->song_bar_count() == 0 );
     CK( z->song_tick_count() == 0 );
     CK( z->pattern_group_index_for_bar(1) == -1 );
     CK( z->bar_for_absolute_tick(0) == -1 );
@@ -192,6 +192,28 @@ TEST_CASE( 015_song_loading )
     Tritium::PatternList pl;
     s->get_playing_patterns(pl);
     CK( pl.get_size() == 1 );
+
+    // Basic instrument loading.
+    // (Detailed instrument loading should be done in a
+    // a different test.  This is t_Song.)
+    Tritium::InstrumentList *list;
+    Tritium::Instrument *inst;
+    const char* names[] = {
+	"Kick", "Stick", "Snare Jazz", "Hand Clap", "Snare Rock", "Tom Low",
+	"Closed HH", "Tom Mid", "Pedal HH", "Tom Hi", "Open HH", "Cowbell",
+	"Ride Jazz", "Crash", "Ride Rock", "Crash Jazz", "17", "18", "19",
+	"20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30",
+	"31", "32"
+    };
+    int k;
+
+    list = s->get_instrument_list();
+    CK( list->get_size() == 32 );
+    for(k=0 ; k<list->get_size() ; ++k) {
+	inst = list->get(k);
+	CK( inst != 0 );
+	CK( inst->get_name() == names[k] );
+    }
 
 }
 
