@@ -78,7 +78,10 @@ namespace Tritium
 	, song_mode( Song::PATTERN_MODE )
     {
 	INFOLOG( QString( "INIT '%1'" ).arg( name ) );
-	pat_mode = new PatternModeManager();
+	pat_mode = new PatternModeManager;
+	pattern_list = new PatternList;
+	pattern_group_sequence = new Song::pattern_group_t;
+	instrument_list = new InstrumentList;
     }
 
     Song::SongPrivate::~SongPrivate()
@@ -469,6 +472,7 @@ namespace Tritium
 	uint32_t tmp;
 
 	tmp = ticks_in_bar(bar_count);
+	if( tmp == -1 ) return -1;
 	while( tick_count >= tmp ) {
 	    tick_count -= tmp;
 	    ++bar_count;
@@ -501,6 +505,7 @@ namespace Tritium
     uint32_t Song::ticks_in_bar(uint32_t bar)
     {
 	if( bar < 1 ) return -1;
+	if( song_bar_count() < 1 ) return -1;
 	if( bar > song_bar_count() ) return -1;
 
 	PatternList* list = get_pattern_group_vector()->at(bar-1);

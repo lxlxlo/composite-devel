@@ -115,7 +115,7 @@ TEST_CASE( 010_defaults )
 
     // Metadata
     CK( w->get_name() == "empty" );
-    CK( w->get_volume() == 1.0 );
+    CK( w->get_volume() == 0.5 );
     CK( w->get_metronome_volume() == 0.5 );
     CK( w->get_mute() == false );
     CK( w->get_resolution() == 48 );
@@ -123,26 +123,26 @@ TEST_CASE( 010_defaults )
     CK( w->get_modified() == false );
     CK( w->get_author() == "Tritium" );
     CK( w->get_license() == "" );
-    CK( w->get_filename() == "" );
+    CK( w->get_filename() == "empty_song" );
 
     // Pattern and Instrument
-    CK( w->get_pattern_list() == 0 );
-    CK( w->get_pattern_group_vector() == 0 );
-    CK( w->get_instrument_list() == 0 );
+    CK( w->get_pattern_list()->get_size() == 1 );
+    CK( w->get_pattern_group_vector()->size() == 1 );
+    CK( w->get_instrument_list()->get_size() == 1 );
     CK( w->get_notes() == "..." );
     CK( w->is_loop_enabled() == false );
-    CK( w->get_humanize_time_value() == 0.0 );
-    CK( w->get_humanize_velocity_value() == 0.0 );
-    CK( w->get_swing_factor() == 0 );
+    CK( w->get_humanize_time_value() == 0.0f );
+    CK( w->get_humanize_velocity_value() == 0.0f );
+    CK( w->get_swing_factor() == 0.0f );
     CK( w->get_mode() == Song::PATTERN_MODE );
 
     // "songhelper" methods
-    CK( w->song_bar_count() == 0 );
-    CK( w->song_tick_count() == 0 );
-    CK( w->pattern_group_index_for_bar(1) == -1 );
-    CK( w->bar_for_absolute_tick(0) == -1 );
-    CK( w->bar_start_tick(1) == -1 );
-    CK( w->ticks_in_bar(1) == -1 );
+    CK( w->song_bar_count() == 1 );
+    CK( w->song_tick_count() == 192 );
+    CK( w->pattern_group_index_for_bar(1) == 0 );
+    CK( w->bar_for_absolute_tick(0) == 1 );
+    CK( w->bar_start_tick(1) == 0 );
+    CK( w->ticks_in_bar(1) == 192 );
 
     // Pattern Mode methods
     CK( w->get_pattern_mode_type() == Song::SINGLE );
@@ -165,8 +165,8 @@ TEST_CASE( 015_song_loading )
     CK( s->get_bpm() == 100.0f );
     CK( s->get_modified() == false );
     CK( s->get_author() == "Emiliano Grilli" );
-    CK( s->get_license() == "" );
-    CK( s->get_filename() == "" );
+    CK( s->get_license() == "Unknown license" );
+    CK( s->get_filename() == song_file_name );
 
     // Pattern and Instrument
     CK( s->get_pattern_list()->get_size() == 3 );
@@ -174,7 +174,7 @@ TEST_CASE( 015_song_loading )
     CK( s->get_instrument_list()->get_size() == 32 );
     CK( s->get_notes() == "Jazzy..." );
     CK( s->is_loop_enabled() == true );
-    CK( s->get_humanize_time_value() == 0.0 );
+    CK( s->get_humanize_time_value() == 0.23f );
     CK( s->get_humanize_velocity_value() == 0.23f );
     CK( s->get_swing_factor() == 0.44f );
     CK( s->get_mode() == Song::SONG_MODE );
@@ -191,7 +191,7 @@ TEST_CASE( 015_song_loading )
     CK( s->get_pattern_mode_type() == Song::SINGLE );
     Tritium::PatternList pl;
     s->get_playing_patterns(pl);
-    CK( pl.get_size() == 1 );
+    CK( pl.get_size() == 0 );
 
     // Basic instrument loading.
     // (Detailed instrument loading should be done in a
