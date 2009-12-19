@@ -23,6 +23,8 @@
 
 #include <Tritium/Song.hpp>
 #include <QString>
+#include <memory>
+
 namespace Tritium
 {
     class PatternList;
@@ -34,35 +36,35 @@ namespace Tritium
     class Song::SongPrivate
     {
     public:
-	bool is_muted;
-	unsigned resolution;		///< Resolution of the song (number of ticks per quarter)
-	float bpm;			///< Beats per minute
-	bool is_modified;
-	QString name;		///< song name
-	QString author;	///< author of the song
-	QString license;	///< license of the song
+        bool is_muted;
+        unsigned resolution;    ///< Resolution of the song (number of ticks per quarter)
+        float bpm;              ///< Beats per minute
+        bool is_modified;
+        QString name;           ///< song name
+        QString author;         ///< author of the song
+        QString license;        ///< license of the song
 
-	float volume;						///< volume of the song (0.0..1.0)
-	float metronome_volume;				///< Metronome volume
-	QString notes;
-	PatternList *pattern_list;				///< Pattern list
-	Song::pattern_group_t* pattern_group_sequence;	///< Sequence of pattern groups
-	InstrumentList *instrument_list;			///< Instrument list
-	QString filename;
-	bool is_loop_enabled;
-	float humanize_time_value;
-	float humanize_velocity_value;
-	float swing_factor;
+        float volume;                                                   ///< volume of the song (0.0..1.0)
+        float metronome_volume;                                         ///< Metronome volume
+        QString notes;
+        std::auto_ptr<PatternList> pattern_list;                        ///< Pattern list
+        std::auto_ptr<Song::pattern_group_t> pattern_group_sequence;    ///< Sequence of pattern groups
+        std::auto_ptr<InstrumentList> instrument_list;                  ///< Instrument list
+        QString filename;
+        bool is_loop_enabled;
+        float humanize_time_value;
+        float humanize_velocity_value;
+        float swing_factor;
 
-	SongMode song_mode;
+        SongMode song_mode;
 
-	PatternModeManager* pat_mode;
+	std::auto_ptr<PatternModeManager> pat_mode;
 
-	SongPrivate(const QString& name,
-		    const QString& author,
-		    float bpm,
-		    float volumne);
-	~SongPrivate();
+        SongPrivate(const QString& name,
+                    const QString& author,
+                    float bpm,
+                    float volumne);
+        ~SongPrivate();
     };
 
 } // namespace Tritium

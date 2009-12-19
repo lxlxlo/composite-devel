@@ -78,27 +78,21 @@ namespace Tritium
 	, song_mode( Song::PATTERN_MODE )
     {
 	INFOLOG( QString( "INIT '%1'" ).arg( name ) );
-	pat_mode = new PatternModeManager;
-	pattern_list = new PatternList;
-	pattern_group_sequence = new Song::pattern_group_t;
-	instrument_list = new InstrumentList;
+	pat_mode.reset( new PatternModeManager );
+	pattern_list.reset( new PatternList );
+	pattern_group_sequence.reset( new Song::pattern_group_t );
+	instrument_list.reset( new InstrumentList );
     }
 
     Song::SongPrivate::~SongPrivate()
     {
-	// delete all patterns
-	delete pattern_list;
-
-	if ( pattern_group_sequence ) {
+	if ( pattern_group_sequence.get() ) {
 	    for ( unsigned i = 0; i < pattern_group_sequence->size(); ++i ) {
 		PatternList *pPatternList = ( *pattern_group_sequence )[i];
 		pPatternList->clear();	// pulisco tutto, i pattern non vanno distrutti qua
 		delete pPatternList;
 	    }
-	    delete pattern_group_sequence;
 	}
-
-	delete instrument_list;
 
 	INFOLOG( QString( "DESTROY '%1'" ).arg( name ) );
     }
@@ -207,32 +201,32 @@ namespace Tritium
 
     PatternList* Song::get_pattern_list()
     {
-	return d->pattern_list;
+	return d->pattern_list.get();
     }
 
     void Song::set_pattern_list( PatternList *pattern_list )
     {
-	d->pattern_list = pattern_list;
+	d->pattern_list.reset( pattern_list );
     }
 
     Song::pattern_group_t* Song::get_pattern_group_vector()
     {
-	return d->pattern_group_sequence;
+	return d->pattern_group_sequence.get();
     }
 
     void Song::set_pattern_group_vector( Song::pattern_group_t* vect )
     {
-	d->pattern_group_sequence = vect;
+	d->pattern_group_sequence.reset( vect );
     }
 
     InstrumentList* Song::get_instrument_list()
     {
-	return d->instrument_list;
+	return d->instrument_list.get();
     }
 
     void Song::set_instrument_list( InstrumentList *list )
     {
-	d->instrument_list = list;
+	d->instrument_list.reset( list );
     }
 
     void Song::set_notes( const QString& notes )
