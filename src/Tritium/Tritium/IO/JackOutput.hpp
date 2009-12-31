@@ -32,8 +32,7 @@
 
 #include <Tritium/globals.hpp>
 #include <Tritium/Engine.hpp>
-
-
+#include <Tritium/memory.hpp>
 
 namespace Tritium
 {
@@ -49,7 +48,7 @@ class Engine;
 class JackOutput : public AudioOutput
 {
 public:
-	JackOutput( Engine* e_parent, JackClient* parent, JackProcessCallback processCallback, void* arg );
+	JackOutput( Engine* e_parent, T<JackClient>::shared_ptr parent, JackProcessCallback processCallback, void* arg );
 	~JackOutput();
 
 	int connect();
@@ -60,8 +59,8 @@ public:
 	int getNumTracks();
 
 	void setPortName( int nPort, bool bLeftChannel, const QString& sName );
-	void makeTrackOutputs( Song * );
-	void setTrackOutput( int, Instrument * );
+	void makeTrackOutputs( T<Song>::shared_ptr );
+	void setTrackOutput( int, T<Instrument>::shared_ptr );
 
 	void setConnectDefaults( bool flag ) {
 		connect_out_flag = flag;
@@ -79,7 +78,7 @@ public:
 
 private:
 	Tritium::Engine *m_pEngine;
-	Tritium::JackClient *m_jack_client;
+	T<JackClient>::shared_ptr m_jack_client;
 
 	JackProcessCallback processCallback;
 	void* processCallback_arg;

@@ -141,7 +141,7 @@ void Instrument::set_adsr( ADSR* adsr )
  * `placeholder` instrument (an Instrument that has everything but the
  * actual samples).
  */
-void Instrument::load_from_placeholder( Engine* engine, Instrument* placeholder, bool is_live )
+void Instrument::load_from_placeholder( Engine* engine, T<Instrument>::shared_ptr placeholder, bool is_live )
 {
     LocalFileMng mgr(engine);
     QString path =
@@ -152,10 +152,10 @@ void Instrument::load_from_placeholder( Engine* engine, Instrument* placeholder,
 	InstrumentLayer *pNewLayer = placeholder->get_layer( nLayer );
 	if ( pNewLayer != NULL ) {
 	    // this is a 'placeholder sample:
-	    Sample *pNewSample = pNewLayer->get_sample();
+	    T<Sample>::shared_ptr pNewSample = pNewLayer->get_sample();
 			
 	    // now we load the actal data:
-	    Sample *pSample = Sample::load( path + pNewSample->get_filename() );
+	    T<Sample>::shared_ptr pSample = Sample::load( path + pNewSample->get_filename() );
 	    InstrumentLayer *pOldLayer = this->get_layer( nLayer );
 
 	    if ( pSample == NULL ) {
@@ -223,21 +223,21 @@ void Instrument::load_from_placeholder( Engine* engine, Instrument* placeholder,
 /**
  * \brief Create a new Instrument without anything in it.
  */
-Instrument * Instrument::create_empty()
+T<Instrument>::shared_ptr Instrument::create_empty()
 {
-    return new Instrument( "", "Empty Instrument", new ADSR() );
+    return T<Instrument>::shared_ptr( new Instrument( "", "Empty Instrument", new ADSR() ) );
 }
 
 /**
  * \brief Create a new Instrument and load samples from the drumkit/instrument.
  */
-Instrument * Instrument::load_instrument(
+T<Instrument>::shared_ptr Instrument::load_instrument(
     Engine* engine,
     const QString& drumkit_name,
     const QString& instrument_name
     )
 {
-    Instrument * I = create_empty();
+    T<Instrument>::shared_ptr I = create_empty();
     I->load_from_name( engine, drumkit_name, instrument_name, false );
     return I;
 }
@@ -252,7 +252,7 @@ void Instrument::load_from_name(
     bool is_live
     )
 {
-    Instrument * pInstr = NULL;
+    T<Instrument>::shared_ptr pInstr;
 	
     LocalFileMng mgr(engine);
     QString sDrumkitPath = mgr.getDrumkitDirectory( drumkit_name );
@@ -261,7 +261,7 @@ void Instrument::load_from_name(
     QString drdir = mgr.getDrumkitDirectory( drumkit_name ) + drumkit_name;
     if ( !QDir( drdir ).exists() )
 	return;
-    Drumkit *pDrumkitInfo = mgr.loadDrumkit( drdir );
+    T<Drumkit>::shared_ptr pDrumkitInfo = mgr.loadDrumkit( drdir );
     assert( pDrumkitInfo );
 
     // find the instrument
@@ -273,10 +273,10 @@ void Instrument::load_from_name(
 	}
     }
 	
-    if ( pInstr != NULL ) {
+    if ( pInstr ) {
 	load_from_placeholder( engine, pInstr, is_live );
     }
-    delete pDrumkitInfo;
+    pDrumkitInfo.reset();
 }
 
 void Instrument::set_name( const QString& name )

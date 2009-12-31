@@ -24,6 +24,7 @@
 
 #include "../EventListener.hpp"
 
+#include <Tritium/memory.hpp>
 #include <QtGui>
 
 class PatternEditorPanel;
@@ -67,7 +68,7 @@ class PatternEditorRuler : public QWidget, public EventListener
 		QTimer *m_pTimer;
 		int m_nTicks;
 		PatternEditorPanel *m_pPatternEditorPanel;
-		Tritium::Pattern *m_pPattern;
+		Tritium::T<Tritium::Pattern>::shared_ptr m_pPattern;
 
 		// Implements EventListener interface
 		virtual void selectedPatternChangedEvent();

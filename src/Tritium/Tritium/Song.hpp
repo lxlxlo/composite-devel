@@ -27,6 +27,7 @@
 #include <deque>
 #include <map>
 #include <stdint.h>
+#include <Tritium/memory.hpp>
 
 namespace Tritium
 {
@@ -56,8 +57,8 @@ public:
 	SONG_MODE
     };
 
-    static Song* get_empty_song(Engine* engine);
-    static Song* get_default_song(Engine* engine);
+    static T<Song>::shared_ptr get_empty_song(Engine* engine);
+    static T<Song>::shared_ptr get_default_song(Engine* engine);
 
     Song( const QString& name, const QString& author, float bpm, float volume );
     ~Song();
@@ -66,7 +67,7 @@ public:
        Remove all the notes in the song that play on instrument I.
        The function is real-time safe (it locks the audio data while deleting notes)
     */
-    void purge_instrument( Instrument* I, Engine* engine );
+    void purge_instrument( T<Instrument>::shared_ptr I, Engine* engine );
 
     void set_volume( float volume );
     float get_volume();
@@ -97,7 +98,7 @@ public:
     pattern_group_t* get_pattern_group_vector();
     void set_pattern_group_vector( pattern_group_t* vect );
 
-    static Song* load( Engine* engine, const QString& sFilename );
+    static T<Song>::shared_ptr load( Engine* engine, const QString& sFilename );
     bool save( Engine* engine, const QString& sFilename );
 
     InstrumentList* get_instrument_list();

@@ -41,6 +41,8 @@
 #include <Tritium/IO/JackOutput.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/JackTimeMasterEvents.hpp>
+#include <Tritium/memory.hpp>
+
 using namespace Tritium;
 
 
@@ -453,7 +455,7 @@ PlayerControl::~PlayerControl() {
 
 void PlayerControl::updatePlayerControl()
 {
-	Preferences *pPref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pPref = g_engine->get_preferences();
 	CompositeApp *pH2App = CompositeApp::get_instance();
 	m_pShowMixerBtn->setPressed( pH2App->getMixer()->isVisible() );
 	m_pShowInstrumentRackBtn->setPressed( pH2App->getInstrumentRack()->isVisible() );
@@ -466,7 +468,7 @@ void PlayerControl::updatePlayerControl()
 		m_pPlayBtn->setPressed(false);
 	}
 
-	Song *song = m_pEngine->getSong();
+	T<Song>::shared_ptr song = m_pEngine->getSong();
 
 	m_pSongLoopBtn->setPressed( song->is_loop_enabled() );
 
@@ -641,7 +643,7 @@ void PlayerControl::stopBtnClicked(Button* /*ref*/)
 /// Switch mode
 void PlayerControl::switchModeBtnClicked(Button* /*ref*/)
 {
-	Song *song = m_pEngine->getSong();
+	T<Song>::shared_ptr song = m_pEngine->getSong();
 
 	m_pEngine->sequencer_stop();
 	m_pEngine->setPatternPos( 0 );	// from start
@@ -710,7 +712,7 @@ void PlayerControl::bpmChanged() {
 //beatcounter
 void PlayerControl::bconoffBtnClicked( Button* )
 {
-	Preferences *pPref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pPref = g_engine->get_preferences();
 	if (m_pBConoffBtn->isPressed()) {
 		pPref->m_bbc = Preferences::BC_ON;
 		(CompositeApp::get_instance())->setStatusBarMessage(trUtf8(" BC Panel on"), 5000);
@@ -727,7 +729,7 @@ void PlayerControl::bconoffBtnClicked( Button* )
 
 void PlayerControl::bcSetPlayBtnClicked( Button* )
 {
-	Preferences *pPref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pPref = g_engine->get_preferences();
 	if (m_pBCSetPlayBtn->isPressed()) {
 		pPref->m_mmcsetplay = Preferences::SET_PLAY_ON;
 		(CompositeApp::get_instance())->setStatusBarMessage(trUtf8(" Count BPM and start PLAY"), 5000);
@@ -803,7 +805,7 @@ void PlayerControl::bctButtonClicked( Button* tBtn)
 
 void PlayerControl::jackTransportBtnClicked( Button* )
 {
-	Preferences *pPref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pPref = g_engine->get_preferences();
 
 	if (m_pJackTransportBtn->isPressed()) {
 		g_engine->lock( RIGHT_HERE );
@@ -840,7 +842,7 @@ void PlayerControl::jackTimeMasterEvent( int data )
 void PlayerControl::jackMasterBtnClicked( Button* )
 {	
 #ifdef JACK_SUPPORT
-	Preferences *pPref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pPref = g_engine->get_preferences();
 
 	// This function just manipulates the Engine.
 	// The widget updates itself by the EventListener
@@ -935,7 +937,7 @@ void PlayerControl::RewindBtnClicked( Button* )
 void PlayerControl::songLoopBtnClicked( Button* )
 {
 	Engine *pEngine = g_engine;
-	Song *song = pEngine->getSong();
+	T<Song>::shared_ptr song = pEngine->getSong();
 	song->set_loop_enabled( ! song->is_loop_enabled() );
 	song->set_modified( true );
 

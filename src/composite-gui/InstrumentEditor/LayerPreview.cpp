@@ -38,7 +38,7 @@ using namespace Tritium;
 
 LayerPreview::LayerPreview( QWidget* pParent )
  : QWidget( pParent )
- , m_pInstrument( NULL )
+ , m_pInstrument()
  , m_nSelectedLayer( 0 )
  , m_bMouseGrab( false )
 {
@@ -141,7 +141,7 @@ void LayerPreview::paintEvent(QPaintEvent *ev)
 void LayerPreview::selectedInstrumentChangedEvent()
 {
 	g_engine->lock( RIGHT_HERE );
-	Song *pSong = g_engine->getSong();
+	T<Song>::shared_ptr pSong = g_engine->getSong();
 	if (pSong != NULL) {
 		InstrumentList *pInstrList = pSong->get_instrument_list();
 		int nInstr = g_engine->getSelectedInstrumentNumber();
@@ -150,14 +150,14 @@ void LayerPreview::selectedInstrumentChangedEvent()
 		}
 
 		if (nInstr == -1) {
-			m_pInstrument = NULL;
+			m_pInstrument.reset();
 		}
 		else {
 			m_pInstrument = pInstrList->get( nInstr );
 		}
 	}
 	else {
-		m_pInstrument = NULL;
+		m_pInstrument.reset();
 	}
 	g_engine->unlock();
 

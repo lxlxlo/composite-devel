@@ -35,6 +35,8 @@
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/Logger.hpp>
+#include <Tritium/memory.hpp>
+
 using namespace Tritium;
 
 #include "../CompositeApp.hpp"
@@ -51,7 +53,7 @@ using namespace Tritium;
 
 InstrumentEditor::InstrumentEditor( QWidget* pParent )
  : QWidget( pParent )
- , m_pInstrument( NULL )
+ , m_pInstrument()
  , m_nSelectedLayer( 0 )
 {
 	setFixedWidth( 290 );
@@ -338,7 +340,7 @@ void InstrumentEditor::selectedInstrumentChangedEvent()
 {
 	g_engine->lock( RIGHT_HERE );
 
-	Song *pSong = g_engine->getSong();
+	T<Song>::shared_ptr pSong = g_engine->getSong();
 	if (pSong != NULL) {
 		InstrumentList *pInstrList = pSong->get_instrument_list();
 		int nInstr = g_engine->getSelectedInstrumentNumber();
@@ -347,7 +349,7 @@ void InstrumentEditor::selectedInstrumentChangedEvent()
 		}
 
 		if (nInstr == -1) {
-			m_pInstrument = NULL;
+			m_pInstrument.reset();
 		}
 		else {
 			m_pInstrument = pInstrList->get( nInstr );
@@ -355,7 +357,7 @@ void InstrumentEditor::selectedInstrumentChangedEvent()
 		}
 	}
 	else {
-		m_pInstrument = NULL;
+		m_pInstrument.reset();
 	}
 	g_engine->unlock();
 
@@ -603,12 +605,12 @@ void InstrumentEditor::loadLayer()
 		{
 			if( i-2 >= MAX_LAYERS ) break;
 
-			Sample *newSample = Sample::load( filename[i] );
+			T<Sample>::shared_ptr newSample = Sample::load( filename[i] );
 	
-			Tritium::Instrument *pInstr = NULL;
+			T<Instrument>::shared_ptr pInstr;
 	
 			g_engine->lock( RIGHT_HERE );
-			Song *song = engine->getSong();
+			T<Song>::shared_ptr song = engine->getSong();
 			InstrumentList *instrList = song->get_instrument_list();
 			pInstr = instrList->get( engine->getSelectedInstrumentNumber() );
 	
@@ -622,11 +624,7 @@ void InstrumentEditor::loadLayer()
 			
 			Tritium::InstrumentLayer *pLayer = pInstr->get_layer( selectedLayer );
 			if (pLayer != NULL) {
-				// delete old sample
-				Sample *oldSample = pLayer->get_sample();
-				delete oldSample;
-	
-				// insert new sample from newInstrument
+				// overwrite sample from newInstrument
 				pLayer->set_sample( newSample );
 			}
 			else {

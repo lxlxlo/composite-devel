@@ -94,14 +94,14 @@ SongReader::~SongReader()
 /// Reads a song.
 /// return NULL = error reading song file.
 ///
-Song* SongReader::readSong( Engine* engine, const QString& filename )
+T<Song>::shared_ptr SongReader::readSong( Engine* engine, const QString& filename )
 {
     INFOLOG( filename );
-    Song* song = NULL;
+    T<Song>::shared_ptr song;
 
     if (QFile( filename ).exists() == false ) {
 	ERRORLOG( "Song file " + filename + " not found." );
-	return NULL;
+	return song;
     }
 
     QDomDocument doc = LocalFileMng::openXmlDocument( filename );
@@ -110,7 +110,7 @@ Song* SongReader::readSong( Engine* engine, const QString& filename )
 
     if( nodeList.isEmpty() ){
 	ERRORLOG( "Error reading song: song node not found" );
-	return NULL;
+	return song;
     }
 
     QDomNode songNode = nodeList.at(0);
@@ -145,7 +145,7 @@ Song* SongReader::readSong( Engine* engine, const QString& filename )
     float fHumanizeVelocityValue = LocalFileMng::readXmlFloat( songNode, "humanize_velocity", 0.0 );
     float fSwingFactor = LocalFileMng::readXmlFloat( songNode, "swing_factor", 0.0 );
 
-    song = new Song( sName, sAuthor, fBpm, fVolume );
+    song.reset( new Song( sName, sAuthor, fBpm, fVolume ) );
     song->set_metronome_volume( fMetronomeVolume );
     song->set_notes( sNotes );
     song->set_license( sLicense );
@@ -214,7 +214,7 @@ Song* SongReader::readSong( Engine* engine, const QString& filename )
 
 
 	    // create a new instrument
-	    Instrument *pInstrument = new Instrument( sId, sName, new ADSR( fAttack, fDecay, fSustain, fRelease ) );
+	    T<Instrument>::shared_ptr pInstrument( new Instrument( sId, sName, new ADSR( fAttack, fDecay, fSustain, fRelease ) ) );
 	    pInstrument->set_volume( fVolume );
 	    pInstrument->set_muted( bIsMuted );
 	    pInstrument->set_pan_l( fPan_L );
@@ -249,7 +249,7 @@ Song* SongReader::readSong( Engine* engine, const QString& filename )
 		if ( !drumkitPath.isEmpty() ) {
 		    sFilename = drumkitPath + "/" + sFilename;
 		}
-		Sample *pSample = Sample::load( sFilename );
+		T<Sample>::shared_ptr pSample = Sample::load( sFilename );
 		if ( pSample == NULL ) {
 		    // nel passaggio tra 0.8.2 e 0.9.0 il drumkit di default e' cambiato.
 		    // Se fallisce provo a caricare il corrispettivo file in formato flac
@@ -283,7 +283,7 @@ Song* SongReader::readSong( Engine* engine, const QString& filename )
 		    if ( !drumkitPath.isEmpty() ) {
 			sFilename = drumkitPath + "/" + sFilename;
 		    }
-		    Sample *pSample = Sample::load( sFilename );
+		    T<Sample>::shared_ptr pSample = Sample::load( sFilename );
 		    if ( pSample == NULL ) {
 			ERRORLOG( "Error loading sample: " + sFilename + " not found" );
 			pInstrument->set_muted( true );
@@ -309,8 +309,8 @@ Song* SongReader::readSong( Engine* engine, const QString& filename )
 	song->set_instrument_list( instrumentList );
     } else {
 	ERRORLOG( "Error reading song: instrumentList node not found" );
-	delete song;
-	return NULL;
+	song.reset();
+	return song;
     }
 
 
@@ -324,14 +324,14 @@ Song* SongReader::readSong( Engine* engine, const QString& filename )
     QDomNode patternNode =  patterns.firstChildElement( "pattern" );
     while (  !patternNode.isNull()  ) {
 	pattern_count++;
-	Pattern *pat = getPattern( patternNode, instrumentList );
+	T<Pattern>::shared_ptr pat = getPattern( patternNode, instrumentList );
 	if ( pat ) {
 	    patternList->add( pat );
 	} else {
 	    ERRORLOG( "Error loading pattern" );
 	    delete patternList;
-	    delete song;
-	    return NULL;
+	    song.reset();
+	    return song;
 	}
 	patternNode = ( QDomNode ) patternNode.nextSiblingElement( "pattern" );
     }
@@ -355,9 +355,9 @@ Song* SongReader::readSong( Engine* engine, const QString& filename )
 	QString patId = pPatternIDNode.firstChildElement().text();
 	ERRORLOG(patId);
 
-	Pattern *pat = NULL;
+	T<Pattern>::shared_ptr pat;
 	for ( unsigned i = 0; i < patternList->get_size(); i++ ) {
-	    Pattern *tmp = patternList->get( i );
+	    T<Pattern>::shared_ptr tmp = patternList->get( i );
 	    if ( tmp ) {
 		if ( tmp->get_name() == patId ) {
 		    pat = tmp;
@@ -384,9 +384,9 @@ Song* SongReader::readSong( Engine* engine, const QString& filename )
 	while (  !patternId.isNull()  ) {
 	    QString patId = patternId.firstChild().nodeValue();
 
-	    Pattern *pat = NULL;
+	    T<Pattern>::shared_ptr pat;
 	    for ( unsigned i = 0; i < patternList->get_size(); i++ ) {
-		Pattern *tmp = patternList->get( i );
+		T<Pattern>::shared_ptr tmp = patternList->get( i );
 		if ( tmp ) {
 		    if ( tmp->get_name() == patId ) {
 			pat = tmp;
@@ -414,7 +414,7 @@ Song* SongReader::readSong( Engine* engine, const QString& filename )
     for ( int fx = 0; fx < MAX_FX; ++fx ) {
 	//LadspaFX* pFX = engine->get_effects()->getLadspaFX( fx );
 	//delete pFX;
-	engine->get_effects()->setLadspaFX( NULL, fx );
+	engine->get_effects()->setLadspaFX( T<LadspaFX>::shared_ptr(), fx );
     }
 #endif
 	
@@ -432,7 +432,7 @@ Song* SongReader::readSong( Engine* engine, const QString& filename )
 	    if ( sName != "no plugin" ) {
 		// FIXME: il caricamento va fatto fare all'engine, solo lui sa il samplerate esatto
 #ifdef LADSPA_SUPPORT
-		LadspaFX* pFX = LadspaFX::load( sFilename, sName, 44100 );
+		T<LadspaFX>::shared_ptr pFX = LadspaFX::load( sFilename, sName, 44100 );
 		engine->get_effects()->setLadspaFX( pFX, nFX );
 		if ( pFX ) {
 		    pFX->setEnabled( bEnabled );
@@ -476,9 +476,9 @@ Song* SongReader::readSong( Engine* engine, const QString& filename )
 
 
 
-Pattern* SongReader::getPattern( QDomNode pattern, InstrumentList* instrList )
+T<Pattern>::shared_ptr SongReader::getPattern( QDomNode pattern, InstrumentList* instrList )
 {
-    Pattern *pPattern = NULL;
+    T<Pattern>::shared_ptr pPattern;
 
     QString sName;	// name
     sName = LocalFileMng::readXmlString( pattern, "name", sName );
@@ -488,7 +488,7 @@ Pattern* SongReader::getPattern( QDomNode pattern, InstrumentList* instrList )
     int nSize = -1;
     nSize = LocalFileMng::readXmlInt( pattern, "size", nSize, false, false );
 
-    pPattern = new Pattern( sName, sCategory, nSize );
+    pPattern.reset( new Pattern( sName, sCategory, nSize ) );
 
 
 
@@ -511,10 +511,10 @@ Pattern* SongReader::getPattern( QDomNode pattern, InstrumentList* instrList )
 
 	    QString instrId = LocalFileMng::readXmlString( noteNode, "instrument", "" );
 
-	    Instrument *instrRef = NULL;
+	    T<Instrument>::shared_ptr instrRef;
 	    // search instrument by ref
 	    for ( unsigned i = 0; i < instrList->get_size(); i++ ) {
-		Instrument *instr = instrList->get( i );
+		T<Instrument>::shared_ptr instr = instrList->get( i );
 		if ( instrId == instr->get_id() ) {
 		    instrRef = instr;
 		    break;
@@ -557,10 +557,10 @@ Pattern* SongReader::getPattern( QDomNode pattern, InstrumentList* instrList )
 
 		QString instrId = LocalFileMng::readXmlString( noteNode, "instrument", "" );
 
-		Instrument *instrRef = NULL;
+		T<Instrument>::shared_ptr instrRef;
 		// search instrument by ref
 		for ( unsigned i = 0; i < instrList->get_size(); i++ ) {
-		    Instrument *instr = instrList->get( i );
+		    T<Instrument>::shared_ptr instr = instrList->get( i );
 		    if ( instrId == instr->get_id() ) {
 			instrRef = instr;
 			break;

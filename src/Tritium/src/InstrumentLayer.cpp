@@ -38,7 +38,7 @@ using namespace Tritium;
  *               class will take ownership of it, including deleting
  *               it.
  */
-InstrumentLayer::InstrumentLayer( Sample *sample )
+InstrumentLayer::InstrumentLayer( T<Sample>::shared_ptr sample )
     : m_velocity_range(0.0, 1.0)
     , m_pitch( 0.0 )
     , m_gain( 1.0 )
@@ -48,8 +48,6 @@ InstrumentLayer::InstrumentLayer( Sample *sample )
 
 InstrumentLayer::~InstrumentLayer()
 {
-    delete m_sample;
-    m_sample = 0;
 }
 
 /**
@@ -219,8 +217,8 @@ float InstrumentLayer::get_gain() {
  *
  * \return Nothing.
  */
-void InstrumentLayer::set_sample( Sample* sample ) {
-    delete m_sample;
+void InstrumentLayer::set_sample( T<Sample>::shared_ptr sample )
+{
     m_sample = sample;
 }
 
@@ -230,6 +228,7 @@ void InstrumentLayer::set_sample( Sample* sample ) {
  * \return Pointer to a Tritium::Sample object, or 0 if there is not
  *         currently a sample loaded.
  */
-Sample* InstrumentLayer::get_sample() {
+T<Sample>::shared_ptr InstrumentLayer::get_sample()
+{
     return m_sample;
 }

@@ -33,6 +33,7 @@
 #include <Tritium/Transport.hpp>
 #include <Tritium/Playlist.hpp>
 #include <Tritium/Logger.hpp>
+#include <Tritium/memory.hpp>
 
 #include "../widgets/Button.hpp"
 
@@ -291,7 +292,7 @@ void PlaylistDialog::addSong()
 
 void PlaylistDialog::addCurrentSong()
 {
-	Song *song = g_engine->getSong();
+	T<Song>::shared_ptr song = g_engine->getSong();
 	QString filename = song->get_filename();
 	
 
@@ -426,7 +427,7 @@ void PlaylistDialog::loadList()
 void PlaylistDialog::newScript()
 {
 
-	Preferences *pPref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pPref = g_engine->get_preferences();
 
 	QString sDirectory = ( g_engine->get_preferences()->getDataDirectory()  + "scripts/");
 	std::auto_ptr<QFileDialog> fd( new QFileDialog );
@@ -622,7 +623,7 @@ void PlaylistDialog::removeScript()
 
 void PlaylistDialog::editScript()
 {
-	Preferences *pPref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pPref = g_engine->get_preferences();
 	if( pPref->getDefaultEditor().isEmpty() ){
 		QMessageBox::information ( this, "Composite", trUtf8 ( "No Default Editor Set. Please set your Default Editor\nDo not use a console based Editor\nSorry, but this will not work for the moment." ) );
 
@@ -768,7 +769,7 @@ void PlaylistDialog::nodePlayBTN( Button* ref )
 		QString selected = "";
 		selected = m_pPlaylistItem->text ( 0 );
 
-		Transport* xport = engine->get_transport();
+		T<Transport>::shared_ptr xport = engine->get_transport();
 		if( selected == engine->getSong()->get_filename()){
 			xport->start();
 			return;	
@@ -779,7 +780,7 @@ void PlaylistDialog::nodePlayBTN( Button* ref )
 		}
 	
 		LocalFileMng mng(g_engine);
-		Song *pSong = Song::load ( g_engine, selected );
+		T<Song>::shared_ptr pSong = Song::load ( g_engine, selected );
 		if ( pSong == NULL ){
 			QMessageBox::information ( this, "Composite", trUtf8 ( "Error loading song." ) );
 			m_pPlayBtn->setPressed(false);
@@ -849,7 +850,7 @@ void PlaylistDialog::on_m_pPlaylistTree_itemDoubleClicked ()
 	m_pPlayBtn->setPressed(false);
 
 	LocalFileMng mng(g_engine);
-	Song *pSong = Song::load ( g_engine, selected );
+	T<Song>::shared_ptr pSong = Song::load ( g_engine, selected );
 	if ( pSong == NULL ){
 		QMessageBox::information ( this, "Composite", trUtf8 ( "Error loading song." ) );
 		return;

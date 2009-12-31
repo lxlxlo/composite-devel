@@ -50,23 +50,27 @@ namespace THIS_NAMESPACE
 	    float vel;
 	};
 
-	SeqScript x; // Simple object.
+	T<SeqScript>::auto_ptr x_ptr; // Simple object.
+	SeqScript& x;
 	// Need a more complex object with random insertion.
 
-	std::auto_ptr<Instrument> inst_refs[3];
+	T<Instrument>::shared_ptr inst_refs[3];
 	const size_t x_pat_size;
 	pat_t* x_pat;  // null terminated.
 
-	Fixture() : x_pat_size(8) {
+	Fixture() : x_pat_size(8),
+		    x_ptr(new SeqScript),
+		    x(*x_ptr)
+	    {
 	    Logger::create_instance();
 	    /*------------------------------------------
 	     * Initialize dummy instruments
 	     *------------------------------------------
 	     */
 
-	    inst_refs[0].reset( Instrument::create_empty() );
-	    inst_refs[1].reset( Instrument::create_empty() );
-	    inst_refs[2].reset( Instrument::create_empty() );
+	    inst_refs[0] = Instrument::create_empty();
+	    inst_refs[1] = Instrument::create_empty();
+	    inst_refs[2] = Instrument::create_empty();
 
 	    /*------------------------------------------
 	     * Initialize master pattern
@@ -107,7 +111,7 @@ namespace THIS_NAMESPACE
 		int p = k % x_pat_size;
 		tmp.frame = x_pat[p].frame + 96000 * (k/x_pat_size);
 		tmp.type = (x_pat[p].on_off) ? SeqEvent::NOTE_ON : SeqEvent::NOTE_OFF;
-		tmp.note.set_instrument( inst_refs[ x_pat[p].inst ].get() );
+		tmp.note.set_instrument( inst_refs[ x_pat[p].inst ] );
 		tmp.note.set_velocity(x_pat[p].vel);
 		tmp.instrument_index = x_pat[p].inst;
 		x.insert(tmp);
@@ -117,6 +121,11 @@ namespace THIS_NAMESPACE
 
 	~Fixture() {
 	    delete[] x_pat;
+	    delete Logger::get_instance();
+	    x_ptr.reset();
+	    CK( inst_refs[0].use_count() == 1 );
+	    CK( inst_refs[1].use_count() == 1 );
+	    CK( inst_refs[2].use_count() == 1 );
 	}
     };
 
@@ -230,7 +239,7 @@ TEST_CASE( 040_check_contents )
 	    }
 	    CK( cur->frame == x_pat[k].frame + frame );
 	    CK( cur->type == ((x_pat[k].on_off) ? SeqEvent::NOTE_ON : SeqEvent::NOTE_OFF) );
-	    CK( cur->note.get_instrument() == inst_refs[ x_pat[k].inst ].get() );
+	    CK( cur->note.get_instrument() == inst_refs[ x_pat[k].inst ] );
 	    CK( cur->note.get_velocity() == x_pat[k].vel );
 	    CK( cur->instrument_index == x_pat[k].inst );
 	    ++cur;

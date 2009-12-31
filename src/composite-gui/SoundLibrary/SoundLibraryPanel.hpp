@@ -27,6 +27,7 @@
 #include <QtGui>
 
 #include <vector>
+#include <Tritium/memory.hpp>
 
 namespace Tritium
 {
@@ -82,8 +83,8 @@ private:
 	QTreeWidgetItem* __pattern_item;
 	QTreeWidgetItem* __pattern_item_list;
 
-	std::vector<Tritium::Drumkit*> __system_drumkit_info_list;
-	std::vector<Tritium::Drumkit*> __user_drumkit_info_list;
+	std::vector< Tritium::T<Tritium::Drumkit>::shared_ptr > __system_drumkit_info_list;
+	std::vector< Tritium::T<Tritium::Drumkit>::shared_ptr > __user_drumkit_info_list;
 	bool __expand_pattern_list;
 	bool __expand_songs_list;
 	void restore_background_color();

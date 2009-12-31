@@ -32,6 +32,7 @@
 #include <Tritium/ADSR.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Logger.hpp>
+#include <Tritium/memory.hpp>
 
 #include <cstdlib>
 
@@ -82,7 +83,7 @@ Drumkit::~Drumkit()
 
 
 
-Drumkit* Drumkit::load( Engine* eng, const QString& sFilename )
+T<Drumkit>::shared_ptr Drumkit::load( Engine* eng, const QString& sFilename )
 {
 	LocalFileMng mng(eng);
 	return mng.loadDrumkit( sFilename );
@@ -116,7 +117,7 @@ void Drumkit::dump()
 
 	INFOLOG( "\t|- Instrument list" );
 	for ( unsigned nInstrument = 0; nInstrument < m_pInstrumentList->get_size(); ++nInstrument ) {
-		Instrument *pInstr = m_pInstrumentList->get( nInstrument );
+		T<Instrument>::shared_ptr pInstr = m_pInstrumentList->get( nInstrument );
 		INFOLOG( QString("\t\t|- (%1 of %2) Name = %3")
 			 .arg( nInstrument )
 			 .arg( m_pInstrumentList->get_size() )
@@ -125,7 +126,7 @@ void Drumkit::dump()
 		for ( unsigned nLayer = 0; nLayer < MAX_LAYERS; ++nLayer ) {
 			InstrumentLayer *pLayer = pInstr->get_layer( nLayer );
 			if ( pLayer ) {
-				Sample *pSample = pLayer->get_sample();
+				T<Sample>::shared_ptr pSample = pLayer->get_sample();
 				if ( pSample ) {
 					INFOLOG( "\t\t   |- " + pSample->get_filename() );
 				} else {
@@ -240,19 +241,19 @@ void Drumkit::save( Engine* engine, const QString& sName, const QString& sAuthor
 {
 	INFOLOG( "Saving drumkit" );
 
-	Drumkit *pDrumkitInfo = new Drumkit();
+	T<Drumkit>::shared_ptr pDrumkitInfo( new Drumkit );
 	pDrumkitInfo->setName( sName );
 	pDrumkitInfo->setAuthor( sAuthor );
 	pDrumkitInfo->setInfo( sInfo );
 	pDrumkitInfo->setLicense( sLicense );
 
-	Song *pSong = engine->getSong();
+	T<Song>::shared_ptr pSong = engine->getSong();
 	InstrumentList *pSongInstrList = pSong->get_instrument_list();
 	InstrumentList *pInstrumentList = new InstrumentList();
 
 	for ( uint nInstrument = 0; nInstrument < pSongInstrList->get_size(); nInstrument++ ) {
-		Instrument *pOldInstr = pSongInstrList->get( nInstrument );
-		Instrument *pNewInstr = new Instrument( pOldInstr->get_id(), pOldInstr->get_name(), new ADSR( *( pOldInstr->get_adsr() ) ) );
+		T<Instrument>::shared_ptr pOldInstr = pSongInstrList->get( nInstrument );
+		T<Instrument>::shared_ptr pNewInstr( new Instrument( pOldInstr->get_id(), pOldInstr->get_name(), new ADSR( *( pOldInstr->get_adsr() ) ) ) );
 		pNewInstr->set_gain( pOldInstr->get_gain() );
 		pNewInstr->set_volume( pOldInstr->get_volume() );
 		pNewInstr->set_pan_l( pOldInstr->get_pan_l() );
@@ -271,9 +272,9 @@ void Drumkit::save( Engine* engine, const QString& sName, const QString& sAuthor
 		for ( unsigned nLayer = 0; nLayer < MAX_LAYERS; nLayer++ ) {
 			InstrumentLayer *pOldLayer = pOldInstr->get_layer( nLayer );
 			if ( pOldLayer ) {
-				Sample *pSample = pOldLayer->get_sample();
-
-				Sample *pNewSample = new Sample( 0, pSample->get_filename(), 0 );	// is not a real sample, it contains only the filename information
+				T<Sample>::shared_ptr pSample = pOldLayer->get_sample();
+				// Following is not a real sample, it contains only the filename information
+				T<Sample>::shared_ptr pNewSample( new Sample( 0, pSample->get_filename(), 0 ) );
 				InstrumentLayer *pLayer = new InstrumentLayer( pNewSample );
 				pLayer->set_gain( pOldLayer->get_gain() );
 				pLayer->set_pitch( pOldLayer->get_pitch() );
@@ -297,9 +298,7 @@ void Drumkit::save( Engine* engine, const QString& sName, const QString& sAuthor
 	}
 
 	// delete the drumkit info
-	delete pDrumkitInfo;
-	pDrumkitInfo = NULL;
-
+	pDrumkitInfo.reset();
 }
 
 

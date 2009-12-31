@@ -22,6 +22,7 @@
 #include "../src/SeqScriptPrivate.hpp"
 #include <Tritium/Instrument.hpp>
 #include <Tritium/Logger.hpp>
+#include <Tritium/memory.hpp>
 #include <vector>
 #include <memory>
 #include <map>
@@ -45,24 +46,32 @@ namespace THIS_NAMESPACE
 	    float vel;
 	};
 
-	SeqScriptPrivate x; // Simple object
-	SeqScriptPrivate r; // same as 'x' but randomly inserted
+
+	T<SeqScriptPrivate>::auto_ptr x_ptr;
+	SeqScriptPrivate& x; // Simple object
+	T<SeqScriptPrivate>::auto_ptr r_ptr;
+	SeqScriptPrivate& r; // same as 'x' but randomly inserted
 	// Need a more complex object with random insertion.
 
-	std::auto_ptr<Instrument> inst_refs[3];
+	T<Instrument>::shared_ptr inst_refs[3];
 	const size_t x_pat_size;
 	pat_t* x_pat;
 
-	Fixture() : x_pat_size(8) {
+	Fixture() :
+	    x_ptr( new SeqScriptPrivate ),
+	    x( *x_ptr ),
+	    r_ptr( new SeqScriptPrivate ),
+	    r( *r_ptr ),
+	    x_pat_size(8) {
 	    Logger::create_instance();
 	    /*------------------------------------------
 	     * Initialize dummy instruments
 	     *------------------------------------------
 	     */
 
-	    inst_refs[0].reset( Instrument::create_empty() );
-	    inst_refs[1].reset( Instrument::create_empty() );
-	    inst_refs[2].reset( Instrument::create_empty() );
+	    inst_refs[0] = Instrument::create_empty();
+	    inst_refs[1] = Instrument::create_empty();
+	    inst_refs[2] = Instrument::create_empty();
 
 	    /*------------------------------------------
 	     * Initialize master pattern
@@ -103,7 +112,7 @@ namespace THIS_NAMESPACE
 		int p = k % x_pat_size;
 		tmp.frame = x_pat[p].frame + 96000 * (k/x_pat_size);
 		tmp.type = (x_pat[p].on_off) ? SeqEvent::NOTE_ON : SeqEvent::NOTE_OFF;
-		tmp.note.set_instrument( inst_refs[ x_pat[p].inst ].get() );
+		tmp.note.set_instrument( inst_refs[ x_pat[p].inst ] );
 		tmp.note.set_velocity(x_pat[p].vel);
 		x.insert(tmp);
 	    }
@@ -129,7 +138,7 @@ namespace THIS_NAMESPACE
 		tmp.frame = x_pat[p].frame;
 		tmp.frame += 96000 * ((*n)/x_pat_size);
 		tmp.type = (x_pat[p].on_off) ? SeqEvent::NOTE_ON : SeqEvent::NOTE_OFF;
-		tmp.note.set_instrument( inst_refs[ x_pat[p].inst ] .get() );
+		tmp.note.set_instrument( inst_refs[ x_pat[p].inst ] );
 		tmp.note.set_velocity(x_pat[p].vel);
 		r.insert(tmp);
 	    }
@@ -138,6 +147,14 @@ namespace THIS_NAMESPACE
 
 	~Fixture() {
 	    delete[] x_pat;
+	    x_ptr.reset();
+	    r_ptr.reset();
+	    CK( inst_refs[0].use_count() == 1 );
+	    CK( inst_refs[1].use_count() == 1 );
+	    CK( inst_refs[2].use_count() == 1 );
+	    inst_refs[0].reset();
+	    inst_refs[1].reset();
+	    inst_refs[2].reset();
 	    delete Logger::get_instance();
 	}
 
@@ -311,7 +328,7 @@ TEST_CASE( 040_frame_adjustment_counts )
 	    deleted = 6;
 	} else {
 	    deleted = 8;
-	}	
+	}
 	left = 32 - int(repeat * 8) - deleted;
 	if( left < 0 ) left = 0;
 	CK( x.size() == unsigned(left) );
@@ -359,7 +376,7 @@ TEST_CASE( 050_size_and_storage )
     CK( x.size() == 0 );
     CK( x.max_size() == 2048 );
     CK( x.begin() == x.end() );
-    
+
 }
 
 TEST_END()

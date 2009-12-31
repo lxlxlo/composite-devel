@@ -33,6 +33,7 @@
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/Logger.hpp>
+#include <Tritium/memory.hpp>
 
 #include "../CompositeApp.hpp"
 #include "../Mixer/Mixer.hpp"
@@ -53,7 +54,7 @@ DrumPatternEditor::DrumPatternEditor(QWidget* parent, PatternEditorPanel *panel)
  , m_bRightBtnPressed( false )
  , m_pDraggedNote( NULL )
  , m_nDraggedNoteStartPosition( 0 )
- , m_pPattern( NULL )
+ , m_pPattern()
  , m_pPatternEditorPanel( panel )
 {
 	//setAttribute(Qt::WA_NoBackground);
@@ -97,7 +98,7 @@ void DrumPatternEditor::updateEditor()
 		m_pPattern = pPatternList->get( nSelectedPatternNumber );
 	}
 	else {
-		m_pPattern = NULL;
+		m_pPattern.reset();
 	}
 
 
@@ -142,7 +143,7 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 	if ( m_pPattern == NULL ) {
 		return;
 	}
-	Song *pSong = g_engine->getSong();
+	T<Song>::shared_ptr pSong = g_engine->getSong();
 	int nInstruments = pSong->get_instrument_list()->get_size();
 
 	int row = (int)( ev->y()  / (float)m_nGridHeight);
@@ -156,7 +157,7 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 		update( 0, 0, width(), height() );
 		return;
 	}
-	Instrument *pSelectedInstrument = pSong->get_instrument_list()->get( row );
+	T<Instrument>::shared_ptr pSelectedInstrument = pSong->get_instrument_list()->get( row );
 
 	if (ev->button() == Qt::LeftButton ) {
 		m_bRightBtnPressed = false;
@@ -188,7 +189,7 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 			m_pPattern->note_map.insert( std::make_pair( nPosition, pNote ) );
 
 			// hear note
-			Preferences *pref = g_engine->get_preferences();
+			T<Preferences>::shared_ptr pref = g_engine->get_preferences();
 			if ( pref->getHearNewNotes() ) {
 				Note *pNote2 = new Note( pSelectedInstrument, fVelocity, fPan_L, fPan_R, nLength, fPitch);
 				g_engine->midi_noteOn(pNote2);
@@ -337,7 +338,7 @@ void DrumPatternEditor::__draw_pattern(QPainter& painter)
 
 	int nNotes = m_pPattern->get_length();
 	int nSelectedInstrument = g_engine->getSelectedInstrumentNumber();
-	Song *pSong = g_engine->getSong();
+	T<Song>::shared_ptr pSong = g_engine->getSong();
 
 	InstrumentList * pInstrList = pSong->get_instrument_list();
 
@@ -375,7 +376,7 @@ void DrumPatternEditor::__draw_pattern(QPainter& painter)
 		m_pPattern = pPatternList->get( nSelectedPatternNumber );
 	}
 	else {
-		m_pPattern = NULL;
+		m_pPattern.reset();
 	}
 	// ~ FIX
 
@@ -405,7 +406,7 @@ void DrumPatternEditor::__draw_note( uint pos, Note *note, QPainter& p )
 	int nInstrument = -1;
 	InstrumentList * pInstrList = g_engine->getSong()->get_instrument_list();
 	for ( uint nInstr = 0; nInstr < pInstrList->get_size(); ++nInstr ) {
-		Instrument *pInstr = pInstrList->get( nInstr );
+		T<Instrument>::shared_ptr pInstr = pInstrList->get( nInstr );
 		if ( pInstr == note->get_instrument() ) {
  			nInstrument = nInstr;
 			break;
@@ -546,7 +547,7 @@ void DrumPatternEditor::__draw_grid( QPainter& p )
 	static const QColor backgroundColor( pStyle->m_patternEditor_backgroundColor.getRed(), pStyle->m_patternEditor_backgroundColor.getGreen(), pStyle->m_patternEditor_backgroundColor.getBlue() );
 	static const QColor selectedRowColor( pStyle->m_patternEditor_selectedRowColor.getRed(), pStyle->m_patternEditor_selectedRowColor.getGreen(), pStyle->m_patternEditor_selectedRowColor.getBlue() );
 	int nSelectedInstrument = g_engine->getSelectedInstrumentNumber();
-	Song *pSong = g_engine->getSong();
+	T<Song>::shared_ptr pSong = g_engine->getSong();
 	int nInstruments = pSong->get_instrument_list()->get_size();
 	for ( uint i = 0; i < (uint)nInstruments; i++ ) {
 		uint y = m_nGridHeight * i + 1;
@@ -573,7 +574,7 @@ void DrumPatternEditor::__create_background( QPainter& p)
 		nNotes = m_pPattern->get_length();
 	}
 
-	Song *pSong = g_engine->getSong();
+	T<Song>::shared_ptr pSong = g_engine->getSong();
 	int nInstruments = pSong->get_instrument_list()->get_size();
 
 	if ( m_nEditorHeight != (int)( m_nGridHeight * nInstruments ) ) {

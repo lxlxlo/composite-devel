@@ -216,7 +216,7 @@ SMFWriter::~SMFWriter()
 
 
 
-void SMFWriter::save( const QString& sFilename, Song *pSong )
+void SMFWriter::save( const QString& sFilename, T<Song>::shared_ptr pSong )
 {
 	INFOLOG( "save" );
 	const int DRUM_CHANNEL = 9;
@@ -242,7 +242,7 @@ void SMFWriter::save( const QString& sFilename, Song *pSong )
 		for ( unsigned nPattern = 0 ;
 		      nPattern < pPatternList->get_size() ;
 		      nPattern++ ) {
-			Pattern *pPattern = pPatternList->get( nPattern );
+			T<Pattern>::shared_ptr pPattern = pPatternList->get( nPattern );
 			// infoLog( "      |-> pattern: " + pPattern->getName() );
 			if ( ( int )pPattern->get_length() > nMaxPatternLength ) {
 				nMaxPatternLength = pPattern->get_length();

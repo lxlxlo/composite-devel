@@ -26,6 +26,7 @@
 #include <Tritium/Engine.hpp>
 #include <Tritium/Transport.hpp>
 #include <Tritium/Preferences.hpp>
+#include <Tritium/memory.hpp>
 #include "BeatCounter.hpp"
 
 using namespace Tritium;
@@ -69,7 +70,7 @@ void BeatCounter::setOffsetAdjust()
 {
     //individual fine tuning for the beatcounter
     //to adjust  ms_offset from different people and controller
-    Preferences *pref = m_engine->get_preferences();
+    T<Preferences>::shared_ptr pref = m_engine->get_preferences();
 
     m_nCoutOffset = pref->m_countOffset;
     m_nStartOffset = pref->m_startOffset;
@@ -77,7 +78,7 @@ void BeatCounter::setOffsetAdjust()
 
 void BeatCounter::trigger()
 {
-    Transport* transport = m_engine->get_transport();
+    T<Transport>::shared_ptr transport = m_engine->get_transport();
     TransportPosition Xpos;
 
     // Get first time value:

@@ -36,6 +36,8 @@
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/fx/Effects.hpp>
+#include <Tritium/memory.hpp>
+
 using namespace Tritium;
 
 #include <cassert>
@@ -196,10 +198,10 @@ void Mixer::muteClicked(MixerLine* ref)
 	bool isMuteClicked = ref->isMuteClicked();
 
 	Engine *engine = g_engine;
-	Song *song = engine->getSong();
+	T<Song>::shared_ptr song = engine->getSong();
 	InstrumentList *instrList = song->get_instrument_list();
 
-	Instrument *pInstr = instrList->get(nLine);
+	T<Instrument>::shared_ptr pInstr = instrList->get(nLine);
 	pInstr->set_muted( isMuteClicked);
 	//(CompositeApp::get_instance())->setSelectedInstrument(nLine);
 	g_engine->setSelectedInstrumentNumber(nLine);
@@ -210,7 +212,7 @@ void Mixer::muteClicked(MixerLine* ref)
 void Mixer::soloClicked(MixerLine* ref)
 {
 	Engine *pEngine = g_engine;
-	Song *pSong = pEngine->getSong();
+	T<Song>::shared_ptr pSong = pEngine->getSong();
 	InstrumentList *pInstrList = pSong->get_instrument_list();
 	int nInstruments = pInstrList->get_size();
 
@@ -288,7 +290,7 @@ void Mixer::noteOnClicked( MixerLine* ref )
 	g_engine->setSelectedInstrumentNumber( nLine );
 
 	Engine *engine = g_engine;
-	Song *song = engine->getSong();
+	T<Song>::shared_ptr song = engine->getSong();
 	InstrumentList *instrList = song->get_instrument_list();
 
 	const float fPitch = 0.0f;
@@ -307,7 +309,7 @@ void Mixer::noteOnClicked( MixerLine* ref )
 	g_engine->setSelectedInstrumentNumber( nLine );
 
 	Engine *engine = g_engine;
-	Song *song = engine->getSong();
+	T<Song>::shared_ptr song = engine->getSong();
 	InstrumentList *instrList = song->get_instrument_list();
 
 	const float fPitch = 0.0f;
@@ -337,10 +339,10 @@ void Mixer::volumeChanged(MixerLine* ref)
 	g_engine->setSelectedInstrumentNumber( nLine );
 
 	Engine *engine = g_engine;
-	Song *song = engine->getSong();
+	T<Song>::shared_ptr song = engine->getSong();
 	InstrumentList *instrList = song->get_instrument_list();
 
-	Instrument *instr = instrList->get(nLine);
+	T<Instrument>::shared_ptr instr = instrList->get(nLine);
 
 	instr->set_volume( ref->getVolume() );
 
@@ -353,7 +355,7 @@ void Mixer::volumeChanged(MixerLine* ref)
 void Mixer::masterVolumeChanged(MasterMixerLine* ref)
 {
 	float volume = ref->getVolume();
-	Song *song = g_engine->getSong();
+	T<Song>::shared_ptr song = g_engine->getSong();
 	song->set_volume(volume);
 }
 
@@ -361,11 +363,11 @@ void Mixer::masterVolumeChanged(MasterMixerLine* ref)
 
 void Mixer::updateMixer()
 {
-	Preferences *pPref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pPref = g_engine->get_preferences();
 	bool bShowPeaks = pPref->showInstrumentPeaks();
 
 	Engine *pEngine = g_engine;
-	Song *pSong = pEngine->getSong();
+	T<Song>::shared_ptr pSong = pEngine->getSong();
 	InstrumentList *pInstrList = pSong->get_instrument_list();
 
 	uint nSelectedInstr = pEngine->getSelectedInstrumentNumber();
@@ -401,7 +403,7 @@ void Mixer::updateMixer()
 			}
 			MixerLine *pLine = m_pMixerLine[ nInstr ];
 
-			Instrument *pInstr = pInstrList->get( nInstr );
+			T<Instrument>::shared_ptr pInstr = pInstrList->get( nInstr );
 			assert( pInstr );
 
 			float fNewPeak_L = pInstr->get_peak_l();
@@ -485,7 +487,7 @@ void Mixer::updateMixer()
 	if (nMuteClicked == nInstruments - 1 ) {
 		// find the not muted button
 		for (uint i = 0; i < nInstruments; i++) {
-			Instrument *instr = pInstrList->get(i);
+			T<Instrument>::shared_ptr instr = pInstrList->get(i);
 			if (instr->is_muted() == false) {
 				m_pMixerLine[i]->setSoloClicked(true);
 				break;
@@ -540,7 +542,7 @@ void Mixer::updateMixer()
 #ifdef LADSPA_SUPPORT
 	// LADSPA
 	for (uint nFX = 0; nFX < MAX_FX; nFX++) {
-		LadspaFX *pFX = g_engine->get_effects()->getLadspaFX( nFX );
+		T<LadspaFX>::shared_ptr pFX = g_engine->get_effects()->getLadspaFX( nFX );
 		if ( pFX ) {
 			m_pLadspaFXLine[nFX]->setName( pFX->getPluginName() );
 			float fNewPeak_L = 0.0;
@@ -619,10 +621,10 @@ void Mixer::panChanged(MixerLine* ref) {
 	g_engine->setSelectedInstrumentNumber( nLine );
 
 	Engine *engine = g_engine;
-	Song *song = engine->getSong();
+	T<Song>::shared_ptr song = engine->getSong();
 	InstrumentList *instrList = song->get_instrument_list();
 
-	Instrument *instr = instrList->get(nLine);
+	T<Instrument>::shared_ptr instr = instrList->get(nLine);
 	instr->set_pan_l( pan_L );
 	instr->set_pan_r( pan_R );
 
@@ -637,9 +639,9 @@ void Mixer::knobChanged(MixerLine* ref, int nKnob) {
 	g_engine->setSelectedInstrumentNumber( nLine );
 
 	Engine *engine = g_engine;
-	Song *song = engine->getSong();
+	T<Song>::shared_ptr song = engine->getSong();
 	InstrumentList *instrList = song->get_instrument_list();
-	Instrument *pInstr = instrList->get(nLine);
+	T<Instrument>::shared_ptr pInstr = instrList->get(nLine);
 	pInstr->set_fx_level( ref->getFXLevel(nKnob), nKnob );
 	QString sInfo = trUtf8( "Set FX %1 level ").arg( nKnob + 1 );
 	( CompositeApp::get_instance() )->setStatusBarMessage( sInfo+ QString( "[%1]" ).arg( ref->getFXLevel(nKnob), 0, 'f', 2 ), 2000 );
@@ -703,7 +705,7 @@ void Mixer::showFXPanelClicked(Button* ref)
 
 void Mixer::showPeaksBtnClicked(Button* ref)
 {
-	Preferences *pPref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pPref = g_engine->get_preferences();
 
 	if ( ref->isPressed() ) {
 		pPref->setInstrumentPeaks( true );
@@ -727,7 +729,7 @@ void Mixer::ladspaActiveBtnClicked( LadspaFXMixerLine* ref )
 
 	for (uint nFX = 0; nFX < MAX_FX; nFX++) {
 		if (ref == m_pLadspaFXLine[ nFX ] ) {
-			LadspaFX *pFX = g_engine->get_effects()->getLadspaFX(nFX);
+			T<LadspaFX>::shared_ptr pFX = g_engine->get_effects()->getLadspaFX(nFX);
 			if (pFX) {
 				pFX->setEnabled( bActive );
 			}
@@ -757,12 +759,12 @@ void Mixer::ladspaEditBtnClicked( LadspaFXMixerLine *ref )
 void Mixer::ladspaVolumeChanged( LadspaFXMixerLine* ref)
 {
 #ifdef LADSPA_SUPPORT
-	Song *pSong = (g_engine )->getSong();
+	T<Song>::shared_ptr pSong = (g_engine )->getSong();
 	pSong->set_modified(true);
 
 	for (uint nFX = 0; nFX < MAX_FX; nFX++) {
 		if (ref == m_pLadspaFXLine[ nFX ] ) {
-			LadspaFX *pFX = g_engine->get_effects()->getLadspaFX(nFX);
+			T<LadspaFX>::shared_ptr pFX = g_engine->get_effects()->getLadspaFX(nFX);
 			if (pFX) {
 				pFX->setVolume( ref->getVolume() );
 				QString sInfo = trUtf8( "Set LADSPA FX ( %1 ) volume").arg( QString(pFX->getPluginName() ) );

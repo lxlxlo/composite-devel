@@ -42,12 +42,12 @@ namespace THIS_NAMESPACE
 
     struct Fixture
     {
-	Song* s;
+	T<Song>::shared_ptr s;
 	Engine* engine;
 
-	Fixture() : s(0) {
+	Fixture() {
 	    Logger::create_instance();
-	    Preferences *prefs = new Preferences();
+	    T<Preferences>::shared_ptr prefs( new Preferences );
 	    engine = new Engine(prefs);
 	    BOOST_MESSAGE(song_file_name);
 	    s = Song::load(engine, song_file_name);
@@ -55,7 +55,8 @@ namespace THIS_NAMESPACE
 	}
 
 	~Fixture() {
-	    delete s;
+	    CK( s.use_count() == 1 );
+	    s.reset();
 	    delete engine;
 	    delete Logger::get_instance();
 	}
@@ -111,7 +112,7 @@ TEST_CASE( 010_defaults )
      * Using static method
      *********************************
      */
-    std::auto_ptr<Song> w( Song::get_default_song(engine) );
+    T<Song>::shared_ptr w = Song::get_default_song(engine);
 
     // Metadata
     CK( w->get_name() == "empty" );
@@ -197,7 +198,7 @@ TEST_CASE( 015_song_loading )
     // (Detailed instrument loading should be done in a
     // a different test.  This is t_Song.)
     Tritium::InstrumentList *list;
-    Tritium::Instrument *inst;
+    T<Tritium::Instrument>::shared_ptr inst;
     const char* names[] = {
 	"Kick", "Stick", "Snare Jazz", "Hand Clap", "Snare Rock", "Tom Low",
 	"Closed HH", "Tom Mid", "Pedal HH", "Tom Hi", "Open HH", "Cowbell",

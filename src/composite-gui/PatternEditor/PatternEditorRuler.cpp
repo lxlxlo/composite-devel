@@ -42,14 +42,14 @@ PatternEditorRuler::PatternEditorRuler( QWidget* parent )
 
 	//infoLog( "INIT" );
 
-	Preferences *pPref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pPref = g_engine->get_preferences();
 
 	//QColor backgroundColor(230, 230, 230);
 	UIStyle *pStyle = pPref->getDefaultUIStyle();
 	QColor backgroundColor( pStyle->m_patternEditor_backgroundColor.getRed(), pStyle->m_patternEditor_backgroundColor.getGreen(), pStyle->m_patternEditor_backgroundColor.getBlue() );
 
 
-	m_pPattern = NULL;
+	m_pPattern.reset();
 	m_nGridWidth = g_engine->get_preferences()->getPatternEditorGridWidth();
 
 	m_nRulerWidth = 20 + m_nGridWidth * ( MAX_NOTES * 4 );
@@ -117,7 +117,7 @@ void PatternEditorRuler::updateEditor( bool bRedrawAll )
 		m_pPattern = pPatternList->get( nSelectedPatternNumber );
 	}
 	else {
-		m_pPattern = NULL;
+		m_pPattern.reset();
 	}
 
 
@@ -175,7 +175,7 @@ void PatternEditorRuler::paintEvent( QPaintEvent *ev)
 	QColor textColor( 100, 100, 100 );
 	QColor lineColor( 170, 170, 170 );
 
-	Preferences *pref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pref = g_engine->get_preferences();
 	QString family = pref->getApplicationFontFamily();
 	int size = pref->getApplicationFontPointSize();
 	QFont font( family, size );

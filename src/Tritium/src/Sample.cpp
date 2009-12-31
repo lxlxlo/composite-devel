@@ -60,7 +60,7 @@ Sample::~Sample()
 
 
 
-Sample* Sample::load( const QString& filename )
+T<Sample>::shared_ptr Sample::load( const QString& filename )
 {
 	// is it a flac file?
 	if ( ( filename.endsWith( "flac") ) || ( filename.endsWith( "FLAC" )) ) {
@@ -73,25 +73,25 @@ Sample* Sample::load( const QString& filename )
 
 
 /// load a FLAC file
-Sample* Sample::load_flac( const QString& filename )
+T<Sample>::shared_ptr Sample::load_flac( const QString& filename )
 {
 #ifdef FLAC_SUPPORT
 	FLACFile file;
 	return file.load( filename );
 #else
 	ERRORLOG("[loadFLAC] FLAC support was disabled during compilation");
-	return NULL;
+	return T<Sample>::shared_ptr();
 #endif
 }
 
 
 
-Sample* Sample::load_wave( const QString& filename )
+T<Sample>::shared_ptr Sample::load_wave( const QString& filename )
 {
 	// file exists?
 	if ( QFile( filename ).exists() == false ) {
 		ERRORLOG( QString( "[Sample::load] Load sample: File %1 not found" ).arg( filename ) );
-		return NULL;
+		return T<Sample>::shared_ptr();
 	}
 
 
@@ -125,13 +125,15 @@ Sample* Sample::load_wave( const QString& filename )
 	delete[] pTmpBuffer;
 
 
-	Sample *pSample = new Sample(
+	T<Sample>::shared_ptr pSample(
+	    new Sample(
 		soundInfo.frames,
 		filename,
 		soundInfo.samplerate,
 		data_l,
 		data_r
-		);
+		)
+	    );
 	return pSample;
 }
 

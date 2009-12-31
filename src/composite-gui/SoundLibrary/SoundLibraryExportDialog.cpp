@@ -33,6 +33,7 @@
 #include <Tritium/SoundLibrary.hpp>
 #include <Tritium/DataPath.hpp>
 #include <Tritium/Logger.hpp>
+#include <Tritium/memory.hpp>
 
 #include <memory>
 #include <QtGui>
@@ -55,11 +56,6 @@ SoundLibraryExportDialog::SoundLibraryExportDialog( QWidget* pParent )
 SoundLibraryExportDialog::~SoundLibraryExportDialog()
 {
 	INFOLOG( "DESTROY" );
-
-	for (uint i = 0; i < drumkitInfoList.size(); i++ ) {
-		Drumkit* info = drumkitInfoList[i];
-		delete info;
-	}
 	drumkitInfoList.clear();
 }
 
@@ -123,11 +119,6 @@ void SoundLibraryExportDialog::updateDrumkitList()
 	INFOLOG( "[updateDrumkitList]" );
 
 	drumkitList->clear();
-
-	for (uint i = 0; i < drumkitInfoList.size(); i++ ) {
-		Drumkit* info = drumkitInfoList[i];
-		delete info;
-	}
 	drumkitInfoList.clear();
 
 	//LocalFileMng mng;
@@ -135,7 +126,7 @@ void SoundLibraryExportDialog::updateDrumkitList()
 	for (uint i = 0; i < userList.size(); i++) {
 		QString absPath =  userList[i];
 
-		Drumkit *info = Drumkit::load( g_engine, absPath );
+		T<Drumkit>::shared_ptr info = Drumkit::load( g_engine, absPath );
 		if (info) {
 			drumkitInfoList.push_back( info );
 			drumkitList->addItem( info->getName() );
@@ -146,7 +137,7 @@ void SoundLibraryExportDialog::updateDrumkitList()
 	std::vector<QString> systemList = Drumkit::getSystemDrumkitList(g_engine);
 	for (uint i = 0; i < systemList.size(); i++) {
 		QString absPath = systemList[i];
-		Drumkit *info = Drumkit::load( g_engine, absPath );
+		T<Drumkit>::shared_ptr info = Drumkit::load( g_engine, absPath );
 		if (info) {
 			drumkitInfoList.push_back( info );
 			drumkitList->addItem( info->getName() );

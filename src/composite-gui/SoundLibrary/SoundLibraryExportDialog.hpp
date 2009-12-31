@@ -27,6 +27,7 @@
 
 #include <Tritium/Song.hpp>
 #include <Tritium/SoundLibrary.hpp>
+#include <Tritium/memory.hpp>
 
 #include <vector>
 
@@ -46,7 +47,7 @@ class SoundLibraryExportDialog : public QDialog, public Ui_SoundLibraryExportDia
 			void on_drumkitPathTxt_textChanged( QString str );
 			void updateDrumkitList();
 	private:
-			std::vector<Tritium::Drumkit*> drumkitInfoList;
+			std::vector< Tritium::T<Tritium::Drumkit>::shared_ptr > drumkitInfoList;
 };
 
 

@@ -115,7 +115,7 @@ void JackTransportMaster::processed_frames(uint32_t nFrames)
     }
 }
 
-void JackTransportMaster::set_current_song(Song* s)
+void JackTransportMaster::set_current_song(T<Song>::shared_ptr s)
 {
     // Timeline handled by JACK server.
 }

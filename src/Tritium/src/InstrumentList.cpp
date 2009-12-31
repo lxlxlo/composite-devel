@@ -38,14 +38,11 @@ InstrumentList::InstrumentList()
 
 InstrumentList::~InstrumentList()
 {
-    for ( unsigned int i = 0; i < m_list.size(); ++i ) {
-	delete m_list[i];
-    }
 }
 
 
 
-void InstrumentList::add( Instrument* newInstrument )
+void InstrumentList::add( T<Instrument>::shared_ptr newInstrument )
 {
     m_list.push_back( newInstrument );
     m_posmap[newInstrument] = m_list.size() - 1;
@@ -53,11 +50,11 @@ void InstrumentList::add( Instrument* newInstrument )
 
 
 
-Instrument* InstrumentList::get( unsigned int pos )
+T<Instrument>::shared_ptr InstrumentList::get( unsigned int pos )
 {
     if ( pos >= m_list.size() ) {
 	ERRORLOG( QString( "pos > list.size(). pos = %1" ).arg( pos ) );
-	return NULL;
+	return T<Instrument>::shared_ptr();
     }
     return m_list[pos];
 }
@@ -65,14 +62,12 @@ Instrument* InstrumentList::get( unsigned int pos )
 
 
 /// Returns index of instrument in list, if instrument not found, returns -1
-int InstrumentList::get_pos( Instrument *pInstr )
+int InstrumentList::get_pos( T<Instrument>::shared_ptr pInstr )
 {
     if ( m_posmap.find( pInstr ) == m_posmap.end() )
 	return -1;
     return m_posmap[ pInstr ];
 }
-
-
 
 unsigned int InstrumentList::get_size()
 {
@@ -80,7 +75,7 @@ unsigned int InstrumentList::get_size()
 }
 
 
-void InstrumentList::replace( Instrument* pNewInstr, unsigned nPos )
+void InstrumentList::replace( T<Instrument>::shared_ptr pNewInstr, unsigned nPos )
 {
     if ( nPos >= m_list.size() ) {
 	ERRORLOG( QString( "Instrument index out of bounds in InstrumentList::replace. pos >= list.size() - %1 > %2" ).arg( nPos ).arg( m_list.size() ) );

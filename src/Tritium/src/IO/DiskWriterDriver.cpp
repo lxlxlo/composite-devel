@@ -52,7 +52,7 @@ void DiskWriterDriverThread::run()
 {
 	INFOLOG( "DiskWriterDriver thread start" );
 	Engine* engine = pDriver->get_engine();
-        Transport* xport = engine->get_transport();
+        T<Transport>::shared_ptr xport = engine->get_transport();
         TransportPosition xpos;
 
 	// always rolling, no user interaction

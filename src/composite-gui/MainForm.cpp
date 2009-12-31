@@ -32,6 +32,8 @@
 #include <Tritium/Logger.hpp>
 #include <Tritium/InstrumentLayer.hpp>
 #include <Tritium/InstrumentList.hpp>
+#include <Tritium/memory.hpp>
+
 using namespace Tritium;
 
 #include "AboutDialog.hpp"
@@ -79,7 +81,7 @@ MainForm::MainForm( QApplication *app, const QString& songFilename )
 	m_pQApp->processEvents();
 
 	// Load default song
-	Song *song = NULL;
+	T<Song>::shared_ptr song;
 	if ( !songFilename.isEmpty() ) {
 		song = Song::load( g_engine, songFilename );
 		if (song == NULL) {
@@ -89,7 +91,7 @@ MainForm::MainForm( QApplication *app, const QString& songFilename )
 		}
 	}
 	else {
-		Preferences *pref = g_engine->get_preferences();
+		T<Preferences>::shared_ptr pref = g_engine->get_preferences();
 		bool restoreLastSong = pref->isRestoreLastSongEnabled();
 		QString filename = pref->getLastSongFilename();
 		if ( restoreLastSong && ( !filename.isEmpty() )) {
@@ -281,7 +283,7 @@ void MainForm::action_file_new()
 		return;
 	}
 
-	Song * song = Song::get_empty_song(g_engine);
+	T<Song>::shared_ptr song = Song::get_empty_song(g_engine);
 	song->set_filename( "" );
 	h2app->setSong(song);
  	g_engine->setSelectedPatternNumber( 0 );
@@ -300,7 +302,7 @@ void MainForm::action_file_save_as()
         fd->setAcceptMode( QFileDialog::AcceptSave );
         fd->setWindowTitle( trUtf8( "Save song" ) );
 
-	Song *song = g_engine->getSong();
+	T<Song>::shared_ptr song = g_engine->getSong();
 	QString defaultFilename;
 	QString lastFilename = song->get_filename();
 
@@ -340,7 +342,7 @@ void MainForm::action_file_save()
 //		(g_engine)->stop();
 //	}
 
-	Song *song = g_engine->getSong();
+	T<Song>::shared_ptr song = g_engine->getSong();
 	QString filename = song->get_filename();
 
 	if ( filename.isEmpty() ) {
@@ -359,7 +361,7 @@ void MainForm::action_file_save()
 		g_engine->get_preferences()->setLastSongFilename( song->get_filename() );
 
 		// add the new loaded song in the "last used song" vector
-		Preferences *pPref = g_engine->get_preferences();
+		T<Preferences>::shared_ptr pPref = g_engine->get_preferences();
 		vector<QString> recentFiles = pPref->getRecentFiles();
 		recentFiles.insert( recentFiles.begin(), filename );
 		pPref->setRecentFiles( recentFiles );
@@ -400,10 +402,10 @@ void MainForm::action_file_export_pattern_as()
 
 	Engine *engine = g_engine;
 	int selectedpattern = engine->getSelectedPatternNumber();
-	Song *song = engine->getSong();
-	Pattern *pat = song->get_pattern_list()->get ( selectedpattern );
+	T<Song>::shared_ptr song = engine->getSong();
+	T<Pattern>::shared_ptr pat = song->get_pattern_list()->get ( selectedpattern );
 
-	Instrument *instr = song->get_instrument_list()->get ( 0 );
+	T<Instrument>::shared_ptr instr = song->get_instrument_list()->get ( 0 );
 	assert ( instr );
 
 	QDir dir  = g_engine->get_preferences()->__lastspatternDirectory;
@@ -509,10 +511,10 @@ void MainForm::action_file_openPattern()
 {
 
 	Engine *engine = g_engine;
-	Song *song = engine->getSong();
+	T<Song>::shared_ptr song = engine->getSong();
 	PatternList *pPatternList = song->get_pattern_list();
 
-	Instrument *instr = song->get_instrument_list()->get ( 0 );
+	T<Instrument>::shared_ptr instr = song->get_instrument_list()->get ( 0 );
 	assert ( instr );
 
 	QDir dirPattern( g_engine->get_preferences()->getDataDirectory() + "/patterns" );
@@ -534,7 +536,7 @@ void MainForm::action_file_openPattern()
 
 	LocalFileMng mng(g_engine);
 	LocalFileMng fileMng(g_engine);
-	Pattern* err = fileMng.loadPattern ( patternname );
+	T<Pattern>::shared_ptr err = fileMng.loadPattern ( patternname );
 	if ( err == 0 )
 	{
 		ERRORLOG( "Error loading the pattern" );
@@ -542,7 +544,7 @@ void MainForm::action_file_openPattern()
 	}
 	else
 	{
-		Tritium::Pattern *pNewPattern = err;
+		T<Pattern>::shared_ptr pNewPattern = err;
 		pPatternList->add ( pNewPattern );
 		song->set_modified( true );
 	}
@@ -639,14 +641,14 @@ void MainForm::action_instruments_addInstrument()
 	// create a new valid ID for this instrument
 	int nID = -1;
 	for ( uint i = 0; i < pList->get_size(); ++i ) {
-		Instrument* pInstr = pList->get( i );
+		T<Instrument>::shared_ptr pInstr = pList->get( i );
 		if ( pInstr->get_id().toInt() > nID ) {
 			nID = pInstr->get_id().toInt();
 		}
 	}
 	++nID;
 
-	Instrument *pNewInstr = new Instrument(QString( nID ), "New instrument", new ADSR());
+	T<Instrument>::shared_ptr pNewInstr( new Instrument(QString( nID ), "New instrument", new ADSR()) );
 	pList->add( pNewInstr );
 	
 	#ifdef JACK_SUPPORT
@@ -683,10 +685,10 @@ void MainForm::action_instruments_clearAll()
 
 	// Remove all layers
 	g_engine->lock( RIGHT_HERE );
-	Song *pSong = g_engine->getSong();
+	T<Song>::shared_ptr pSong = g_engine->getSong();
 	InstrumentList* pList = pSong->get_instrument_list();
 	for (uint i = 0; i < pList->get_size(); i++) {
-		Instrument* pInstr = pList->get( i );
+		T<Instrument>::shared_ptr pInstr = pList->get( i );
 		pInstr->set_name( (QString( trUtf8( "Instrument %1" ) ).arg( i + 1 )) );
 		// remove all layers
 		for ( int nLayer = 0; nLayer < MAX_LAYERS; nLayer++ ) {
@@ -770,7 +772,7 @@ void MainForm::action_window_showDrumkitManagerPanel()
 
 void MainForm::closeAll() {
 	// save window properties in the preferences files
-	Preferences *pref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pref = g_engine->get_preferences();
 
 	// mainform
 	WindowProperties mainFormProp;
@@ -838,7 +840,7 @@ void MainForm::closeAll() {
 
 void MainForm::onPlayStopAccelEvent()
 {
-	Transport* xport = g_engine->get_transport();
+	T<Transport>::shared_ptr xport = g_engine->get_transport();
 	TransportPosition::State state = xport->get_state();
 	switch (state) {
 	case TransportPosition::STOPPED:
@@ -869,7 +871,7 @@ void MainForm::onBPMPlusAccelEvent()
 	Engine* pEngine = g_engine;
 	g_engine->lock( RIGHT_HERE );
 
-	Song* pSong = pEngine->getSong();
+	T<Song>::shared_ptr pSong = pEngine->getSong();
 	if (pSong->get_bpm()  < 300) {
 		pEngine->setBPM( pSong->get_bpm() + 0.1 );
 	}
@@ -883,7 +885,7 @@ void MainForm::onBPMMinusAccelEvent()
 	Engine* pEngine = g_engine;
 	g_engine->lock( RIGHT_HERE );
 
-	Song* pSong = pEngine->getSong();
+	T<Song>::shared_ptr pSong = pEngine->getSong();
 	if (pSong->get_bpm() > 40 ) {
 		pEngine->setBPM( pSong->get_bpm() - 0.1 );
 	}
@@ -917,7 +919,7 @@ void MainForm::updateRecentUsedSongList()
 {
 	m_pRecentFilesMenu->clear();
 
-	Preferences *pPref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pPref = g_engine->get_preferences();
 	vector<QString> recentUsedSongs = pPref->getRecentFiles();
 
 	QString sFilename;
@@ -950,14 +952,14 @@ void MainForm::openSongFile( const QString& sFilename )
 
 	h2app->closeFXProperties();
 	LocalFileMng mng(g_engine);
-	Song *pSong = Song::load( g_engine, sFilename );
+	T<Song>::shared_ptr pSong = Song::load( g_engine, sFilename );
 	if ( pSong == NULL ) {
 		QMessageBox::information( this, "Composite", trUtf8("Error loading song.") );
 		return;
 	}
 
 	// add the new loaded song in the "last used song" vector
-	Preferences *pPref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pPref = g_engine->get_preferences();
 	vector<QString> recentFiles = pPref->getRecentFiles();
 	recentFiles.insert( recentFiles.begin(), sFilename );
 	pPref->setRecentFiles( recentFiles );
@@ -1250,7 +1252,7 @@ void MainForm::action_file_export_midi()
 			sFilename += ".mid";
 		}
 
-		Song *pSong = g_engine->getSong();
+		T<Song>::shared_ptr pSong = g_engine->getSong();
 
 		// create the Standard Midi File object
 		SMFWriter *pSmfWriter = new SMFWriter();
@@ -1317,7 +1319,7 @@ void MainForm::action_window_showPatternEditor()
 
 QString MainForm::getAutoSaveFilename()
 {
-	Song *pSong = g_engine->getSong();
+	T<Song>::shared_ptr pSong = g_engine->getSong();
 	assert( pSong );
 	QString sOldFilename = pSong->get_filename();
 	QString newName = "autosave.h2song";
@@ -1334,7 +1336,7 @@ QString MainForm::getAutoSaveFilename()
 void MainForm::onAutoSaveTimer()
 {
 	//INFOLOG( "[onAutoSaveTimer]" );
-	Song *pSong = g_engine->getSong();
+	T<Song>::shared_ptr pSong = g_engine->getSong();
 	assert( pSong );
 	QString sOldFilename = pSong->get_filename();
 

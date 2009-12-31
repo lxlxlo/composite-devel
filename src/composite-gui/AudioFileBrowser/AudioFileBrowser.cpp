@@ -32,6 +32,7 @@
 #include <Tritium/Logger.hpp>
 #include <Tritium/Engine.hpp>
 #include <Tritium/Sampler.hpp>
+#include <Tritium/memory.hpp>
 
 #include <QModelIndex>
 #include <QTreeWidget>
@@ -100,7 +101,7 @@ AudioFileBrowser::AudioFileBrowser ( QWidget* pParent )
 
 AudioFileBrowser::~AudioFileBrowser()
 {
-	Sample *pNewSample = Sample::load( sEmptySampleFilename );
+	T<Sample>::shared_ptr pNewSample = Sample::load( sEmptySampleFilename );
 	g_engine->get_sampler()->preview_sample( pNewSample, 100 );
 	INFOLOG ( "DESTROY" );
 }
@@ -247,7 +248,7 @@ void AudioFileBrowser::browseTree( const QModelIndex& index )
 		) {
 	
 			filelineedit->setText( fleTxt );
-			Sample *pNewSample = Sample::load( path2 );
+			T<Sample>::shared_ptr pNewSample = Sample::load( path2 );
 
 			if ( pNewSample ) {
 				m_pNBytesLable->setText( trUtf8( "Size: %1 bytes" ).arg( pNewSample->get_size() / 2 ) );
@@ -257,7 +258,7 @@ void AudioFileBrowser::browseTree( const QModelIndex& index )
 				qsec.sprintf( "%2.2f", sec );
 				m_pLengthLable->setText( trUtf8( "Samplelength: " ) + qsec + trUtf8( " s" ) );
 				
-				delete pNewSample;
+				pNewSample.reset();
 				m_psamplefilename = path2;
 
 				m_pSampleWaveDisplay->updateDisplay( path2 );
@@ -299,7 +300,7 @@ void AudioFileBrowser::on_m_pPlayBtn_clicked()
 	if( QFile( m_psamplefilename ).exists() == false )
 		return;
 	m_pStopBtn->setEnabled( true );
-	Sample *pNewSample = Sample::load( m_psamplefilename );
+	T<Sample>::shared_ptr pNewSample = Sample::load( m_psamplefilename );
 	if ( pNewSample ){
 		int length = ( ( pNewSample->get_n_frames() / pNewSample->get_sample_rate() + 1) * 100 );
 		g_engine->get_sampler()->preview_sample( pNewSample, length );
@@ -310,7 +311,7 @@ void AudioFileBrowser::on_m_pPlayBtn_clicked()
 
 void AudioFileBrowser::on_m_pStopBtn_clicked()
 {
-	Sample *pNewSample = Sample::load( sEmptySampleFilename );
+	T<Sample>::shared_ptr pNewSample = Sample::load( sEmptySampleFilename );
 	g_engine->get_sampler()->preview_sample( pNewSample, 100 );
 	m_pStopBtn->setEnabled( false );
 }

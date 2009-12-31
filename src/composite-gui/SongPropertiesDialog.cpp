@@ -23,6 +23,7 @@
 #include "Skin.hpp"
 #include <Tritium/Song.hpp>
 #include <Tritium/Engine.hpp>
+#include <Tritium/memory.hpp>
 
 #include <QPixmap>
 
@@ -39,7 +40,7 @@ SongPropertiesDialog::SongPropertiesDialog(QWidget* parent)
 	setWindowTitle( trUtf8( "Song properties" ) );
 //	setIcon( QPixmap( Skin::getImagePath() + "/icon16.png" ) );
 
-	Song *song = g_engine->getSong();
+	T<Song>::shared_ptr song = g_engine->getSong();
 	songNameTxt->setText( song->get_name() );
 
 	authorTxt->setText( song->get_author() );
@@ -61,7 +62,7 @@ void SongPropertiesDialog::on_cancelBtn_clicked()
 
 void SongPropertiesDialog::on_okBtn_clicked()
 {
-	Song *song = g_engine->getSong();
+	T<Song>::shared_ptr song = g_engine->getSong();
 
 	song->set_name( songNameTxt->text() );
 	song->set_author( authorTxt->text() );

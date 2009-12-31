@@ -86,7 +86,7 @@ void MidiTable::updateTable()
 
 void MidiTable::insertNewRow(QString actionString , QString eventString, int eventParameter , int actionParameter)
 {
-	Tritium::ActionManager *aH;
+	Tritium::T<Tritium::ActionManager>::shared_ptr aH;
 	aH = Tritium::g_engine->get_action_manager();
 
 	insertRow( __row_count );

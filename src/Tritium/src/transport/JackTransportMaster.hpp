@@ -61,7 +61,7 @@ namespace Tritium
         // of frames processed.  This is needed so that the internal transport
         // master can keep track of time.
         virtual void processed_frames(uint32_t nFrames);
-        virtual void set_current_song(Song* s);
+        virtual void set_current_song(T<Song>::shared_ptr s);
 
         // Convenience interface (mostly for GUI)
         virtual uint32_t get_current_frame(void);

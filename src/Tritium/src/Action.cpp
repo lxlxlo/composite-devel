@@ -122,9 +122,9 @@ static bool Tritium::setAbsoluteFXLevel(
 			
 	engine->setSelectedInstrumentNumber( nLine );
 
-	Song *song = engine->getSong();
+	T<Song>::shared_ptr song = engine->getSong();
 	InstrumentList *instrList = song->get_instrument_list();
-	Instrument *instr = instrList->get( nLine );
+	T<Instrument>::shared_ptr instr = instrList->get( nLine );
 	if ( instr == NULL) return false;
 
 	if( fx_param != 0 ){
@@ -163,7 +163,7 @@ bool ActionManager::handleAction( Action * pAction ){
 
 	if( sActionString == "PLAY_TOGGLE" )
 	{
-		Transport* xport = pEngine->get_transport();
+		T<Transport>::shared_ptr xport = pEngine->get_transport();
 		TransportPosition::State state = xport->get_state();
 		switch ( state ) 
 		{
@@ -263,7 +263,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		int vol_param = pAction->getParameter2().toInt(&ok,10);
 			
 		Engine *engine = m_engine;
-		Song *song = engine->getSong();
+		T<Song>::shared_ptr song = engine->getSong();
 
 
 
@@ -291,7 +291,7 @@ bool ActionManager::handleAction( Action * pAction ){
 			
 
 		Engine *engine = m_engine;
-		Song *song = engine->getSong();
+		T<Song>::shared_ptr song = engine->getSong();
 
 
 		if( vol_param != 0 ){
@@ -314,10 +314,10 @@ bool ActionManager::handleAction( Action * pAction ){
 		m_engine->setSelectedInstrumentNumber( nLine );
 
 		Engine *engine = m_engine;
-		Song *song = engine->getSong();
+		T<Song>::shared_ptr song = engine->getSong();
 		InstrumentList *instrList = song->get_instrument_list();
 
-		Instrument *instr = instrList->get( nLine );
+		T<Instrument>::shared_ptr instr = instrList->get( nLine );
 
 		if ( instr == NULL) return 0;
 
@@ -346,10 +346,10 @@ bool ActionManager::handleAction( Action * pAction ){
 		m_engine->setSelectedInstrumentNumber( nLine );
 
 		Engine *engine = m_engine;
-		Song *song = engine->getSong();
+		T<Song>::shared_ptr song = engine->getSong();
 		InstrumentList *instrList = song->get_instrument_list();
 
-		Instrument *instr = instrList->get( nLine );
+		T<Instrument>::shared_ptr instr = instrList->get( nLine );
 
 		if ( instr == NULL) return 0;
 
@@ -387,10 +387,10 @@ bool ActionManager::handleAction( Action * pAction ){
 
 		Engine *engine = m_engine;
 		engine->setSelectedInstrumentNumber( nLine );
-		Song *song = engine->getSong();
+		T<Song>::shared_ptr song = engine->getSong();
 		InstrumentList *instrList = song->get_instrument_list();
 
-		Instrument *instr = instrList->get( nLine );
+		T<Instrument>::shared_ptr instr = instrList->get( nLine );
 		
 		if( instr == NULL )
 			return false;
@@ -445,10 +445,10 @@ bool ActionManager::handleAction( Action * pAction ){
 
 		Engine *engine = m_engine;
 		engine->setSelectedInstrumentNumber( nLine );
-		Song *song = engine->getSong();
+		T<Song>::shared_ptr song = engine->getSong();
 		InstrumentList *instrList = song->get_instrument_list();
 
-		Instrument *instr = instrList->get( nLine );
+		T<Instrument>::shared_ptr instr = instrList->get( nLine );
 		
 		if( instr == NULL )
 			return false;
@@ -514,7 +514,7 @@ bool ActionManager::handleAction( Action * pAction ){
 			
 
 
-		Song* pSong = pEngine->getSong();
+		T<Song>::shared_ptr pSong = pEngine->getSong();
 
 
 		
@@ -543,7 +543,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		mult = pAction->getParameter1().toInt(&ok,10);
 
 
-		Song* pSong = pEngine->getSong();
+		T<Song>::shared_ptr pSong = pEngine->getSong();
 		if (pSong->get_bpm()  < 300) {
 			pEngine->setBPM( pSong->get_bpm() + 1*mult );
 		}
@@ -562,7 +562,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		bool ok;
 		mult = pAction->getParameter1().toInt(&ok,10);
 
-		Song* pSong = pEngine->getSong();
+		T<Song>::shared_ptr pSong = pEngine->getSong();
 		if (pSong->get_bpm()  > 40 ) {
 			pEngine->setBPM( pSong->get_bpm() - 1*mult );
 		}

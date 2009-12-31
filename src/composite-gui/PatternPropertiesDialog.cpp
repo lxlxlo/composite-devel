@@ -29,7 +29,9 @@
 using namespace std;
 using namespace Tritium;
 
-PatternPropertiesDialog::PatternPropertiesDialog(QWidget* parent, Pattern *pattern, bool savepattern)
+PatternPropertiesDialog::PatternPropertiesDialog(QWidget* parent,
+						 T<Pattern>::shared_ptr pattern,
+						 bool savepattern)
  : QDialog(parent)
 {
 	setupUi( this );
@@ -47,7 +49,7 @@ PatternPropertiesDialog::PatternPropertiesDialog(QWidget* parent, Pattern *patte
 	}
 	categoryComboBox->addItem( category );
 
-	Preferences *pPref = Tritium::g_engine->get_preferences();
+	T<Preferences>::shared_ptr pPref = Tritium::g_engine->get_preferences();
 
 	std::list<QString>::const_iterator cur_patternCategories;
 	
@@ -88,7 +90,7 @@ void PatternPropertiesDialog::on_okBtn_clicked()
 	QString pattName = patternNameTxt->text();
 	QString pattCategory = categoryComboBox->currentText();
 
-	Preferences *pPref = Tritium::g_engine->get_preferences();
+	T<Preferences>::shared_ptr pPref = Tritium::g_engine->get_preferences();
 	std::list<QString>::const_iterator cur_testpatternCategories;
 
 	bool test = true;

@@ -151,10 +151,10 @@ void JackClient::raise_error(Engine::error_t err)
 bool JackClient::jack_is_up()
 {
     bool rv;
-    AudioOutput* ao = m_engine->get_audio_output();
+    T<AudioOutput>::shared_ptr ao = m_engine->get_audio_output();
     try {
 	if( ao
-	    && dynamic_cast<JackOutput*>(ao)
+	    && dynamic_cast<JackOutput*>(ao.get())
 	    && ref() /* client pointer */ ) {
 	    rv = true;
 	} else {

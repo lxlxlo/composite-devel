@@ -24,6 +24,7 @@
 #include <Tritium/Song.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/Engine.hpp>
+#include <Tritium/memory.hpp>
 
 #include <vector>
 #include <cassert>
@@ -53,7 +54,7 @@ Pattern::~Pattern()
 }
 
 
-void Pattern::purge_instrument( Instrument * I, Engine* engine )
+void Pattern::purge_instrument( T<Instrument>::shared_ptr I, Engine* engine )
 {
 	bool locked = false;
 	std::list< Note* > slate;
@@ -86,7 +87,7 @@ void Pattern::purge_instrument( Instrument * I, Engine* engine )
 }
 
 
-bool Pattern::references_instrument( Instrument * I )
+bool Pattern::references_instrument( T<Instrument>::shared_ptr I )
 {
 	Pattern::note_map_t::const_iterator pos;
 	for ( pos = note_map.begin(); pos != note_map.end(); ++pos ) {
@@ -102,19 +103,19 @@ bool Pattern::references_instrument( Instrument * I )
 
 
 /// Returns an empty Pattern
-Pattern* Pattern::get_empty_pattern()
+T<Pattern>::shared_ptr Pattern::get_empty_pattern()
 {
-	Pattern *pat = new Pattern( "Pattern", "not_categorized" );
+	T<Pattern>::shared_ptr pat( new Pattern( "Pattern", "not_categorized" ) );
 	return pat;
 }
 
 
 
-Pattern* Pattern::copy()
+T<Pattern>::shared_ptr Pattern::copy()
 {
 //	ERRORLOG( "not implemented yet!!!" );
 
-	Pattern *newPat = new Pattern( __name, __category );
+	T<Pattern>::shared_ptr newPat( new Pattern( __name, __category ) );
 	newPat->set_length( get_length() );
 
 	Pattern::note_map_t::iterator pos;
@@ -154,9 +155,9 @@ PatternList::~PatternList()
 //	infoLog("destroy");
 
 	// find single patterns. (skip duplicates)
-	std::vector<Pattern*> temp;
+	std::vector< T<Pattern>::shared_ptr > temp;
 	for ( unsigned int i = 0; i < list.size(); ++i ) {
-		Pattern *pat = list[i];
+		T<Pattern>::shared_ptr pat = list[i];
 
 		// pat exists in temp?
 		bool exists = false;
@@ -173,31 +174,30 @@ PatternList::~PatternList()
 
 	// delete patterns
 	for ( unsigned int i = 0; i < temp.size(); ++i ) {
-		Pattern *pat = temp[i];
+		T<Pattern>::shared_ptr pat = temp[i];
 		if ( pat != NULL ) {
-			delete pat;
-			pat = NULL;
+			pat.reset();
 		}
 	}
 }
 
 
 
-void PatternList::add( Pattern* newPattern )
+void PatternList::add( T<Pattern>::shared_ptr newPattern )
 {
 	list.push_back( newPattern );
 }
 
 
 
-Pattern* PatternList::get( int nPos )
+T<Pattern>::shared_ptr PatternList::get( int nPos )
 {
 	if ( nPos >= ( int )list.size() ) {
 		ERRORLOG( QString("Pattern index out of bounds. nPos > list.size() - %1 > %2")
 			  .arg( nPos )
 			  .arg( list.size() )
 			);
-		return NULL;
+		return T<Pattern>::shared_ptr();
 	}
 //	assert( nPos < (int)list.size() );
 	return list[ nPos ];
@@ -220,7 +220,7 @@ void PatternList::clear()
 
 
 /// Replace an existent pattern with another one
-void PatternList::replace( Pattern* newPattern, unsigned int pos )
+void PatternList::replace( T<Pattern>::shared_ptr newPattern, unsigned int pos )
 {
 	if ( pos >= ( unsigned )list.size() ) {
 		ERRORLOG( QString("Pattern index out of bounds in PatternList::replace. pos >= list.size() - %1 > %2")
@@ -236,11 +236,11 @@ void PatternList::replace( Pattern* newPattern, unsigned int pos )
 
 
 
-int PatternList::index_of( Pattern* pattern )
+int PatternList::index_of( T<Pattern>::shared_ptr pattern )
 {
 	if ( get_size() < 1 ) return -1;
 
-	std::vector<Pattern*>::iterator i;
+	std::vector< T<Pattern>::shared_ptr >::iterator i;
 
 	int r = 0;
 	for ( i = list.begin(); i != list.end(); ++i ) {
@@ -252,12 +252,12 @@ int PatternList::index_of( Pattern* pattern )
 
 
 
-Pattern * PatternList::del( Pattern * p )
+T<Pattern>::shared_ptr PatternList::del( T<Pattern>::shared_ptr p )
 {
 	bool did_delete = false;
-	if ( get_size() < 1 ) return NULL;
+	if ( get_size() < 1 ) return T<Pattern>::shared_ptr();
 
-	std::vector<Pattern*>::iterator i;
+	std::vector< T<Pattern>::shared_ptr >::iterator i;
 
 	for ( i = list.begin(); i != list.end(); i++ ) {
 		if ( *i == p ) {
@@ -270,7 +270,7 @@ Pattern * PatternList::del( Pattern * p )
 		}
 	}
 	if ( did_delete ) return p;
-	return NULL;
+	return T<Pattern>::shared_ptr();
 }
 
 

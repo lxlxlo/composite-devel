@@ -85,7 +85,7 @@ SoundLibraryImportDialog::~SoundLibraryImportDialog()
 //update combo box
 void SoundLibraryImportDialog::updateRepositoryCombo()
 {
-	Tritium::Preferences* pref = Tritium::g_engine->get_preferences();
+	Tritium::T<Tritium::Preferences>::shared_ptr pref = Tritium::g_engine->get_preferences();
 
 	/*
 		Read serverList from config and put servers into the comboBox

@@ -25,6 +25,7 @@
 #include "Skin.hpp"
 #include <Tritium/Song.hpp>
 #include <Tritium/Preferences.hpp>
+#include <Tritium/memory.hpp>
 
 #include <Tritium/fx/Effects.hpp>
 #include <Tritium/fx/LadspaFX.hpp>
@@ -60,7 +61,7 @@ LadspaFXSelector::LadspaFXSelector(int nLadspaFX)
 
 #ifdef LADSPA_SUPPORT
 	//Song *pSong = g_engine->getSong();
-	LadspaFX *pFX = g_engine->get_effects()->getLadspaFX(nLadspaFX);
+	T<LadspaFX>::shared_ptr pFX = g_engine->get_effects()->getLadspaFX(nLadspaFX);
 	if (pFX) {
 		m_sSelectedPluginName = pFX->getPluginName();
 	}

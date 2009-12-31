@@ -30,6 +30,7 @@
 #include <Tritium/SeqEvent.hpp>
 #include <Tritium/SeqScript.hpp>
 #include <Tritium/SeqScriptIterator.hpp>
+#include <Tritium/memory.hpp>
 
 #include <QMutex>
 
@@ -64,7 +65,7 @@ namespace Tritium
 
             {
                 // TODO:  This seems too complicated for what we're doing...
-                Preferences *pref = m_engine->get_preferences();
+		T<Preferences>::shared_ptr pref = m_engine->get_preferences();
                 TransportPosition quant(pos);
                 quant.ceil(TransportPosition::TICK);
 
@@ -147,8 +148,8 @@ namespace Tritium
             bool bLockEngine = false,
             unsigned nTotalFrames = 0 );
         void audioEngine_stop( bool bLockEngine = false );
-	AudioOutput* createDriver(const QString& sDriver);
-        void audioEngine_setSong( Song *newSong );
+	T<AudioOutput>::shared_ptr createDriver(const QString& sDriver);
+        void audioEngine_setSong( T<Song>::shared_ptr newSong );
 	void audioEngine_setupLadspaFX(unsigned nBufferSize );
 	void audioEngine_renameJackPorts();
         void audioEngine_removeSong();
@@ -181,7 +182,7 @@ namespace Tritium
         // Stuff from the old Tritium::Engine
         /////////////////////////////////////////
 
-        Engine* m_engine;
+	Engine* m_engine;
 
         ///Last received midi message
         QString lastMidiEvent;
@@ -199,7 +200,7 @@ namespace Tritium
 	////////////////////////////////////////////////////////////
         Engine::playlist_t m_Playlist;
 
-        Sampler* __sampler;
+	T<Sampler>::shared_ptr __sampler;
 
         /// Mutex for syncronized access to the Song object and the
         /// AudioEngine.
@@ -219,7 +220,7 @@ namespace Tritium
          * In some cases, deleting a large list of instruments is not
          * realtime safe.
          */
-        std::list<Instrument*> __instrument_death_row;
+        std::list< T<Instrument>::shared_ptr > __instrument_death_row;
 
         /////////////////////////////////////////
         // Old Global Varibles from Engine.cpp
@@ -230,17 +231,17 @@ namespace Tritium
         float m_fProcessTime;            ///< time used in process function
         float m_fMaxProcessTime;         ///< max ms usable in process with no xrun
 
-        Preferences* m_preferences;
-        ActionManager* m_action_manager;
-        Sampler* m_sampler;
-        EventQueue* m_event_queue;
-        H2Transport* m_pTransport;
-        Playlist* m_playlist;
+	T<Preferences>::shared_ptr m_preferences;
+	T<ActionManager>::shared_ptr m_action_manager;
+	T<Sampler>::shared_ptr m_sampler;
+	T<EventQueue>::shared_ptr m_event_queue;
+	T<H2Transport>::shared_ptr m_pTransport;
+	T<Playlist>::shared_ptr m_playlist;
 #ifdef JACK_SUPPORT
-        JackClient* m_jack_client;
+	T<JackClient>::shared_ptr m_jack_client;
 #endif
 #ifdef LADSPA_SUPPORT
-        Effects* m_effects;
+	T<Effects>::shared_ptr m_effects;
 #endif
 
         // This is *the* priority queue for scheduling notes/events to be
@@ -251,14 +252,14 @@ namespace Tritium
 
         BeatCounter m_BeatCounter;
 
-        AudioOutput *m_pAudioDriver;     ///< Audio output
-        MidiInput *m_pMidiDriver;        ///< MIDI input
+	T<AudioOutput>::shared_ptr m_pAudioDriver;     ///< Audio output
+	T<MidiInput>::shared_ptr m_pMidiDriver;        ///< MIDI input
         QMutex mutex_OutputPointer;             ///< Mutex for audio output pointer, allows multiple readers
         ///< When locking this AND AudioEngine, always lock AudioEngine first.
 
 
-        Song *m_pSong;                          ///< Current song
-        Instrument *m_pMetronomeInstrument;      ///< Metronome instrument
+	T<Song>::shared_ptr m_pSong;                          ///< Current song
+	T<Instrument>::shared_ptr m_pMetronomeInstrument;      ///< Metronome instrument
         unsigned long m_nFreeRollingFrameCounter;
 
 // Buffers used in the process function
@@ -283,13 +284,13 @@ namespace Tritium
 	/////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////
 
-	EnginePrivate(Engine* parent, Preferences* prefs) :
+	EnginePrivate(Engine* parent, T<Preferences>::shared_ptr prefs) :
 	    m_engine(parent),
 	    lastMidiEvent(),
 	    lastMidiEventParameter(-1),
 	    m_currentDrumkit(),
 	    m_Playlist(),
-	    __sampler(0),
+	    __sampler(),
 	    __engine_mutex(),
 	    m_oldEngineMode(Song::SONG_MODE),
 	    m_bOldLoopEnabled(false),
@@ -299,26 +300,26 @@ namespace Tritium
 	    m_fProcessTime(0.0),
 	    m_fMaxProcessTime(0.0),
 	    m_preferences(prefs),
-	    m_action_manager(0),
-	    m_sampler(0),
-	    m_event_queue(0),
-	    m_pTransport(0),
-	    m_playlist(0),
+	    m_action_manager(),
+	    m_sampler(),
+	    m_event_queue(),
+	    m_pTransport(),
+	    m_playlist(),
 #ifdef JACK_SUPPORT
-	    m_jack_client(0),
+	    m_jack_client(),
 #endif
 #ifdef LADSPA_SUPPORT
-	    m_effects(0),
+	    m_effects(),
 #endif
 	    m_queue(),
 	    m_GuiInput(parent),
 	    m_SongSequencer(),
 	    m_BeatCounter(parent),
-	    m_pAudioDriver(0),
-	    m_pMidiDriver(0),
+	    m_pAudioDriver(),
+	    m_pMidiDriver(),
 	    mutex_OutputPointer(),
-	    m_pSong(0),
-	    m_pMetronomeInstrument(0),
+	    m_pSong(),
+	    m_pMetronomeInstrument(),
 	    m_nFreeRollingFrameCounter(0),
 	    m_pMainBuffer_L(0),
 	    m_pMainBuffer_R(0),

@@ -94,7 +94,7 @@ void AudioEngineInfoForm::hideEvent ( QHideEvent* )
 void AudioEngineInfoForm::updateInfo()
 {
 	Engine *pEngine = g_engine;
-	Song *song = pEngine->getSong();
+	T<Song>::shared_ptr song = pEngine->getSong();
 
 	// Song position
 	QString sSongPos = "N/A";
@@ -135,7 +135,7 @@ void AudioEngineInfoForm::updateInfo()
 
 
 	// Audio driver info
-	AudioOutput *driver = pEngine->get_audio_output();
+	T<AudioOutput>::shared_ptr driver = pEngine->get_audio_output();
 	if (driver) {
 		QString audioDriverName = "Jack";
 		driverLbl->setText(audioDriverName);
@@ -165,7 +165,7 @@ void AudioEngineInfoForm::updateInfo()
 
 
 	// Midi driver info
-	MidiInput *pMidiDriver = pEngine->get_midi_input();
+	T<MidiInput>::shared_ptr pMidiDriver = pEngine->get_midi_input();
 	if (pMidiDriver) {
 		midiDriverName->setText( "Jack" );
 	}
@@ -203,7 +203,7 @@ void AudioEngineInfoForm::updateInfo()
 	}
 
 	// SAMPLER
-	Sampler *pSampler = g_engine->get_sampler();
+	T<Sampler>::shared_ptr pSampler = g_engine->get_sampler();
 	sampler_playingNotesLbl->setText(QString( "%1 / %2" ).arg(pSampler->get_playing_notes_number()).arg(g_engine->get_preferences()->m_nMaxNotes));
 
 }

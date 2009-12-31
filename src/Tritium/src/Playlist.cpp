@@ -184,8 +184,8 @@ void Playlist::loadSong( QString songName )
 {
 	m_engine->get_transport()->stop();
 
-	Song *pSong = Song::load ( m_engine, songName );
-	if ( pSong == NULL ){
+	T<Song>::shared_ptr pSong = Song::load ( m_engine, songName );
+	if ( ! pSong ){
 		return;
 	}
 

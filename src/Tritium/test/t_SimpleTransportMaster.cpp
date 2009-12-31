@@ -43,20 +43,20 @@ namespace THIS_NAMESPACE
 
     struct Fixture
     {
-	Song* s;
+	T<Song>::shared_ptr s;
 	Engine* engine;
 	SimpleTransportMaster x;
 
 	Fixture() {
 	    Logger::create_instance();
-	    Preferences* prefs = new Preferences();
+	    T<Preferences>::shared_ptr prefs( new Preferences );
 	    engine = new Engine(prefs);
 	    s = Song::load(engine, song_file_name);
 	    x.set_current_song(s);
 	}
 	~Fixture() {
-	    x.set_current_song(0);
-	    delete s;
+	    x.set_current_song(T<Song>::shared_ptr());
+	    s.reset();
 	    delete engine;
 	    delete Logger::get_instance();
 	}

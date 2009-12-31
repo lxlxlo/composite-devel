@@ -24,6 +24,7 @@
 
 #include <QDomNode>
 #include <QString>
+#include <Tritium/memory.hpp>
 
 namespace Tritium
 {
@@ -40,13 +41,13 @@ namespace Tritium
     public:
 	SongReader();
 	~SongReader();
-	Song* readSong( Engine* engine, const QString& filename );
+	T<Song>::shared_ptr readSong( Engine* engine, const QString& filename );
 
     private:
 	QString m_sSongVersion;
 
 	/// Dato un XmlNode restituisce un oggetto Pattern
-	Pattern* getPattern( QDomNode pattern, InstrumentList* instrList );
+	T<Pattern>::shared_ptr getPattern( QDomNode pattern, InstrumentList* instrList );
     };
 
 } // namespace Tritium

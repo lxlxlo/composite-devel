@@ -23,6 +23,7 @@
 
 #include <stdint.h>
 #include <QtCore/QMutex>
+#include <Tritium/memory.hpp>
 
 namespace Tritium
 {
@@ -38,12 +39,12 @@ public:
     SongSequencer();
     ~SongSequencer();
 
-    void set_current_song(Song* pSong);
+    void set_current_song(T<Song>::shared_ptr pSong);
     int process(SeqScript& seq, const TransportPosition& pos, uint32_t nframes, bool& pattern_changed);
 
 private:
     QMutex m_mutex;
-    Song* m_pSong;
+    T<Song>::shared_ptr m_pSong;
 };  // class SongSequencer
 
 } // namespace Tritium

@@ -22,8 +22,8 @@
 #include <Tritium/SeqEvent.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/Logger.hpp>
+#include <Tritium/memory.hpp>
 #include <cmath>
-#include <memory>
 
 #define THIS_NAMESPACE t_SeqEvent
 #include "test_macros.hpp"
@@ -35,24 +35,33 @@ namespace THIS_NAMESPACE
 
     struct Fixture
     {
-	SeqEvent ev;  // This is the "normal" one.
-	SeqEvent xev; // This is the odd one.
-	std::auto_ptr<Instrument> instr;  // Note() won't let us set a null instrument
+	T<SeqEvent>::auto_ptr ev_ptr;
+	SeqEvent& ev;  // This is the "normal" one.
+	T<SeqEvent>::auto_ptr xev_ptr;
+	SeqEvent& xev; // This is the odd one.
+	T<Instrument>::shared_ptr instr;  // Note() won't let us set a null instrument
 
-	Fixture() : ev(), xev() {
+	Fixture() :
+	    ev_ptr( new SeqEvent ),
+	    ev( *ev_ptr ),
+	    xev_ptr( new SeqEvent ),
+	    xev( *xev_ptr ) {
 	    Logger::create_instance();
-	    instr.reset( Instrument::create_empty() );
+	    instr = Instrument::create_empty();
 
-	    ev.note.set_instrument( instr.get() );
+	    ev.note.set_instrument( instr );
 
 	    xev.frame = 0xFEEEEEEE;
 	    xev.type = SeqEvent::ALL_OFF;
 	    xev.quantize = true;
 	    xev.instrument_index = 0xFF;
-	    xev.note.set_instrument( instr.get() );
+	    xev.note.set_instrument( instr );
 	}
 
 	~Fixture() {
+	    ev_ptr.reset();
+	    xev_ptr.reset();
+	    CK( instr.use_count() == 1 );
 	}
     };
 
@@ -128,7 +137,7 @@ TEST_CASE( 004_compare )
     SeqEvent a;
     SeqEvent b = xev;
 
-    a.note.set_instrument( instr.get() );
+    a.note.set_instrument( instr );
 
     CK( a == ev );
     CK( ev == a );

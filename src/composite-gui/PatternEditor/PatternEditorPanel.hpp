@@ -26,6 +26,7 @@
 #include <QtGui>
 
 #include <Tritium/TransportPosition.hpp>
+#include <Tritium/memory.hpp>
 
 #include "../EventListener.hpp"
 
@@ -96,7 +97,7 @@ class PatternEditorPanel : public QWidget, public EventListener
 		void moveUpBtnClicked(Button *);
 
 	private:
-		Tritium::Pattern *m_pPattern;
+		Tritium::T<Tritium::Pattern>::shared_ptr m_pPattern;
 		QPixmap m_backgroundPixmap;
 		QLabel *pSLlabel;
 

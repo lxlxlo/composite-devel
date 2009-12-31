@@ -87,7 +87,7 @@ void SampleWaveDisplay::paintEvent(QPaintEvent *ev)
 void SampleWaveDisplay::updateDisplay( QString filename )
 {
 
-	Sample *pNewSample = Sample::load( filename );
+	T<Sample>::shared_ptr pNewSample = Sample::load( filename );
 
 	if ( pNewSample ) {
 		// Extract the filename from the complete path
@@ -127,7 +127,7 @@ void SampleWaveDisplay::updateDisplay( QString filename )
 		}
 	}
 
-	delete pNewSample;
+	pNewSample.reset();
 	update();
 
 }

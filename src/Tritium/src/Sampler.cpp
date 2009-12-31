@@ -43,6 +43,7 @@
 #include <Tritium/fx/Effects.hpp>
 #include <Tritium/Sampler.hpp>
 #include <Tritium/TransportPosition.hpp>
+#include <Tritium/memory.hpp>
 
 using namespace Tritium;
 
@@ -73,17 +74,17 @@ void SamplerPrivate::handle_event(const SeqEvent& ev)
 
 void SamplerPrivate::panic()
 {
-	parent.stop_playing_notes(0);
+	parent.stop_playing_notes();
 }
 
 void SamplerPrivate::handle_note_on(const SeqEvent& ev)
 {
 	// Respect the mute groups.
-	Instrument *pInstr = ev.note.get_instrument(); // TODO: May return invalid note
+	T<Instrument>::shared_ptr pInstr = ev.note.get_instrument(); // TODO: May return invalid note
 	if ( pInstr->get_mute_group() != -1 ) {
 		// remove all notes using the same mute group
 		NoteList::iterator j, prev;
-		Instrument *otherInst = 0;
+		T<Instrument>::shared_ptr otherInst;
 		for ( j = current_notes.begin() ; j != current_notes.end() ; ++j ) {
 			otherInst = j->get_instrument();
 			if( (otherInst != pInstr)
@@ -125,7 +126,7 @@ Sampler::Sampler(Engine* parent) :
 
 	// instrument used in file preview
 	QString sEmptySampleFilename = DataPath::get_data_path() + "/emptySample.wav";
-	d->preview_instrument = new Instrument( sEmptySampleFilename, "preview", new ADSR() );
+	d->preview_instrument.reset( new Instrument( sEmptySampleFilename, "preview", new ADSR() ) );
 	d->preview_instrument->set_volume( 0.8 );
 	d->preview_instrument->set_layer( new InstrumentLayer( Sample::load( sEmptySampleFilename ) ), 0 );
 }
@@ -138,9 +139,6 @@ Sampler::~Sampler()
 
 	delete[] __main_out_L;
 	delete[] __main_out_R;
-
-	delete d->preview_instrument;
-	d->preview_instrument = NULL;
 }
 
 void Sampler::panic()
@@ -161,8 +159,8 @@ void Sampler::process( SeqScriptConstIterator beg,
 		       uint32_t nFrames )
 {
 	//infoLog( "[process]" );
-	AudioOutput* audio_output = d->engine->get_audio_output();
-	assert( audio_output );
+	T<AudioOutput>::shared_ptr audio_output = d->engine->get_audio_output();
+	assert( audio_output.use_count() );
 
 	memset( __main_out_L, 0, nFrames * sizeof( float ) );
 	memset( __main_out_R, 0, nFrames * sizeof( float ) );
@@ -205,7 +203,7 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
 {
 	//infoLog( "[renderNote] instr: " + note.getInstrument()->m_sName );
 
-	Instrument *pInstr = note.get_instrument();
+	T<Instrument>::shared_ptr pInstr = note.get_instrument();
 	if ( !pInstr ) {
 		ERRORLOG( "NULL instrument" );
 		return 1;
@@ -215,7 +213,7 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
 	float fLayerPitch = 0.0;
 
 	// scelgo il sample da usare in base alla velocity
-	Sample *pSample = NULL;
+	T<Sample>::shared_ptr pSample;
 	for ( unsigned nLayer = 0; nLayer < MAX_LAYERS; ++nLayer ) {
 		InstrumentLayer *pLayer = pInstr->get_layer( nLayer );
 		if ( pLayer == NULL ) continue;
@@ -351,7 +349,7 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
 
 
 int SamplerPrivate::render_note_no_resample(
-    Sample *pSample,
+    T<Sample>::shared_ptr pSample,
     Note& note,
     int nFrames,
     float cost_L,
@@ -362,7 +360,7 @@ int SamplerPrivate::render_note_no_resample(
     float fSendFXLevel_R
 )
 {
-	AudioOutput* audio_output = engine->get_audio_output();
+	T<AudioOutput>::shared_ptr audio_output = engine->get_audio_output();
 	int retValue = 1; // the note is ended
 
 	int nAvail_bytes = pSample->get_n_frames() - ( int )note.m_fSamplePosition;   // verifico 
@@ -410,7 +408,7 @@ int SamplerPrivate::render_note_no_resample(
 	float *track_out_L = 0;
 	float *track_out_R = 0;
 	if( audio_output->has_track_outs()
-	    && (jao = dynamic_cast<JackOutput*>(audio_output)) ) {
+	    && (jao = dynamic_cast<JackOutput*>(audio_output.get())) ) {
 		track_out_L = jao->getTrackOut_L( nInstrument );
 		track_out_R = jao->getTrackOut_R( nInstrument );
 	}
@@ -473,7 +471,7 @@ int SamplerPrivate::render_note_no_resample(
 #ifdef LADSPA_SUPPORT
 	// LADSPA
 	for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
-		LadspaFX *pFX = engine->get_effects()->getLadspaFX( nFX );
+		T<LadspaFX>::shared_ptr pFX = engine->get_effects()->getLadspaFX( nFX );
 
 		float fLevel = note.get_instrument()->get_fx_level( nFX );
 
@@ -506,7 +504,7 @@ int SamplerPrivate::render_note_no_resample(
 
 
 int SamplerPrivate::render_note_resample(
-    Sample *pSample,
+    T<Sample>::shared_ptr pSample,
     Note& note,
     int nFrames,
     uint32_t frame_rate,
@@ -519,7 +517,7 @@ int SamplerPrivate::render_note_resample(
     float fSendFXLevel_R
 )
 {
-	AudioOutput* audio_output = engine->get_audio_output();
+	T<AudioOutput>::shared_ptr audio_output = engine->get_audio_output();
 	float fNotePitch = note.get_pitch() + fLayerPitch;
 	fNotePitch += note.m_noteKey.m_nOctave * 12 + note.m_noteKey.m_key;
 
@@ -577,7 +575,7 @@ int SamplerPrivate::render_note_resample(
 	float *track_out_L = 0;
 	float *track_out_R = 0;
 	if( audio_output->has_track_outs()
-	    && (jao = dynamic_cast<JackOutput*>(audio_output)) ) {
+	    && (jao = dynamic_cast<JackOutput*>(audio_output.get())) ) {
 		track_out_L = jao->getTrackOut_L( nInstrument );
 		track_out_R = jao->getTrackOut_R( nInstrument );
 	}
@@ -654,7 +652,7 @@ int SamplerPrivate::render_note_resample(
 #ifdef LADSPA_SUPPORT
 	// LADSPA
 	for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
-		LadspaFX *pFX = engine->get_effects()->getLadspaFX( nFX );
+		T<LadspaFX>::shared_ptr pFX = engine->get_effects()->getLadspaFX( nFX );
 		float fLevel = note.get_instrument()->get_fx_level( nFX );
 		if ( ( pFX ) && ( fLevel != 0.0 ) ) {
 			fLevel = fLevel * pFX->getVolume();
@@ -703,7 +701,7 @@ void note_off( Note* note )
 	assert(false);
 }
 
-void Sampler::stop_playing_notes( Instrument* instrument )
+void Sampler::stop_playing_notes( T<Instrument>::shared_ptr instrument )
 {
 	/*
 	// send a note-off event to all notes present in the playing note queue
@@ -736,29 +734,28 @@ void Sampler::stop_playing_notes( Instrument* instrument )
 
 
 /// Preview, uses only the first layer
-void Sampler::preview_sample( Sample* sample, int length )
+void Sampler::preview_sample( T<Sample>::shared_ptr sample, int length )
 {
 	d->engine->lock( RIGHT_HERE );
 
 	InstrumentLayer *pLayer = d->preview_instrument->get_layer( 0 );
 
-	Sample *pOldSample = pLayer->get_sample();
+	T<Sample>::shared_ptr pOldSample = pLayer->get_sample();
 	pLayer->set_sample( sample );
 
 	Note *previewNote = new Note( d->preview_instrument, 0, 1.0, 0.5, 0.5, 0 );
 
 	stop_playing_notes( d->preview_instrument );
 	note_on( previewNote );
-	delete pOldSample;
 
 	d->engine->unlock();
 }
 
 
 
-void Sampler::preview_instrument( Instrument* instr )
+void Sampler::preview_instrument( T<Instrument>::shared_ptr instr )
 {
-	Instrument * old_preview;
+	T<Instrument>::shared_ptr old_preview;
 	d->engine->lock( RIGHT_HERE );
 
 	stop_playing_notes( d->preview_instrument );
@@ -770,5 +767,4 @@ void Sampler::preview_instrument( Instrument* instr )
 
 	note_on( previewNote );	// exclusive note
 	d->engine->unlock();
-	delete old_preview;
 }

@@ -33,6 +33,7 @@
 #include "test_macros.hpp"
 #include "test_config.hpp"
 #include <Tritium/Sample.hpp>
+#include <Tritium/memory.hpp>
 #include <cmath>
 
 using namespace Tritium;
@@ -66,23 +67,20 @@ namespace THIS_NAMESPACE
     struct Fixture
     {
 	// SETUP AND TEARDOWN OBJECTS FOR YOUR TESTS.
-	Sample *sine_wav, *sine_flac;
-	Sample *tri_wav, *tri_flac;
+	T<Sample>::shared_ptr sine_wav, sine_flac;
+	T<Sample>::shared_ptr tri_wav, tri_flac;
 
-	Fixture() : sine_wav(0), 
-		    sine_flac(0), 
-		    tri_wav(0), 
-		    tri_flac(0) {
+	Fixture() {
 	    sine_wav = Sample::load(sine_wav_file);
 	    sine_flac = Sample::load(sine_flac_file);
 	    tri_wav = Sample::load(triangle_wav_file);
 	    tri_flac = Sample::load(triangle_flac_file);
 	}
 	~Fixture() {
-	    delete sine_wav;
-	    delete sine_flac;
-	    delete tri_wav;
-	    delete tri_flac;
+	    CK( sine_wav.use_count() == 1 );
+	    CK( sine_flac.use_count() == 1 );
+	    CK( tri_wav.use_count() == 1 );
+	    CK( tri_flac.use_count() == 1 );
 	}
 
 	/* This works like a trig function.
@@ -113,16 +111,17 @@ TEST_BEGIN( Fixture );
 
 TEST_CASE( 010_defaults )
 {
-    Sample* samples[] = {
+    T<Sample>::shared_ptr null;
+    T<Sample>::shared_ptr samples[] = {
 	sine_wav,
 	sine_flac,
 	tri_wav,
 	tri_flac,
-	0 };
-    Sample **iter = samples;
+	null };
+    T<Sample>::shared_ptr *iter = samples;
 
     while(*iter) {
-	Sample *that = *iter;
+	T<Sample>::shared_ptr that = *iter;
 
 	CK(that);
 	CK(that->get_data_l());
@@ -142,18 +141,20 @@ TEST_CASE( 010_defaults )
 
 TEST_CASE( 020_no_clipping )
 {
-    Sample* samples[] = {
+    T<Sample>::shared_ptr null;
+    T<Sample>::shared_ptr samples[] = {
 	sine_wav,
 	sine_flac,
 	tri_wav,
 	tri_flac,
-	0 };
-    Sample **iter = samples;
+	null };
+    T<Sample>::shared_ptr *iter = samples;
+
     float *left, *right;
     unsigned long k;
 
     while(*iter) {
-	Sample *that = *iter;
+	T<Sample>::shared_ptr that = *iter;
 
 	CK(that);
 	left = that->get_data_l();

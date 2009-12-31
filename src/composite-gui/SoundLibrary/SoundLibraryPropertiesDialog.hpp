@@ -24,6 +24,7 @@
 
 #include "config.h"
 #include "ui_SoundLibraryPropertiesDialog_UI.h"
+#include <Tritium/memory.hpp>
 
 ///
 ///
@@ -36,7 +37,7 @@ class SoundLibraryPropertiesDialog : public QDialog, public Ui_SoundLibraryPrope
 {
 	Q_OBJECT
 	public:
-		SoundLibraryPropertiesDialog( QWidget* pParent , Drumkit *drumkitInfo, Drumkit *preDrumKit );
+		SoundLibraryPropertiesDialog( QWidget* pParent , T<Drumkit>::shared_ptr drumkitInfo, T<Drumkit>::shared_ptr preDrumKit );
 		~SoundLibraryPropertiesDialog();
 
 	private slots:

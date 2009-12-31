@@ -33,6 +33,7 @@
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Transport.hpp>
+#include <Tritium/memory.hpp>
 
 using namespace Tritium;
 using namespace std;
@@ -255,7 +256,7 @@ SongEditorPanel::~SongEditorPanel()
 
 void SongEditorPanel::updatePlayHeadPosition()
 {
-	Song *pSong = g_engine->getSong();
+	T<Song>::shared_ptr pSong = g_engine->getSong();
 
 	if ( g_engine->get_preferences()->m_bFollowPlayhead && pSong->get_mode() == Song::SONG_MODE) {
 		if ( g_engine->get_transport()->get_state() != TransportPosition::ROLLING ) {
@@ -334,11 +335,11 @@ void SongEditorPanel::updateAll()
 void SongEditorPanel::newPatBtnClicked( Button* /*btn*/)
 {
 	Engine *engine = g_engine;
-	Song *song = engine->getSong();
+	T<Song>::shared_ptr song = engine->getSong();
 	PatternList *patternList = song->get_pattern_list();
 	int emptyPatternNo = patternList->get_size() + 1;
 
-	Pattern *emptyPattern = Pattern::get_empty_pattern();
+	T<Pattern>::shared_ptr emptyPattern = Pattern::get_empty_pattern();
 	emptyPattern->set_name( trUtf8("Pattern %1").arg(emptyPatternNo) );
 	emptyPattern->set_category( trUtf8("not_categorized") );
 
@@ -350,8 +351,7 @@ void SongEditorPanel::newPatBtnClicked( Button* /*btn*/)
 	}
 	else {
 		patternList->del( emptyPattern );
-		delete emptyPattern;
-		emptyPattern = NULL;
+		emptyPattern.reset();
 	}
 	delete dialog;
 	dialog = NULL;
@@ -368,11 +368,11 @@ void SongEditorPanel::upBtnClicked( Button* /*btn*/ )
 	int nSelectedPatternPos = pEngine->getSelectedPatternNumber();
 
 	g_engine->lock( RIGHT_HERE );
-	Song *pSong = pEngine->getSong();
+	T<Song>::shared_ptr pSong = pEngine->getSong();
 	PatternList *pList = pSong->get_pattern_list();
 
 	if ( ( nSelectedPatternPos - 1 ) >= 0 ) {
-		Pattern *pTemp = pList->get( nSelectedPatternPos - 1 );
+		T<Pattern>::shared_ptr pTemp = pList->get( nSelectedPatternPos - 1 );
 		pList->replace( pList->get( nSelectedPatternPos ), nSelectedPatternPos - 1 );
 		pList->replace( pTemp, nSelectedPatternPos );
 		g_engine->unlock();
@@ -397,11 +397,11 @@ void SongEditorPanel::downBtnClicked( Button* /*btn*/ )
 	int nSelectedPatternPos = pEngine->getSelectedPatternNumber();
 
 	g_engine->lock( RIGHT_HERE );
-	Song *pSong = pEngine->getSong();
+	T<Song>::shared_ptr pSong = pEngine->getSong();
 	PatternList *pList = pSong->get_pattern_list();
 
 	if ( ( nSelectedPatternPos + 1 ) < (int)pList->get_size() ) {
-		Pattern *pTemp = pList->get( nSelectedPatternPos + 1 );
+		T<Pattern>::shared_ptr pTemp = pList->get( nSelectedPatternPos + 1 );
 		pList->replace( pList->get( nSelectedPatternPos ), nSelectedPatternPos + 1 );
 		pList->replace( pTemp, nSelectedPatternPos );
 
@@ -430,7 +430,7 @@ void SongEditorPanel::clearSequence( Button* /*btn*/)
 
 	g_engine->lock( RIGHT_HERE );
 
-	Song *song = engine->getSong();
+	T<Song>::shared_ptr song = engine->getSong();
 	Song::pattern_group_t *pPatternGroupsVect = song->get_pattern_group_vector();
 	for (uint i = 0; i < pPatternGroupsVect->size(); i++) {
 		PatternList *pPatternList = (*pPatternGroupsVect)[i];

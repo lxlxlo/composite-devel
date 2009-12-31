@@ -23,6 +23,7 @@
 #define TRITIUM_SAMPLE_HPP
 
 #include <Tritium/globals.hpp>
+#include <Tritium/memory.hpp>
 #include <QString>
 
 namespace Tritium
@@ -66,7 +67,7 @@ public:
 	}
 
 	/// Loads a sample from disk
-	static Sample* load( const QString& filename );
+	static T<Sample>::shared_ptr load( const QString& filename );
 
 	unsigned get_n_frames() {
 		return __n_frames;
@@ -83,10 +84,10 @@ private:
 	//static int __total_used_bytes;
 
 	/// loads a wave file
-	static Sample* load_wave( const QString& filename );
+	static T<Sample>::shared_ptr load_wave( const QString& filename );
 
 	/// loads a FLAC file
-	static Sample* load_flac( const QString& filename );
+	static T<Sample>::shared_ptr load_flac( const QString& filename );
 };
 
 };

@@ -56,6 +56,7 @@
 #include <Tritium/Song.hpp>
 #include <Tritium/SoundLibrary.hpp>
 #include <Tritium/Logger.hpp>
+#include <Tritium/memory.hpp>
 
 using namespace Tritium;
 
@@ -129,16 +130,8 @@ SoundLibraryPanel::SoundLibraryPanel( QWidget *pParent )
 
 SoundLibraryPanel::~SoundLibraryPanel()
 {
-	for (uint i = 0; i < __system_drumkit_info_list.size(); ++i ) {
-		delete __system_drumkit_info_list[i];
-	}
 	__system_drumkit_info_list.clear();
-
-	for (uint i = 0; i < __user_drumkit_info_list.size(); ++i ) {
-		delete __user_drumkit_info_list[i];
-	}
 	__user_drumkit_info_list.clear();
-
 }
 
 
@@ -163,21 +156,14 @@ void SoundLibraryPanel::updateDrumkitList()
 
 	
 
-	for (uint i = 0; i < __system_drumkit_info_list.size(); ++i ) {
-		delete __system_drumkit_info_list[i];
-	}
 	__system_drumkit_info_list.clear();
-
-	for (uint i = 0; i < __user_drumkit_info_list.size(); ++i ) {
-		delete __user_drumkit_info_list[i];
-	}
 	__user_drumkit_info_list.clear();
 
 	//User drumkit list
 	std::vector<QString> userList = Drumkit::getUserDrumkitList(g_engine);
 	for (uint i = 0; i < userList.size(); ++i) {
 		QString absPath =  userList[i];
-		Drumkit *pInfo = mng.loadDrumkit( absPath );
+		T<Drumkit>::shared_ptr pInfo = mng.loadDrumkit( absPath );
 
 		QString filenameforpattern = absPath + "/patterns/";
 		
@@ -194,7 +180,7 @@ void SoundLibraryPanel::updateDrumkitList()
 
 			InstrumentList *pInstrList = pInfo->getInstrumentList();
 			for ( uint nInstr = 0; nInstr < pInstrList->get_size(); ++nInstr ) {
-				Instrument *pInstr = pInstrList->get( nInstr );
+				T<Instrument>::shared_ptr pInstr = pInstrList->get( nInstr );
 
 				QTreeWidgetItem* pInstrumentItem = new QTreeWidgetItem( pDrumkitItem );
 				pInstrumentItem->setText( 0, QString( "[%1] " ).arg( nInstr + 1 ) + pInstr->get_name() );
@@ -209,7 +195,7 @@ void SoundLibraryPanel::updateDrumkitList()
 
 	for (uint i = 0; i < systemList.size(); i++) {
 		QString absPath = systemList[i];
-		Drumkit *pInfo = mng.loadDrumkit( absPath );
+		T<Drumkit>::shared_ptr pInfo = mng.loadDrumkit( absPath );
 		if (pInfo) {
 			__system_drumkit_info_list.push_back( pInfo );
 
@@ -221,7 +207,7 @@ void SoundLibraryPanel::updateDrumkitList()
 
 			InstrumentList *pInstrList = pInfo->getInstrumentList();
 			for ( uint nInstr = 0; nInstr < pInstrList->get_size(); ++nInstr ) {
-				Instrument *pInstr = pInstrList->get( nInstr );
+				T<Instrument>::shared_ptr pInstr = pInstrList->get( nInstr );
 
 				QTreeWidgetItem* pInstrumentItem = new QTreeWidgetItem( pDrumkitItem );
 				pInstrumentItem->setText( 0, QString( "[%1] " ).arg( nInstr + 1 ) + pInstr->get_name() );
@@ -338,7 +324,7 @@ void SoundLibraryPanel::on_DrumkitList_itemActivated(
 		QString sDrumkitName = item->parent()->text(0);
 		INFOLOG( QString(sDrumkitName) + ", instr:" + sInstrName );
 
-		Instrument *pInstrument = Instrument::load_instrument( g_engine, sDrumkitName, sInstrName );
+		T<Instrument>::shared_ptr pInstrument = Instrument::load_instrument( g_engine, sDrumkitName, sInstrName );
 		pInstrument->set_muted( false );
 
 		g_engine->get_sampler()->preview_instrument( pInstrument );
@@ -513,18 +499,18 @@ void SoundLibraryPanel::on_drumkitLoadAction()
 
 	QString sDrumkitName = __sound_library_tree->currentItem()->text(0);
 
-	Drumkit *drumkitInfo = NULL;
+	T<Drumkit>::shared_ptr drumkitInfo;
 
 	// find the drumkit in the list
 	for ( uint i = 0; i < __system_drumkit_info_list.size(); i++ ) {
-		Drumkit *pInfo = __system_drumkit_info_list[i];
+		T<Drumkit>::shared_ptr pInfo = __system_drumkit_info_list[i];
 		if ( pInfo->getName() == sDrumkitName ) {
 			drumkitInfo = pInfo;
 			break;
 		}
 	}
 	for ( uint i = 0; i < __user_drumkit_info_list.size(); i++ ) {
-		Drumkit *pInfo = __user_drumkit_info_list[i];
+		T<Drumkit>::shared_ptr pInfo = __user_drumkit_info_list[i];
 		if ( pInfo->getName() == sDrumkitName ) {
 			drumkitInfo = pInfo;
 			break;
@@ -654,18 +640,18 @@ void SoundLibraryPanel::on_drumkitPropertiesAction()
 {
 	QString sDrumkitName = __sound_library_tree->currentItem()->text(0);
 
-	Drumkit *drumkitInfo = NULL;
+	T<Drumkit>::shared_ptr drumkitInfo;
 
 	// find the drumkit in the list
 	for ( uint i = 0; i < __system_drumkit_info_list.size(); i++ ) {
-		Drumkit *pInfo = __system_drumkit_info_list[i];
+		T<Drumkit>::shared_ptr pInfo = __system_drumkit_info_list[i];
 		if ( pInfo->getName() == sDrumkitName ) {
 			drumkitInfo = pInfo;
 			break;
 		}
 	}
 	for ( uint i = 0; i < __user_drumkit_info_list.size(); i++ ) {
-		Drumkit*pInfo = __user_drumkit_info_list[i];
+		T<Drumkit>::shared_ptr pInfo = __user_drumkit_info_list[i];
 		if ( pInfo->getName() == sDrumkitName ) {
 			drumkitInfo = pInfo;
 			break;
@@ -676,19 +662,19 @@ void SoundLibraryPanel::on_drumkitPropertiesAction()
 
 	QString sPreDrumkitName = g_engine->getCurrentDrumkitname();
 
-	Drumkit *preDrumkitInfo = NULL;
+	T<Drumkit>::shared_ptr preDrumkitInfo;
 	
 
 	// find the drumkit in the list
 	for ( uint i = 0; i < __system_drumkit_info_list.size(); i++ ) {
-		Drumkit *prInfo = __system_drumkit_info_list[i];
+		T<Drumkit>::shared_ptr prInfo = __system_drumkit_info_list[i];
 		if ( prInfo->getName() == sPreDrumkitName ) {
 			preDrumkitInfo = prInfo;
 			break;
 		}
 	}
 	for ( uint i = 0; i < __user_drumkit_info_list.size(); i++ ) {
-		Drumkit *prInfo = __user_drumkit_info_list[i];
+		T<Drumkit>::shared_ptr prInfo = __user_drumkit_info_list[i];
 		if ( prInfo->getName() == sPreDrumkitName ) {
 			preDrumkitInfo = prInfo;
 			break;
@@ -726,14 +712,14 @@ void SoundLibraryPanel::on_songLoadAction()
 	engine->get_transport()->stop();
 
 	Tritium::LocalFileMng mng(g_engine);
-	Song *pSong = Song::load( g_engine, sFilename );
-	if ( pSong == NULL ) {
+	T<Song>::shared_ptr pSong = Song::load( g_engine, sFilename );
+	if ( ! pSong ) {
 		QMessageBox::information( this, "Composite", trUtf8("Error loading song.") );
 		return;
 	}
 
 	// add the new loaded song in the "last used song" vector
-	Preferences *pPref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pPref = g_engine->get_preferences();
 
 	std::vector<QString> recentFiles = pPref->getRecentFiles();
 	recentFiles.insert( recentFiles.begin(), sFilename );
@@ -756,7 +742,7 @@ void SoundLibraryPanel::on_patternLoadAction()
 	QString patternName = __sound_library_tree->currentItem()->text( 0 ) + ".h2pattern";
 	QString drumkitname = __sound_library_tree->currentItem()->toolTip ( 0 );
 	Engine *engine = g_engine;
-	Song *song = engine->getSong();
+	T<Song>::shared_ptr song = engine->getSong();
 	PatternList *pPatternList = song->get_pattern_list();
 	
 	QString sDirectory;
@@ -777,13 +763,13 @@ void SoundLibraryPanel::on_patternLoadAction()
 		} 
 	}
 
-	Pattern* err = mng.loadPattern (sDirectory );
+	T<Pattern>::shared_ptr err = mng.loadPattern (sDirectory );
 
 	if ( err == 0 ) {
 		ERRORLOG( "Error loading the pattern" );
 	}
 	else {
-		Tritium::Pattern *pNewPattern = err;
+		T<Pattern>::shared_ptr pNewPattern = err;
 		pPatternList->add ( pNewPattern );
 		song->set_modified( true );
 	}

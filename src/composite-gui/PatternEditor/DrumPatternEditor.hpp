@@ -25,6 +25,7 @@
 
 #include "config.h"
 #include "../EventListener.hpp"
+#include <Tritium/memory.hpp>
 
 #include <QtGui>
 
@@ -83,7 +84,7 @@ class DrumPatternEditor : public QWidget, public EventListener
 		int m_nDraggedNoteStartPosition;
 		//~
 
-		Tritium::Pattern *m_pPattern;
+		Tritium::T<Tritium::Pattern>::shared_ptr m_pPattern;
 
 		PatternEditorPanel *m_pPatternEditorPanel;
 

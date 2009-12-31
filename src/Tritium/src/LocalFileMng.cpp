@@ -39,7 +39,7 @@
 #include <Tritium/SoundLibrary.hpp>
 #include <Tritium/Sample.hpp>
 #include <Tritium/fx/Effects.hpp>
-
+#include <Tritium/memory.hpp>
 
 #include <cstdlib>
 #include <cassert>
@@ -124,16 +124,16 @@ QString LocalFileMng::getPatternNameFromPatternDir( const QString& patternDirNam
 }
 
 
-Pattern* LocalFileMng::loadPattern( const QString& directory )
+T<Pattern>::shared_ptr LocalFileMng::loadPattern( const QString& directory )
 {
 	InstrumentList* instrList = m_engine->getSong()->get_instrument_list();
-	Pattern *pPattern = NULL;
+	T<Pattern>::shared_ptr pPattern;
 	QString patternInfoFile = directory;
 
 	QFile check( patternInfoFile );
 	if (check.exists() == false) {
 		ERRORLOG( QString("Load Pattern: Data file %1 not found." ).arg( patternInfoFile ) );
-		return NULL;
+		return pPattern; // empty
 	}
 
 
@@ -144,7 +144,7 @@ Pattern* LocalFileMng::loadPattern( const QString& directory )
 	QDomNode rootNode = doc.firstChildElement( "drumkit_pattern" );	// root element
 	if (  rootNode.isNull() ) {
 		ERRORLOG( "Error reading Pattern: Pattern_drumkit_infonode not found" ); 
-		return NULL;
+		return pPattern; // empty
 	}
 
 	QDomNode patternNode = rootNode.firstChildElement( "pattern" );
@@ -154,7 +154,7 @@ Pattern* LocalFileMng::loadPattern( const QString& directory )
 
 	int nSize = -1;
 	nSize = LocalFileMng::readXmlInt( patternNode, "size",nSize ,false,false );
-	pPattern = new Pattern( sName, sCategory, nSize );
+	pPattern.reset( new Pattern( sName, sCategory, nSize ) );
 
 
 
@@ -177,9 +177,10 @@ Pattern* LocalFileMng::loadPattern( const QString& directory )
 
 			QString instrId = LocalFileMng::readXmlString( noteNode, "instrument", "" );
 
-			Instrument *instrRef = NULL;
+			T<Instrument>::shared_ptr instrRef;
 			// search instrument by ref
-			for ( unsigned i = 0; i < instrList->get_size(); i++ ) { Instrument *instr = instrList->get( i );
+			for ( unsigned i = 0; i < instrList->get_size(); i++ ) {
+				T<Instrument>::shared_ptr instr = instrList->get( i );
 				if ( instrId == instr->get_id() ) {
 					instrRef = instr;
 					break;
@@ -200,18 +201,17 @@ Pattern* LocalFileMng::loadPattern( const QString& directory )
 	}
 
 	return pPattern;
-
 }
 
 
-int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString& patternname, const QString& realpatternname, int mode)
+int LocalFileMng::savePattern( T<Song>::shared_ptr song , int selectedpattern , const QString& patternname, const QString& realpatternname, int mode)
 {
 	//int mode = 1 save, int mode = 2 save as
 	// INSTRUMENT NODE
-	Instrument *instr = song->get_instrument_list()->get( 0 );
+	T<Instrument>::shared_ptr instr = song->get_instrument_list()->get( 0 );
 	assert( instr );
 
-	Pattern *pat = song->get_pattern_list()->get( selectedpattern );
+	T<Pattern>::shared_ptr pat = song->get_pattern_list()->get( selectedpattern );
 
 	QString sPatternDir = m_engine->get_preferences()->getDataDirectory() + "patterns/" +  instr->get_drumkit_name();
 
@@ -431,7 +431,7 @@ std::vector<QString> LocalFileMng::getAllPatternName()
 
 std::vector<QString> LocalFileMng::getAllCategoriesFromPattern()
 {
-	Preferences *pPref = m_engine->get_preferences();
+	T<Preferences>::shared_ptr pPref = m_engine->get_preferences();
 	std::list<QString>::const_iterator cur_testpatternCategories;
 
 	std::vector<QString> categorylist;
@@ -630,7 +630,7 @@ QString LocalFileMng::getDrumkitDirectory( const QString& drumkitName )
 /// Restituisce un oggetto DrumkitInfo.
 /// Gli strumenti non hanno dei veri propri sample,
 /// viene utilizzato solo il campo filename.
-Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
+T<Drumkit>::shared_ptr LocalFileMng::loadDrumkit( const QString& directory )
 {
 	//INFOLOG( directory );
 
@@ -640,11 +640,11 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 	QFileInfo fInfo( directory );
 
 	if( fInfo.isFile() ) 
-		return NULL;
+		return T<Drumkit>::shared_ptr();
 
 	if ( QFile( drumkitInfoFile ).exists() == false ) {
 		ERRORLOG( "Load Instrument: Data file " + drumkitInfoFile + " not found." );
-		return NULL;
+		return T<Drumkit>::shared_ptr();
 	}
 
 	QDomDocument doc  = LocalFileMng::openXmlDocument( drumkitInfoFile );
@@ -653,21 +653,21 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 	QDomNode drumkitNode = doc.firstChildElement( "drumkit_info" );	// root element
 	if ( drumkitNode.isNull() ) {
 		ERRORLOG( "Error reading drumkit: drumkit_info node not found" );
-		return NULL;
+		return T<Drumkit>::shared_ptr();
 	}
 
 	// Name
 	QString sDrumkitName = readXmlString( drumkitNode, "name", "" );
 	if ( sDrumkitName.isEmpty() ) {
 		ERRORLOG( "Error reading drumkit: name node not found" );
-		return NULL;
+		return T<Drumkit>::shared_ptr();
 	}
 
 	QString author = readXmlString( drumkitNode, "author", "undefined author", true );
 	QString info = readXmlString( drumkitNode, "info", "defaultInfo", true );
 	QString license = readXmlString( drumkitNode, "license", "undefined license", true );
 
-	Drumkit *drumkitInfo = new Drumkit();
+	T<Drumkit>::shared_ptr drumkitInfo( new Drumkit() );
 	drumkitInfo->setName( sDrumkitName );
 	drumkitInfo->setAuthor( author );
 	drumkitInfo->setInfo( info );
@@ -713,7 +713,7 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 				continue;
 			}
 
-			Instrument *pInstrument = new Instrument( id, name, new ADSR() );
+			T<Instrument>::shared_ptr pInstrument( new Instrument( id, name, new ADSR() ) );
 			pInstrument->set_volume( volume );
 
 
@@ -723,7 +723,7 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 			if ( ! filenameNode.isNull() ) {
 				//warningLog( "Using back compatibility code. filename node found" );
 				QString sFilename = LocalFileMng::readXmlString( instrumentNode, "filename", "" );
-				Sample *pSample = new Sample( 0, sFilename, 0 );
+				T<Sample>::shared_ptr pSample( new Sample( 0, sFilename, 0 ) );
 				InstrumentLayer *pLayer = new InstrumentLayer( pSample );
 				pInstrument->set_layer( pLayer, 0 );
 			}
@@ -743,7 +743,7 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 					float fGain = LocalFileMng::readXmlFloat( layerNode, "gain", 1.0, false, false );
 					float fPitch = LocalFileMng::readXmlFloat( layerNode, "pitch", 0.0, false, false );
 
-					Sample *pSample = new Sample( 0, sFilename, 0 );
+					T<Sample>::shared_ptr pSample( new Sample( 0, sFilename, 0 ) );
 					InstrumentLayer *pLayer = new InstrumentLayer( pSample );
 					pLayer->set_velocity_range( fMin, fMax );
 					pLayer->set_gain( fGain );
@@ -781,7 +781,7 @@ Drumkit* LocalFileMng::loadDrumkit( const QString& directory )
 
 
 
-int LocalFileMng::saveDrumkit( Drumkit *info )
+int LocalFileMng::saveDrumkit( T<Drumkit>::shared_ptr info )
 {
 	INFOLOG( "[saveDrumkit]" );
 	info->dump();	// debug
@@ -824,12 +824,12 @@ int LocalFileMng::saveDrumkit( Drumkit *info )
 	unsigned nInstrument = info->getInstrumentList()->get_size();
 	// INSTRUMENT NODE
 	for ( unsigned i = 0; i < nInstrument; i++ ) {
-		Instrument *instr = info->getInstrumentList()->get( i );
+		T<Instrument>::shared_ptr instr = info->getInstrumentList()->get( i );
 
 		for ( unsigned nLayer = 0; nLayer < MAX_LAYERS; nLayer++ ) {
 			InstrumentLayer *pLayer = instr->get_layer( nLayer );
 			if ( pLayer ) {
-				Sample *pSample = pLayer->get_sample();
+				T<Sample>::shared_ptr pSample = pLayer->get_sample();
 				QString sOrigFilename = pSample->get_filename();
 
 				QString sDestFilename = sOrigFilename;
@@ -902,7 +902,7 @@ int LocalFileMng::saveDrumkit( Drumkit *info )
 	
 	QFile file( sDrumkitXmlFilename );
 	if ( !file.open(QIODevice::WriteOnly) )
-		return NULL;
+		return 0;
 
 	QTextStream TextStream( &file );
 	doc.save( TextStream, 1 );
@@ -1264,7 +1264,7 @@ SongWriter::~SongWriter()
 
 
 // Returns 0 on success, passes the TinyXml error code otherwise.
-int SongWriter::writeSong( Engine* engine, Song *song, const QString& filename )
+int SongWriter::writeSong( Engine* engine, T<Song>::shared_ptr song, const QString& filename )
 {
 	INFOLOG( "Saving song " + filename );
 	int rv = 0; // return value
@@ -1312,7 +1312,7 @@ int SongWriter::writeSong( Engine* engine, Song *song, const QString& filename )
 
 	// INSTRUMENT NODE
 	for ( unsigned i = 0; i < nInstrument; i++ ) {
-		Instrument *instr = song->get_instrument_list()->get( i );
+		T<Instrument>::shared_ptr instr = song->get_instrument_list()->get( i );
 		assert( instr );
 
 		QDomNode instrumentNode = doc.createElement( "instrument" );
@@ -1348,7 +1348,7 @@ int SongWriter::writeSong( Engine* engine, Song *song, const QString& filename )
 		for ( unsigned nLayer = 0; nLayer < MAX_LAYERS; nLayer++ ) {
 			InstrumentLayer *pLayer = instr->get_layer( nLayer );
 			if ( pLayer == NULL ) continue;
-			Sample *pSample = pLayer->get_sample();
+			T<Sample>::shared_ptr pSample = pLayer->get_sample();
 			if ( pSample == NULL ) continue;
 
 			QString sFilename = pSample->get_filename();
@@ -1377,7 +1377,7 @@ int SongWriter::writeSong( Engine* engine, Song *song, const QString& filename )
 
 	unsigned nPatterns = song->get_pattern_list()->get_size();
 	for ( unsigned i = 0; i < nPatterns; i++ ) {
-		Pattern *pat = song->get_pattern_list()->get( i );
+		T<Pattern>::shared_ptr pat = song->get_pattern_list()->get( i );
 
 		// pattern
 		QDomNode patternNode = doc.createElement( "pattern" );
@@ -1421,7 +1421,7 @@ int SongWriter::writeSong( Engine* engine, Song *song, const QString& filename )
 
 		PatternList *pList = ( *song->get_pattern_group_vector() )[i];
 		for ( unsigned j = 0; j < pList->get_size(); j++ ) {
-			Pattern *pPattern = pList->get( j );
+			T<Pattern>::shared_ptr pPattern = pList->get( j );
 			LocalFileMng::writeXmlString( groupNode, "patternID", pPattern->get_name() );
 		}
 		patternSequenceNode.appendChild( groupNode );
@@ -1437,7 +1437,7 @@ int SongWriter::writeSong( Engine* engine, Song *song, const QString& filename )
 		QDomNode fxNode = doc.createElement( "fx" );
 
 #ifdef LADSPA_SUPPORT
-		LadspaFX *pFX = engine->get_effects()->getLadspaFX( nFX );
+		T<LadspaFX>::shared_ptr pFX = engine->get_effects()->getLadspaFX( nFX );
 		if ( pFX ) {
 			LocalFileMng::writeXmlString( fxNode, "name", pFX->getPluginLabel() );
 			LocalFileMng::writeXmlString( fxNode, "filename", pFX->getLibraryPath() );

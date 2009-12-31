@@ -60,13 +60,13 @@ public:
 		      const TransportPosition& pos,
 		      uint32_t nFrames );
 
-	void stop_playing_notes( Instrument *instr = NULL );
+	void stop_playing_notes( T<Instrument>::shared_ptr instr = T<Instrument>::shared_ptr() );
 	void panic();
 
 	int get_playing_notes_number();
 
-	void preview_sample( Sample* sample, int length );
-	void preview_instrument( Instrument* instr );
+	void preview_sample( T<Sample>::shared_ptr sample, int length );
+	void preview_instrument( T<Instrument>::shared_ptr instr );
 
 	void makeTrackOutputQueues();
 

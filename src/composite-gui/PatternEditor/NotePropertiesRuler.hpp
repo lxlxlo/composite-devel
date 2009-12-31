@@ -24,6 +24,7 @@
 
 #include "../EventListener.hpp"
 
+#include <Tritium/memory.hpp>
 #include <QtGui>
 
 namespace Tritium
@@ -59,7 +60,7 @@ class NotePropertiesRuler : public QWidget, public EventListener
 		NotePropertiesMode m_mode;
 
 		PatternEditorPanel *m_pPatternEditorPanel;
-		Tritium::Pattern *m_pPattern;
+		Tritium::T<Tritium::Pattern>::shared_ptr m_pPattern;
 		float m_nGridWidth;
 		uint m_nEditorWidth;
 		uint m_nEditorHeight;

@@ -30,7 +30,7 @@ namespace Tritium
 {
 
 Note::Note(
-    Instrument *pInstrument,
+    T<Instrument>::shared_ptr pInstrument,
     float velocity,
     float fPan_L,
     float fPan_R,
@@ -98,9 +98,9 @@ Note::~Note()
 
 
 
-void Note::set_instrument( Instrument* instrument )
+void Note::set_instrument( T<Instrument>::shared_ptr instrument )
 {
-	if ( instrument == NULL ) {
+	if ( ! instrument ) {
 		return;
 	}
 

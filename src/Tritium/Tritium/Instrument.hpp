@@ -23,6 +23,8 @@
 #ifndef TRITIUM_INSTRUMENT_HPP
 #define TRITIUM_INSTRUMENT_HPP
 
+#include <Tritium/memory.hpp>
+
 class QString;
 
 namespace Tritium
@@ -49,17 +51,17 @@ namespace Tritium
 	    ADSR* adsr
 	    );
 	
-	static Instrument * create_empty();
+	static T<Instrument>::shared_ptr create_empty();
 	~Instrument();
 
-	static Instrument* load_instrument(
+	static T<Instrument>::shared_ptr load_instrument(
 	    Engine* engine,
 	    const QString& drumkit_name,
 	    const QString& instrument_name
 	    );
 	void load_from_placeholder(
 	    Engine* engine,
-	    Instrument* placeholder,
+	    T<Instrument>::shared_ptr placeholder,
 	    bool is_live = true
 	    );
 	void load_from_name(

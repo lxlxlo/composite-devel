@@ -188,9 +188,9 @@ LadspaFX::~LadspaFX()
 
 
 // Static
-LadspaFX* LadspaFX::load( const QString& sLibraryPath, const QString& sPluginLabel, long nSampleRate )
+T<LadspaFX>::shared_ptr LadspaFX::load( const QString& sLibraryPath, const QString& sPluginLabel, long nSampleRate )
 {
-	LadspaFX* pFX = new LadspaFX( sLibraryPath, sPluginLabel );
+	T<LadspaFX>::shared_ptr pFX( new LadspaFX( sLibraryPath, sPluginLabel ) );
 
 	INFOLOG( "INIT - " + sLibraryPath + " - " + sPluginLabel );
 
@@ -198,8 +198,8 @@ LadspaFX* LadspaFX::load( const QString& sLibraryPath, const QString& sPluginLab
 	LADSPA_Descriptor_Function desc_func = ( LADSPA_Descriptor_Function )pFX->m_pLibrary->resolve( "ladspa_descriptor" );
 	if ( desc_func == NULL ) {
 		ERRORLOG( "Error loading the library. (" + sLibraryPath + ")" );
-		delete pFX;
-		return NULL;
+		pFX.reset();
+		return pFX;
 	}
 	if ( desc_func ) {
 		for ( unsigned i = 0; ( pFX->m_d = desc_func( i ) ) != NULL; i++ ) {
@@ -229,8 +229,8 @@ LadspaFX* LadspaFX::load( const QString& sLibraryPath, const QString& sPluginLab
 		}
 	} else {
 		ERRORLOG( "Error in dlsym" );
-		delete pFX;
-		return NULL;
+		pFX.reset();
+		return pFX;
 	}
 
 	if ( ( pFX->m_nIAPorts == 2 ) && ( pFX->m_nOAPorts == 2 ) ) {		// Stereo plugin

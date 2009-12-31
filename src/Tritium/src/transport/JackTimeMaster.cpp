@@ -31,11 +31,9 @@
 
 using namespace Tritium;
 
-JackTimeMaster::JackTimeMaster(JackClient* parent) :
+JackTimeMaster::JackTimeMaster(T<JackClient>::shared_ptr parent) :
     m_jack_client(parent),
-    m_pSong( 0 ),
     m_pBeat( 0 )
-
 {
 }
 
@@ -62,7 +60,7 @@ void JackTimeMaster::clearMaster(void)
     jack_release_timebase(m_jack_client->ref()); // ignore return
 }
 
-void JackTimeMaster::set_current_song(Song* s)
+void JackTimeMaster::set_current_song(T<Song>::shared_ptr s)
 {
     QMutexLocker mx(&m_mutex);
     m_pSong = s;

@@ -84,7 +84,7 @@ using namespace Tritium;
 
 JackProcessCallback jackMidiFallbackProcess; // implemented in Engine.cpp
 
-JackMidiDriver::JackMidiDriver(JackClient* parent, Engine* e_parent)
+JackMidiDriver::JackMidiDriver(T<JackClient>::shared_ptr parent, Engine* e_parent)
 	: MidiInput( e_parent, "JackMidiDriver" ),
 	  m_jack_client(parent),
 	  m_port(0)

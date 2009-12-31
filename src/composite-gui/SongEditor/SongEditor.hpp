@@ -26,6 +26,7 @@
 
 #include <QtGui>
 
+#include <Tritium/memory.hpp>
 #include "../EventListener.hpp"
 #include "../PatternFillDialog.hpp"
 
@@ -130,7 +131,7 @@ class SongEditorPatternList : public QWidget, public EventListener
 
 		QMenu *m_pPatternPopup;
 		QLineEdit *line;
-		Tritium::Pattern *patternBeingEdited;
+		Tritium::T<Tritium::Pattern>::shared_ptr patternBeingEdited;
 		void inlineEditPatternName( int row );
 
 		virtual void mousePressEvent( QMouseEvent *ev );

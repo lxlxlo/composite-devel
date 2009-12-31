@@ -34,6 +34,8 @@
 #include <Tritium/Engine.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Logger.hpp>
+#include <Tritium/memory.hpp>
+
 using namespace Tritium;
 
 #include "MixerLine.hpp"
@@ -131,7 +133,7 @@ MixerLine::MixerLine(QWidget* parent)
 		connect( m_pKnob[i], SIGNAL( valueChanged(Knob*) ), this, SLOT( knobChanged(Knob*) ) );
 	}
 
-	Preferences *pref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pref = g_engine->get_preferences();
 
 	QString family = pref->getMixerFontFamily();
 	int size = pref->getMixerFontPointSize();
@@ -205,7 +207,7 @@ void MixerLine::updateMixerLine()
 
 
 void MixerLine::click(Button *ref) {
-	Song *song = (g_engine)->getSong();
+	T<Song>::shared_ptr song = (g_engine)->getSong();
 
 	if (ref == m_pMuteBtn) {
 		song->set_modified( true );
@@ -234,7 +236,7 @@ void MixerLine::rightClick(Button *ref)
 
 void MixerLine::faderChanged(Fader *ref)
 {
-	Song *song = (g_engine)->getSong();
+	T<Song>::shared_ptr song = (g_engine)->getSong();
 	song->set_modified( true );
 	emit volumeChanged(this);
 
@@ -362,7 +364,7 @@ void MixerLine::nameSelected() {
 
 void MixerLine::panChanged(Rotary *ref)
 {
-	Song *song = g_engine->getSong();
+	T<Song>::shared_ptr song = g_engine->getSong();
 	song->set_modified( true );
 	emit panChanged( this );
 
@@ -485,7 +487,7 @@ MasterMixerLine::MasterMixerLine(QWidget* parent)
 	// Background image
 	setPixmap( "/mixerPanel/masterMixerline_background.png" );
 
-	Preferences *pref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pref = g_engine->get_preferences();
 	int size = pref->getMixerFontPointSize();
 	QString family = pref->getMixerFontFamily();
 	float m_fFalloffTemp = pref->getMixerFalloffSpeed();
@@ -556,7 +558,7 @@ void MasterMixerLine::faderChanged(MasterFader *ref)
 
 	emit volumeChanged(this);
 
-	Song *song = g_engine->getSong();
+	T<Song>::shared_ptr song = g_engine->getSong();
 	song->set_modified( true );
 
 	char m_pMasterFaderPos[100];
@@ -667,7 +669,7 @@ void MasterMixerLine::updateMixerLine()
 	}
 	m_nPeakTimer++;
 
-	Song *pSong = g_engine->getSong();
+	T<Song>::shared_ptr pSong = g_engine->getSong();
 	if ( pSong ) {
 		m_pHumanizeTimeRotary->setValue( pSong->get_humanize_time_value() );
 		m_pHumanizeVelocityRotary->setValue( pSong->get_humanize_velocity_value() );
@@ -759,7 +761,7 @@ FxMixerLine::FxMixerLine(QWidget* parent)
 	activeBtn->setToolTip( trUtf8( "FX on/off") );
 	connect( activeBtn, SIGNAL( clicked(Button*) ), this, SLOT( click(Button*) ) );
 
-	Preferences *pref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pref = g_engine->get_preferences();
 
 	// m_pFader
 	m_pFader = new Fader( this, false, false );
@@ -790,7 +792,7 @@ FxMixerLine::~FxMixerLine()
 
 
 void FxMixerLine::click(Button *ref) {
-	Song *song = g_engine->getSong();
+	T<Song>::shared_ptr song = g_engine->getSong();
 
 	if (ref == activeBtn ) {
 		song->set_modified( true );
@@ -814,7 +816,7 @@ void FxMixerLine::faderChanged(Fader * /*ref*/)
 	}
 
 
-	Song *song = g_engine->getSong();
+	T<Song>::shared_ptr song = g_engine->getSong();
 	song->set_modified( true );
 	emit volumeChanged( this );
 
@@ -927,7 +929,7 @@ InstrumentNameWidget::InstrumentNameWidget(QWidget* parent)
 	m_nWidgetWidth = 17;
 	m_nWidgetHeight = 116;
 
-	Preferences *pref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pref = g_engine->get_preferences();
 	QString family = pref->getMixerFontFamily();
 	int size = pref->getMixerFontPointSize();
 	m_mixerFont.setFamily( family );
@@ -1093,7 +1095,7 @@ void LadspaFXMixerLine::rotaryChanged(Rotary * /*ref*/)
 //	sprintf(tmp, "%#.1f", fMaxPeak);
 //	m_pVolumeLbl->setText(tmp);
 
-	Song *song = g_engine->getSong();
+	T<Song>::shared_ptr song = g_engine->getSong();
 	song->set_modified( true );
 	emit volumeChanged(this);
 }

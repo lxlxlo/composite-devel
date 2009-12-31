@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
 
 		// Man your battle stations... this is not a drill.
 		Tritium::Logger::create_instance();
-		Tritium::Preferences *pPref = new Tritium::Preferences();
+		Tritium::T<Tritium::Preferences>::shared_ptr pPref( new Tritium::Preferences() );
 		Tritium::Logger::get_instance()->set_logging_level( logLevelOpt );
 		// See below for Tritium::Engine.
 
@@ -284,6 +284,7 @@ int main(int argc, char *argv[])
 
 		INFOLOG( "Quitting..." );
 		cout << "\nBye..." << endl;
+		pPref.reset(); // Preferences require the Logger.
 		delete Tritium::Logger::get_instance();
 
 		//	pQApp->dumpObjectTree();

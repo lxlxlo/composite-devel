@@ -23,6 +23,7 @@
 #define TRITIUM_PATTERN_HPP
 
 #include <Tritium/globals.hpp>
+#include <Tritium/memory.hpp>
 #include <vector>
 
 namespace Tritium
@@ -48,15 +49,15 @@ public:
 	  Delete notes that pertain to instrument I.
 	  The function is thread safe (it locks the audio data while deleting notes)
 	*/
-	void purge_instrument( Instrument * I, Engine* engine );
-	
+	void purge_instrument( T<Instrument>::shared_ptr I, Engine* engine );
+
 	/**
 	  Check if there are any notes pertaining to I
 	*/
-	bool references_instrument( Instrument * I );
-	
-	static Pattern* get_empty_pattern();
-	Pattern* copy();
+	bool references_instrument( T<Instrument>::shared_ptr I );
+
+	static T<Pattern>::shared_ptr get_empty_pattern();
+	T<Pattern>::shared_ptr copy();
 
 	void debug_dump();
 
@@ -95,23 +96,23 @@ public:
 	PatternList();
 	~PatternList();
 
-	void add( Pattern* new_pattern );
-	Pattern* get( int pos );
+	void add( T<Pattern>::shared_ptr new_pattern );
+	T<Pattern>::shared_ptr get( int pos );
 	unsigned int get_size();
 	void clear();
 
-	void replace( Pattern* new_pattern, unsigned pos );
-	int index_of( Pattern* pattern );
+	void replace( T<Pattern>::shared_ptr new_pattern, unsigned pos );
+	int index_of( T<Pattern>::shared_ptr pattern );
 
 	/// Remove a pattern from the list (every instance in the list), the pattern is not deleted!!!
 	/// Returns NULL if the pattern is not in the list
-	Pattern * del( Pattern *pattern ); 
+	T<Pattern>::shared_ptr del( T<Pattern>::shared_ptr pattern );
 
 	/// Remove one pattern from the list, the pattern is not deleted!!!
 	void del( unsigned index );
 
 private:
-	std::vector<Pattern*> list;
+	std::vector< T<Pattern>::shared_ptr > list;
 };
 
 };

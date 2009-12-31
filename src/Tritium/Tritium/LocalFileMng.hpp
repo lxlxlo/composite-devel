@@ -27,6 +27,7 @@
 #include <vector>
 
 #include <QDomDocument>
+#include <Tritium/memory.hpp>
 
 namespace Tritium
 {
@@ -69,14 +70,14 @@ public:
 	QString getCategoryFromPatternName( const QString& patternPathName );
 	QString getPatternNameFromPatternDir( const QString& patternDirName);
 
-	Drumkit* loadDrumkit( const QString& directory );
-	int saveDrumkit( Drumkit *pDrumkit );
+	T<Drumkit>::shared_ptr loadDrumkit( const QString& directory );
+	int saveDrumkit( T<Drumkit>::shared_ptr pDrumkit );
 
 	static void writeXmlString( QDomNode parent, const QString& name, const QString& text );
 	static void writeXmlBool( QDomNode parent, const QString& name, bool value );
 
-	Pattern* loadPattern( const QString& directory );
-	int savePattern( Song *song , int selectedpattern , const QString& patternname, const QString& realpatternname, int mode);
+	T<Pattern>::shared_ptr loadPattern( const QString& directory );
+	int savePattern( T<Song>::shared_ptr song , int selectedpattern , const QString& patternname, const QString& realpatternname, int mode);
 
 	int savePlayList( const std::string& patternname );
 	int loadPlayList( const std::string& patternname);
@@ -107,7 +108,7 @@ public:
 	~SongWriter();
 
 	// Returns 0 on success.
-	int writeSong( Engine* engine, Song *song, const QString& filename );
+	int writeSong( Engine* engine, T<Song>::shared_ptr song, const QString& filename );
 };
 
 } // namespace Tritium

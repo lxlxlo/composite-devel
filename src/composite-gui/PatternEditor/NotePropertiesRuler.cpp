@@ -40,7 +40,7 @@ NotePropertiesRuler::NotePropertiesRuler( QWidget *parent, PatternEditorPanel *p
  : QWidget( parent )
  , m_mode( mode )
  , m_pPatternEditorPanel( pPatternEditorPanel )
- , m_pPattern( NULL )
+ , m_pPattern()
 {
 	//infoLog("INIT");
 	//setAttribute(Qt::WA_NoBackground);
@@ -108,7 +108,7 @@ void NotePropertiesRuler::mousePressEvent(QMouseEvent *ev)
 	val = val / height();
 
 	int nSelectedInstrument = g_engine->getSelectedInstrumentNumber();
-	Song *pSong = (g_engine)->getSong();
+	T<Song>::shared_ptr pSong = (g_engine)->getSong();
 
 	Pattern::note_map_t::iterator pos;
 	for ( pos = m_pPattern->note_map.lower_bound( column ); pos != m_pPattern->note_map.upper_bound( column ); ++pos ) {
@@ -199,7 +199,7 @@ void NotePropertiesRuler::wheelEvent(QWheelEvent *ev)
 	column = (column * 4 * MAX_NOTES) / ( nBase * pPatternEditor->getResolution() );
 
 	int nSelectedInstrument = g_engine->getSelectedInstrumentNumber();
-	Song *pSong = (g_engine)->getSong();
+	T<Song>::shared_ptr pSong = (g_engine)->getSong();
 
 	Pattern::note_map_t::iterator pos;
 	for ( pos = m_pPattern->note_map.lower_bound( column ); pos != m_pPattern->note_map.upper_bound( column ); ++pos ) {
@@ -413,7 +413,7 @@ void NotePropertiesRuler::createVelocityBackground(QPixmap *pixmap)
 	// draw velocity lines
 	if (m_pPattern != NULL) {
 		int nSelectedInstrument = g_engine->getSelectedInstrumentNumber();
-		Song *pSong = g_engine->getSong();
+		T<Song>::shared_ptr pSong = g_engine->getSong();
 		Pattern::note_map_t::iterator pos;
 		for ( pos = m_pPattern->note_map.begin(); pos != m_pPattern->note_map.end(); ++pos ) {
 			Note *pNote = pos->second;
@@ -577,7 +577,7 @@ void NotePropertiesRuler::createPanBackground(QPixmap *pixmap)
 
 	if ( m_pPattern ) {
 		int nSelectedInstrument = g_engine->getSelectedInstrumentNumber();
-		Song *pSong = g_engine->getSong();
+		T<Song>::shared_ptr pSong = g_engine->getSong();
 
 		Pattern::note_map_t::iterator pos;
 		for ( pos = m_pPattern->note_map.begin(); pos != m_pPattern->note_map.end(); ++pos ) {
@@ -732,7 +732,7 @@ void NotePropertiesRuler::createLeadLagBackground(QPixmap *pixmap)
  
 	if ( m_pPattern ) {
 		int nSelectedInstrument = g_engine->getSelectedInstrumentNumber();
-		Song *pSong = g_engine->getSong();
+		T<Song>::shared_ptr pSong = g_engine->getSong();
  
 		Pattern::note_map_t::iterator pos;
 		for ( pos = m_pPattern->note_map.begin(); pos != m_pPattern->note_map.end(); ++pos ) {
@@ -787,7 +787,7 @@ void NotePropertiesRuler::updateEditor()
 		m_pPattern = pPatternList->get( nSelectedPatternNumber );
 	}
 	else {
-		m_pPattern = NULL;
+		m_pPattern.reset();
 	}
 
 

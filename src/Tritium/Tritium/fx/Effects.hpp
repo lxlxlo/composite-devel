@@ -26,6 +26,7 @@
 
 #include <Tritium/globals.hpp>
 #include <Tritium/fx/LadspaFX.hpp>
+#include <Tritium/memory.hpp>
 
 #include <vector>
 #include <cassert>
@@ -44,8 +45,8 @@ public:
 	Effects(Engine* parent);
 	~Effects();
 
-	LadspaFX* getLadspaFX( int nFX );
-	void  setLadspaFX( LadspaFX* pFX, int nFX );
+	T<LadspaFX>::shared_ptr getLadspaFX( int nFX );
+	void  setLadspaFX( T<LadspaFX>::shared_ptr pFX, int nFX );
 
 	std::vector<LadspaFXInfo*> getPluginList();
 	LadspaFXGroup* getLadspaFXGroup();
@@ -58,7 +59,7 @@ private:
 	
 	void updateRecentGroup();
 
-	LadspaFX* m_FXList[ MAX_FX ];
+	T<LadspaFX>::shared_ptr m_FXList[ MAX_FX ];
 
 	void RDFDescend( const QString& sBase, LadspaFXGroup *pGroup, std::vector<LadspaFXInfo*> pluginList );
 	void getRDF( LadspaFXGroup *pGroup, std::vector<LadspaFXInfo*> pluginList );

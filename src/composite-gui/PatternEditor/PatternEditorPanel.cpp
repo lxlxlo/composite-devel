@@ -27,8 +27,9 @@
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/Transport.hpp>
 #include <Tritium/Logger.hpp>
-using namespace Tritium;
+#include <Tritium/memory.hpp>
 
+using namespace Tritium;
 
 #include "CompositeApp.hpp"
 #include "PatternEditorPanel.hpp"
@@ -64,12 +65,12 @@ void PatternEditorPanel::updateSLnameLabel( )
 
 PatternEditorPanel::PatternEditorPanel( QWidget *pParent )
  : QWidget( pParent )
- , m_pPattern( NULL )
+ , m_pPattern()
  , m_bEnablePatternResize( true )
 {
 	setAcceptDrops(true);
 
-	Preferences *pPref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pPref = g_engine->get_preferences();
 	
 
 // Editor TOP
@@ -615,7 +616,7 @@ void PatternEditorPanel::selectedPatternChangedEvent()
 		}
 	}
 	else {
-		m_pPattern = NULL;
+		m_pPattern.reset();
 
 		this->setWindowTitle( ( trUtf8( "Pattern editor - %1").arg(QString("No pattern selected.")) ) );
 		//m_pNameLCD->setText( trUtf8( "No pattern selected" ) );
@@ -629,7 +630,7 @@ void PatternEditorPanel::selectedPatternChangedEvent()
 
 void PatternEditorPanel::hearNotesBtnClick(Button *ref)
 {
-	Preferences *pref = ( g_engine->get_preferences() );
+	T<Preferences>::shared_ptr pref = ( g_engine->get_preferences() );
 	pref->setHearNewNotes( ref->isPressed() );
 
 	if (ref->isPressed() ) {
@@ -645,7 +646,7 @@ void PatternEditorPanel::hearNotesBtnClick(Button *ref)
 
 void PatternEditorPanel::recordEventsBtnClick(Button *ref)
 {
-	Preferences *pref = ( g_engine->get_preferences() );
+	T<Preferences>::shared_ptr pref = ( g_engine->get_preferences() );
 	pref->setRecordEvents( ref->isPressed() );
 
 	if (ref->isPressed() ) {
@@ -661,7 +662,7 @@ void PatternEditorPanel::recordEventsBtnClick(Button *ref)
 
 void PatternEditorPanel::quantizeEventsBtnClick(Button *ref)
 {
-	Preferences *pref = ( g_engine->get_preferences() );
+	T<Preferences>::shared_ptr pref = ( g_engine->get_preferences() );
 	pref->setQuantizeEvents( ref->isPressed() );
 
 	if (ref->isPressed() ) {
@@ -675,7 +676,7 @@ void PatternEditorPanel::quantizeEventsBtnClick(Button *ref)
 
 void PatternEditorPanel::stateChangedEvent(int state)
 {
-	Transport* xport = g_engine->get_transport();
+	T<Transport>::shared_ptr xport = g_engine->get_transport();
 	if ( (state == Engine::StateReady) && (xport->get_state() != TransportPosition::ROLLING) ) {
 		m_bEnablePatternResize = true;
 	}
@@ -866,11 +867,11 @@ void PatternEditorPanel::moveUpBtnClicked(Button *)
 
 	g_engine->lock( RIGHT_HERE );
 
-	Song *pSong = engine->getSong();
+	T<Song>::shared_ptr pSong = engine->getSong();
 	InstrumentList *pInstrumentList = pSong->get_instrument_list();
 
 	if ( ( nSelectedInstrument - 1 ) >= 0 ) {
-		Instrument *pTemp = pInstrumentList->get( nSelectedInstrument - 1 );
+		T<Instrument>::shared_ptr pTemp = pInstrumentList->get( nSelectedInstrument - 1 );
 		pInstrumentList->replace( pInstrumentList->get( nSelectedInstrument ), nSelectedInstrument - 1 );
 		pInstrumentList->replace( pTemp, nSelectedInstrument );
 
@@ -907,11 +908,11 @@ void PatternEditorPanel::moveDownBtnClicked(Button *)
 
 	g_engine->lock( RIGHT_HERE );
 
-	Song *pSong = engine->getSong();
+	T<Song>::shared_ptr pSong = engine->getSong();
 	InstrumentList *pInstrumentList = pSong->get_instrument_list();
 
 	if ( ( nSelectedInstrument + 1 ) < (int)pInstrumentList->get_size() ) {
-		Instrument *pTemp = pInstrumentList->get( nSelectedInstrument + 1 );
+		T<Instrument>::shared_ptr pTemp = pInstrumentList->get( nSelectedInstrument + 1 );
 		pInstrumentList->replace( pInstrumentList->get( nSelectedInstrument ), nSelectedInstrument + 1 );
 		pInstrumentList->replace( pTemp, nSelectedInstrument );
 

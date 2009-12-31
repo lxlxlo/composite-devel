@@ -26,6 +26,7 @@
 #include <QMutex>
 #include <vector>
 #include <cassert>
+#include <Tritium/memory.hpp>
 
 namespace Tritium
 {
@@ -56,7 +57,7 @@ namespace Tritium
          * Signals that the current song should be
          * changed to the one pointed to by @pSong.
          */
-        virtual void set_song(Song* pSong) = 0;
+        virtual void set_song(T<Song>::shared_ptr pSong) = 0;
     };
 
     class Playlist

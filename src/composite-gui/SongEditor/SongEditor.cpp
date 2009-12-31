@@ -31,6 +31,7 @@
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/Logger.hpp>
+#include <Tritium/memory.hpp>
 using namespace Tritium;
 
 
@@ -144,7 +145,7 @@ void SongEditor::mousePressEvent( QMouseEvent *ev )
 	}
 
 	Engine *pEngine = g_engine;
-	Song *pSong = pEngine->getSong();
+	T<Song>::shared_ptr pSong = pEngine->getSong();
 	PatternList *pPatternList = pSong->get_pattern_list();
 
 	// don't lock the audio driver before checking that...
@@ -185,7 +186,7 @@ void SongEditor::mousePressEvent( QMouseEvent *ev )
 		}
 	}
 	else if ( actionMode == DRAW_ACTION ) {
-		Tritium::Pattern *pPattern = pPatternList->get( nRow );
+		T<Tritium::Pattern>::shared_ptr pPattern = pPatternList->get( nRow );
 		Song::pattern_group_t *pColumns = pSong->get_pattern_group_vector();	// E' la lista di "colonne" di pattern
 		if ( nColumn < (int)pColumns->size() ) {
 			PatternList *pColumn = ( *pColumns )[ nColumn ];
@@ -316,7 +317,7 @@ void SongEditor::mouseMoveEvent(QMouseEvent *ev)
 				if ( nRow >= (int)pPatternList->get_size() || nRow < 0 || nCol < 0 ) {
 					return;
 				}
-				Tritium::Pattern *pPattern = pPatternList->get( nRow );
+				T<Tritium::Pattern>::shared_ptr pPattern = pPatternList->get( nRow );
 
 				if ( nCol < (int)pColumns->size() ) {
 					PatternList *pColumn = ( *pColumns )[ nCol ];
@@ -457,7 +458,7 @@ void SongEditor::createBackground()
 	QColor linesColor( pStyle->m_songEditor_lineColor.getRed(), pStyle->m_songEditor_lineColor.getGreen(), pStyle->m_songEditor_lineColor.getBlue() );
 
 	Engine *pEngine = g_engine;
-	Song *pSong = pEngine->getSong();
+	T<Song>::shared_ptr pSong = pEngine->getSong();
 
 	uint nPatterns = pSong->get_pattern_list()->get_size();
 
@@ -542,7 +543,7 @@ void SongEditor::drawSequence()
 	p.drawPixmap( rect(), *m_pBackgroundPixmap, rect() );
 	p.end();
 
-	Song* song = g_engine->getSong();
+	T<Song>::shared_ptr song = g_engine->getSong();
 	PatternList *patList = song->get_pattern_list();
 	Song::pattern_group_t* pColumns = song->get_pattern_group_vector();
 	uint listLength = patList->get_size();
@@ -550,12 +551,12 @@ void SongEditor::drawSequence()
 		PatternList* pColumn = (*pColumns)[ i ];
 
 		for (uint nPat = 0; nPat < pColumn->get_size(); ++nPat) {
-			Tritium::Pattern *pat = pColumn->get( nPat );
+			T<Tritium::Pattern>::shared_ptr pat = pColumn->get( nPat );
 
 			int position = -1;
 			// find the position in pattern list
 			for (uint j = 0; j < listLength; j++) {
-				Tritium::Pattern *pat2 = patList->get( j );
+				T<Tritium::Pattern>::shared_ptr pat2 = patList->get( j );
 				if (pat == pat2) {
 					position = j;
 					break;
@@ -592,7 +593,7 @@ void SongEditor::drawSequence()
 
 void SongEditor::drawPattern( int pos, int number )
 {
-	Preferences *pref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pref = g_engine->get_preferences();
 	UIStyle *pStyle = pref->getDefaultUIStyle();
 	QPainter p( m_pSequencePixmap );
 	QColor patternColor( pStyle->m_songEditor_pattern1Color.getRed(), pStyle->m_songEditor_pattern1Color.getGreen(), pStyle->m_songEditor_pattern1Color.getBlue() );
@@ -638,8 +639,6 @@ SongEditorPatternList::SongEditorPatternList( QWidget *parent )
 	
 	setAcceptDrops(true);
 
-	patternBeingEdited = NULL;
-	
 	line = new QLineEdit( "Inline Pattern Name", this );
 	line->setFrame( false );
 	line->hide();
@@ -688,7 +687,7 @@ void SongEditorPatternList::mousePressEvent( QMouseEvent *ev )
 	int row = (ev->y() / m_nGridHeight);
 
 	Engine *engine = g_engine;
-	Song *song = engine->getSong();
+	T<Song>::shared_ptr song = engine->getSong();
 	PatternList *patternList = song->get_pattern_list();
 
 	if ( row >= (int)patternList->get_size() ) {
@@ -768,7 +767,7 @@ void SongEditorPatternList::mouseDoubleClickEvent( QMouseEvent *ev )
 void SongEditorPatternList::inlineEditPatternName( int row )
 {
 	Engine *engine = g_engine;
-	Song *song = engine->getSong();
+	T<Song>::shared_ptr song = engine->getSong();
 	PatternList *patternList = song->get_pattern_list();
 
 	if ( row >= (int)patternList->get_size() ) {
@@ -799,7 +798,7 @@ void SongEditorPatternList::inlineEditingEntered()
 
 void SongEditorPatternList::inlineEditingFinished()
 {
-	patternBeingEdited = NULL;
+	patternBeingEdited.reset();
 	line->hide();
 }
 
@@ -825,7 +824,7 @@ void SongEditorPatternList::updateEditor()
 
 void SongEditorPatternList::createBackground()
 {
-	Preferences *pref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pref = g_engine->get_preferences();
 	UIStyle *pStyle = pref->getDefaultUIStyle();
 	QColor textColor( pStyle->m_songEditor_textColor.getRed(), pStyle->m_songEditor_textColor.getGreen(), pStyle->m_songEditor_textColor.getBlue() );
 
@@ -838,7 +837,7 @@ void SongEditorPatternList::createBackground()
 	boldTextFont.setBold( true );
 
 	Engine *pEngine = g_engine;
-	Song *pSong = pEngine->getSong();
+	T<Song>::shared_ptr pSong = pEngine->getSong();
 	int nPatterns = pSong->get_pattern_list()->get_size();
 	int nSelectedPattern = pEngine->getSelectedPatternNumber();
 
@@ -877,7 +876,7 @@ void SongEditorPatternList::createBackground()
 
 	/// paint the foreground (pattern name etc.)
 	for ( int i = 0; i < nPatterns; i++ ) {
-		Tritium::Pattern *pPattern = pSong->get_pattern_list()->get(i);
+		T<Tritium::Pattern>::shared_ptr pPattern = pSong->get_pattern_list()->get(i);
 		//uint y = m_nGridHeight * i;
 
 		// Text
@@ -924,9 +923,9 @@ void SongEditorPatternList::patternPopup_load()
 
 	Engine *engine = g_engine;
 	int tmpselectedpatternpos = engine->getSelectedPatternNumber();
-	Song *song = engine->getSong();
+	T<Song>::shared_ptr song = engine->getSong();
 	PatternList *pPatternList = song->get_pattern_list();
-	Instrument *instr = song->get_instrument_list()->get( 0 );
+	T<Instrument>::shared_ptr instr = song->get_instrument_list()->get( 0 );
 	assert( instr );
 	
 	QDir dirPattern( g_engine->get_preferences()->getDataDirectory() + "/patterns" );
@@ -948,11 +947,11 @@ void SongEditorPatternList::patternPopup_load()
 
 	LocalFileMng mng(g_engine);
 	LocalFileMng fileMng(g_engine);
-	Pattern* err = fileMng.loadPattern( filename );
+	T<Pattern>::shared_ptr err = fileMng.loadPattern( filename );
 	if ( err == 0 ) {
 		ERRORLOG( "Error loading the pattern" );
 	}else{
-		Tritium::Pattern *pNewPattern = err;
+		T<Pattern>::shared_ptr pNewPattern = err;
 		pPatternList->add( pNewPattern );
 		song->set_modified( true );
 		createBackground();
@@ -961,7 +960,7 @@ void SongEditorPatternList::patternPopup_load()
 
 	int listsize = pPatternList->get_size();
 	engine->setSelectedPatternNumber( listsize -1 );
-	Pattern *pTemp = pPatternList->get( engine->getSelectedPatternNumber() );
+	T<Pattern>::shared_ptr pTemp = pPatternList->get( engine->getSelectedPatternNumber() );
 	pPatternList->replace( pPatternList->get( tmpselectedpatternpos ), listsize -1);
 	pPatternList->replace( pTemp, tmpselectedpatternpos );
 	listsize = pPatternList->get_size();
@@ -978,8 +977,8 @@ void SongEditorPatternList::patternPopup_save()
 {	
 	Engine *engine = g_engine;
 	int nSelectedPattern = engine->getSelectedPatternNumber();
-	Song *song = engine->getSong();
-	Pattern *pat = song->get_pattern_list()->get( nSelectedPattern );
+	T<Song>::shared_ptr song = engine->getSong();
+	T<Pattern>::shared_ptr pat = song->get_pattern_list()->get( nSelectedPattern );
 
 	QString patternname = pat->get_name();
 
@@ -1021,11 +1020,11 @@ void SongEditorPatternList::patternPopup_edit()
 void SongEditorPatternList::patternPopup_properties()
 {
 	Engine *engine = g_engine;
-	Song *song = engine->getSong();
+	T<Song>::shared_ptr song = engine->getSong();
 	PatternList *patternList = song->get_pattern_list();
 
 	int nSelectedPattern = engine->getSelectedPatternNumber();
-	Tritium::Pattern *pattern = patternList->get( nSelectedPattern );
+	T<Tritium::Pattern>::shared_ptr pattern = patternList->get( nSelectedPattern );
 
 	PatternPropertiesDialog *dialog = new PatternPropertiesDialog(this, pattern, false);
 	if (dialog->exec() == QDialog::Accepted) {
@@ -1063,11 +1062,11 @@ void SongEditorPatternList::patternPopup_delete()
 // "lock engine" I am not sure, but think this is unnecessarily. -wolke-
 //	g_engine->lock( RIGHT_HERE );
 
-	Song *song = pEngine->getSong();
+	T<Song>::shared_ptr song = pEngine->getSong();
 	PatternList *pSongPatternList = song->get_pattern_list();
 
-	Tritium::Pattern *pattern = pSongPatternList->get( pEngine->getSelectedPatternNumber() );
-	INFOLOG( QString("[patternPopup_delete] Delete pattern: %1 @%2").arg(pattern->get_name()).arg( (long)pattern ) );
+	T<Pattern>::shared_ptr pattern = pSongPatternList->get( pEngine->getSelectedPatternNumber() );
+	INFOLOG( QString("[patternPopup_delete] Delete pattern: %1 @%2").arg(pattern->get_name()).arg( (long)pattern.get() ) );
 	pSongPatternList->del(pattern);
 
 	Song::pattern_group_t *patternGroupVect = song->get_pattern_group_vector();
@@ -1078,7 +1077,7 @@ void SongEditorPatternList::patternPopup_delete()
 
 		uint j = 0;
 		while ( j < list->get_size() ) {
-			Tritium::Pattern *pOldPattern = list->get( j );
+			T<Tritium::Pattern>::shared_ptr pOldPattern = list->get( j );
 			if (pOldPattern == pattern ) {
 				list->del( j );
 				continue;
@@ -1107,7 +1106,7 @@ void SongEditorPatternList::patternPopup_delete()
 	list->del( pattern );
 	// se esiste, seleziono il primo pattern
 	if ( pSongPatternList->get_size() > 0 ) {
-		Tritium::Pattern *pFirstPattern = pSongPatternList->get( 0 );
+		T<Tritium::Pattern>::shared_ptr pFirstPattern = pSongPatternList->get( 0 );
 		list->add( pFirstPattern );
 		// Cambio due volte...cosi' il pattern editor viene costretto ad aggiornarsi
 		pEngine->setSelectedPatternNumber( -1 );
@@ -1115,7 +1114,7 @@ void SongEditorPatternList::patternPopup_delete()
 	}
 	else {
 		// there's no patterns..	
-		Pattern *emptyPattern = Pattern::get_empty_pattern();
+		T<Pattern>::shared_ptr emptyPattern = Pattern::get_empty_pattern();
 		emptyPattern->set_name( trUtf8("Pattern 1") );
 		emptyPattern->set_category( trUtf8("not_categorized") );
 		pSongPatternList->add( emptyPattern );
@@ -1123,7 +1122,7 @@ void SongEditorPatternList::patternPopup_delete()
 		pEngine->setSelectedPatternNumber( 0 );
 	}
 
-	delete pattern;
+	pattern.reset();
 
 	song->set_modified( true );
 
@@ -1138,12 +1137,12 @@ void SongEditorPatternList::patternPopup_delete()
 void SongEditorPatternList::patternPopup_copy()
 {
 	Engine *pEngine = g_engine;
-	Song *pSong = pEngine->getSong();
+	T<Song>::shared_ptr pSong = pEngine->getSong();
 	PatternList *pPatternList = pSong->get_pattern_list();
 	int nSelectedPattern = pEngine->getSelectedPatternNumber();
-	Tritium::Pattern *pPattern = pPatternList->get( nSelectedPattern );
+	T<Tritium::Pattern>::shared_ptr pPattern = pPatternList->get( nSelectedPattern );
 
-	Tritium::Pattern *pNewPattern = pPattern->copy();
+	T<Tritium::Pattern>::shared_ptr pNewPattern = pPattern->copy();
 	pPatternList->add( pNewPattern );
 
 	// rename the copied pattern
@@ -1157,7 +1156,7 @@ void SongEditorPatternList::patternPopup_copy()
 	}
 	else {
 		pPatternList->del( pNewPattern );
-		delete pNewPattern;
+		pNewPattern.reset();
 	}
 	delete dialog;
 
@@ -1190,9 +1189,9 @@ void SongEditorPatternList::fillRangeWithPattern(FillRange* pRange, int nPattern
 	g_engine->lock( RIGHT_HERE );
 
 
-	Song *pSong = pEngine->getSong();
+	T<Song>::shared_ptr pSong = pEngine->getSong();
 	PatternList *pPatternList = pSong->get_pattern_list();
-	Tritium::Pattern *pPattern = pPatternList->get( nPattern );
+	T<Tritium::Pattern>::shared_ptr pPattern = pPatternList->get( nPattern );
 	Song::pattern_group_t *pColumns = pSong->get_pattern_group_vector();	// E' la lista di "colonne" di pattern
 	PatternList *pColumn;
 
@@ -1302,15 +1301,15 @@ void SongEditorPatternList::dropEvent(QDropEvent *event)
 		int nTargetPattern = event->pos().y() / m_nGridHeight;
 
 		LocalFileMng mng(g_engine);
-		Pattern* err = mng.loadPattern( sPatternName );
+		T<Pattern>::shared_ptr err = mng.loadPattern( sPatternName );
 		if ( err == 0 ) {
 			ERRORLOG( "Error loading the pattern" );
 		}else{
-			Tritium::Pattern *pNewPattern = err;
+			T<Pattern>::shared_ptr pNewPattern = err;
 			pPatternList->add( pNewPattern );
 
 			for (int nPatr = pPatternList->get_size() +1 ; nPatr >= nTargetPattern; nPatr--) {
-				Tritium::Pattern *pPattern = pPatternList->get(nPatr - 1);
+				T<Tritium::Pattern>::shared_ptr pPattern = pPatternList->get(nPatr - 1);
 				pPatternList->replace( pPattern, nPatr );
 			}
 			pPatternList->replace( pNewPattern, nTargetPattern );
@@ -1331,23 +1330,23 @@ void SongEditorPatternList::movePatternLine( int nSourcePattern , int nTargetPat
 {
 		Engine *engine = g_engine;
 
-		Song *pSong = engine->getSong();
+		T<Song>::shared_ptr pSong = engine->getSong();
 		PatternList *pPatternList = pSong->get_pattern_list();
 
 
 
 		// move instruments...
-		Tritium::Pattern *pSourcePattern = pPatternList->get( nSourcePattern );//Instrument *pSourceInstr = pPatternList->get(nSourcePattern);
+		T<Tritium::Pattern>::shared_ptr pSourcePattern = pPatternList->get( nSourcePattern );//Instrument *pSourceInstr = pPatternList->get(nSourcePattern);
 		if ( nSourcePattern < nTargetPattern) {
 			for (int nPatr = nSourcePattern; nPatr < nTargetPattern; nPatr++) {
-				Tritium::Pattern *pPattern = pPatternList->get(nPatr + 1);
+				T<Tritium::Pattern>::shared_ptr pPattern = pPatternList->get(nPatr + 1);
 				pPatternList->replace( pPattern, nPatr );
 			}
 			pPatternList->replace( pSourcePattern, nTargetPattern );
 		}
 		else {
 			for (int nPatr = nSourcePattern; nPatr >= nTargetPattern; nPatr--) {
-				Tritium::Pattern *pPattern = pPatternList->get(nPatr - 1);
+				T<Tritium::Pattern>::shared_ptr pPattern = pPatternList->get(nPatr - 1);
 				pPatternList->replace( pPattern, nPatr );
 			}
 			pPatternList->replace( pSourcePattern, nTargetPattern );
@@ -1444,7 +1443,7 @@ void SongEditorPositionRuler::createBackground()
 
 	m_pBackgroundPixmap->fill( backgroundColor );
 
-	Preferences *pref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pref = g_engine->get_preferences();
 	QString family = pref->getApplicationFontFamily();
 	int size = pref->getApplicationFontPointSize();
 	QFont font( family, size );
@@ -1515,7 +1514,7 @@ void SongEditorPositionRuler::paintEvent( QPaintEvent *ev )
 	float fPos = H->getPatternPos();
 
 	if ( H->getCurrentPatternList()->get_size() != 0 ) {
-		Tritium::Pattern *pPattern = H->getCurrentPatternList()->get( 0 );
+		T<Tritium::Pattern>::shared_ptr pPattern = H->getCurrentPatternList()->get( 0 );
 		fPos += (float)H->getTickPosition() / (float)pPattern->get_length();
 	}
 	else {

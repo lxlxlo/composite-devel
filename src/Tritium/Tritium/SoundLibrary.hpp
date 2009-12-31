@@ -22,6 +22,7 @@
 #ifndef TRITIUM_SOUNDLIBRARY_HPP
 #define TRITIUM_SOUNDLIBRARY_HPP
 
+#include <Tritium/memory.hpp>
 #include <vector>
 
 namespace Tritium
@@ -56,7 +57,7 @@ public:
 	~Drumkit();
 
 	/// Loads a single Drumkit
-	static Drumkit* load( Engine* engine, const QString& sFilename );
+	static T<Drumkit>::shared_ptr load( Engine* engine, const QString& sFilename );
 
 	/// Lists the User drumkit list
 	static std::vector<QString> getUserDrumkitList(Engine* engine);

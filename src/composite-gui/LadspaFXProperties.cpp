@@ -25,6 +25,7 @@
 #include <Tritium/Preferences.hpp>
 #include <Tritium/IO/AudioOutput.hpp>
 #include <Tritium/Logger.hpp>
+#include <Tritium/memory.hpp>
 
 #include "LadspaFXProperties.hpp"
 #include "CompositeApp.hpp"
@@ -128,10 +129,10 @@ void LadspaFXProperties::faderChanged( Fader * ref )
 	ref->setPeak_L( ref->getValue() );
 	ref->setPeak_R( ref->getValue() );
 
-	Song *pSong = (g_engine )->getSong();
+	T<Song>::shared_ptr pSong = (g_engine )->getSong();
 
 #ifdef LADSPA_SUPPORT
-	LadspaFX *pFX = g_engine->get_effects()->getLadspaFX( m_nLadspaFX );
+	T<LadspaFX>::shared_ptr pFX = g_engine->get_effects()->getLadspaFX( m_nLadspaFX );
 
 	for ( uint i = 0; i < m_pInputControlFaders.size(); i++ ) {
 		if (ref == m_pInputControlFaders[ i ] ) {
@@ -166,7 +167,7 @@ void LadspaFXProperties::updateControls()
 	INFOLOG( "*** [updateControls] ***" );
 	m_pTimer->stop();
 
-	LadspaFX *pFX = g_engine->get_effects()->getLadspaFX( m_nLadspaFX );
+	T<LadspaFX>::shared_ptr pFX = g_engine->get_effects()->getLadspaFX( m_nLadspaFX );
 
 	// svuoto i vettori..
 	if ( m_pInputControlNames.size() != 0 ) {
@@ -341,7 +342,7 @@ void LadspaFXProperties::selectFXBtnClicked()
 	if (fxSelector.exec() == QDialog::Accepted) {
 		QString sSelectedFX = fxSelector.getSelectedFX();
 		if ( !sSelectedFX.isEmpty() ) {
-			LadspaFX *pFX = NULL;
+			T<LadspaFX>::shared_ptr pFX;
 
 			vector<Tritium::LadspaFXInfo*> pluginList = g_engine->get_effects()->getPluginList();
 			for (uint i = 0; i < pluginList.size(); i++) {
@@ -354,7 +355,7 @@ void LadspaFXProperties::selectFXBtnClicked()
 				}
 			}
 			//g_engine->lock( RIGHT_HERE );
-			Song *pSong = (g_engine )->getSong();
+			T<Song>::shared_ptr pSong = (g_engine )->getSong();
 			pSong->set_modified(true);
 
 			g_engine->get_effects()->setLadspaFX( pFX, m_nLadspaFX );
@@ -378,7 +379,7 @@ void LadspaFXProperties::updateOutputControls()
 
 //	INFOLOG( "[updateOutputControls]" );
 //	Song *pSong = (g_engine )->getSong();
-	LadspaFX *pFX = g_engine->get_effects()->getLadspaFX(m_nLadspaFX);
+	T<LadspaFX>::shared_ptr pFX = g_engine->get_effects()->getLadspaFX(m_nLadspaFX);
 
 	if (pFX) {
 		m_pActivateBtn->setEnabled(true);
@@ -424,7 +425,7 @@ void LadspaFXProperties::activateBtnClicked()
 {
 #ifdef LADSPA_SUPPORT
 //	Song *pSong = (g_engine )->getSong();
-	LadspaFX *pFX = g_engine->get_effects()->getLadspaFX(m_nLadspaFX);
+	T<LadspaFX>::shared_ptr pFX = g_engine->get_effects()->getLadspaFX(m_nLadspaFX);
 	if (pFX) {
 		g_engine->lock( RIGHT_HERE );
 		pFX->setEnabled( !pFX->isEnabled() );

@@ -112,7 +112,7 @@ namespace Tritium
 	delete d;
     }
 
-    void Song::purge_instrument( Instrument * I, Engine* engine )
+    void Song::purge_instrument( T<Instrument>::shared_ptr I, Engine* engine )
     {
 	for ( int nPattern = 0; nPattern < (int)d->pattern_list->get_size(); ++nPattern ) {
 	    d->pattern_list->get( nPattern )->purge_instrument( I, engine );
@@ -305,9 +305,9 @@ namespace Tritium
     }
 
     ///Load a song from file
-    Song* Song::load( Engine* engine, const QString& filename )
+    T<Song>::shared_ptr Song::load( Engine* engine, const QString& filename )
     {
-	Song *song = NULL;
+	T<Song>::shared_ptr song;
 
 	SongReader reader;
 	song = reader.readSong( engine, filename );
@@ -322,7 +322,7 @@ namespace Tritium
     {
 	SongWriter writer;
 	int err;
-	err = writer.writeSong( engine, this, filename );
+	err = writer.writeSong( engine, T<Song>::shared_ptr(this), filename );
 
 	if( err ) {
 	    return false;
@@ -332,8 +332,8 @@ namespace Tritium
 
 
     /// Create default song
-    Song* Song::get_default_song(Engine* engine){
-	Song *song = new Song( "empty", "Tritium", 120, 0.5 );
+    T<Song>::shared_ptr Song::get_default_song(Engine* engine){
+	T<Song>::shared_ptr song( new Song( "empty", "Tritium", 120, 0.5 ) );
 
 	song->set_metronome_volume( 0.5 );
 	song->set_notes( "..." );
@@ -345,7 +345,7 @@ namespace Tritium
 	song->set_swing_factor( 0.0 );
 
 	InstrumentList* pList = new InstrumentList();
-	Instrument *pNewInstr = new Instrument(QString( 0 ), "New instrument", new ADSR());
+	T<Instrument>::shared_ptr pNewInstr( new Instrument(QString( 0 ), "New instrument", new ADSR()) );
 	pList->add( pNewInstr );
 	song->set_instrument_list( pList );
 		
@@ -354,7 +354,7 @@ namespace Tritium
 #endif
 
 	PatternList *patternList = new PatternList();
-	Pattern *emptyPattern = Pattern::get_empty_pattern(); 
+	T<Pattern>::shared_ptr emptyPattern( Pattern::get_empty_pattern() );
 	emptyPattern->set_name( QString("Pattern 1") ); 
 	emptyPattern->set_category( QString("not_categorized") );
 	patternList->add( emptyPattern );
@@ -371,7 +371,7 @@ namespace Tritium
     }
 
     /// Return an empty song
-    Song* Song::get_empty_song(Engine* engine)
+    T<Song>::shared_ptr Song::get_empty_song(Engine* engine)
     {
 	QString dataDir = DataPath::get_data_path();	
 	QString filename = dataDir + "/DefaultSong.h2song";
@@ -381,7 +381,7 @@ namespace Tritium
 	    filename = dataDir + "/DefaultSong.h2song";
 	}
 	
-	Song *song = Song::load( engine, filename );
+	T<Song>::shared_ptr song = Song::load( engine, filename );
 	
 	/* if file DefaultSong.h2song not accessible
 	 * create a simple default song.

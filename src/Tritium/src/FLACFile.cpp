@@ -22,6 +22,7 @@
 #include "FLACFile.hpp"
 #include <Tritium/Sample.hpp>
 #include <Tritium/Logger.hpp>
+#include <Tritium/memory.hpp>
 
 #include <vector>
 #include <fstream>
@@ -52,7 +53,7 @@ public:
 	~FLACFile_real();
 
 	void load( const QString& filename );
-	Sample* getSample();
+	T<Sample>::shared_ptr getSample();
 
 protected:
 	virtual ::FLAC__StreamDecoderWriteStatus write_callback( const ::FLAC__Frame *frame, const FLAC__int32 * const buffer[] );
@@ -189,13 +190,13 @@ void FLACFile_real::load( const QString& sFilename )
 
 
 
-Sample* FLACFile_real::getSample() {
+T<Sample>::shared_ptr FLACFile_real::getSample() {
 	//infoLog( "[getSample]" );
-	Sample *pSample = NULL;
+	T<Sample>::shared_ptr pSample;
 
 	if ( m_audioVect_L.size() == 0 ) {
 		// there were errors loading the file
-		return NULL;
+		return pSample;
 	}
 
 
@@ -205,7 +206,7 @@ Sample* FLACFile_real::getSample() {
 
 	memcpy( data_L, &m_audioVect_L[ 0 ], nFrames * sizeof( float ) );
 	memcpy( data_R, &m_audioVect_R[ 0 ], nFrames * sizeof( float ) );
-	pSample = new Sample( nFrames, m_sFilename, get_sample_rate(), data_L, data_R );
+	pSample.reset( new Sample( nFrames, m_sFilename, get_sample_rate(), data_L, data_R ) );
 
 	return pSample;
 }
@@ -228,12 +229,12 @@ FLACFile::~FLACFile()
 
 
 
-Sample* FLACFile::load( const QString& sFilename ) {
+T<Sample>::shared_ptr FLACFile::load( const QString& sFilename ) {
 	//infoLog( "[load] " + sFilename );
 
 	FLACFile_real *pFile = new FLACFile_real();
 	pFile->load( sFilename );
-	Sample *pSample = pFile->getSample();
+	T<Sample>::shared_ptr pSample = pFile->getSample();
 	delete pFile;
 
 	return pSample;

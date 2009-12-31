@@ -25,6 +25,7 @@
 #include "config.h"
 
 #include <Tritium/globals.hpp>
+#include <Tritium/memory.hpp>
 
 #include "EventListener.hpp"
 
@@ -58,14 +59,17 @@ class CompositeApp : public QObject
 {
 	Q_OBJECT
 	public:
-		CompositeApp( MainForm* pMainForm, Tritium::Song *pFirstSong );
+		CompositeApp(
+			MainForm* pMainForm,
+			Tritium::T<Tritium::Song>::shared_ptr pFirstSong
+			);
 
 		/// Returns the instance of CompositeApp class
 		static CompositeApp* get_instance();
 
 		virtual ~CompositeApp();
 
-		void setSong( Tritium::Song* pSong );
+		void setSong( Tritium::T<Tritium::Song>::shared_ptr pSong );
 
 		void showPreferencesDialog();
 		void showMixer(bool bShow);

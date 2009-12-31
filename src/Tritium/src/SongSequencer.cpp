@@ -34,8 +34,7 @@
 
 using namespace Tritium;
 
-SongSequencer::SongSequencer() :
-    m_pSong( 0 )
+SongSequencer::SongSequencer()
 {
 }
 
@@ -43,7 +42,7 @@ SongSequencer::~SongSequencer()
 {
 }
 
-void SongSequencer::set_current_song(Song* pSong)
+void SongSequencer::set_current_song(T<Song>::shared_ptr pSong)
 {
     QMutexLocker mx(&m_mutex);
     m_pSong = pSong;
@@ -58,7 +57,7 @@ int SongSequencer::process(SeqScript& seq, const TransportPosition& pos, uint32_
 
     if( m_pSong == 0 ) return 0;
 
-	Song* pSong = m_pSong;
+	T<Song>::shared_ptr pSong = m_pSong;
 	TransportPosition cur;
 	uint32_t end_frame = pos.frame + nframes;  // 1 past end of this process() cycle
 	uint32_t this_tick;

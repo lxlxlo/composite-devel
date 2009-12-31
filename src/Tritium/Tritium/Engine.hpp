@@ -23,6 +23,7 @@
 
 #include <stdint.h> // for uint32_t et al
 #include <Tritium/Song.hpp>
+#include <Tritium/memory.hpp>
 #include <QMutex>
 #include <vector>
 #include <list>
@@ -64,23 +65,23 @@ namespace Tritium
         // initialized before Engine is created
         // (for now).  Engine takes ownership and
         // will delete it.
-        Engine(Preferences* prefs);
+        Engine(T<Preferences>::shared_ptr prefs);
         ~Engine();
 
 	///////////////////////////////////////
 	// ACCESS TO MAJOR COMPONENTS
 	///////////////////////////////////////
 
-        Transport* get_transport(); // Never returns null
-        Preferences* get_preferences();
-        AudioOutput* get_audio_output();
-        MidiInput* get_midi_input();
-        ActionManager* get_action_manager();
-        Sampler* get_sampler();
-        EventQueue* get_event_queue();
+	T<Transport>::shared_ptr get_transport(); // Never returns null
+	T<Preferences>::shared_ptr get_preferences();
+	T<AudioOutput>::shared_ptr get_audio_output();
+	T<MidiInput>::shared_ptr get_midi_input();
+	T<ActionManager>::shared_ptr get_action_manager();
+	T<Sampler>::shared_ptr get_sampler();
+	T<EventQueue>::shared_ptr get_event_queue();
         Playlist& get_playlist();
 #ifdef LADSPA_SUPPORT
-        Effects* get_effects();
+	T<Effects>::shared_ptr get_effects();
 #endif
 
 	///////////////////////////////////////
@@ -210,10 +211,10 @@ namespace Tritium
 	///////////////////////////////////////
 
         /// Set current song
-        void setSong( Song *newSong );
+        void setSong( T<Song>::shared_ptr newSong );
 
         /// Return the current song
-        Song* getSong();
+	T<Song>::shared_ptr getSong();
         void removeSong();
 
 	///////////////////////////////////////
@@ -249,7 +250,7 @@ namespace Tritium
 	// SAMPLER CONTROL
 	///////////////////////////////////////
 
-        int loadDrumkit( Drumkit *drumkitInfo );
+        int loadDrumkit( T<Drumkit>::shared_ptr drumkitInfo );
 
         /// delete an instrument. If `conditional` is true, and there
         /// are patterns that use this instrument, it's not deleted
@@ -259,8 +260,8 @@ namespace Tritium
         const QString& getCurrentDrumkitname();
         void setCurrentDrumkitname( const QString& currentdrumkitname );
 
-        void previewSample( Sample *pSample );
-        void previewInstrument( Instrument *pInstr );
+        void previewSample( T<Sample>::shared_ptr pSample );
+        void previewInstrument( T<Instrument>::shared_ptr pInstr );
 
 	///////////////////////////////////////
 	// TEMPO CONTROLS

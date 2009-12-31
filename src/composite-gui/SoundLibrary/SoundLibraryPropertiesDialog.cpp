@@ -33,11 +33,11 @@ namespace Tritium
 {
 
 //globals
-Drumkit *drumkitinfo = NULL ;
-Drumkit *predrumkit = NULL;
+T<Drumkit>::shared_ptr drumkitinfo;
+T<Drumkit>::shared_ptr predrumkit;
 QString oldName;
 
-SoundLibraryPropertiesDialog::SoundLibraryPropertiesDialog( QWidget* pParent, Drumkit *drumkitInfo, Drumkit *preDrumKit )
+SoundLibraryPropertiesDialog::SoundLibraryPropertiesDialog( QWidget* pParent, T<Drumkit>::shared_ptr drumkitInfo, T<Drumkit>::shared_ptr preDrumKit )
  : QDialog( pParent )
 {
 	setupUi( this );

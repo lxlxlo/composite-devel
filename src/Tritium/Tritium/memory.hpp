@@ -1,5 +1,5 @@
 /*
- * Copyright(c) 2002-2008 by Alex >Comix< Cominu [comix@users.sourceforge.net]
+ * Copyright (c) 2009 by Gabriel M. Beddingfield <gabriel@teuton.org>
  *
  * This file is part of Tritium
  *
@@ -18,30 +18,27 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#ifndef TRITIUM_MEMORY_HPP
+#define TRITIUM_MEMORY_HPP
 
-#ifndef TRITIUM_FLAC_FILE_HPP
-#define TRITIUM_FLAC_FILE_HPP
+#include <memory>
+#include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 
-#include <Tritium/memory.hpp>
-
-class QString;
+/**
+ * \brief Header file with smart pointers, etc.
+ */
 
 namespace Tritium
 {
-
-    class Sample;
-
-    /// \todo: impostare il samplerate in load()
-    /// Class for FLAC file handling
-    class FLACFile
+    template <typename X>
+    struct T
     {
-    public:
-	FLACFile();
-	~FLACFile();
-
-	T<Sample>::shared_ptr load( const QString& sFilename );
+	typedef std::auto_ptr<X> auto_ptr;
+	typedef boost::shared_ptr<X> shared_ptr;
+	typedef boost::weak_ptr<X> weak_ptr;
     };
 
 } // namespace Tritium
 
-#endif // TRITIUM_FLAC_FILE_HPP
+#endif // TRITIUM_MEMORY_HPP

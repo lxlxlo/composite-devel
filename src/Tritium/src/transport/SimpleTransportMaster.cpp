@@ -39,14 +39,14 @@ class Tritium::SimpleTransportMasterPrivate
 public:
     SimpleTransportMasterPrivate();
 
-    void set_current_song(Song* song);
+    void set_current_song(T<Song>::shared_ptr song);
 
     TransportPosition pos;
     QMutex pos_mutex;
-    Song* song;
+    T<Song>::shared_ptr song;
 };
 
-SimpleTransportMasterPrivate::SimpleTransportMasterPrivate() : song(0)
+SimpleTransportMasterPrivate::SimpleTransportMasterPrivate()
 {
     set_current_song(song);
 }
@@ -176,7 +176,7 @@ void SimpleTransportMaster::processed_frames(uint32_t nFrames)
     d->pos.beats_per_minute = d->song->get_bpm();
 }
 
-void SimpleTransportMaster::set_current_song(Song* s)
+void SimpleTransportMaster::set_current_song(T<Song>::shared_ptr s)
 {
     d->set_current_song(s);
 }
@@ -186,13 +186,13 @@ uint32_t SimpleTransportMaster::get_current_frame(void)
     return d->pos.frame;
 }
 
-void SimpleTransportMasterPrivate::set_current_song(Song* s)
+void SimpleTransportMasterPrivate::set_current_song(T<Song>::shared_ptr s)
 {
     QMutexLocker lk(&pos_mutex);
     song = s;
 
     #warning "Still have a hard-coded frame rate"
-    if( song != 0 ) {
+    if( song ) {
         pos.state = TransportPosition::STOPPED;
         pos.frame = 0;
         pos.frame_rate = 48000;

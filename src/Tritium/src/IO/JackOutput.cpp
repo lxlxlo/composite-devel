@@ -34,6 +34,7 @@
 #include <Tritium/Song.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/globals.hpp>
+#include <Tritium/memory.hpp>
 
 namespace Tritium
 {
@@ -60,14 +61,16 @@ int jackDriverBufferSize( jack_nframes_t nframes, void * /*arg*/ )
 
 void jackDriverShutdown( void *arg )
 {
-	JackClient* client = static_cast<JackClient*>(arg);
+	T<JackClient>::shared_ptr *ptr =
+		reinterpret_cast< T<JackClient>::shared_ptr* >(arg);
+	T<JackClient>::shared_ptr client = *ptr;
 	if(client) {
-		client->clearAudioProcessCallback();
-		client->raise_error( Engine::JACK_SERVER_SHUTDOWN );
+		(client)->clearAudioProcessCallback();
+		(client)->raise_error( Engine::JACK_SERVER_SHUTDOWN );
 	}
 }
 
-JackOutput::JackOutput( Engine* e_parent, JackClient* parent, JackProcessCallback processCallback, void* arg )
+JackOutput::JackOutput( Engine* e_parent, T<JackClient>::shared_ptr parent, JackProcessCallback processCallback, void* arg )
     : AudioOutput(e_parent),
       m_jack_client(parent)
 {
@@ -259,7 +262,7 @@ int JackOutput::init( unsigned /*nBufferSize*/ )
 	   it ever shuts down, either entirely, or if it
 	   just decides to stop calling us.
 	*/
-	jack_on_shutdown ( client, jackDriverShutdown, ((void*)m_jack_client) );
+	jack_on_shutdown ( client, jackDriverShutdown, ((void*)&m_jack_client) );
 
 	m_jack_client->activate();
 
@@ -286,7 +289,7 @@ int JackOutput::init( unsigned /*nBufferSize*/ )
 /**
  * Make sure the number of track outputs match the instruments in @a song , and name the ports.
  */
-void JackOutput::makeTrackOutputs( Song * song )
+void JackOutput::makeTrackOutputs( T<Song>::shared_ptr song )
 {
 
 	/// Disable Track Outputs
@@ -295,7 +298,7 @@ void JackOutput::makeTrackOutputs( Song * song )
 	///
 
 	InstrumentList * instruments = song->get_instrument_list();
-	Instrument * instr;
+	T<Instrument>::shared_ptr instr;
 	int nInstruments = ( int )instruments->get_size();
 
 	// create dedicated channel output ports
@@ -324,7 +327,7 @@ void JackOutput::makeTrackOutputs( Song * song )
  * Give the @a n 'th port the name of @a instr .
  * If the n'th port doesn't exist, new ports up to n are created.
  */
-void JackOutput::setTrackOutput( int n, Instrument * instr )
+void JackOutput::setTrackOutput( int n, T<Instrument>::shared_ptr instr )
 {
 
 	QString chName;

@@ -47,10 +47,6 @@ Effects::Effects(Engine* parent) :
 	m_pRecentGroup( NULL )
 {
 	assert(parent);
-	for ( int nFX = 0; nFX < MAX_FX; ++nFX ) {
-		m_FXList[ nFX ] = NULL;
-	}
-
 	getPluginList();
 }
 
@@ -64,15 +60,11 @@ Effects::~Effects()
 		delete m_pluginList[i];
 	}
 	m_pluginList.clear();
-
-	for ( int nFX = 0; nFX < MAX_FX; ++nFX ) {
-		delete m_FXList[ nFX ];
-	}
 }
 
 
 
-LadspaFX* Effects::getLadspaFX( int nFX )
+T<LadspaFX>::shared_ptr Effects::getLadspaFX( int nFX )
 {
 	assert( nFX < MAX_FX );
 	return m_FXList[ nFX ];
@@ -80,18 +72,12 @@ LadspaFX* Effects::getLadspaFX( int nFX )
 
 
 
-void  Effects::setLadspaFX( LadspaFX* pFX, int nFX )
+void  Effects::setLadspaFX( T<LadspaFX>::shared_ptr pFX, int nFX )
 {
 	assert( nFX < MAX_FX );
 	//INFOLOG( "[setLadspaFX] FX: " + pFX->getPluginLabel() + ", " + to_string( nFX ) );
 
 	m_engine->lock( RIGHT_HERE );
-
-
-	if ( m_FXList[ nFX ] ) {
-		( m_FXList[ nFX ] )->deactivate();
-		delete m_FXList[ nFX ];
-	}
 
 	m_FXList[ nFX ] = pFX;
 	
@@ -99,7 +85,6 @@ void  Effects::setLadspaFX( LadspaFX* pFX, int nFX )
 		m_engine->get_preferences()->setMostRecentFX( pFX->getPluginName() );
 		updateRecentGroup();
 	}
-
 
 	m_engine->unlock();
 }

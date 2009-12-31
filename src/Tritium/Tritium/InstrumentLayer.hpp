@@ -23,6 +23,7 @@
 #define TRITIUM_INSTRUMENTLAYER_HPP
 
 #include <Tritium/globals.hpp>
+#include <Tritium/memory.hpp>
 #include <utility> // std::pair
 
 namespace Tritium
@@ -41,7 +42,7 @@ namespace Tritium
     public:
 	typedef std::pair<float, float> velocity_range_t;
 
-	InstrumentLayer( Sample *sample );
+	InstrumentLayer( T<Sample>::shared_ptr sample );
 	~InstrumentLayer();
 
 	void set_velocity_range(float min, float max);
@@ -57,14 +58,14 @@ namespace Tritium
 	void set_gain( float gain );
 	float get_gain();
 
-	void set_sample( Sample* sample );
-	Sample* get_sample();
+	void set_sample( T<Sample>::shared_ptr sample );
+	T<Sample>::shared_ptr get_sample();
 
     private:
 	velocity_range_t m_velocity_range; // Range: [min, max]
 	float m_pitch;
 	float m_gain;
-	Sample *m_sample;
+	T<Sample>::shared_ptr m_sample;
     };
 
 

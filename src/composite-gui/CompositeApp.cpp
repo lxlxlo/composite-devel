@@ -77,14 +77,14 @@ public:
 	}
     }
 
-    void set_song(Tritium::Song* pSong) {
+    void set_song(Tritium::T<Tritium::Song>::shared_ptr pSong) {
 	if(q) {
 	    q->setSong(pSong);
 	}
     }
 };
 
-CompositeApp::CompositeApp( MainForm *pMainForm, Song *pFirstSong )
+CompositeApp::CompositeApp( MainForm *pMainForm, T<Song>::shared_ptr pFirstSong )
  : m_pMainForm( pMainForm )
  , m_pMixer( NULL )
  , m_pPatternEditorPanel( NULL )
@@ -117,7 +117,7 @@ CompositeApp::CompositeApp( MainForm *pMainForm, Song *pFirstSong )
 
         setWindowTitle( qsSongName  );
 
-	Preferences *pPref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pPref = g_engine->get_preferences();
 
 	setupSinglePanedInterface();
 
@@ -157,10 +157,10 @@ CompositeApp::~CompositeApp()
 
 	Engine *engine = g_engine;
 	if (engine) {
-		Tritium::Song * song = engine->getSong();
+		T<Song>::shared_ptr song = engine->getSong();
 		// Engine calls removeSong on from its destructor, so here we just delete the objects:
+		song.reset();
 		delete engine;
-		delete song;
 	}
 
 	#ifdef LADSPA_SUPPORT
@@ -185,7 +185,7 @@ CompositeApp* CompositeApp::get_instance() {
 
 void CompositeApp::setupSinglePanedInterface()
 {
-	Preferences *pPref = g_engine->get_preferences();
+	T<Preferences>::shared_ptr pPref = g_engine->get_preferences();
 
 	// MAINFORM
 	WindowProperties mainFormProp = pPref->getMainFormProperties();
@@ -286,15 +286,12 @@ void CompositeApp::closeFXProperties()
 #endif
 }
 
-void CompositeApp::setSong(Song* song)
+void CompositeApp::setSong(T<Song>::shared_ptr song)
 {
-
-
-	Song* oldSong = (g_engine)->getSong();
-	if (oldSong != NULL) {
+	T<Song>::shared_ptr oldSong = (g_engine)->getSong();
+	if (oldSong) {
 		(g_engine)->removeSong();
-		delete oldSong;
-		oldSong = NULL;
+		oldSong.reset();
 	}
 
 	g_engine->setSong( song );
@@ -410,7 +407,7 @@ void CompositeApp::onDrumkitLoad( QString name ){
 void CompositeApp::onEventQueueTimer()
 {
 	// use the timer to do schedule instrument slaughter;
-	EventQueue *pQueue = g_engine->get_event_queue();
+	T<EventQueue>::shared_ptr pQueue = g_engine->get_event_queue();
 
 	Event event;
 	while ( ( event = pQueue->pop_event() ).type != EVENT_NONE ) {

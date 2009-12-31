@@ -23,7 +23,7 @@
 
 #include <Tritium/Song.hpp>
 #include <QString>
-#include <memory>
+#include <Tritium/memory.hpp>
 
 namespace Tritium
 {
@@ -47,9 +47,9 @@ namespace Tritium
         float volume;                                                   ///< volume of the song (0.0..1.0)
         float metronome_volume;                                         ///< Metronome volume
         QString notes;
-        std::auto_ptr<PatternList> pattern_list;                        ///< Pattern list
-        std::auto_ptr<Song::pattern_group_t> pattern_group_sequence;    ///< Sequence of pattern groups
-        std::auto_ptr<InstrumentList> instrument_list;                  ///< Instrument list
+	T<PatternList>::auto_ptr pattern_list;                        ///< Pattern list
+        T<Song::pattern_group_t>::auto_ptr pattern_group_sequence;    ///< Sequence of pattern groups
+	T<InstrumentList>::auto_ptr instrument_list;                  ///< Instrument list
         QString filename;
         bool is_loop_enabled;
         float humanize_time_value;
@@ -58,7 +58,7 @@ namespace Tritium
 
         SongMode song_mode;
 
-	std::auto_ptr<PatternModeManager> pat_mode;
+	T<PatternModeManager>::auto_ptr pat_mode;
 
         SongPrivate(const QString& name,
                     const QString& author,

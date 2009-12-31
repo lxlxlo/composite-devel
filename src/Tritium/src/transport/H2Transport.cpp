@@ -19,9 +19,9 @@
  *
  */
 
-#include <memory>
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/Engine.hpp>
+#include <Tritium/memory.hpp>
 #include "H2Transport.hpp"
 #include "SimpleTransportMaster.hpp"
 #include "JackTimeMaster.hpp"
@@ -32,7 +32,7 @@ class Tritium::H2TransportPrivate
 {
 public:
     Engine* engine;
-    std::auto_ptr<Transport> xport;
+    T<Transport>::auto_ptr xport;
 
     /* This is used as a heartbeat signal with the JACK transport.
      * It always sets it true.  We always set it false.  If it's
@@ -41,8 +41,8 @@ public:
      */
     bool presumed_jtm;  // We *think* we're the Jack time master.
     bool heartbeat_jtm;
-    std::auto_ptr<JackTimeMaster> jtm;
-    Song* pSong;  // Cached pointer for JTM
+    T<JackTimeMaster>::auto_ptr jtm;
+    T<Song>::shared_ptr pSong;  // Cached pointer for JTM
 };
 
 H2Transport::H2Transport(Engine* parent) :
@@ -54,7 +54,6 @@ H2Transport::H2Transport(Engine* parent) :
     d->xport.reset( new SimpleTransportMaster );
     d->presumed_jtm = false;
     d->heartbeat_jtm = false;
-    d->pSong = 0;
 }
 
 H2Transport::~H2Transport()
@@ -102,7 +101,7 @@ void H2Transport::processed_frames(uint32_t nFrames)
     if(d->xport.get()) d->xport->processed_frames(nFrames);
 }
 
-void H2Transport::set_current_song(Song* s)
+void H2Transport::set_current_song(T<Song>::shared_ptr s)
 {
     d->pSong = s;
     if( d->jtm.get() ) {
@@ -127,7 +126,7 @@ TransportPosition::State H2Transport::get_state()
     return TransportPosition::STOPPED;
 }
 
-bool H2Transport::setJackTimeMaster(JackClient* parent, bool if_none_already)
+bool H2Transport::setJackTimeMaster(T<JackClient>::shared_ptr parent, bool if_none_already)
 {
     bool rv;
 

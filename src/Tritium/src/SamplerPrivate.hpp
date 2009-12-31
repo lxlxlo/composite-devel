@@ -23,6 +23,7 @@
 
 #include <Tritium/Sampler.hpp>
 #include <Tritium/Note.hpp>
+#include <Tritium/memory.hpp>
 #include <cassert>
 
 namespace Tritium
@@ -35,7 +36,7 @@ namespace Tritium
 	Engine* engine;
 	typedef std::list<Note> NoteList;
 	NoteList current_notes;                // Replaces __playing_notes_queue
-	Instrument* preview_instrument;         // Replaces __preview_instrument
+	T<Instrument>::shared_ptr preview_instrument;         // Replaces __preview_instrument
 #ifdef JACK_SUPPORT
 	float* track_out_L[ MAX_INSTRUMENTS ];  // Replaces __track_out_L
 	float* track_out_R[ MAX_INSTRUMENTS ];  // Replaces __track_out_R
@@ -43,7 +44,7 @@ namespace Tritium
 	SamplerPrivate(Sampler* par, Engine* e_par) :
 	    parent( *par ),
 	    engine(e_par),
-	    preview_instrument( 0 )
+	    preview_instrument()
 	    { assert(e_par); }
 
 	// Add/Remove notes from current_notes based on event 'ev'
@@ -57,7 +58,7 @@ namespace Tritium
 	// Actually render the specific note(s) to the buffers.
 	int render_note(Note& note, uint32_t nFrames, uint32_t frame_rate);
 	int render_note_no_resample(
-	    Sample *pSample,
+	    T<Sample>::shared_ptr pSample,
 	    Note& note,
 	    int nFrames,
 	    float cost_L,
@@ -68,7 +69,7 @@ namespace Tritium
 	    float fSendFXLevel_R
 	    );
 	int render_note_resample(
-	    Sample *pSample,
+	    T<Sample>::shared_ptr pSample,
 	    Note& note,
 	    int nFrames,
 	    uint32_t frame_rate,

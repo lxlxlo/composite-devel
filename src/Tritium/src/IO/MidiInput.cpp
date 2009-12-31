@@ -30,6 +30,7 @@
 #include <Tritium/Note.hpp>
 #include <Tritium/Action.hpp>
 #include <Tritium/MidiMap.hpp>
+#include <Tritium/memory.hpp>
 #include <cassert>
 
 namespace Tritium
@@ -133,7 +134,7 @@ void MidiInput::handleControlChangeMessage( const MidiMessage& msg )
 {
 	//INFOLOG( QString( "[handleMidiMessage] CONTROL_CHANGE Parameter: %1, Value: %2" ).arg( msg.m_nData1 ).arg( msg.m_nData2 ) );
 	
-	ActionManager * aH = m_engine->get_action_manager();
+	T<ActionManager>::shared_ptr aH = m_engine->get_action_manager();
 	MidiMap * mM = m_engine->get_preferences()->get_midi_map();
 
 	Action * pAction; 
@@ -169,7 +170,7 @@ void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
 		bIsChannelValid = ( nChannel == nMidiChannelFilter );
 	}
 
-	ActionManager * aH = m_engine->get_action_manager();
+	T<ActionManager>::shared_ptr aH = m_engine->get_action_manager();
 	MidiMap * mM = m_engine->get_preferences()->get_midi_map();
 
 	m_engine->set_last_midi_event("NOTE", msg.m_nData1);
@@ -219,7 +220,7 @@ void MidiInput::handleNoteOffMessage( const MidiMessage& msg )
 		return;
 	}
 
-	Song *pSong = m_engine->getSong();
+	T<Song>::shared_ptr pSong = m_engine->getSong();
 
 	int nNote = msg.m_nData1;
 	int nInstrument = nNote - 36;
@@ -229,7 +230,7 @@ void MidiInput::handleNoteOffMessage( const MidiMessage& msg )
 	if ( nInstrument > ( MAX_INSTRUMENTS -1 ) ) {
 		nInstrument = MAX_INSTRUMENTS - 1;
 	}
-	Instrument *pInstr = pSong->get_instrument_list()->get( nInstrument );
+	T<Instrument>::shared_ptr pInstr = pSong->get_instrument_list()->get( nInstrument );
 	// unsigned nPosition = 0;
 	const float fVelocity = 0.0f;
 	const float fPan_L = 0.5f;
@@ -274,7 +275,7 @@ void MidiInput::handleSysexMessage( const MidiMessage& msg )
 	*/
 	
 	
-	ActionManager * aH = m_engine->get_action_manager();
+	T<ActionManager>::shared_ptr aH = m_engine->get_action_manager();
 	MidiMap * mM = m_engine->get_preferences()->get_midi_map();
 
 	m_engine->set_last_midi_event("SYSEX", msg.m_nData1);

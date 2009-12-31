@@ -26,6 +26,7 @@
 #include <Tritium/ADSR.hpp>
 #include <QString>
 #include <stdint.h>
+#include <Tritium/memory.hpp>
 
 namespace Tritium
 {
@@ -98,7 +99,7 @@ public:
 
 	#warning "TODO: Check these defaults"
 	Note(
-	    Instrument *pInstrument = 0,
+	    T<Instrument>::shared_ptr pInstrument = T<Instrument>::shared_ptr(),
 	    float fVelocity = 1.0,
 	    float fPan_L = 0.5,
 	    float fPan_R = 0.5,
@@ -114,8 +115,8 @@ public:
 
 	Note* copy();
 
-	void set_instrument( Instrument* instrument );
-	Instrument* get_instrument() const {
+	void set_instrument( T<Instrument>::shared_ptr instrument );
+	T<Instrument>::shared_ptr get_instrument() const {
 		return __instrument;
 	}
 
@@ -192,7 +193,7 @@ public:
 
 
 private:
-	Instrument* __instrument;
+	T<Instrument>::shared_ptr __instrument;
 	float __velocity;		///< Velocity (intensity) of the note [0..1]
 	float __pan_l;			///< Pan of the note (left volume) [0..1]
 	float __pan_r;			///< Pan of the note (right volume) [0..1]

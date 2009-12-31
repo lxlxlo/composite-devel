@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include <cstring>
 #include <boost/test/unit_test.hpp>
+#include <Tritium/memory.hpp>
 
 /*
  * test_utils.h
@@ -89,7 +90,8 @@ namespace TritiumTest
      * Returns:  true if p is within the bounds of s.  false if the
      *           position p is outside the song.
      */
-    bool valid_position(Tritium::TransportPosition& p, Tritium::Song* s);
+    bool valid_position(Tritium::TransportPosition& p,
+			Tritium::T<Tritium::Song>::shared_ptr s);
 
 } // namespace TritiumTest
 

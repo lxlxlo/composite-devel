@@ -23,6 +23,7 @@
 #define TRITIUM_SMF_HPP
 
 #include <Tritium/Song.hpp>
+#include <Tritium/memory.hpp>
 
 #include <cstdio>
 #include <vector>
@@ -87,7 +88,7 @@ public:
 	SMFWriter();
 	~SMFWriter();
 
-	void save( const QString& sFilename, Song *pSong );
+	void save( const QString& sFilename, T<Song>::shared_ptr pSong );
 
 private:
 	FILE *m_file;

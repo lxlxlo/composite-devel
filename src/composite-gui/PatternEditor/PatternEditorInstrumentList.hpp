@@ -26,6 +26,7 @@
 #include "config.h"
 
 #include <Tritium/globals.hpp>
+#include <Tritium/memory.hpp>
 
 #include <QtGui>
 
@@ -70,7 +71,7 @@ class InstrumentLine : public PixmapWidget
 		ToggleButton *m_pSoloBtn;
 
 		virtual void mousePressEvent(QMouseEvent *ev);
-		Tritium::Pattern* getCurrentPattern();
+		Tritium::T<Tritium::Pattern>::shared_ptr getCurrentPattern();
 };
 
 

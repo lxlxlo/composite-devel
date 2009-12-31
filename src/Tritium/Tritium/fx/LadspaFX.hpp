@@ -28,6 +28,7 @@
 #include <vector>
 #include <list>
 #include "ladspa.h"
+#include <Tritium/memory.hpp>
 
 namespace Tritium
 {
@@ -152,7 +153,7 @@ public:
 		m_bEnabled = value;
 	}
 
-	static LadspaFX* load( const QString& sLibraryPath, const QString& sPluginLabel, long nSampleRate );
+	static T<LadspaFX>::shared_ptr load( const QString& sLibraryPath, const QString& sPluginLabel, long nSampleRate );
 
 	int getPluginType() {
 		return m_pluginType;

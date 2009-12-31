@@ -26,6 +26,7 @@
 #include <deque>
 #include <map>
 #include <utility> // std::pair
+#include <Tritium/memory.hpp>
 
 namespace Tritium
 {
@@ -39,20 +40,21 @@ namespace Tritium
     class InstrumentList
     {
     public:
-	typedef std::deque<Instrument*> sequence_t;
-	typedef std::map<Instrument*, unsigned> map_t;
+	typedef T<Instrument>::shared_ptr instrument_t;
+	typedef std::deque<instrument_t> sequence_t;
+	typedef std::map<instrument_t, unsigned> map_t;
 
 	InstrumentList();
 	~InstrumentList();
 
-	void add( Instrument* pInstrument );
-	Instrument* get( unsigned int pos );
-	int get_pos( Instrument* inst );
+	void add( T<Instrument>::shared_ptr pInstrument );
+	T<Instrument>::shared_ptr get( unsigned int pos );
+	int get_pos( T<Instrument>::shared_ptr inst );
 	unsigned get_size();
 
 	void del( int pos );
 
-	void replace( Instrument* pNewInstr, unsigned nPos );
+	void replace( T<Instrument>::shared_ptr pNewInstr, unsigned nPos );
 
     private:
 	sequence_t m_list;

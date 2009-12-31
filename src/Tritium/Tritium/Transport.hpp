@@ -23,6 +23,7 @@
 
 #include <stdint.h>  // int32_t, uint32_t
 #include <Tritium/TransportPosition.hpp>
+#include <Tritium/memory.hpp>
 
 namespace Tritium
 {
@@ -49,7 +50,7 @@ namespace Tritium
         // of frames processed.  This is needed so that the internal transport
         // master can keep track of time.
         virtual void processed_frames(uint32_t nFrames) = 0;
-        virtual void set_current_song(Song* s) = 0;
+        virtual void set_current_song(T<Song>::shared_ptr s) = 0;
 
         // Convenience interface (mostly for GUI)
         /**

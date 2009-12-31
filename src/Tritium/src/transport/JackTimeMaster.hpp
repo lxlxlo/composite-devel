@@ -24,6 +24,7 @@
 #include <QtCore/QMutex>
 #include <jack/transport.h>
 #include <Tritium/JackTimeMasterEvents.hpp>
+#include <Tritium/memory.hpp>
 
 namespace Tritium
 {
@@ -33,12 +34,12 @@ namespace Tritium
     class JackTimeMaster
     {
     public:
-	JackTimeMaster(JackClient* parent);
+	JackTimeMaster(T<JackClient>::shared_ptr parent);
 	~JackTimeMaster();
 
 	bool setMaster(bool if_none_already = false);
 	void clearMaster(void);
-	void set_current_song(Song* s);
+	void set_current_song(T<Song>::shared_ptr s);
 	void set_heartbeat(bool* beat);
 
     private:
@@ -53,8 +54,8 @@ namespace Tritium
 		      int new_pos);
 
     private:
-	JackClient* m_jack_client;
-	Song* m_pSong;
+	T<JackClient>::shared_ptr m_jack_client;
+	T<Song>::shared_ptr m_pSong;
 	bool* m_pBeat;
 	QMutex m_mutex;
     }; // class JackTimeMaster

@@ -22,6 +22,7 @@
 #include "test_utils.hpp"
 #include <Tritium/TransportPosition.hpp>
 #include <Tritium/Song.hpp>
+#include <Tritium/memory.hpp>
 #include <cmath>
 
 using namespace Tritium;
@@ -125,7 +126,8 @@ namespace TritiumTest
 
     #define XCK(expr) { BOOST_CHECK( expr ); rv = rv && (expr); }
 
-    bool valid_position(TransportPosition& p, Song* s)
+    bool valid_position(TransportPosition& p,
+			T<Song>::shared_ptr s)
     {
 	bool rv = true;
 	XCK( p.bar > 0 );

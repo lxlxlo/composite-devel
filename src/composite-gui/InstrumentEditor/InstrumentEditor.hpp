@@ -27,6 +27,7 @@
 #include <QtGui>
 
 #include <Tritium/Instrument.hpp>
+#include <Tritium/memory.hpp>
 
 #include "../EventListener.hpp"
 #include "../widgets/PixmapWidget.hpp"
@@ -72,7 +73,7 @@ class InstrumentEditor : public QWidget, public EventListener
 
 
 	private:
-		Tritium::Instrument *m_pInstrument;
+		Tritium::T<Tritium::Instrument>::shared_ptr m_pInstrument;
 		int m_nSelectedLayer;
 
 		ToggleButton *m_pShowInstrumentBtn;
