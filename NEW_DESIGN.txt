@@ -18,12 +18,12 @@ See TRANSPORT_REDESIGN_NOTES.gmb.  :-)
 OVERVIEW
 --------
 
-     ...HydrogenApp......................................
+     ...CompositeApp.....................................
      .                                                  .
      .  Let there be GUI                                .
      ....................................................
-              ...H Y D R O G E N    A P I .....
-              . H2Core::Hydrogen              .
+              ...T R I T I U M      A P I .....
+              . Tritium::Engine               .
               . {                             .
               .    Transport                  .
               .    Mixer                      .
@@ -35,7 +35,7 @@ OVERVIEW
               .    Preferences                .
               . };                            .
               .................................
-     ...Hydrogen.........................................
+     ...Composite........................................
      .                                                  .
      .             Song         Transport <-----+       .
      .               |              A           |       .
@@ -117,7 +117,7 @@ THE TRANSPORT
 
 A conceptual model of the transport looks like this:
 
-     HydrogenApp
+     CompositeApp
         A
         |                                              Current Song
         V                                                     |(**)
@@ -142,8 +142,8 @@ TransportPosition (Struct/class)           +-MiscTransportMaster
                              * When jack_position_t does not have BBT.
                              * When ticks don't match Hydrogen's ticks.
 
-Hydrogen will create and own the transport.  It allows the GUI to
-manipulate it through the Transport Interface.  This tranposrt is
+Tritium::Engine will create and own the transport.  It allows the GUI
+to manipulate it through the Transport Interface.  This tranposrt is
 not very smart at all, but serves as a front to several different
 Transport implementations.  One key thing to notice in this: The
 Sequencer is *always* a transport slave.  It is unable to change the
@@ -176,7 +176,7 @@ being the Jack Transport Master.
 THE JACK TRANSPORT
 ==================
 
-When Hydrogen wishes to be the JACK Transport master, it must be done in a
+When Composite wishes to be the JACK Transport master, it must be done in a
 special way.  The JACK API provides a funtion for (optionally) taking control of
 the JACK Transport.  However, it does *not* provide any means of notification
 that you are no longer the transport master.
@@ -302,4 +302,3 @@ It's worth noting that once the sequencer is given the list of events
 to render... the processing lends itself to parallel processing.  None
 of the instruments really need to know anything about the other
 intruments during this phase.
-
