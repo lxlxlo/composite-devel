@@ -171,9 +171,8 @@ void Rotary::mousePressEvent(QMouseEvent *ev)
 	m_fMousePressY = ev->y();
 
 	if ( m_bShowValueToolTip ) {
-		char tmp[20];
-		sprintf( tmp, "%#.2f", m_fValue );
-		m_pValueToolTip->showTip( mapToGlobal( QPoint( -38, 1 ) ), QString( tmp ) );
+		QString tmp = QString("%1").arg(m_fValue, 0, 'f', 2);
+		m_pValueToolTip->showTip( mapToGlobal( QPoint( -38, 1 ) ), tmp );
 	}
 }
 
@@ -223,9 +222,8 @@ void Rotary::wheelEvent ( QWheelEvent *ev )
 	emit valueChanged(this);
 
 	if ( m_bShowValueToolTip ) {
-		char tmp[20];
-		sprintf( tmp, "%#.2f", m_fValue );
-		m_pValueToolTip->showTip( mapToGlobal( QPoint( -38, 1 ) ), QString( tmp ) );
+		QString tmp = QString("%1").arg(m_fValue, 0, 'f', 2);
+		m_pValueToolTip->showTip( mapToGlobal( QPoint( -38, 1 ) ), tmp );
 	}
 }
 

@@ -564,25 +564,21 @@ void PlayerControl::updatePlayerControl()
 		int nMins = (int)( fSeconds / 60.0 ) % 60;
 		int nHours = (int)( fSeconds / 3600.0 );
 
-		char tmp[100];
-		sprintf(tmp, "%02d", nHours );
-		m_pTimeDisplayH->setText( QString( tmp ) );
-
-		sprintf(tmp, "%02d", nMins );
-		m_pTimeDisplayM->setText( QString( tmp ) );
-
-		sprintf(tmp, "%02d", nSeconds );
-		m_pTimeDisplayS->setText( QString( tmp ) );
-
-		sprintf(tmp, "%03d", nMSec );
-		m_pTimeDisplayMS->setText( QString( tmp ) );
+		QString num = QString::number((int)nHours);
+		m_pTimeDisplayH->setText( QString("%1").arg( num, 2, '0' ) );
+		num = QString::number((int)nMins);
+		m_pTimeDisplayM->setText( QString("%1").arg( num, 2, '0' ) );
+		num = QString::number((int)nSeconds);
+		m_pTimeDisplayS->setText( QString("%1").arg( num, 2, '0') );
+		num = QString::number((int)nMSec);
+		m_pTimeDisplayMS->setText( QString("%1").arg( num, 3, '0') );
 	}
 
 	m_pMetronomeBtn->setPressed(pPref->m_bUseMetronome);
 
 
 	//beatcounter get BC message
-	char bcstatus[4];
+	QString bcstatus;
 	int beatstocountondisplay = 1;
 	beatstocountondisplay = m_pEngine->getBcStatus();
 
@@ -592,8 +588,8 @@ void PlayerControl::updatePlayerControl()
 				g_engine->get_preferences()->m_bbc = Preferences::BC_OFF;
 				bcDisplaystatus = 0;
 			}
-			sprintf(bcstatus, "R");
-				m_pBCDisplayZ->setText( QString (bcstatus) );
+			bcstatus = "R";
+			m_pBCDisplayZ->setText( bcstatus);
 				
 			break;
 		default:
@@ -601,8 +597,8 @@ void PlayerControl::updatePlayerControl()
 				g_engine->get_preferences()->m_bbc = Preferences::BC_ON;
 				bcDisplaystatus = 1;
 			}
-			sprintf(bcstatus, "%02d ", beatstocountondisplay -1);
-			m_pBCDisplayZ->setText( QString (bcstatus) );
+			bcstatus = QString("%1").arg( QString::number(beatstocountondisplay-1), 2, '0' );
+			m_pBCDisplayZ->setText( bcstatus );
 
 	}
 	//~ beatcounter
@@ -746,35 +742,24 @@ void PlayerControl::bcSetPlayBtnClicked( Button* )
 void PlayerControl::bcbButtonClicked( Button* bBtn)
 {
 	int tmp = m_pEngine->getbeatsToCount();
-	char tmpb[3];       // m_pBCBUpBtn
 		if ( bBtn == m_pBCBUpBtn ) {
 			tmp ++;
 			if (tmp > 16)
 				tmp = 2;
-//small fix against qt4 png transparent problem
-//think this will be solved in next time
-//			if (tmp < 10 ){
-//				sprintf(tmpb, "%01d", tmp );
-//			}else
-//			{
-				sprintf(tmpb, "%02d", tmp );
-//			}
-			m_pBCDisplayB->setText( QString( tmpb ) );
+			m_pBCDisplayB->setText(
+			    QString("%1")
+			    .arg( QString::number(tmp), 2, '0')
+			    );
 			m_pEngine->setbeatsToCount( tmp );
 	}
 	else {		
 			tmp --;
 			if (tmp < 2 )
-				 tmp = 16;
-//small fix against qt4 png transparent problem
-//think this will be solved in next time
-//			if (tmp < 10 ){
-//				sprintf(tmpb, "%01d", tmp );
-//			}else
-//			{
-				sprintf(tmpb, "%02d", tmp );
-//			}
-			m_pBCDisplayB->setText( QString( tmpb ) );
+				tmp = 16;
+			m_pBCDisplayB->setText( 
+			    QString("%1")
+			    .arg( QString::number(tmp), 2, '0')
+			    );
 			m_pEngine->setbeatsToCount( tmp );
 	}
 }

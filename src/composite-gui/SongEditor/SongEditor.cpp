@@ -1451,12 +1451,12 @@ void SongEditorPositionRuler::createBackground()
 	QPainter p( m_pBackgroundPixmap );
 	p.setFont( font );
 
-	char tmp[10];
+	QString tmp;
 	for (uint i = 0; i < m_nMaxPatternSequence + 1; i++) {
 		uint x = 10 + i * m_nGridWidth;
 		if ( (i % 4) == 0 ) {
 			p.setPen( textColor );
-			sprintf( tmp, "%d", i + 1 );
+			tmp = QString("%1").arg( i+1 );
 			p.drawText( x - m_nGridWidth, 0, m_nGridWidth * 2, height(), Qt::AlignCenter, tmp );
 		}
 		else {

@@ -103,16 +103,15 @@ void AudioEngineInfoForm::updateInfo()
 	}
 	m_pSongPositionLbl->setText( sSongPos );
 
-
-	// Audio engine Playing notes
-	char tmp[100];
-
 	// Process time
 	int perc = 0;
 	if ( pEngine->getMaxProcessTime() != 0.0 ) {
 		perc= (int)( pEngine->getProcessTime() / ( pEngine->getMaxProcessTime() / 100.0 ) );
 	}
-	sprintf(tmp, "%#.2f / %#.2f  (%d%%)", pEngine->getProcessTime(), pEngine->getMaxProcessTime(), perc );
+	QString tmp = QString("%1 / %2 (%3%%)")
+	    .arg(pEngine->getProcessTime(), 0, 'f', 2)
+	    .arg(pEngine->getMaxProcessTime(), 0, 'f', 2)
+	    .arg(perc);
 	processTimeLbl->setText(tmp);
 
 	// Song state
@@ -129,10 +128,7 @@ void AudioEngineInfoForm::updateInfo()
 	}
 
 	// tick number
-	sprintf(tmp, "%03d", (int)pEngine->getTickPosition() );
-	nTicksLbl->setText(tmp);
-
-
+	nTicksLbl->setText( QString("%1").arg( QString::number((int)pEngine->getTickPosition()), 3, '0') );
 
 	// Audio driver info
 	T<AudioOutput>::shared_ptr driver = pEngine->get_audio_output();

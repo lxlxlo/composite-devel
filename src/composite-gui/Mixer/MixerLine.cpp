@@ -191,9 +191,7 @@ void MixerLine::updateMixerLine()
 			m_fMaxPeak = 0.0f;
 			m_nPeakTimer = 0;
 		}
-		char tmp[20];
-		sprintf(tmp, "%#.2f", m_fMaxPeak );
-		m_pPeakLCD->setText(tmp);
+		m_pPeakLCD->setText( QString("%1").arg(m_fMaxPeak, 0, 'f', 2) );
 		if ( m_fMaxPeak > 1.0 ) {
 			m_pPeakLCD->setSmallRed();
 		}
@@ -240,10 +238,10 @@ void MixerLine::faderChanged(Fader *ref)
 	song->set_modified( true );
 	emit volumeChanged(this);
 
-	char m_pFaderPos[100];
 	float value = ref->getValue();
-	sprintf( m_pFaderPos, "%#.2f",  value);
-	( CompositeApp::get_instance() )->setStatusBarMessage( trUtf8( "Set instrument volume [%1]" ).arg( m_pFaderPos ), 2000 );
+	QString msg = QString( trUtf8("Set instrument volume [%1]") )
+	    .arg(value, 0, 'f', 2);
+	( CompositeApp::get_instance() )->setStatusBarMessage( msg, 2000 );
 }
 
 
@@ -323,9 +321,7 @@ void MixerLine::setPeak_R( float peak ) {
 			if ( peak < 0.1f ) {
 				peak = 0.0f;
 			}
-			char tmp[20];
-			sprintf(tmp, "%#.2f", peak);
-			m_pPeakLCD->setText( tmp );
+			m_pPeakLCD->setText( QString("%1").arg(peak, 0, 'f', 2) );
 			if ( peak > 1.0 ) {
 				m_pPeakLCD->setSmallRed();
 			}
@@ -378,11 +374,14 @@ void MixerLine::panChanged(Rotary *ref)
 		pan_R = panValue * 2.0;
 	}
 
-	char m_pFaderPos[100];
-	sprintf( m_pFaderPos, "%#.2fL, %#.2fR",  pan_L, pan_R);
-	CompositeApp::get_instance()->setStatusBarMessage( trUtf8( "Set instr. pan [%1]" ).arg( m_pFaderPos ), 2000 );
+	QString tmp = QString( trUtf8("Set instr. pan [%1L, %2R]") )
+		.arg(pan_L, 0, 'f', 2)
+		.arg(pan_R, 0, 'f', 2);
+	CompositeApp::get_instance()->setStatusBarMessage(
+		QString(trUtf8("Set instr. pan [%1]")).arg(tmp),
+		2000 );
 
-	m_pPanRotary->setToolTip( QString("Pan ") + QString( m_pFaderPos ) );
+	m_pPanRotary->setToolTip( trUtf8("Pan ") + tmp );
 }
 
 
@@ -406,9 +405,10 @@ void MixerLine::setPan(float fValue)
 			pan_L = 1.0;
 			pan_R = fValue * 2.0;
 		}
-		char m_pFaderPos[100];
-		sprintf( m_pFaderPos, "Pan %#.2fL, %#.2fR",  pan_L, pan_R);
-		m_pPanRotary->setToolTip( QString( m_pFaderPos ) );
+		QString msg = QString( trUtf8("Pan %1L, %2R") )
+			.arg(pan_L, 0, 'f', 2)
+			.arg(pan_R, 0, 'f', 2);
+		m_pPanRotary->setToolTip( msg );
 	}
 }
 
@@ -561,10 +561,10 @@ void MasterMixerLine::faderChanged(MasterFader *ref)
 	T<Song>::shared_ptr song = g_engine->getSong();
 	song->set_modified( true );
 
-	char m_pMasterFaderPos[100];
 	float value = ref->getValue();
-	sprintf( m_pMasterFaderPos, "%#.2f",  value);
-	( CompositeApp::get_instance() )->setStatusBarMessage( trUtf8( "Set master volume [%1]" ).arg( m_pMasterFaderPos ), 2000 );
+	QString msg = QString( trUtf8("Set master volume [%1]") )
+		.arg(value, 0, 'f', 2);
+	( CompositeApp::get_instance() )->setStatusBarMessage( msg, 2000 );
 }
 
 
@@ -592,9 +592,7 @@ void MasterMixerLine::setPeak_L(float peak)
 			if ( peak < 0.1f ) {
 				peak = 0.0f;
 			}
-			char tmp[20];
-			sprintf(tmp, "%#.2f", peak);
-			m_pPeakLCD->setText(tmp);
+			m_pPeakLCD->setText( QString("%1").arg(peak, 0, 'f', 2) );
 			if ( peak > 1.0 ) {
 				m_pPeakLCD->setSmallRed();
 			}
@@ -623,9 +621,7 @@ void MasterMixerLine::setPeak_R(float peak) {
 			if ( peak < 0.1f ) {
 				peak = 0.0f;
 			}
-			char tmp[20];
-			sprintf(tmp, "%#.2f", peak);
-			m_pPeakLCD->setText(tmp);
+			m_pPeakLCD->setText( QString("%1").arg(peak, 0, 'f', 2) );
 			if ( peak > 1.0 ) {
 				m_pPeakLCD->setSmallRed();
 			}
@@ -657,9 +653,7 @@ void MasterMixerLine::updateMixerLine()
 			m_fMaxPeak = 0.0f;
 			m_nPeakTimer = 0;
 		}
-		char tmp[20];
-		sprintf(tmp, "%#.2f", m_fMaxPeak );
-		m_pPeakLCD->setText(tmp);
+		m_pPeakLCD->setText( QString("%1").arg(m_fMaxPeak, 0, 'f', 2) );
 		if ( m_fMaxPeak > 1.0 ) {
 			m_pPeakLCD->setSmallRed();
 		}
@@ -685,8 +679,7 @@ void MasterMixerLine::rotaryChanged( Rotary *pRef )
 {
 	QString sMsg;
 	float fVal = pRef->getValue();
-	char sVal[100];
-	sprintf( sVal, "%#.2f", fVal);
+	QString sVal = QString("%1").arg(fVal, 0, 'f', 2);
 
 	Engine *pEngine = g_engine;
 	g_engine->lock( RIGHT_HERE );
@@ -805,9 +798,7 @@ void FxMixerLine::click(Button *ref) {
 void FxMixerLine::faderChanged(Fader * /*ref*/)
 {
 	m_fMaxPeak = 0.0;
-	char tmp[20];
-	sprintf( tmp, "%#.2f", m_fMaxPeak );
-	m_pPeakLCD->setText( tmp );
+	m_pPeakLCD->setText( QString("%1").arg(m_fMaxPeak, 0, 'f', 2) );
 	if ( m_fMaxPeak > 1.0 ) {
 		m_pPeakLCD->setSmallRed();
 	}
@@ -843,9 +834,7 @@ void FxMixerLine::setPeak_L( float peak )
 	if (peak != getPeak_L() ) {
 		m_pFader->setPeak_L( peak );
 		if (peak > m_fMaxPeak) {
-			char tmp[20];
-			sprintf(tmp, "%#.2f", peak);
-			m_pPeakLCD->setText(tmp);
+			m_pPeakLCD->setText( QString("%1").arg(peak, 0, 'f', 2) );
 			if ( peak > 1.0 ) {
 				m_pPeakLCD->setSmallRed();
 			}
@@ -873,9 +862,7 @@ void FxMixerLine::setPeak_R(float peak)
 	if (peak != getPeak_R() ) {
 		m_pFader->setPeak_R( peak );
 		if (peak > m_fMaxPeak) {
-			char tmp[20];
-			sprintf(tmp, "%#.2f", peak);
-			m_pPeakLCD->setText(tmp);
+			m_pPeakLCD->setText( QString("%1").arg(peak, 0, 'f', 2) );
 			if ( peak > 1.0 ) {
 				m_pPeakLCD->setSmallRed();
 			}
@@ -1091,9 +1078,6 @@ void LadspaFXMixerLine::setFxActive( bool active )
 void LadspaFXMixerLine::rotaryChanged(Rotary * /*ref*/)
 {
 	m_fMaxPeak = 0.0;
-//	char tmp[20];
-//	sprintf(tmp, "%#.1f", fMaxPeak);
-//	m_pVolumeLbl->setText(tmp);
 
 	T<Song>::shared_ptr song = g_engine->getSong();
 	song->set_modified( true );

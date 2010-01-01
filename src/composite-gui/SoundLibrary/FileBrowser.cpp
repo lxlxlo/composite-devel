@@ -157,28 +157,32 @@ void FileBrowser::loadDirectoryTree( const QString& sBasedir )
 void FileBrowser::updateFileInfo( QString sFilename, unsigned nSampleRate, unsigned nBytes )
 {
 
-	char sFileSizeUnit[6];
-	char sFileSize[32];
+	QString sFileSizeUnit;
+	QString sFileSize;
 
 	if( nBytes >= 1073741824 ){
 
-		sprintf( sFileSize, "%#.3f", (float)nBytes / 1073741824.0 );
-		strcpy( sFileSizeUnit, "GByte" );
+		sFileSize = QString("%1")
+			.arg( ((float)nBytes / 1073741824.0f), 0, 'f', 3 );
+		sFileSizeUnit = "GByte";
 
 	} else if( nBytes >= 1048576 ){
 
-		sprintf( sFileSize, "%#.2f", (float)nBytes / 1048576.0 );
-		strcpy( sFileSizeUnit, "MByte" );
+		sFileSize = QString("%1")
+			.arg( ((float)nBytes / 1048576.0f), 0, 'f', 2 );
+		sFileSizeUnit = "MByte";
 
 	} else if(nBytes >= 1024) {
 
-		sprintf( sFileSize, "%#.1f", (float)nBytes / 1024.0 );
-		strcpy( sFileSizeUnit, "KByte" );
+		sFileSize = QString("%1")
+			.arg( ((float)nBytes / 1024.0f), 0, 'f', 1 );
+		sFileSizeUnit = "KByte";
 
 	} else {
 
-		sprintf( sFileSize, "%#.0f", (double)nBytes );
-		strcpy( sFileSizeUnit, "Byte" );
+		sFileSize = QString("%1")
+			.arg( (double)nBytes, 0, 'f', 0 );
+		sFileSizeUnit = "Byte";
 
 	}
 

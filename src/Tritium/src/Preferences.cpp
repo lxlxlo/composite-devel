@@ -1213,13 +1213,7 @@ H2RGBColor::H2RGBColor( const QString& sColor )
 
 QString H2RGBColor::toStringFmt()
 {
-	char tmp[255];
-	sprintf( tmp, "%d,%d,%d", m_red, m_green, m_blue );
-
-	//string sRes = to_string( m_red ) + "," + to_string( m_green ) + "," + to_string( m_blue );
-//	return sRes;
-
-	return QString( tmp );
+	return QString("%1,%2,%3").arg(m_red).arg(m_green).arg(m_blue);
 }
 
 };

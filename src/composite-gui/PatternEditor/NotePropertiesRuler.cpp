@@ -122,9 +122,9 @@ void NotePropertiesRuler::mousePressEvent(QMouseEvent *ev)
 		if ( m_mode == VELOCITY ) {
 			pNote->set_velocity( val );
 
-			char valueChar[100];
-			sprintf( valueChar, "%#.2f",  val);
-			CompositeApp::get_instance()->setStatusBarMessage( QString("Set note velocity [%1]").arg( valueChar ), 2000 );
+			QString msg = QString( trUtf8("Set note velocity [%1]") )
+				.arg(val, 0, 'f', 2);
+			CompositeApp::get_instance()->setStatusBarMessage( msg, 2000 );
 		}
 		else if ( m_mode == PAN ){
 			float pan_L, pan_R;
@@ -148,13 +148,16 @@ void NotePropertiesRuler::mousePressEvent(QMouseEvent *ev)
 				pNote->set_leadlag(0.0);
 			} else {
 				pNote->set_leadlag((val * -2.0) + 1.0);
-				char valueChar[100];
 				if (pNote->get_leadlag() < 0.0) {
-					sprintf( valueChar, "%.2f",  ( pNote->get_leadlag() * -5)); // FIXME: '5' taken from fLeadLagFactor calculation in Engine.cpp
-					CompositeApp::get_instance()->setStatusBarMessage( QString("Leading beat by: %1 ticks").arg( valueChar ), 2000 );
+					// FIXME: '5' taken from fLeadLagFactor calculation in Engine.cpp
+					QString msg = QString( trUtf8("Leading beat by: %1 ticks") )
+						.arg( (pNote->get_leadlag() * -5), 0, 'f', 2 );
+					CompositeApp::get_instance()->setStatusBarMessage( msg, 2000 );
 				} else if (pNote->get_leadlag() > 0.0) {
-					sprintf( valueChar, "%.2f",  ( pNote->get_leadlag() * 5)); // FIXME: '5' taken from fLeadLagFactor calculation in Engine.cpp
-					CompositeApp::get_instance()->setStatusBarMessage( QString("Lagging beat by: %1 ticks").arg( valueChar ), 2000 );
+					// FIXME: '5' taken from fLeadLagFactor calculation in Engine.cpp
+					QString msg = QString( trUtf8("Lagging beat by: %1 ticks") )
+						.arg( (pNote->get_leadlag() * 5), 0, 'f', 2 );
+					CompositeApp::get_instance()->setStatusBarMessage( msg, 2000 );
 				} else {
 					CompositeApp::get_instance()->setStatusBarMessage( QString("Note on beat"), 2000 );
 				}
@@ -220,9 +223,9 @@ void NotePropertiesRuler::wheelEvent(QWheelEvent *ev)
 
 			pNote->set_velocity(val);
 
-			char valueChar[100];
-			sprintf( valueChar, "%#.2f",  val);
-			( CompositeApp::get_instance() )->setStatusBarMessage( QString("Set note velocity [%1]").arg( valueChar ), 2000 );
+			QString msg = QString( trUtf8("Set note velocity [%1]") )
+				.arg(val, 0, 'f', 2);
+			( CompositeApp::get_instance() )->setStatusBarMessage( msg, 2000 );
 		}
 		else if ( m_mode == PAN ){
 			float pan_L, pan_R;
@@ -255,13 +258,16 @@ void NotePropertiesRuler::wheelEvent(QWheelEvent *ev)
 				val = 0.0;
 			}
 			pNote->set_leadlag((val * -2.0) + 1.0);
-			char valueChar[100];
 			if (pNote->get_leadlag() < 0.0) {
-				sprintf( valueChar, "%.2f",  ( pNote->get_leadlag() * -5)); // FIXME: '5' taken from fLeadLagFactor calculation in Engine.cpp
-				CompositeApp::get_instance()->setStatusBarMessage( QString("Leading beat by: %1 ticks").arg( valueChar ), 2000 );
+				// FIXME: '5' taken from fLeadLagFactor calculation in Engine.cpp
+				QString msg = QString( trUtf8("Leading beat by: %1 ticks") )
+					.arg( (pNote->get_leadlag() * -5), 0, 'f', 2 );
+				CompositeApp::get_instance()->setStatusBarMessage( msg, 2000 );
 			} else if (pNote->get_leadlag() > 0.0) {
-				sprintf( valueChar, "%.2f",  ( pNote->get_leadlag() * 5)); // FIXME: '5' taken from fLeadLagFactor calculation in Engine.cpp
-				CompositeApp::get_instance()->setStatusBarMessage( QString("Lagging beat by: %1 ticks").arg( valueChar ), 2000 );
+				// FIXME: '5' taken from fLeadLagFactor calculation in Engine.cpp
+				QString msg = QString( trUtf8("Lagging beat by: %1 ticks") )
+					.arg( (pNote->get_leadlag() * 5), 0, 'f', 2 );
+				CompositeApp::get_instance()->setStatusBarMessage( msg, 2000 );
 			} else {
 				CompositeApp::get_instance()->setStatusBarMessage( QString("Note on beat"), 2000 );
 			}

@@ -386,8 +386,7 @@ void InstrumentEditor::selectedInstrumentChangedEvent()
 		m_pRandomPitchRotary->setValue( m_pInstrument->get_random_pitch_factor());
 
 		// instr gain
-		char tmp[20];
-		sprintf( tmp, "%#.2f", m_pInstrument->get_gain());
+		QString tmp = QString("%1").arg(m_pInstrument->get_gain(), 0, 'f', 2);
 		m_pInstrumentGainLCD->setText( tmp );
 		m_pInstrumentGain->setValue( m_pInstrument->get_gain()/ 5.0 );
 
@@ -468,9 +467,7 @@ void InstrumentEditor::rotaryChanged(Rotary *ref)
 		}
 		else if ( ref == m_pLayerGainRotary ) {
 			fVal = fVal * 5.0;
-			char tmp[20];
-			sprintf( tmp, "%#.2f", fVal );
-			m_pLayerGainLCD->setText( tmp );
+			m_pLayerGainLCD->setText( QString("%1").arg(fVal, 0, 'f', 2) );
 
 			Tritium::InstrumentLayer *pLayer = m_pInstrument->get_layer( m_nSelectedLayer );
 			if ( pLayer ) {
@@ -502,9 +499,7 @@ void InstrumentEditor::rotaryChanged(Rotary *ref)
 		}
 		else if ( ref == m_pInstrumentGain ) {
 			fVal = fVal * 5.0;
-			char tmp[20];
-			sprintf( tmp, "%#.2f", fVal );
-			m_pInstrumentGainLCD->setText( tmp );
+			m_pInstrumentGainLCD->setText( QString("%1").arg(fVal, 0, 'f', 2) );
 
 			m_pInstrument->set_gain( fVal );
 		}
@@ -716,12 +711,9 @@ void InstrumentEditor::selectLayer( int nLayer )
 	Tritium::InstrumentLayer *pLayer = m_pInstrument->get_layer( nLayer );
 	m_pWaveDisplay->updateDisplay( pLayer );
 	if (pLayer) {
-		char tmp[20];
-
 		// Layer GAIN
 		m_pLayerGainRotary->setValue( pLayer->get_gain() / 5.0 );
-		sprintf( tmp, "%#.2f", pLayer->get_gain() );
-		m_pLayerGainLCD->setText( tmp );
+		m_pLayerGainLCD->setText( QString("%1").arg(pLayer->get_gain(), 0, 'f', 2) );
 
 		// Layer PITCH
 		//int nCoarsePitch = pLayer->m_fPitch / 24 + 0.5;

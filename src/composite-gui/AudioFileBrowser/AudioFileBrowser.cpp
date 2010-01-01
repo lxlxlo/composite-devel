@@ -254,8 +254,7 @@ void AudioFileBrowser::browseTree( const QModelIndex& index )
 				m_pNBytesLable->setText( trUtf8( "Size: %1 bytes" ).arg( pNewSample->get_size() / 2 ) );
 				m_pSamplerateLable->setText( trUtf8( "Samplerate: %1" ).arg( pNewSample->get_sample_rate() ) );
 				float sec = ( float )( pNewSample->get_n_frames() / (float)pNewSample->get_sample_rate() );
-				QString qsec;
-				qsec.sprintf( "%2.2f", sec );
+				QString qsec = QString("%1").arg(sec, 2, 'f', 2);
 				m_pLengthLable->setText( trUtf8( "Samplelength: " ) + qsec + trUtf8( " s" ) );
 				
 				pNewSample.reset();

@@ -353,17 +353,14 @@ if ( msg.m_sysexData.size() == 6 ) {
 		int sc = msg.m_sysexData[9];
 		int fr = msg.m_sysexData[10];
 		int ff = msg.m_sysexData[11];
-		char tmp[200];
-		sprintf( tmp, "[handleSysexMessage] GOTO %d:%d:%d:%d:%d", hr, mn, sc, fr, ff );
-		INFOLOG( tmp );
-
+		INFOLOG( QString("[handleSysexMessage] GOTO %1:%2:%3:%4:%5")
+			 .arg(hr).arg(mn).arg(sc).arg(fr).arg(ff) );
 	} else {
 		// sysex dump
 		QString sDump;
-		char tmpChar[64];
 		for ( int i = 0; i < ( int )msg.m_sysexData.size(); ++i ) {
-			sprintf( tmpChar, "%X ", ( int )msg.m_sysexData[ i ] );
-			sDump += tmpChar;
+			QString hx = QString::number((unsigned)msg.m_sysexData[i], 16);
+			sDump += QString("%1 ").arg( hx, 2, '0');
 		}
 		WARNINGLOG( QString( "Unknown SysEx message: (%1) [%2]" ).arg( msg.m_sysexData.size() ).arg( sDump ) );
 	}
