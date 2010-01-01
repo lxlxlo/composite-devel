@@ -65,6 +65,9 @@ As of this writing (2009-05-25), the status is:
 SPECIFIC TASKS
 --------------
 
+(.) Replace sprintf() everywhere.  Using QString is
+    preferred. snprintf() if really necc.
+
 (.) Implement support for audio sample rate (currently
     hard-coded to 48000 Hz).
 
