@@ -87,7 +87,9 @@ installed on your system, and the development header files.
 	* liblrdf for LADSPA plugins
         * boost unit test framework (**)
 
-On a single, 500MHz processor Composite takes about 1.5 hours to build.
+On a single, 800MHz processor Composite takes about 37 min. to build.
+On a dual-core 2800MHz processor with gobs of memory it takes about 2
+min. to do a parallel build.
 
 (**) These tests check that Tritium works correctly on your machine,
      and with any changes the developers have added.
