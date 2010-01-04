@@ -97,14 +97,13 @@ public:
 	// This is used exclusively by the Sequencer (Engine)
 	int m_nHumanizeDelay;	///< Used in "humanize" function
 
-	#warning "TODO: Check these defaults"
 	Note(
 	    T<Instrument>::shared_ptr pInstrument = T<Instrument>::shared_ptr(),
 	    float fVelocity = 1.0,
-	    float fPan_L = 0.5,
-	    float fPan_R = 0.5,
+	    float fPan_L = 1.0,
+	    float fPan_R = 1.0,
 	    int nLength = -1,                 // Length is in *ticks*
-	    float fPitch = 1.0,
+	    float fPitch = 0.0,               // 0.0 is no pitch adjustement. +1.0 is 1 half-step sharp.
 	    NoteKey key = NoteKey()
 	);
 
