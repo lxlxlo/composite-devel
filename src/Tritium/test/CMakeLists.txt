@@ -23,6 +23,7 @@ IF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
     t_Song
     t_TransportPosition
     t_Sample
+    t_ObjectBundle
     )
 
   ADD_DEFINITIONS("-DBOOST_TEST_DYN_LINK")
