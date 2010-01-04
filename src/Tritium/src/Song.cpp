@@ -322,7 +322,7 @@ namespace Tritium
     {
 	SongWriter writer;
 	int err;
-	err = writer.writeSong( engine, T<Song>::shared_ptr(this), filename );
+	err = writer.writeSong( engine, *this, filename );
 
 	if( err ) {
 	    return false;

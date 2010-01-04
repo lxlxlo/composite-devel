@@ -108,7 +108,7 @@ public:
 	~SongWriter();
 
 	// Returns 0 on success.
-	int writeSong( Engine* engine, T<Song>::shared_ptr song, const QString& filename );
+	int writeSong( Engine* engine, Song& song, const QString& filename );
 };
 
 } // namespace Tritium

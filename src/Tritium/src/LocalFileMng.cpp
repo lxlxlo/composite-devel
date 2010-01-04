@@ -1264,7 +1264,7 @@ SongWriter::~SongWriter()
 
 
 // Returns 0 on success, passes the TinyXml error code otherwise.
-int SongWriter::writeSong( Engine* engine, T<Song>::shared_ptr song, const QString& filename )
+int SongWriter::writeSong( Engine* engine, Song& song, const QString& filename )
 {
 	INFOLOG( "Saving song " + filename );
 	int rv = 0; // return value
@@ -1281,38 +1281,38 @@ int SongWriter::writeSong( Engine* engine, T<Song>::shared_ptr song, const QStri
 	QDomNode songNode = doc.createElement( "song" );
 
 	LocalFileMng::writeXmlString( songNode, "version", QString( get_version().c_str() ) );
-	LocalFileMng::writeXmlString( songNode, "bpm", QString("%1").arg( song->get_bpm() ) );
-	LocalFileMng::writeXmlString( songNode, "volume", QString("%1").arg( song->get_volume() ) );
-	LocalFileMng::writeXmlString( songNode, "metronomeVolume", QString("%1").arg( song->get_metronome_volume() ) );
-	LocalFileMng::writeXmlString( songNode, "name", song->get_name() );
-	LocalFileMng::writeXmlString( songNode, "author", song->get_author() );
-	LocalFileMng::writeXmlString( songNode, "notes", song->get_notes() );
-	LocalFileMng::writeXmlString( songNode, "license", song->get_license() );
-	LocalFileMng::writeXmlBool( songNode, "loopEnabled", song->is_loop_enabled() );
+	LocalFileMng::writeXmlString( songNode, "bpm", QString("%1").arg( song.get_bpm() ) );
+	LocalFileMng::writeXmlString( songNode, "volume", QString("%1").arg( song.get_volume() ) );
+	LocalFileMng::writeXmlString( songNode, "metronomeVolume", QString("%1").arg( song.get_metronome_volume() ) );
+	LocalFileMng::writeXmlString( songNode, "name", song.get_name() );
+	LocalFileMng::writeXmlString( songNode, "author", song.get_author() );
+	LocalFileMng::writeXmlString( songNode, "notes", song.get_notes() );
+	LocalFileMng::writeXmlString( songNode, "license", song.get_license() );
+	LocalFileMng::writeXmlBool( songNode, "loopEnabled", song.is_loop_enabled() );
 
-	if ( song->get_mode() == Song::SONG_MODE ) {
+	if ( song.get_mode() == Song::SONG_MODE ) {
 		LocalFileMng::writeXmlString( songNode, "mode", QString( "song" ) );
 	} else {
 		LocalFileMng::writeXmlString( songNode, "mode", QString( "pattern" ) );
 	}
 
-	LocalFileMng::writeXmlString( songNode, "humanize_time", QString("%1").arg( song->get_humanize_time_value() ) );
-	LocalFileMng::writeXmlString( songNode, "humanize_velocity", QString("%1").arg( song->get_humanize_velocity_value() ) );
-	LocalFileMng::writeXmlString( songNode, "swing_factor", QString("%1").arg( song->get_swing_factor() ) );
+	LocalFileMng::writeXmlString( songNode, "humanize_time", QString("%1").arg( song.get_humanize_time_value() ) );
+	LocalFileMng::writeXmlString( songNode, "humanize_velocity", QString("%1").arg( song.get_humanize_velocity_value() ) );
+	LocalFileMng::writeXmlString( songNode, "swing_factor", QString("%1").arg( song.get_swing_factor() ) );
 
-	/*	LocalFileMng::writeXmlBool( &songNode, "delayFXEnabled", song->m_bDelayFXEnabled );
-		LocalFileMng::writeXmlString( &songNode, "delayFXWetLevel", QString("%1").arg( song->m_fDelayFXWetLevel ) );
-		LocalFileMng::writeXmlString( &songNode, "delayFXFeedback", QString("%1").arg( song->m_fDelayFXFeedback ) );
-		LocalFileMng::writeXmlString( &songNode, "delayFXTime", QString("%1").arg( song->m_nDelayFXTime ) );
+	/*	LocalFileMng::writeXmlBool( &songNode, "delayFXEnabled", song.m_bDelayFXEnabled );
+		LocalFileMng::writeXmlString( &songNode, "delayFXWetLevel", QString("%1").arg( song.m_fDelayFXWetLevel ) );
+		LocalFileMng::writeXmlString( &songNode, "delayFXFeedback", QString("%1").arg( song.m_fDelayFXFeedback ) );
+		LocalFileMng::writeXmlString( &songNode, "delayFXTime", QString("%1").arg( song.m_nDelayFXTime ) );
 	*/
 
 	// instrument list
 	QDomNode instrumentListNode = doc.createElement( "instrumentList" );
-	unsigned nInstrument = song->get_instrument_list()->get_size();
+	unsigned nInstrument = song.get_instrument_list()->get_size();
 
 	// INSTRUMENT NODE
 	for ( unsigned i = 0; i < nInstrument; i++ ) {
-		T<Instrument>::shared_ptr instr = song->get_instrument_list()->get( i );
+		T<Instrument>::shared_ptr instr = song.get_instrument_list()->get( i );
 		assert( instr );
 
 		QDomNode instrumentNode = doc.createElement( "instrument" );
@@ -1375,9 +1375,9 @@ int SongWriter::writeSong( Engine* engine, T<Song>::shared_ptr song, const QStri
 	// pattern list
 	QDomNode patternListNode = doc.createElement( "patternList" );
 
-	unsigned nPatterns = song->get_pattern_list()->get_size();
+	unsigned nPatterns = song.get_pattern_list()->get_size();
 	for ( unsigned i = 0; i < nPatterns; i++ ) {
-		T<Pattern>::shared_ptr pat = song->get_pattern_list()->get( i );
+		T<Pattern>::shared_ptr pat = song.get_pattern_list()->get( i );
 
 		// pattern
 		QDomNode patternNode = doc.createElement( "pattern" );
@@ -1415,11 +1415,11 @@ int SongWriter::writeSong( Engine* engine, T<Song>::shared_ptr song, const QStri
 	// pattern sequence
 	QDomNode patternSequenceNode = doc.createElement( "patternSequence" );
 
-	unsigned nPatternGroups = song->get_pattern_group_vector()->size();
+	unsigned nPatternGroups = song.get_pattern_group_vector()->size();
 	for ( unsigned i = 0; i < nPatternGroups; i++ ) {
 		QDomNode groupNode = doc.createElement( "group" );
 
-		PatternList *pList = ( *song->get_pattern_group_vector() )[i];
+		PatternList *pList = ( *song.get_pattern_group_vector() )[i];
 		for ( unsigned j = 0; j < pList->get_size(); j++ ) {
 			T<Pattern>::shared_ptr pPattern = pList->get( j );
 			LocalFileMng::writeXmlString( groupNode, "patternID", pPattern->get_name() );
@@ -1488,10 +1488,10 @@ int SongWriter::writeSong( Engine* engine, T<Song>::shared_ptr song, const QStri
 	if( rv ) {
 		WARNINGLOG("File save reported an error.");
 	} else {
-		song->set_modified(false);
+		song.set_modified(false);
 		INFOLOG("Save was successful.");
 	}
-	song->set_filename( filename );
+	song.set_filename( filename );
 
 	return rv;
 }
