@@ -218,7 +218,7 @@ namespace Tritium
 	/**
 	 * \brief ObjectBundle functor for synchronous loading.
 	 *
-	 * This is a convencience class for those that want to wait
+	 * This is a convenience class for those that want to wait
 	 * until things are loaded before continuing.
 	 */
 	class SynchronousObjectBundle : public ObjectBundle

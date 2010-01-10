@@ -44,6 +44,7 @@
 
 using namespace Tritium;
 using namespace Tritium::Serialization;
+using std::deque;
 
 /*********************************************************************
  * Serializer implementation
@@ -276,54 +277,64 @@ void SerializationQueue::handle_load_song(SerializationQueue::event_data_t& ev)
         (*ev.report_load_to)();
         return;
     }
-    QDomElement inst_l_node = song_node.firstChildElement("instrumentList");
-    if( inst_l_node.isNull() ) {
-        ERRORLOG( QString("Error loading %1 -- no instrumentList node in .h2song")
+    QDomElement instrumentList_node =
+	song_node.firstChildElement("instrumentList");
+    if( instrumentList_node.isNull() ) {
+        ERRORLOG( QString("Error loading %1 -- no instrumentList node"
+			  " in .h2song")
                   .arg(ev.filename) );
         ev.report_load_to->error = true;
-        ev.report_load_to->error_message = ".h2song missing instrumentList section.";
+        ev.report_load_to->error_message =
+	    ".h2song missing instrumentList section.";
         (*ev.report_load_to)();
         return;
     }
-    QDomElement pat_l_node = song_node.firstChildElement("patternList");
-    if( pat_l_node.isNull() ) {
+    QDomElement patternList_node = song_node.firstChildElement("patternList");
+    if( patternList_node.isNull() ) {
         ERRORLOG( QString("Error loading %1 -- no patternList node in .h2song")
                   .arg(ev.filename) );
         ev.report_load_to->error = true;
-        ev.report_load_to->error_message = ".h2song missing patternList section.";
+        ev.report_load_to->error_message =
+	    ".h2song missing patternList section.";
         (*ev.report_load_to)();
         return;
     }
-    QDomElement pat_s_node = song_node.firstChildElement("patternSequence");
-    if( pat_l_node.isNull() ) {
-        ERRORLOG( QString("Error loading %1 -- no patternSequence node in .h2song")
+    QDomElement patternSequence_node =
+	song_node.firstChildElement("patternSequence");
+    if( patternList_node.isNull() ) {
+        ERRORLOG( QString("Error loading %1 -- no patternSequence node "
+			  "in .h2song")
                   .arg(ev.filename) );
         ev.report_load_to->error = true;
-        ev.report_load_to->error_message = ".h2song missing patternSequence section.";
+        ev.report_load_to->error_message =
+	    ".h2song missing patternSequence section.";
         (*ev.report_load_to)();
         return;
     }
-    QDomElement ladspa_node = song_node.firstChildElement("ladspa"); // Null is OK.
+    // Null is OK.
+    QDomElement ladspa_node = song_node.firstChildElement("ladspa");
 
     // LOAD SONG-SPECIFIC DATA
     T<Song>::shared_ptr song = handle_load_song_node(song_node, errors);
 
     // LOAD INSTRUMENTS
-    std::deque< T<Instrument>::shared_ptr > i_list;
-    handle_load_instrumentlist_node(i_list, inst_l_node, errors);
+    deque< T<Instrument>::shared_ptr > instrument_ra;
+    handle_load_instrumentlist_node(instrument_ra, instrumentList_node, errors);
 
     // LOAD PATTERNS
-    std::deque< T<Pattern>::shared_ptr > p_list;
-    handle_load_patternlist_node(p_list, pat_l_node, i_list, errors);
+    deque< T<Pattern>::shared_ptr > pattern_ra;
+    handle_load_patternlist_node(pattern_ra, patternList_node,
+				 instrument_ra, errors);
 
     // LOAD PATTERN SEQUENCE
-    std::deque< QStringList > pat_seq;
-    handle_load_patternsequence_node(pat_seq, pat_s_node, errors);
+    deque< QStringList > pattern_seq_ra;
+    handle_load_patternsequence_node(pattern_seq_ra, patternSequence_node,
+				     errors);
 
     // LOAD LADSPA SETTINGS
-    std::deque< T<LadspaFX>::shared_ptr > fx_list;
+    deque< T<LadspaFX>::shared_ptr > fx_ra;
     if( ! ladspa_node.isNull() ) {
-        handle_load_ladspa_node(fx_list, ladspa_node, errors);
+        handle_load_ladspa_node(fx_ra, ladspa_node, errors);
     }
 
     #warning "TODO: NEED TO HANDLE ERRORS"
@@ -338,20 +349,23 @@ void SerializationQueue::handle_load_song(SerializationQueue::event_data_t& ev)
 
     bdl.push(song);
 
-    std::deque< T<Instrument>::shared_ptr >::iterator i_it;
-    for(i_it = i_list.begin() ; i_it != i_list.end() ; ++i_it ) {
+    deque< T<Instrument>::shared_ptr >::iterator i_it;
+    for(i_it = instrument_ra.begin() ; i_it != instrument_ra.end() ; ++i_it ) {
 	bdl.push( *i_it );
     }
 
     T<PatternList>::auto_ptr pattern_list( new PatternList );
-    std::deque< T<Pattern>::shared_ptr >::iterator p_it;
-    for( p_it = p_list.begin() ; p_it != p_list.end() ; ++p_it ) {
+    deque< T<Pattern>::shared_ptr >::iterator p_it;
+    for( p_it = pattern_ra.begin() ; p_it != pattern_ra.end() ; ++p_it ) {
 	pattern_list->add( *p_it );
     }
 
-    std::deque< QStringList >::iterator ps_it;
+    // Join the pattern sequence names with the patterns
+    // that we've already loaded.  (Similar to an SQL
+    // LEFT JOIN).  Then put both into the song reference.
+    deque< QStringList >::iterator ps_it;
     T<Song::pattern_group_t>::shared_ptr groups(new Song::pattern_group_t);
-    for( ps_it = pat_seq.begin() ; ps_it != pat_seq.end() ; ++ps_it ) {
+    for( ps_it = pattern_seq_ra.begin() ; ps_it != pattern_seq_ra.end() ; ++ps_it ) {
 	T<PatternList>::shared_ptr tmp( new PatternList );
 	QStringList::Iterator pid_it;
 	for( pid_it = ps_it->begin() ; pid_it != ps_it->end() ; ++pid_it ) {
@@ -373,21 +387,23 @@ void SerializationQueue::handle_load_song(SerializationQueue::event_data_t& ev)
     song->set_pattern_list( pattern_list.release() );
     song->set_pattern_group_vector( groups );
 
-    std::deque< T<LadspaFX>::shared_ptr >::iterator fx_it;
-    for(fx_it = fx_list.begin() ; fx_it != fx_list.end() ; ++fx_it ) {
+    deque< T<LadspaFX>::shared_ptr >::iterator fx_it;
+    for(fx_it = fx_ra.begin() ; fx_it != fx_ra.end() ; ++fx_it ) {
 	bdl.push( *fx_it );
     }
 
     bdl();
 }
 
-void SerializationQueue::handle_load_drumkit(SerializationQueue::event_data_t& ev)
+void SerializationQueue::handle_load_drumkit(
+    SerializationQueue::event_data_t& ev
+    )
 {
     QDomDocument drumkit_doc = LocalFileMng::openXmlDocument(ev.filename);
-    QDomElement drumkit_node = drumkit_doc.documentElement();
+    QDomElement drumkit_info_node = drumkit_doc.documentElement();
     QStringList errors;
 
-    if( drumkit_node.tagName() != "drumkit_info" ) {
+    if( drumkit_info_node.tagName() != "drumkit_info" ) {
         ERRORLOG( QString("Error loading %1 -- not a valid drumkit.xml file")
                   .arg(ev.filename) );
         ev.report_load_to->error = true;
@@ -395,17 +411,20 @@ void SerializationQueue::handle_load_drumkit(SerializationQueue::event_data_t& e
         (*ev.report_load_to)();
         return;
     }
-    QDomElement inst_l_node = drumkit_node.firstChildElement("instrumentList");
-    if( inst_l_node.isNull() ) {
-        ERRORLOG( QString("Error loading %1 -- no instrumentList node in drumkit.xml")
+    QDomElement instrumentList_node =
+	drumkit_info_node.firstChildElement("instrumentList");
+    if( instrumentList_node.isNull() ) {
+        ERRORLOG( QString("Error loading %1 -- no instrumentList node "
+			  "in drumkit.xml")
                   .arg(ev.filename) );
         ev.report_load_to->error = true;
-        ev.report_load_to->error_message = "drumkit.xml missing instrumentList section.";
+        ev.report_load_to->error_message =
+	    "drumkit.xml missing instrumentList section.";
         (*ev.report_load_to)();
         return;
     }
-    std::deque< T<Instrument>::shared_ptr > i_list;
-    handle_load_instrumentlist_node(i_list, inst_l_node, errors);
+    deque< T<Instrument>::shared_ptr > instrument_ra;
+    handle_load_instrumentlist_node(instrument_ra, instrumentList_node, errors);
 
     #warning "TODO: NEED TO HANDLE ERRORS"
     #warning "TODO: NEED TO VALIDATE OBJECTS"
@@ -417,15 +436,17 @@ void SerializationQueue::handle_load_drumkit(SerializationQueue::event_data_t& e
 
     ObjectBundle& bdl = (*ev.report_load_to);
 
-    std::deque< T<Instrument>::shared_ptr >::iterator i_it;
-    for(i_it = i_list.begin() ; i_it != i_list.end() ; ++i_it ) {
+    deque< T<Instrument>::shared_ptr >::iterator i_it;
+    for(i_it = instrument_ra.begin() ; i_it != instrument_ra.end() ; ++i_it ) {
 	bdl.push( *i_it );
     }
 
     bdl();
 }
 
-void SerializationQueue::handle_load_pattern(SerializationQueue::event_data_t& ev)
+void SerializationQueue::handle_load_pattern(
+    SerializationQueue::event_data_t& ev
+    )
 {
     QDomDocument pattern_doc = LocalFileMng::openXmlDocument(ev.filename);
     QDomElement dk_pattern_node = pattern_doc.documentElement();
@@ -450,13 +471,14 @@ void SerializationQueue::handle_load_pattern(SerializationQueue::event_data_t& e
     }
 
     #warning "TODO: Converting InstrumentList to std::deque<>... not a great practice"
-    std::deque< T<Instrument>::shared_ptr > insts;
+    deque< T<Instrument>::shared_ptr > insts;
     InstrumentList* ilist = ev.engine->getSong()->get_instrument_list();
     for( unsigned k=0 ; k < ilist->get_size() ; ++k ) {
 	insts.push_back( ilist->get(k) );
     }
 
-    T<Pattern>::shared_ptr pat = handle_load_pattern_node(pat_node, insts, errors);
+    T<Pattern>::shared_ptr pat = handle_load_pattern_node(pat_node, insts,
+							  errors);
 
     #warning "TODO: Need to handle errors!!"
 
@@ -465,12 +487,16 @@ void SerializationQueue::handle_load_pattern(SerializationQueue::event_data_t& e
     (*ev.report_load_to)();
 }
 
-T<Song>::shared_ptr SerializationQueue::handle_load_song_node(QDomElement songNode, QStringList& errors)
+T<Song>::shared_ptr SerializationQueue::handle_load_song_node(
+    QDomElement songNode,
+    QStringList& errors
+    )
 {
     QString m_sSongVersion = LocalFileMng::readXmlString( songNode , "version", "Unknown version" );
 
     if ( m_sSongVersion != QString( get_version().c_str() ) ) {
-        WARNINGLOG( "Trying to load a song created with a different version of Hydrogen/Tritium/Composite." );
+        WARNINGLOG( "Trying to load a song created with a different "
+		    "version of Hydrogen/Tritium/Composite." );
         WARNINGLOG( "Song was saved with version " + m_sSongVersion );
     }
 
@@ -507,13 +533,13 @@ T<Song>::shared_ptr SerializationQueue::handle_load_song_node(QDomElement songNo
 }
 
 void SerializationQueue::handle_load_instrumentlist_node(
-    std::deque< T<Instrument>::shared_ptr >& dest,
-    QDomElement& inst_l_node,
+    deque< T<Instrument>::shared_ptr >& dest,
+    QDomElement& instrumentList_node,
     QStringList& errors)
 {
     QDomElement inst_node;
     T<Instrument>::shared_ptr i;
-    inst_node = inst_l_node.firstChildElement("instrument");
+    inst_node = instrumentList_node.firstChildElement("instrument");
     while( ! inst_node.isNull() ) {
         i = handle_load_instrument_node(inst_node, errors);
         if(i) dest.push_back(i);
@@ -557,7 +583,13 @@ T<Instrument>::shared_ptr SerializationQueue::handle_load_instrument_node(
     }
 
     // create a new instrument
-    T<Instrument>::shared_ptr pInstrument( new Instrument( sId, sName, new ADSR( fAttack, fDecay, fSustain, fRelease ) ) );
+    T<Instrument>::shared_ptr pInstrument(
+	new Instrument(
+	    sId,
+	    sName,
+	    new ADSR( fAttack, fDecay, fSustain, fRelease )
+	    )
+	);
     pInstrument->set_volume( fVolume );
     pInstrument->set_muted( bIsMuted );
     pInstrument->set_pan_l( fPan_L );
@@ -648,14 +680,14 @@ T<Instrument>::shared_ptr SerializationQueue::handle_load_instrument_node(
 }
 
 void SerializationQueue::handle_load_patternlist_node(
-    std::deque< T<Pattern>::shared_ptr >& dest,
-    QDomElement& pat_l_node,
-    const std::deque< T<Instrument>::shared_ptr >& insts,
+    deque< T<Pattern>::shared_ptr >& dest,
+    QDomElement& patternList_node,
+    const deque< T<Instrument>::shared_ptr >& insts,
     QStringList& errors)
 {
     QDomElement pat_node;
     T<Pattern>::shared_ptr p;
-    pat_node = pat_l_node.firstChildElement("pattern");
+    pat_node = patternList_node.firstChildElement("pattern");
     while( ! pat_node.isNull() ) {
         p = handle_load_pattern_node(pat_node, insts, errors);
         if(p) dest.push_back(p);
@@ -665,7 +697,7 @@ void SerializationQueue::handle_load_patternlist_node(
 
 T<Pattern>::shared_ptr SerializationQueue::handle_load_pattern_node(
     QDomElement& pat_node,
-    const std::deque< T<Instrument>::shared_ptr >& insts,
+    const deque< T<Instrument>::shared_ptr >& insts,
     QStringList& errors)
 {
     QDomNode test = pat_node.firstChildElement("noteList");
@@ -678,7 +710,7 @@ T<Pattern>::shared_ptr SerializationQueue::handle_load_pattern_node(
 
 T<Pattern>::shared_ptr SerializationQueue::handle_load_pattern_node_pre094(
     QDomElement& pat_node,
-    const std::deque< T<Instrument>::shared_ptr >& insts,
+    const deque< T<Instrument>::shared_ptr >& insts,
     QStringList& errors)
 {
     T<Pattern>::shared_ptr pPattern;
@@ -718,7 +750,7 @@ T<Pattern>::shared_ptr SerializationQueue::handle_load_pattern_node_pre094(
             QString instrId = LocalFileMng::readXmlString( noteNode, "instrument", "" );
 
             T<Instrument>::shared_ptr instrRef;
-	    std::deque< T<Instrument>::shared_ptr >::const_iterator it;
+	    deque< T<Instrument>::shared_ptr >::const_iterator it;
 	    unsigned i;
 	    for( i=0, it=insts.begin() ; it != insts.end() ; ++it ) {
 		if( instrId == (*it)->get_id() ) {
@@ -750,7 +782,7 @@ T<Pattern>::shared_ptr SerializationQueue::handle_load_pattern_node_pre094(
 
 T<Pattern>::shared_ptr SerializationQueue::handle_load_pattern_node_094(
     QDomElement& pat_node,
-    const std::deque< T<Instrument>::shared_ptr >& insts,
+    const deque< T<Instrument>::shared_ptr >& insts,
     QStringList& errors)
 {
     T<Pattern>::shared_ptr pPattern;
@@ -784,7 +816,7 @@ T<Pattern>::shared_ptr SerializationQueue::handle_load_pattern_node_094(
         QString instrId = LocalFileMng::readXmlString( noteNode, "instrument", "" );
 
 	T<Instrument>::shared_ptr instrRef;
-	std::deque< T<Instrument>::shared_ptr >::const_iterator it;
+	deque< T<Instrument>::shared_ptr >::const_iterator it;
 	unsigned i;
 	for( i=0, it=insts.begin() ; it != insts.end() ; ++it ) {
 	    if( instrId == (*it)->get_id() ) {
@@ -809,11 +841,11 @@ T<Pattern>::shared_ptr SerializationQueue::handle_load_pattern_node_094(
 }
 
 void SerializationQueue::handle_load_patternsequence_node(
-    std::deque< QStringList >& pat_seq,
-    QDomElement& pat_s_node,
+    deque< QStringList >& pattern_seq_ra,
+    QDomElement& patternSequence_node,
     QStringList& errors )
 {
-    QDomElement group = pat_s_node.firstChildElement("group");
+    QDomElement group = patternSequence_node.firstChildElement("group");
     QLocale c_locale = QLocale::c();
 
     while( !group.isNull() ) {
@@ -823,13 +855,13 @@ void SerializationQueue::handle_load_patternsequence_node(
 	    pats << pid.text();
 	    pid = pid.nextSiblingElement("patternID");
 	}
-	pat_seq.push_back(pats);
+	pattern_seq_ra.push_back(pats);
 	group = group.nextSiblingElement("group");
     }
 }
 
 void SerializationQueue::handle_load_ladspa_node(
-    std::deque< T<LadspaFX>::shared_ptr >& dest,
+    deque< T<LadspaFX>::shared_ptr >& dest,
     QDomElement& ladspaNode,
     QStringList& errors)
 {
@@ -917,7 +949,7 @@ T<Song>::shared_ptr SongReader::readSong( Engine* engine, const QString& filenam
 	 * The objects in the bundle can come in any order.
 	 */
 	T<InstrumentList>::auto_ptr insts( new InstrumentList );
-	std::deque< T<LadspaFX>::shared_ptr > fx;
+	deque< T<LadspaFX>::shared_ptr > fx;
 
 	while( ! bdl.empty() ) {
 	    switch(bdl.peek_type()) {
@@ -949,7 +981,7 @@ T<Song>::shared_ptr SongReader::readSong( Engine* engine, const QString& filenam
 	    engine->get_effects()->getLadspaFX(k).reset();
 	}
 #endif
-	std::deque< T<LadspaFX>::shared_ptr >::iterator i_fx;
+	deque< T<LadspaFX>::shared_ptr >::iterator i_fx;
 	for( k=0, i_fx = fx.begin() ; i_fx != fx.end() && k<MAX_FX ; ++k, ++i_fx ) {
 	    engine->get_effects()->setLadspaFX( *i_fx, k );
 	}
