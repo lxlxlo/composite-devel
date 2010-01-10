@@ -118,6 +118,13 @@ ELSE()
        add_definitions(-DLIBARCHIVE_SUPPORT)
 ENDIF()  
 
+###
+### Boost Framework http://www.boost.org/
+### Used for unit testing
+###
+find_package(Boost 1.33 COMPONENTS unit_test_framework REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
+
 ######################################################################
 ### OPTIONAL LIBRARIES                                             ###
 ######################################################################
@@ -128,12 +135,6 @@ IF(WANT_LRDF)
   set(LIBS ${LRDF_LIBRARIES})
   add_definitions(-DLRDF_SUPPORT)
 ENDIF(WANT_LRDF)
-
-###
-### Boost Framework http://www.boost.org/
-### Used for unit testing
-###
-find_package(Boost 1.33 COMPONENTS unit_test_framework)
 
 ######################################################################
 ### BUILD/INSTALL SETUP                                            ###
