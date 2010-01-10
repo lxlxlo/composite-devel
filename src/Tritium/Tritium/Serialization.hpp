@@ -21,6 +21,7 @@
 #ifndef TRITIUM_SERIALIZATION_HPP
 #define TRITIUM_SERIALIZATION_HPP
 
+#include <Tritium/memory.hpp>
 #include <list>
 #include <QString>
 
@@ -30,108 +31,60 @@ namespace Tritium
     class Instrument;
     class Drumkit;
     class Pattern;
+    class ObjectBundle;
+    class Engine;
 
-    /**
-     * \brief Several functions for loading resources.
-     *
-     * These functions behave asynchronously, loading objects and
-     * allocating memory in a dedicated thread.  It also abstracts
-     * access to resources... looking toward a future system where
-     * resources may be files or database keys.  This makes it
-     * possible to call these functions from a realtime thread, and
-     * provide a notification means to deliver the goods.
-     */
     namespace Serialization
     {
-	class LoadBundle;
 	class SaveReport;
-	void load_file(const QString& filename,
-		       LoadBundle& report_to);
 
-	bool save_song(const QString& filename,
-		       Song& song,
-		       SaveReport& report_to,
-		       bool overwrite = false);
-	bool save_drumkit(const QString& filename,
-			  Drumkit& song,
-			  SaveReport& report_to,
-			  bool overwrite = false);
-	bool save_pattern(const QString& filename,
-			  Pattern& pattern,
-			  SaveReport& report_to,
-			  bool overwrite = false);
-
-	/**
-	 * \brief Container for various classes.
+        /**
+	 * \brief Class that handles loading and saving objects.
+	 *
+	 * In order to load and save songs, patterns, drumkits, etc.
+	 * in real-time, they are handled asynchronously by Tritium.
+	 * In order to load/save files, there must also be an instance
+	 * of a worker thread.
+	 *
 	 */
-	struct LoadBundleObject
-	{
-	    typedef enum {
-		Song_t = 0,
-		Pattern_t,
-		Instrument_t,
-		_Reserved = 0xFF
-	    } object_t;
-
-	    object_t type;
-	    void* ref;
-	};
-		
-	/**
-	 * \brief Delivers the results of loading a file.
-	 *
-	 * Loading operations typically result in one or more new
-	 * classes being allocated, created, and initialized.  This
-	 * class is used to deliver these to the part of the program
-	 * that requested the load operation.
-	 *
-	 * Ownership of the objects is transferred to the class
-	 * derived from LoadBundle.  Wherever these objects are
-	 * delivered to, they are responsible for deleting them.
-	 *
-	 * Example:
-	 * \code
-	 * class SongLoaded : public Tritium::Serialization::LoadBundle
-	 * {
-	 *     virtual void operator()() {
-	 *         list_t::iterator k;
-	 *         Song *pSong; Pattern *pPattern; Instrument *pInstrument;
-	 *         for(k=objects.begin() ; k!=objects.end() ; ++k) {
-	 *             switch(k->type) {
-	 *             case Song_t:
-	 *                 pSong = static_cast<Song*>(k->ref);
-	 *                 // handle new song obj.
-	 *                 break;
-	 *             case Pattern_t:
-	 *                 pPattern = static_cast<Pattern*>(k->ref);
-	 *                 // handle new pattern obj.
-	 *                 break;
-	 *             case Instrument_t:
-	 *                 pInstrument = static_cast<Instrument*>(k->ref);
-	 *                 // handle new instrument obj.
-	 *                 break;
-	 *             default:
-	 *                 assert(false); // This is a logic error.
-	 *                 delete k->ref;
-	 *             };
-	 *         }
-	 *     }
-	 * };
-	 * \endcode
-	 *
-	 * Note the assert() for the default case.  If a load
-	 * operation results in a type that you were not expecting,
-	 * this is an error.
-	 */
-	class LoadBundle
+	class Serializer
 	{
 	public:
-	    typedef std::list<LoadBundleObject> list_t;
+	    virtual ~Serializer() {}
 
-	    virtual ~LoadBundle() {}
-	    virtual void operator()() = 0;
+	    virtual void load_file(const QString& filename,
+				   ObjectBundle& report_to,
+				   Engine *engine) = 0;
 
-	    list_t objects;
+	    virtual void save_song(const QString& filename,
+				   T<Song>::shared_ptr song,
+				   SaveReport& report_to,
+				   Engine *engine,
+				   bool overwrite = false) = 0;
+	    virtual void save_drumkit(const QString& filename,
+				      T<Drumkit>::shared_ptr song,
+				      SaveReport& report_to,
+				      Engine *engine,
+				      bool overwrite = false) = 0;
+	    virtual void save_pattern(const QString& filename,
+				      T<Pattern>::shared_ptr pattern,
+				      SaveReport& report_to,
+				      Engine *engine,
+				      bool overwrite = false) = 0;
+
+	    /**
+	     * \brief Creates a stand-alone serailizer object.
+	     *
+	     * Not real-time safe.
+	     *
+	     * Typically, you will want to use the serializer that
+	     * comes from Tritium::Engine::get_serializer() so that
+	     * the worker thread can be shared.  Sometimes you may
+	     * wish to use the serializer without the Engine, and this
+	     * function returns a serializer object that can be used
+	     * for this purpose.
+	     */
+	    static Serializer* create_standalone(Engine *engine);
 	};
 
 	/**

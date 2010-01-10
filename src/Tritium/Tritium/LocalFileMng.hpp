@@ -28,90 +28,132 @@
 
 #include <QDomDocument>
 #include <Tritium/memory.hpp>
+#include <Tritium/ObjectBundle.hpp>
 
 namespace Tritium
 {
 
-class Note;
-class Instrument;
-class InstrumentList;
-class Sequence;
-class Pattern;
-class Song;
-class Drumkit;
-class Engine;
+    class Note;
+    class Instrument;
+    class InstrumentList;
+    class Sequence;
+    class Pattern;
+    class Song;
+    class Drumkit;
+    class Engine;
 
-/**
- *
- */
-class LocalFileMng
-{
-public:
-	LocalFileMng(Engine* parent);
-	~LocalFileMng();
-	
-	std::vector<QString> getDrumkitsFromDirectory( QString );
-	std::vector<QString> getUserDrumkitList();
-	std::vector<QString> getSystemDrumkitList();
-	std::vector<QString> getPatternDirList();
-	std::vector<QString> getSongList();
-	std::vector<QString> getPatternsForDrumkit( const QString&  );
-	std::vector<QString> getAllPatternName();
-	int getPatternList( const QString& );
-	int mergeAllPatternList( std::vector<QString> );
+    /**
+     *
+     */
+    class LocalFileMng
+    {
+    public:
+        LocalFileMng(Engine* parent);
+        ~LocalFileMng();
 
-	std::vector<QString> getallPatternList(){
-		return m_allPatternList;
-	}
-	std::vector<QString> getAllCategoriesFromPattern();
-
-	QString getDrumkitDirectory( const QString& drumkitName );
-	QString getDrumkitNameForPattern( const QString& patternDir );
-	QString getCategoryFromPatternName( const QString& patternPathName );
-	QString getPatternNameFromPatternDir( const QString& patternDirName);
-
-	T<Drumkit>::shared_ptr loadDrumkit( const QString& directory );
-	int saveDrumkit( T<Drumkit>::shared_ptr pDrumkit );
-
-	static void writeXmlString( QDomNode parent, const QString& name, const QString& text );
-	static void writeXmlBool( QDomNode parent, const QString& name, bool value );
-
-	T<Pattern>::shared_ptr loadPattern( const QString& directory );
-	int savePattern( T<Song>::shared_ptr song , int selectedpattern , const QString& patternname, const QString& realpatternname, int mode);
-
-	int savePlayList( const std::string& patternname );
-	int loadPlayList( const std::string& patternname);
-
-	static QString readXmlString( QDomNode , const QString& nodeName, const QString& defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true , bool tinyXmlCompatMode = false);
-	static float readXmlFloat( QDomNode , const QString& nodeName, float defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true , bool tinyXmlCompatMode = false);
-	static int readXmlInt( QDomNode , const QString& nodeName, int defaultValue, bool bCanBeEmpty = false, bool bShouldExists = true , bool tinyXmlCompatMode = false);
-	static bool readXmlBool( QDomNode , const QString& nodeName, bool defaultValue, bool bShouldExists = true , bool tinyXmlCompatMode = false );
-	static void convertFromTinyXMLString( QByteArray* str );
-	static bool checkTinyXMLCompatMode( const QString& filename );
-	static QDomDocument openXmlDocument( const QString& filename );
-
-private:
-	Engine* m_engine;
-	void fileCopy( const QString& sOrigFilename, const QString& sDestFilename );
-	std::vector<QString> m_allPatternList;
-};
+        /* Methods for determining where resource locations
+         * are (e.g. the "data" directory.)
+         */
+        std::vector<QString> getDrumkitsFromDirectory( QString );
+        std::vector<QString> getUserDrumkitList();
+        std::vector<QString> getSystemDrumkitList();
+        std::vector<QString> getPatternDirList();
+        std::vector<QString> getSongList();
+        std::vector<QString> getPatternsForDrumkit( const QString&  );
+        std::vector<QString> getAllPatternName();
+        QString getDrumkitDirectory( const QString& drumkitName );
+        QString getDrumkitNameForPattern( const QString& patternDir );
+        QString getCategoryFromPatternName( const QString& patternPathName );
+        QString getPatternNameFromPatternDir( const QString& patternDirName);
 
 
+        /* Methods for extracting metadata regarding the patterns
+         * loaded in the patterns directory.
+         */
+        int getPatternList( const QString& );
+        int mergeAllPatternList( std::vector<QString> );
+        std::vector<QString> getallPatternList(){
+            return m_allPatternList;
+        }
+        std::vector<QString> getAllCategoriesFromPattern();
 
-/**
- * Write XML file of a song
- */
-class SongWriter
-{
-public:
-	SongWriter();
-	~SongWriter();
+        /* Methods for loading/saving files.
+         *
+         * Note that loadSong() and saveSong() are currently
+         * handled by Tritium::Song.
+         */
+        T<Drumkit>::shared_ptr loadDrumkit( const QString& directory );
+        int saveDrumkit( T<Drumkit>::shared_ptr pDrumkit );
 
-	// Returns 0 on success.
-	int writeSong( Engine* engine, Song& song, const QString& filename );
-};
+        T<Pattern>::shared_ptr loadPattern( const QString& directory );
+        int savePattern( T<Song>::shared_ptr song,
+                         int selectedpattern,
+                         const QString& patternname,
+                         const QString& realpatternname,
+                         int mode);
+
+        int savePlayList( const std::string& patternname );
+        int loadPlayList( const std::string& patternname);
+
+        /* Static helper functions for reading/writing bits
+         * of an XML file.
+         */
+        static void writeXmlString( QDomNode parent,
+                                    const QString& name,
+                                    const QString& text );
+        static void writeXmlBool( QDomNode parent,
+                                  const QString& name,
+                                  bool value );
+
+        static QString readXmlString( QDomNode node,
+                                      const QString& nodeName,
+                                      const QString& defaultValue,
+                                      bool bCanBeEmpty = false,
+                                      bool bShouldExists = true,
+                                      bool tinyXmlCompatMode = false);
+        static float readXmlFloat( QDomNode node,
+                                   const QString& nodeName,
+                                   float defaultValue,
+                                   bool bCanBeEmpty = false,
+                                   bool bShouldExists = true,
+                                   bool tinyXmlCompatMode = false);
+        static int readXmlInt( QDomNode node,
+                               const QString& nodeName,
+                               int defaultValue,
+                               bool bCanBeEmpty = false,
+                               bool bShouldExists = true,
+                               bool tinyXmlCompatMode = false);
+        static bool readXmlBool( QDomNode node,
+                                 const QString& nodeName,
+                                 bool defaultValue,
+                                 bool bShouldExists = true,
+                                 bool tinyXmlCompatMode = false);
+        static void convertFromTinyXMLString( QByteArray* str );
+        static bool checkTinyXMLCompatMode( const QString& filename );
+        static QDomDocument openXmlDocument( const QString& filename );
+
+    private:
+        Engine* m_engine;
+        void fileCopy( const QString& sOrigFilename,
+                       const QString& sDestFilename );
+        std::vector<QString> m_allPatternList;
+    };
+
+
+
+    /**
+     * Write XML file of a song
+     */
+    class SongWriter
+    {
+    public:
+        SongWriter();
+        ~SongWriter();
+
+        // Returns 0 on success.
+        int writeSong( Engine* engine, Song& song, const QString& filename );
+    };
 
 } // namespace Tritium
 
 #endif // TRITIUM_LOCALFILEMNG_HPP
-

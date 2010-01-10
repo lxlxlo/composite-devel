@@ -1419,7 +1419,7 @@ int SongWriter::writeSong( Engine* engine, Song& song, const QString& filename )
 	for ( unsigned i = 0; i < nPatternGroups; i++ ) {
 		QDomNode groupNode = doc.createElement( "group" );
 
-		PatternList *pList = ( *song.get_pattern_group_vector() )[i];
+		T<PatternList>::shared_ptr pList = ( *song.get_pattern_group_vector() )[i];
 		for ( unsigned j = 0; j < pList->get_size(); j++ ) {
 			T<Pattern>::shared_ptr pPattern = pList->get( j );
 			LocalFileMng::writeXmlString( groupNode, "patternID", pPattern->get_name() );

@@ -190,7 +190,7 @@ void AudioEngineInfoForm::updateInfo()
 
 
 	QString currentPatternName;
-	PatternList *pPatternList = g_engine->getCurrentPatternList();
+	T<PatternList>::shared_ptr pPatternList = g_engine->getCurrentPatternList();
 	if (pPatternList) {
 		currentPatternLbl->setText( QString::number(pPatternList->get_size()) );
 	}

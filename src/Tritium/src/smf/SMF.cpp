@@ -234,7 +234,7 @@ void SMFWriter::save( const QString& sFilename, T<Song>::shared_ptr pSong )
 	      nPatternList < pSong->get_pattern_group_vector()->size() ;
 	      nPatternList++ ) {
 		// infoLog( "[save] pattern list pos: " + toString( nPatternList ) );
-		PatternList *pPatternList =
+		T<PatternList>::shared_ptr pPatternList =
 			( *(pSong->get_pattern_group_vector()) )[ nPatternList ];
 
 		int nStartTicks = nTick;

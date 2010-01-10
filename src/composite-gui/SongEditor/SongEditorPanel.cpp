@@ -431,11 +431,10 @@ void SongEditorPanel::clearSequence( Button* /*btn*/)
 	g_engine->lock( RIGHT_HERE );
 
 	T<Song>::shared_ptr song = engine->getSong();
-	Song::pattern_group_t *pPatternGroupsVect = song->get_pattern_group_vector();
+	T<Song::pattern_group_t>::shared_ptr pPatternGroupsVect = song->get_pattern_group_vector();
 	for (uint i = 0; i < pPatternGroupsVect->size(); i++) {
-		PatternList *pPatternList = (*pPatternGroupsVect)[i];
+		T<PatternList>::shared_ptr pPatternList = (*pPatternGroupsVect)[i];
 		pPatternList->clear();
-		delete pPatternList;
 	}
 	pPatternGroupsVect->clear();
 

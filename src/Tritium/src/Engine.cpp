@@ -1079,20 +1079,20 @@ namespace Tritium
         return pos.tick + (pos.beat-1) * pos.ticks_per_beat;
     }
 
-    PatternList* Engine::getCurrentPatternList()
+    T<PatternList>::shared_ptr Engine::getCurrentPatternList()
     {
         TransportPosition pos;
         d->m_pTransport->get_position(&pos);
         if( pos.bar <= d->m_pSong->get_pattern_group_vector()->size() ) {
             return d->m_pSong->get_pattern_group_vector()->at(pos.bar-1);
         } else {
-            return 0;
+            return T<PatternList>::shared_ptr();
         }
     }
 
-    PatternList * Engine::getNextPatterns()
+    T<PatternList>::shared_ptr Engine::getNextPatterns()
     {
-        static PatternList the_nothing;
+        static T<PatternList>::shared_ptr the_nothing(new PatternList);
         TransportPosition pos;
         d->m_pTransport->get_position(&pos);
         size_t p_sz = d->m_pSong->get_pattern_group_vector()->size();
@@ -1102,7 +1102,7 @@ namespace Tritium
             if( d->m_pSong->is_loop_enabled() && p_sz ) {
                 return d->m_pSong->get_pattern_group_vector()->at(0);
             } else  {
-                return &the_nothing;
+                return the_nothing;
             }
         }
     }
@@ -1461,12 +1461,12 @@ namespace Tritium
             }
         }
 
-        Song::pattern_group_t *pColumns = d->m_pSong->get_pattern_group_vector();
+        T<Song::pattern_group_t>::shared_ptr pColumns = d->m_pSong->get_pattern_group_vector();
         long totalTick = 0;
         int nPatternSize;
         T<Pattern>::shared_ptr pPattern;
         for ( int i = 0; i < pos; ++i ) {
-            PatternList *pColumn = ( *pColumns )[ i ];
+            T<PatternList>::shared_ptr pColumn = ( *pColumns )[ i ];
             // prendo solo il primo. I pattern nel gruppo devono avere la
             // stessa lunghezza
             pPattern = pColumn->get( 0 );

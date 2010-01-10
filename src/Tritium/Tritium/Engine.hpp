@@ -175,8 +175,8 @@ namespace Tritium
         unsigned long getTickPosition();
         unsigned long getRealtimeFrames();
 
-        PatternList * getCurrentPatternList();
-        PatternList * getNextPatterns();
+        T<PatternList>::shared_ptr getCurrentPatternList();
+        T<PatternList>::shared_ptr getNextPatterns();
 
         int getPatternPos();
         void setPatternPos( int pos );

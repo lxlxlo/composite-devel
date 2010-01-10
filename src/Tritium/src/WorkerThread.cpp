@@ -50,8 +50,6 @@ WorkerThread::WorkerThread() :
 
 WorkerThread::~WorkerThread()
 {
-    client_list_t::iterator k;
-
     shutdown();
 
     QMutexLocker lock(&m_mutex);
@@ -61,10 +59,8 @@ WorkerThread::~WorkerThread()
 /**
  * \brief Add a module to the worker thread.
  *
- * The WorkerThread takes ownership of the object and
- * will delete it.
  */
-void WorkerThread::add_client(WorkerThreadClient* module)
+void WorkerThread::add_client(WorkerThread::pointer_t module)
 {
     pointer_t tmp(module);
     m_clients.insert(tmp);

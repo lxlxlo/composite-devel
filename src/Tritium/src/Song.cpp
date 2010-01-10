@@ -67,9 +67,9 @@ namespace Tritium
 	, author( author )
 	, volume( volume )
 	, metronome_volume( 0.5 )
-	, pattern_list( NULL )
-	, pattern_group_sequence( NULL )
-	, instrument_list( NULL )
+	, pattern_list()
+	, pattern_group_sequence()
+	, instrument_list()
 	, filename( "" )
 	, is_loop_enabled( false )
 	, humanize_time_value( 0.0 )
@@ -88,9 +88,9 @@ namespace Tritium
     {
 	if ( pattern_group_sequence.get() ) {
 	    for ( unsigned i = 0; i < pattern_group_sequence->size(); ++i ) {
-		PatternList *pPatternList = ( *pattern_group_sequence )[i];
+		T<PatternList>::shared_ptr pPatternList = ( *pattern_group_sequence )[i];
 		pPatternList->clear();	// pulisco tutto, i pattern non vanno distrutti qua
-		delete pPatternList;
+		pPatternList.reset();
 	    }
 	}
 
@@ -209,14 +209,14 @@ namespace Tritium
 	d->pattern_list.reset( pattern_list );
     }
 
-    Song::pattern_group_t* Song::get_pattern_group_vector()
+    T<Song::pattern_group_t>::shared_ptr Song::get_pattern_group_vector()
     {
-	return d->pattern_group_sequence.get();
+	return d->pattern_group_sequence;
     }
 
-    void Song::set_pattern_group_vector( Song::pattern_group_t* vect )
+    void Song::set_pattern_group_vector( T<Song::pattern_group_t>::shared_ptr vect )
     {
-	d->pattern_group_sequence.reset( vect );
+	d->pattern_group_sequence = vect;
     }
 
     InstrumentList* Song::get_instrument_list()
@@ -359,8 +359,8 @@ namespace Tritium
 	emptyPattern->set_category( QString("not_categorized") );
 	patternList->add( emptyPattern );
 	song->set_pattern_list( patternList );
-	pattern_group_t* pPatternGroupVector = new pattern_group_t;
-	PatternList *patternSequence = new PatternList();
+	T<pattern_group_t>::shared_ptr pPatternGroupVector( new pattern_group_t );
+	T<PatternList>::shared_ptr patternSequence( new PatternList() );
 	patternSequence->add( emptyPattern );
 	pPatternGroupVector->push_back( patternSequence );
 	song->set_pattern_group_vector( pPatternGroupVector );
@@ -502,7 +502,7 @@ namespace Tritium
 	if( song_bar_count() < 1 ) return -1;
 	if( bar > song_bar_count() ) return -1;
 
-	PatternList* list = get_pattern_group_vector()->at(bar-1);
+	T<PatternList>::shared_ptr list = get_pattern_group_vector()->at(bar-1);
 	uint32_t j;
 	uint32_t max_ticks = 0;
 	uint32_t tmp;

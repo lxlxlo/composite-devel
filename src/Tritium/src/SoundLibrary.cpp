@@ -86,8 +86,8 @@ Drumkit::~Drumkit()
 T<Drumkit>::shared_ptr Drumkit::load( Engine* eng, const QString& sFilename )
 {
 	LocalFileMng mng(eng);
-	return mng.loadDrumkit( sFilename );
-
+	T<Drumkit>::shared_ptr rv( mng.loadDrumkit( sFilename ) );
+	return rv;
 }
 
 

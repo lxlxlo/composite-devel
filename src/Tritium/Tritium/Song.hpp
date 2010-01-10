@@ -50,7 +50,7 @@ class Song
 public:
     class SongPrivate;
 
-    typedef std::deque<PatternList*> pattern_group_t;
+    typedef std::deque< T<PatternList>::shared_ptr > pattern_group_t;
 
     enum SongMode {
 	PATTERN_MODE,
@@ -95,8 +95,8 @@ public:
     PatternList* get_pattern_list();
     void set_pattern_list( PatternList *pattern_list );
 
-    pattern_group_t* get_pattern_group_vector();
-    void set_pattern_group_vector( pattern_group_t* vect );
+    T<pattern_group_t>::shared_ptr get_pattern_group_vector();
+    void set_pattern_group_vector( T<pattern_group_t>::shared_ptr vect );
 
     static T<Song>::shared_ptr load( Engine* engine, const QString& sFilename );
     bool save( Engine* engine, const QString& sFilename );

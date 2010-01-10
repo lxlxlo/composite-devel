@@ -21,10 +21,10 @@
 #ifndef TRITIUM_WORKERTHREAD_HPP
 #define TRITIUM_WORKERTHREAD_HPP
 
+#include <Tritium/memory.hpp>
 #include <QThread>
 #include <QMutex>
 #include <set>
-#include <memory>
 
 namespace Tritium
 {
@@ -59,13 +59,13 @@ namespace Tritium
     class WorkerThread : public QThread
     {
     public:
-	typedef WorkerThreadClient* pointer_t;
+	typedef T<WorkerThreadClient>::shared_ptr pointer_t;
 	typedef std::set<pointer_t> client_list_t;
 
 	WorkerThread();
 	virtual ~WorkerThread();
 
-	void add_client(WorkerThreadClient* module);
+	void add_client(pointer_t module);
 	void shutdown();
 	void run();
 

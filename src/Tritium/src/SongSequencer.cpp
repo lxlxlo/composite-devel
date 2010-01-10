@@ -29,6 +29,7 @@
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentList.hpp>
+#include <Tritium/memory.hpp>
 
 #include "SongSequencer.hpp"
 
@@ -64,7 +65,7 @@ int SongSequencer::process(SeqScript& seq, const TransportPosition& pos, uint32_
 	Note* pNote;
 	SeqEvent ev;
 	uint32_t pat_grp;
-	PatternList* patterns;
+	T<PatternList>::shared_ptr patterns;
 	Pattern::note_map_t::const_iterator n;
 	int k;
 	uint32_t default_note_length, length;

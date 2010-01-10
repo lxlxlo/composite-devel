@@ -102,7 +102,7 @@ void SongEditor::keyPressEvent ( QKeyEvent * ev )
 {
 	Engine *pEngine = g_engine;
 	PatternList *pPatternList = pEngine->getSong()->get_pattern_list();
-	Song::pattern_group_t* pColumns = pEngine->getSong()->get_pattern_group_vector();
+	T<Song::pattern_group_t>::shared_ptr pColumns = pEngine->getSong()->get_pattern_group_vector();
 
 	if ( ev->key() == Qt::Key_Delete ) {
 		if ( m_selectedCells.size() != 0 ) {
@@ -110,7 +110,7 @@ void SongEditor::keyPressEvent ( QKeyEvent * ev )
 			// delete all selected cells
 			for ( uint i = 0; i < m_selectedCells.size(); i++ ) {
 				QPoint cell = m_selectedCells[ i ];
-				PatternList* pColumn = (*pColumns)[ cell.x() ];
+				T<PatternList>::shared_ptr pColumn = (*pColumns)[ cell.x() ];
 				pColumn->del(pPatternList->get( cell.y() ) );
 			}
 			g_engine->unlock();
@@ -187,9 +187,9 @@ void SongEditor::mousePressEvent( QMouseEvent *ev )
 	}
 	else if ( actionMode == DRAW_ACTION ) {
 		T<Tritium::Pattern>::shared_ptr pPattern = pPatternList->get( nRow );
-		Song::pattern_group_t *pColumns = pSong->get_pattern_group_vector();	// E' la lista di "colonne" di pattern
+		T<Song::pattern_group_t>::shared_ptr pColumns = pSong->get_pattern_group_vector();	// E' la lista di "colonne" di pattern
 		if ( nColumn < (int)pColumns->size() ) {
-			PatternList *pColumn = ( *pColumns )[ nColumn ];
+			T<PatternList>::shared_ptr pColumn = ( *pColumns )[ nColumn ];
 
 			bool bFound = false;
 			unsigned nColumnIndex = 0;
@@ -207,10 +207,10 @@ void SongEditor::mousePressEvent( QMouseEvent *ev )
 
 				// elimino le colonne vuote
 				for ( int i = pColumns->size() - 1; i >= 0; i-- ) {
-					PatternList *pColumn = ( *pColumns )[ i ];
+					T<PatternList>::shared_ptr pColumn = ( *pColumns )[ i ];
 					if ( pColumn->get_size() == 0 ) {
 						pColumns->erase( pColumns->begin() + i );
-						delete pColumn;
+						pColumn.reset();
 					}
 					else {
 						break;
@@ -232,11 +232,11 @@ void SongEditor::mousePressEvent( QMouseEvent *ev )
 			int nSpaces = nColumn - pColumns->size();
 //			INFOLOG( "[mousePressEvent] add pattern (with " + to_string( nSpaces ) + " spaces)" );
 
-			PatternList *pColumn = new PatternList();
+			T<PatternList>::shared_ptr pColumn( new PatternList() );
 			pColumns->push_back( pColumn );
 
 			for ( int i = 0; i < nSpaces; i++ ) {
-				pColumn = new PatternList();
+				pColumn.reset( new PatternList() );
 				pColumns->push_back( pColumn );
 			}
 			pColumn->add( pPattern );
@@ -258,7 +258,7 @@ void SongEditor::mouseMoveEvent(QMouseEvent *ev)
 	int nRow = ev->y() / m_nGridHeight;
 	int nColumn = ( (int)ev->x() - 10 ) / (int)m_nGridWidth;
 	PatternList *pPatternList = g_engine->getSong()->get_pattern_list();
-	Song::pattern_group_t* pColumns = g_engine->getSong()->get_pattern_group_vector();
+	T<Song::pattern_group_t>::shared_ptr pColumns = g_engine->getSong()->get_pattern_group_vector();
 
 	if ( m_bIsMoving ) {
 //		WARNINGLOG( "[mouseMoveEvent] Move patterns not implemented yet" );
@@ -320,7 +320,7 @@ void SongEditor::mouseMoveEvent(QMouseEvent *ev)
 				T<Tritium::Pattern>::shared_ptr pPattern = pPatternList->get( nRow );
 
 				if ( nCol < (int)pColumns->size() ) {
-					PatternList *pColumn = ( *pColumns )[ nCol ];
+					T<PatternList>::shared_ptr pColumn = ( *pColumns )[ nCol ];
 
 					for ( uint i = 0; i < pColumn->get_size(); i++) {
 						if ( pColumn->get(i) == pPattern ) { // esiste un pattern in questa posizione
@@ -344,7 +344,7 @@ void SongEditor::mouseReleaseEvent( QMouseEvent * /*ev*/ )
 	Engine *pEngine = g_engine;
 
 	PatternList *pPatternList = pEngine->getSong()->get_pattern_list();
-	Song::pattern_group_t* pColumns = pEngine->getSong()->get_pattern_group_vector();
+	T<Song::pattern_group_t>::shared_ptr pColumns = pEngine->getSong()->get_pattern_group_vector();
 
 	if ( m_bIsMoving ) {	// fine dello spostamento dei pattern
 		g_engine->lock( RIGHT_HERE );
@@ -356,7 +356,7 @@ void SongEditor::mouseReleaseEvent( QMouseEvent * /*ev*/ )
 				continue;
 			}
 			// aggiungo un pattern per volta
-			PatternList* pColumn = NULL;
+			T<PatternList>::shared_ptr pColumn;
 			if ( cell.x() < (int)pColumns->size() ) {
 				pColumn = (*pColumns)[ cell.x() ];
 			}
@@ -364,7 +364,7 @@ void SongEditor::mouseReleaseEvent( QMouseEvent * /*ev*/ )
 				// creo dei patternlist vuoti
 				int nSpaces = cell.x() - pColumns->size();
 				for ( int i = 0; i <= nSpaces; i++ ) {
-					pColumn = new PatternList();
+					pColumn.reset( new PatternList() );
 					pColumns->push_back( pColumn );
 				}
 			}
@@ -377,12 +377,12 @@ void SongEditor::mouseReleaseEvent( QMouseEvent * /*ev*/ )
 			// remove the old patterns
 			for ( uint i = 0; i < m_selectedCells.size(); i++ ) {
 				QPoint cell = m_selectedCells[ i ];
-				PatternList* pColumn = NULL;
+				T<PatternList>::shared_ptr pColumn;
 				if ( cell.x() < (int)pColumns->size() ) {
 					pColumn = (*pColumns)[ cell.x() ];
 				}
 				else {
-					pColumn = new PatternList();
+					pColumn.reset( new PatternList() );
 					pColumns->push_back( pColumn );
 				}
 				pColumn->del(pPatternList->get( cell.y() ) );
@@ -391,11 +391,11 @@ void SongEditor::mouseReleaseEvent( QMouseEvent * /*ev*/ )
 
 		// remove the empty patternlist at the end of the song
 		for ( int i = pColumns->size() - 1; i != 0 ; i-- ) {
-			PatternList *pList = (*pColumns)[ i ];
+			T<PatternList>::shared_ptr pList = (*pColumns)[ i ];
 			int nSize = pList->get_size();
 			if ( nSize == 0 ) {
 				pColumns->erase( pColumns->begin() + i );
-				delete pList;
+				pList.reset();
 			}
 			else {
 				break;
@@ -545,10 +545,10 @@ void SongEditor::drawSequence()
 
 	T<Song>::shared_ptr song = g_engine->getSong();
 	PatternList *patList = song->get_pattern_list();
-	Song::pattern_group_t* pColumns = song->get_pattern_group_vector();
+	T<Song::pattern_group_t>::shared_ptr pColumns = song->get_pattern_group_vector();
 	uint listLength = patList->get_size();
 	for (uint i = 0; i < pColumns->size(); i++) {
-		PatternList* pColumn = (*pColumns)[ i ];
+		T<PatternList>::shared_ptr pColumn = (*pColumns)[ i ];
 
 		for (uint nPat = 0; nPat < pColumn->get_size(); ++nPat) {
 			T<Tritium::Pattern>::shared_ptr pat = pColumn->get( nPat );
@@ -872,7 +872,7 @@ void SongEditorPatternList::createBackground()
 		}
 	}
 
-	PatternList *pCurrentPatternList = pEngine->getCurrentPatternList();
+	T<PatternList>::shared_ptr pCurrentPatternList = pEngine->getCurrentPatternList();
 
 	/// paint the foreground (pattern name etc.)
 	for ( int i = 0; i < nPatterns; i++ ) {
@@ -1069,11 +1069,11 @@ void SongEditorPatternList::patternPopup_delete()
 	INFOLOG( QString("[patternPopup_delete] Delete pattern: %1 @%2").arg(pattern->get_name()).arg( (long)pattern.get() ) );
 	pSongPatternList->del(pattern);
 
-	Song::pattern_group_t *patternGroupVect = song->get_pattern_group_vector();
+	T<Song::pattern_group_t>::shared_ptr patternGroupVect = song->get_pattern_group_vector();
 
 	uint i = 0;
 	while (i < patternGroupVect->size() ) {
-		PatternList *list = (*patternGroupVect)[i];
+		T<PatternList>::shared_ptr list = (*patternGroupVect)[i];
 
 		uint j = 0;
 		while ( j < list->get_size() ) {
@@ -1102,7 +1102,7 @@ void SongEditorPatternList::patternPopup_delete()
 	}
 
 
-	PatternList *list = pEngine->getCurrentPatternList();
+	T<PatternList>::shared_ptr list = pEngine->getCurrentPatternList();
 	list->del( pattern );
 	// se esiste, seleziono il primo pattern
 	if ( pSongPatternList->get_size() > 0 ) {
@@ -1192,8 +1192,8 @@ void SongEditorPatternList::fillRangeWithPattern(FillRange* pRange, int nPattern
 	T<Song>::shared_ptr pSong = pEngine->getSong();
 	PatternList *pPatternList = pSong->get_pattern_list();
 	T<Tritium::Pattern>::shared_ptr pPattern = pPatternList->get( nPattern );
-	Song::pattern_group_t *pColumns = pSong->get_pattern_group_vector();	// E' la lista di "colonne" di pattern
-	PatternList *pColumn;
+	T<Song::pattern_group_t>::shared_ptr pColumns = pSong->get_pattern_group_vector();	// E' la lista di "colonne" di pattern
+	T<PatternList>::shared_ptr pColumn;
 
 	int nColumn, nColumnIndex;
 	bool bHasPattern = false;
@@ -1207,7 +1207,7 @@ void SongEditorPatternList::fillRangeWithPattern(FillRange* pRange, int nPattern
 	int nDelta = toVal - pColumns->size() + 1;
 
 	for ( int i = 0; i < nDelta; i++ ) {
-		pColumn = new PatternList();
+		pColumn.reset( new PatternList() );
 		pColumns->push_back( pColumn );
 	}
 
@@ -1240,11 +1240,11 @@ void SongEditorPatternList::fillRangeWithPattern(FillRange* pRange, int nPattern
 
 		// remove all the empty patternlists at the end of the song
 		for ( int i = pColumns->size() - 1; i != 0 ; i-- ) {
-			PatternList *pList = (*pColumns)[ i ];
+			T<PatternList>::shared_ptr pList = (*pColumns)[ i ];
 			int nSize = pList->get_size();
 			if ( nSize == 0 ) {
 				pColumns->erase( pColumns->begin() + i );
-				delete pList;
+				pList.reset();
 			}
 			else {
 				break;

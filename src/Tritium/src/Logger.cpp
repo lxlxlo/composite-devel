@@ -241,9 +241,10 @@ void Logger::create_instance()
 Logger::Logger()
 {
     __instance = this;
-    d = new LoggerPrivate(this, false);
+    T<LoggerPrivate>::shared_ptr lp( new LoggerPrivate(this, false) );
+    d = lp.get();
     worker_thread = new WorkerThread();
-    worker_thread->add_client(d); // takes ownership of d.
+    worker_thread->add_client(lp);
     worker_thread->start();
 }
 

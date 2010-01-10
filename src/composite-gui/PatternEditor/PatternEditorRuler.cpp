@@ -122,7 +122,7 @@ void PatternEditorRuler::updateEditor( bool bRedrawAll )
 
 
 	bool bActive = false;	// is the pattern playing now?
-	PatternList *pList = pEngine->getCurrentPatternList();
+	T<PatternList>::shared_ptr pList = pEngine->getCurrentPatternList();
 	for (uint i = 0; i < pList->get_size(); i++) {
 		if ( m_pPattern == pList->get(i) ) {
 			bActive = true;
