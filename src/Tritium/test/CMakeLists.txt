@@ -27,6 +27,9 @@ IF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
     )
 
   ADD_DEFINITIONS("-DBOOST_TEST_DYN_LINK")
+  ADD_DEFINITIONS("-DLADSPA_SUPPORT")
+  ADD_DEFINITIONS("-DJACK_SUPPORT")
+
   ENABLE_TESTING()
 
   ADD_LIBRARY(test_utils_Tritium
@@ -47,19 +50,30 @@ IF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
     TARGET_LINK_LIBRARIES(${T}
       Tritium
       test_utils_Tritium
-      ${QT_LIBRARIES}
-      ${LibSndfile_LIBRARIES}
-      ${JACK_LIBRARIES}
-      ${FLAC_LIBRARIES}
-      ${FLAC++_LIBRARIES}
-      ${LRDF_LIBRARIES}
-      ${LibTar_LIBRARIES}
-      ${ZLIB_LIBRARIES}
-      ${LibArchive_LIBRARIES}
       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARIES}
       )
 
     ADD_TEST(${T} ${T})
   ENDFOREACH()
+
+  ######################################################################
+  ### CONFIGURATION SUMMARY                                          ###
+  ######################################################################
+
+  MESSAGE("\n"
+  "Configuration Summary for Tritium Tests\n"
+  "---------------------------------------\n"
+  )
+
+  MACRO(lib_report name)
+    IF(${name}_FOUND)
+      message("ENABLED..... ${name}")
+    ELSE()
+      message("disabled.... ${name}")
+    ENDIF()
+  ENDMACRO(lib_report)
+
+  lib_report(Boost)
+  lib_report(Boost_UNIT_TEST_FRAMEWORK)
 
 ENDIF(Boost_UNIT_TEST_FRAMEWORK_FOUND)

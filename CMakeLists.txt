@@ -48,145 +48,14 @@ OPTION(WANT_LIBARCHIVE
 ### REQUIRED LIBRARIES                                             ###
 ######################################################################
 
-###
-### LADSPA
-###
-add_definitions(-DLADSPA_SUPPORT)
-
-###
-### Qt 4 http://qt.nokia.com/
-###
-
-SET(QT_USE_QTNETWORK true)
-SET(QT_USE_QTXML true)
-FIND_PACKAGE(Qt4 4.3.0 REQUIRED)
-INCLUDE(${QT_USE_FILE})
-
-###
-### JACK http://jackaudio.org/
-###
-find_package(JACK REQUIRED)
-include_directories(${JACK_INCLUDE_DIRS})
-set(LIBS ${JACK_LIBRARIES})
-add_definitions(-DJACK_SUPPORT)
-
-###
-### FLAC http://flac.sourceforge.net/
-###
-find_package(FLAC REQUIRED)
-include_directories(${FLAC_INCLUDE_DIRS})
-set(LIBS ${FLAC_LIBRARIES})
-add_definitions(-DFLAC_SUPPORT)
-
-find_package(FLAC++ REQUIRED)
-include_directories(${FLAC++_INCLUDE_DIRS})
-set(LIBS ${FLAC++_LIBRARIES})
-add_definitions(-DFLAC_SUPPORT)
-
-###
-### libsndfile http://www.mega-nerd.com/libsndfile/
-###
-find_package(LibSndfile REQUIRED)
-include_directories(${LibSndfile_INCLUDE_DIRS})
-set(LIBS ${LibSndfile_LIBRARIES})
-
-### ...................................................
-### Either libtar and libz, or libarchive are required.
-### ...................................................
-
-###
-### libtar http://www.feep.net/libtar/
-### Zlib http://www.zlib.net/
-###
-IF(NOT WANT_LIBARCHIVE)
-  find_package(LibTar)
-  find_package(ZLIB)
-ENDIF()
-IF(LibTar_FOUND AND ZLIB_FOUND)
-	include_directories(${LibTar_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
-	set(LIBS ${LibSndfile_LIBRARIES} ${ZLIB_INCLUDE_DIRS})
-ENDIF()
-
-###
-### libarchive http://code.google.com/p/libarchive/
-###
-IF(LibTar_FOUND AND ZLIB_FOUND)
-ELSE()
-       find_package(LibArchive REQUIRED)
-       include_directories(${LibArchive_INCLUDE_DIRS})
-       set(LIBS ${LibArchive_LIBRARIES})
-       add_definitions(-DLIBARCHIVE_SUPPORT)
-ENDIF()  
-
-###
-### Boost Framework http://www.boost.org/
-### Used for unit testing
-###
-find_package(Boost 1.33 COMPONENTS unit_test_framework REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
-
-######################################################################
-### OPTIONAL LIBRARIES                                             ###
-######################################################################
-
-IF(WANT_LRDF)
-  find_package(LRDF REQUIRED)
-  include_directories(${LRDF_INCLUDE_DIRS})
-  set(LIBS ${LRDF_LIBRARIES})
-  add_definitions(-DLRDF_SUPPORT)
-ENDIF(WANT_LRDF)
+### See src/Tritium/CMakeLists.txt
+### See src/composite-gui/CMakeLists.txt
 
 ######################################################################
 ### BUILD/INSTALL SETUP                                            ###
 ######################################################################
 
 SET(DATA_PATH "${CMAKE_INSTALL_PREFIX}/share/composite/data")
-
-######################################################################
-### CONFIGURATION SUMMARY                                          ###
-######################################################################
-
-MESSAGE("\n"
-"Installation Summary\n"
-"--------------------\n"
-"* Install Directory           : ${CMAKE_INSTALL_PREFIX}\n"
-"* Data path                   : ${DATA_PATH}\n"
-)
-
-MACRO(lib_report name)
-  IF(${name}_FOUND)
-    message("ENABLED..... ${name}")
-  ELSE()
-    message("disabled.... ${name}")
-  ENDIF()
-ENDMACRO(lib_report)
-
-MESSAGE(
-"LIBRARIES\n"
-"---------\n"
-)
-lib_report(QT4)
-lib_report(JACK)
-lib_report(LibSndfile)
-lib_report(LRDF)
-lib_report(FLAC)
-lib_report(FLAC++)
-lib_report(LibTar)
-lib_report(ZLIB)
-lib_report(LibArchive)
-lib_report(Boost)
-lib_report(Boost_UNIT_TEST_FRAMEWORK)
-
-MESSAGE(
-"\n"
-"-----------------------------------------------------------------\n"
-"FOR ADVANCED CONFIGURATION, USE ccmake INSTEAD OF cmake\n"
-"\n"
-"IMPORTANT:\n"
-"after installing missing packages, remove CMakeCache.txt before\n"
-"running cmake again!\n"
-"-----------------------------------------------------------------\n"
-)
 
 ######################################################################
 ### CONFIGURING THE SOFTWARE....                                   ###
@@ -247,3 +116,26 @@ SET(MACOSX_BUNDLE_COPYRIGHT "Jérémy Zurcher, 2009")
 #INCLUDE(CPack)
 
 add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
+
+######################################################################
+### CONFIGURATION SUMMARY                                          ###
+######################################################################
+
+MESSAGE("\n"
+"Overall Configuration Summary\n"
+"-----------------------------\n"
+"* Install Directory           : ${CMAKE_INSTALL_PREFIX}\n"
+"* Data path                   : ${DATA_PATH}\n"
+)
+
+MESSAGE(
+"\n"
+"-----------------------------------------------------------------\n"
+"FOR ADVANCED CONFIGURATION, USE ccmake INSTEAD OF cmake\n"
+"\n"
+"IMPORTANT:\n"
+"after installing missing packages, remove CMakeCache.txt before\n"
+"running cmake again!\n"
+"-----------------------------------------------------------------\n"
+)
+
