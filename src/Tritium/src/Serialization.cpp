@@ -242,9 +242,19 @@ void SerializationQueue::handle_load_file(SerializationQueue::event_data_t& ev)
             handle_load_pattern(ev);
         } else if (ev.filename.endsWith("drumkit.xml")) {
             handle_load_drumkit(ev);
-        }
+        } else {
+	    ObjectBundle& bdl = *ev.report_load_to;
+	    bdl.error = true;
+	    bdl.error_message = QString("File '%1' is not in a valid format")
+		.arg(ev.filename);
+	    bdl();
+	}
     } else {
-        (*ev.report_load_to)();
+	ObjectBundle& bdl = *ev.report_load_to;
+	bdl.error = true;
+	bdl.error_message = QString("File '%1' does not exist")
+	    .arg(ev.filename);
+	bdl();
     }
 }
 
@@ -316,6 +326,7 @@ void SerializationQueue::handle_load_song(SerializationQueue::event_data_t& ev)
 
     // LOAD SONG-SPECIFIC DATA
     T<Song>::shared_ptr song = handle_load_song_node(song_node, errors);
+    song->set_filename(ev.filename);
 
     // LOAD INSTRUMENTS
     deque< T<Instrument>::shared_ptr > instrument_ra;

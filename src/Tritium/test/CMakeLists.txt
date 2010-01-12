@@ -19,6 +19,7 @@ IF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
     t_SeqEvent
     t_SeqScript
     t_SeqScriptPrivate
+    t_Serialization
     t_SimpleTransportMaster
     t_Song
     t_TransportPosition
