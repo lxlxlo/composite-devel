@@ -20,7 +20,7 @@
  */
 
 /**
- * t_TestTemplate.cpp
+ * t_Serialization.cpp
  *
  * This is just the template for a test.  If the template is not
  * executable, it will not be kept up-to-date.
@@ -35,6 +35,8 @@
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentList.hpp>
+#include <Tritium/InstrumentLayer.hpp>
+#include <Tritium/Sample.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/fx/Effects.hpp>
 #include <Tritium/fx/LadspaFX.hpp>
@@ -56,37 +58,38 @@ namespace THIS_NAMESPACE
     class SyncBundle : public ObjectBundle
     {
     public:
-	bool done;
+        bool done;
 
-	SyncBundle() : done(false) {}
-	void operator()() { done = true; }
+        SyncBundle() : done(false) {}
+        void operator()() { done = true; }
     };
 
     const char temp_dir[] = "t_Serialization_tmp";
     const char song_file_name[] = TEST_DATA_DIR "/t_Serialization.h2song";
+    const char pattern_file_name[] = TEST_DATA_DIR "/t_Serialization.h2pattern";
 
     struct Fixture
     {
-	// SETUP AND TEARDOWN OBJECTS FOR YOUR TESTS.
-	T<Serializer>::auto_ptr s;
-	T<Engine>::auto_ptr engine;
-	Fixture() : s(0) {
-	    Logger::create_instance();
-	    T<Preferences>::shared_ptr prefs(new Preferences );
-	    engine.reset( new Engine(prefs) );
-	    s.reset( Serializer::create_standalone(engine.get()) );
-	    int rv;
-	    rv = ::mkdir(temp_dir, 0700);
-	    BOOST_REQUIRE( rv == 0 );
-	}
-	~Fixture() {
-	    int rv;
-	    rv = ::remove(temp_dir);
-	    BOOST_REQUIRE( rv == 0 );
-	    s.reset();
-	    engine.reset();
-	    delete Logger::get_instance();
-	}
+        // SETUP AND TEARDOWN OBJECTS FOR YOUR TESTS.
+        T<Serializer>::auto_ptr s;
+        T<Engine>::auto_ptr engine;
+        Fixture() : s(0) {
+            Logger::create_instance();
+            T<Preferences>::shared_ptr prefs(new Preferences );
+            engine.reset( new Engine(prefs) );
+            s.reset( Serializer::create_standalone(engine.get()) );
+            int rv;
+            rv = ::mkdir(temp_dir, 0700);
+            BOOST_REQUIRE( rv == 0 );
+        }
+        ~Fixture() {
+            int rv;
+            rv = ::remove(temp_dir);
+            BOOST_REQUIRE( rv == 0 );
+            s.reset();
+            engine.reset();
+            delete Logger::get_instance();
+        }
     };
 
 } // namespace THIS_NAMESPACE
@@ -101,7 +104,7 @@ TEST_CASE( 000_load_invalid_file_name )
     s->load_file(fn, bdl, engine.get());
 
     while( ! bdl.done ) {
-	sleep(1);
+        sleep(1);
     }
 
     CK( bdl.error );
@@ -115,7 +118,7 @@ TEST_CASE( 010_load_song_check_song )
     s->load_file(song_file_name, bdl, engine.get());
 
     while( ! bdl.done ) {
-	sleep(1);
+        sleep(1);
     }
 
     BOOST_REQUIRE( ! bdl.error );
@@ -127,29 +130,29 @@ TEST_CASE( 010_load_song_check_song )
     std::deque< T<LadspaFX>::shared_ptr > effects;
 
     while( ! bdl.empty() ) {
-	switch(bdl.peek_type()) {
-	case ObjectItem::Song_t:
-	    songs.push_back( bdl.pop<Song>() );
-	    break;
-	case ObjectItem::Pattern_t:
-	    patterns.push_back( bdl.pop<Pattern>() );
-	    break;
-	case ObjectItem::Instrument_t:
-	    instruments.push_back( bdl.pop<Instrument>() );
-	    break;
-	case ObjectItem::LadspaFX_t:
-	    effects.push_back( bdl.pop<LadspaFX>() );
-	    break;
-	default:
-	    CK(false); // should not reach this.
-	}
+        switch(bdl.peek_type()) {
+        case ObjectItem::Song_t:
+            songs.push_back( bdl.pop<Song>() );
+            break;
+        case ObjectItem::Pattern_t:
+            patterns.push_back( bdl.pop<Pattern>() );
+            break;
+        case ObjectItem::Instrument_t:
+            instruments.push_back( bdl.pop<Instrument>() );
+            break;
+        case ObjectItem::LadspaFX_t:
+            effects.push_back( bdl.pop<LadspaFX>() );
+            break;
+        default:
+            CK(false); // should not reach this.
+        }
     }
 
     CK( songs.size() == 1 );
     CK( patterns.size() == 0 );
     CK( instruments.size() == 32 );
     CK( effects.size() == 0 );
-    
+
     /********************************************
      * SONG Object
      ********************************************
@@ -199,11 +202,202 @@ TEST_CASE( 010_load_song_check_song )
      * Instrument Objects
      ********************************************
      */
+    // Instead of testing that _every_ instrument
+    // loaded properly... we'll check 0, 1, 13,
+    // 30, and 31.
+    int k;
+    std::deque< T<Instrument>::shared_ptr >::iterator inst;
+    for( k=0, inst=instruments.begin() ; inst != instruments.end() ; ++inst, ++k ) {
+        Instrument& in = *(*inst);
+        InstrumentLayer *lay = 0;
+        T<Sample>::shared_ptr samp;
+        switch(k) {
+        case 0:
+            CK( in.get_id() == "0" );
+            CK( in.get_drumkit_name() == "GMkit" );
+            CK( in.get_name() == "Kick" );
+            CK( in.get_volume() == 1.0f );
+            CK( in.is_muted() == false );
+            CK( in.get_pan_l() == 1.0f );
+            CK( in.get_pan_r() == 1.0f );
+            CK( in.get_fx_level(0) == 0.0f );
+            CK( in.get_fx_level(1) == 0.0f );
+            CK( in.get_fx_level(2) == 0.0f );
+            CK( in.get_fx_level(3) == 0.0f );
+            lay = in.get_layer(0);
+            CK( lay );
+            CK( lay->get_min_velocity() == 0.0f );
+            CK( lay->get_max_velocity() == 1.0f );
+            CK( lay->get_gain() == 1.0 );
+            CK( lay->get_pitch() == 0.0 );
+            samp = lay->get_sample();
+            CK( samp );
+            CK( samp->get_filename().endsWith( "kick_Dry_b.flac" ) );
+            CK( samp->get_sample_rate() == 44100U );
+            CK( in.get_layer(1) == 0 );
+            break;
+        case 1:
+            CK( in.get_id() == "1" );
+            CK( in.get_drumkit_name() == "GMkit" );
+            CK( in.get_name() == "Stick" );
+            CK( in.get_volume() == 0.69f );
+            CK( in.is_muted() == false );
+            CK( in.get_pan_l() == 1.0f );
+            CK( in.get_pan_r() == 1.0f );
+            CK( in.get_fx_level(0) == 0.0f );
+            CK( in.get_fx_level(1) == 0.0f );
+            CK( in.get_fx_level(2) == 0.0f );
+            CK( in.get_fx_level(3) == 0.0f );
+            lay = in.get_layer(0);
+            CK( lay );
+            CK( lay->get_min_velocity() == 0.0f );
+            CK( lay->get_max_velocity() == 1.0f );
+            CK( lay->get_gain() == 1.0 );
+            CK( lay->get_pitch() == 0.0 );
+            samp = lay->get_sample();
+            CK( samp );
+            CK( samp->get_filename().endsWith( "stick_Woody.flac" ) );
+            CK( samp->get_sample_rate() == 44100U );
+            CK( in.get_layer(1) == 0 );
+            break;
+        case 13:
+            CK( in.get_id() == "13" );
+            CK( in.get_drumkit_name() == "GMkit" );
+            CK( in.get_name() == "Crash" );
+            CK( in.get_volume() == 0.69f );
+            CK( in.is_muted() == false );
+            CK( in.get_pan_l() == 1.0f );
+            CK( in.get_pan_r() == 0.88f );
+            CK( in.get_fx_level(0) == 0.0f );
+            CK( in.get_fx_level(1) == 0.0f );
+            CK( in.get_fx_level(2) == 0.0f );
+            CK( in.get_fx_level(3) == 0.0f );
+            lay = in.get_layer(0);
+            CK( lay );
+            CK( lay->get_min_velocity() == 0.0f );
+            CK( lay->get_max_velocity() == 1.0f );
+            CK( lay->get_gain() == 1.0 );
+            CK( lay->get_pitch() == 0.0 );
+            samp = lay->get_sample();
+            CK( samp );
+            CK( samp->get_filename().endsWith( "cra_Rock_a.flac" ) );
+            CK( samp->get_sample_rate() == 44100U );
+            CK( in.get_layer(1) == 0 );
+            break;
+        case 30:
+            CK( in.get_id() == "30" );
+            CK( in.get_drumkit_name() == "GMkit" );
+            CK( in.get_name() == "31" );
+            CK( in.get_volume() == 0.8f );
+            CK( in.is_muted() == false );
+            CK( in.get_pan_l() == 1.0f );
+            CK( in.get_pan_r() == 1.0f );
+            CK( in.get_fx_level(0) == 0.0f );
+            CK( in.get_fx_level(1) == 0.0f );
+            CK( in.get_fx_level(2) == 0.0f );
+            CK( in.get_fx_level(3) == 0.0f );
+            lay = in.get_layer(0);
+            CK( lay );
+            CK( lay->get_min_velocity() == 0.0f );
+            CK( lay->get_max_velocity() == 1.0f );
+            CK( lay->get_gain() == 1.0 );
+            CK( lay->get_pitch() == 0.0 );
+            samp = lay->get_sample();
+            CK( samp );
+            CK( samp->get_filename().endsWith( "emptySample.flac" ) );
+            CK( samp->get_sample_rate() == 44100U );
+            CK( in.get_layer(1) == 0 );
+            break;
+        case 31:
+            CK( in.get_id() == "31" );
+            CK( in.get_drumkit_name() == "GMkit" );
+            CK( in.get_name() == "32" );
+            CK( in.get_volume() == 0.8f );
+            CK( in.is_muted() == false );
+            CK( in.get_pan_l() == 1.0f );
+            CK( in.get_pan_r() == 1.0f );
+            CK( in.get_fx_level(0) == 0.0f );
+            CK( in.get_fx_level(1) == 0.0f );
+            CK( in.get_fx_level(2) == 0.0f );
+            CK( in.get_fx_level(3) == 0.0f );
+            lay = in.get_layer(0);
+            CK( lay );
+            CK( lay->get_min_velocity() == 0.0f );
+            CK( lay->get_max_velocity() == 1.0f );
+            CK( lay->get_gain() == 1.0 );
+            CK( lay->get_pitch() == 0.0 );
+            samp = lay->get_sample();
+            CK( samp );
+            CK( samp->get_filename().endsWith( "emptySample.flac" ) );
+            CK( samp->get_sample_rate() == 44100U );
+            CK( in.get_layer(1) == 0 );
+            break;
+        case 32:
+            // Should not be 33 insts.
+            BOOST_ERROR("Too many instruments loaded");
+            break;
+        }
+    }
+
+    /********************************************
+     * Pattern Sequence
+     ********************************************
+     */
+    T<Song::pattern_group_t>::shared_ptr seq;
+    seq = s->get_pattern_group_vector();
+    CK( seq->size() == 8 );
+    for( k=0; unsigned(k)<seq->size() ; ++k ) {
+	BOOST_REQUIRE( (*seq)[k] );
+	BOOST_REQUIRE( (*seq)[k]->get_size() == 1 );
+	BOOST_REQUIRE( (*seq)[k]->get(0) );
+	switch(k) {
+	case 0:
+	case 1:
+	case 2:
+	case 5:
+	case 6:
+	    // patternID == 1
+	    CK( (*seq)[k]->get(0)->get_name() == "1" );
+	    break;
+	case 3:
+	case 7:
+	    // patternID == 2
+	    CK( (*seq)[k]->get(0)->get_name() == "2" );
+	    break;
+	case 4:
+	    // patternID == 3
+	    CK( (*seq)[k]->get(0)->get_name() == "3" );
+	    break;
+	default:
+	    BOOST_ERROR("Invalid song sequence.");
+	}
+    }
+
+}
+
+TEST_CASE( 020_load_pattern_check_pattern )
+{
     BOOST_ERROR("Need to write more tests");
 }
 
-TEST_CASE( 020_save_song )
+TEST_CASE( 030_load_drumkit_check_drumkit )
 {
+    BOOST_ERROR("Need to write more tests");
+}
+
+TEST_CASE( 040_save_song )
+{
+    BOOST_ERROR("Need to write more tests");
+}
+
+TEST_CASE( 050_save_pattern )
+{
+    BOOST_ERROR("Need to write more tests");
+}
+
+TEST_CASE( 060_save_drumkit )
+{
+    BOOST_ERROR("Need to write more tests");
 }
 
 TEST_END()
