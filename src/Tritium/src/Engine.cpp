@@ -205,6 +205,8 @@ namespace Tritium
 #endif
         m_playlist.reset( new Playlist(m_engine) );
 
+        m_pSong = Song::get_default_song(m_engine);
+
         m_engine->get_event_queue()->push_event( EVENT_STATE, Engine::StateInitialized );
 
     }

@@ -838,7 +838,6 @@ T<Pattern>::shared_ptr SerializationQueue::handle_load_pattern_node_094(
 
         if ( !instrRef ) {
             ERRORLOG( "Instrument with ID: '" + instrId + "' not found. Note skipped." );
-            continue;
         }
 
         pNote = new Note( instrRef, fVelocity, fPan_L, fPan_R, nLength, nPitch, Note::stringToKey( sKey ) );

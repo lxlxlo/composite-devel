@@ -40,8 +40,10 @@
 #include <Tritium/Preferences.hpp>
 #include <Tritium/fx/Effects.hpp>
 #include <Tritium/fx/LadspaFX.hpp>
+#include <Tritium/ADSR.hpp>
 #include <cstdio>
 #include <deque>
+#include <QString>
 #include <sys/stat.h> // for mkdir()
 #include <sys/types.h> // for mkdir()
 
@@ -79,6 +81,7 @@ namespace THIS_NAMESPACE
             engine.reset( new Engine(prefs) );
             s.reset( Serializer::create_standalone(engine.get()) );
             int rv;
+	    ::remove(temp_dir);
             rv = ::mkdir(temp_dir, 0700);
             BOOST_REQUIRE( rv == 0 );
         }
@@ -377,7 +380,66 @@ TEST_CASE( 010_load_song_check_song )
 
 TEST_CASE( 020_load_pattern_check_pattern )
 {
-    BOOST_ERROR("Need to write more tests");
+    SyncBundle bdl;
+
+    s->load_file(pattern_file_name, bdl, engine.get());
+
+    // Set up some fake instruments
+    T<InstrumentList>::auto_ptr inst_list( new InstrumentList );
+    int k;
+    for( k=0 ; k<32 ; ++k ) {
+	T<Instrument>::shared_ptr i(
+	    new Instrument(
+		QString::number(k),
+		QString::number(k),
+		new ADSR
+		)
+	    );
+	inst_list->add(i);
+    }
+    engine->getSong()->set_instrument_list(inst_list.release());
+
+    while( ! bdl.done ) {
+        sleep(1);
+    }
+
+    BOOST_REQUIRE( ! bdl.error );
+
+    // Sort out all the components:
+    std::deque< T<Song>::shared_ptr > songs;
+    std::deque< T<Pattern>::shared_ptr > patterns;
+    std::deque< T<Instrument>::shared_ptr > instruments;
+    std::deque< T<LadspaFX>::shared_ptr > effects;
+
+    while( ! bdl.empty() ) {
+        switch(bdl.peek_type()) {
+        case ObjectItem::Song_t:
+            songs.push_back( bdl.pop<Song>() );
+            break;
+        case ObjectItem::Pattern_t:
+            patterns.push_back( bdl.pop<Pattern>() );
+            break;
+        case ObjectItem::Instrument_t:
+            instruments.push_back( bdl.pop<Instrument>() );
+            break;
+        case ObjectItem::LadspaFX_t:
+            effects.push_back( bdl.pop<LadspaFX>() );
+            break;
+        default:
+            CK(false); // should not reach this.
+        }
+    }
+
+    CK( songs.size() == 0 );
+    CK( patterns.size() == 1 );
+    CK( instruments.size() == 0 );
+    CK( effects.size() == 0 );
+
+    /********************************************
+     * Pattern Object
+     ********************************************
+     */
+    BOOST_ERROR("Not done, yet.");
 }
 
 TEST_CASE( 030_load_drumkit_check_drumkit )
