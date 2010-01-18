@@ -21,6 +21,9 @@ need are here:
 
     http://gabe.is-a-geek.org/composite/
 
+Also look in the Documentation/ sub-directory for documentation on the
+application design and various sub-systems.
+
 1. VERSIONS
 -----------
 
