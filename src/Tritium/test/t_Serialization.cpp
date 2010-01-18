@@ -40,6 +40,7 @@
 #include <Tritium/Preferences.hpp>
 #include <Tritium/fx/Effects.hpp>
 #include <Tritium/fx/LadspaFX.hpp>
+#include <Tritium/Note.hpp>
 #include <Tritium/ADSR.hpp>
 #include <cstdio>
 #include <deque>
@@ -439,7 +440,136 @@ TEST_CASE( 020_load_pattern_check_pattern )
      * Pattern Object
      ********************************************
      */
-    BOOST_ERROR("Not done, yet.");
+    T<Pattern>::shared_ptr pat = patterns.front();
+
+    CK(pat->get_length() == 192);
+    CK(pat->get_name() == "floor-tom");
+    CK(pat->get_category() == "" );
+
+    // Not going to validate the entire file...
+    // just a few specific beats @ 0, 72, 84,
+    // 168, and 192.
+    typedef Pattern::note_map_t::iterator iter_t;
+    std::pair<iter_t, iter_t> range;
+    iter_t it;
+    int ctr;
+    InstrumentList *i_list = engine->getSong()->get_instrument_list();
+
+    range = pat->note_map.equal_range(0);
+    ctr = 0;
+    for(it=range.first ; it!=range.second ; ++it) {
+	++ctr;
+	Note *N = it->second;
+	T<Instrument>::shared_ptr inst = N->get_instrument();
+	if(inst == i_list->get(0)) {
+	    CK(N->get_velocity() == 0.8f);
+	    CK(N->get_leadlag() == 0.0f);
+	    CK(N->get_pan_l() == 0.5f);
+	    CK(N->get_pan_r() == 0.5f);
+	    CK(N->get_pitch() == 0.0f);
+	    CK(Note::keyToString(N->m_noteKey) == "C0");
+	    CK(N->get_length() == -1);
+	} else if (inst == i_list->get(5)) {
+	    CK(N->get_velocity() == 0.71f);
+	    CK(N->get_leadlag() == 0.0f);
+	    CK(N->get_pan_l() == 0.5f);
+	    CK(N->get_pan_r() == 0.5f);
+	    CK(N->get_pitch() == 0.0f);
+	    CK(Note::keyToString(N->m_noteKey) == "C0");
+	    CK(N->get_length() == -1);
+	} else if (inst == i_list->get(13)) {
+	    CK(N->get_velocity() == 0.8f);
+	    CK(N->get_leadlag() == 0.0f);
+	    CK(N->get_pan_l() == 0.5f);
+	    CK(N->get_pan_r() == 0.5f);
+	    CK(N->get_pitch() == 0.0f);
+	    CK(Note::keyToString(N->m_noteKey) == "C0");
+	    CK(N->get_length() == -1);
+	} else {
+	    BOOST_ERROR("Pattern references invalid instrument");
+	}
+    }
+    CK(ctr == 3);
+
+    range = pat->note_map.equal_range(72);
+    ctr = 0;
+    for(it=range.first ; it!=range.second ; ++it) {
+	++ctr;
+	Note *N = it->second;
+	T<Instrument>::shared_ptr inst = N->get_instrument();
+	if(inst == i_list->get(5)) {
+	    CK(N->get_velocity() == 0.3f);
+	    CK(N->get_leadlag() == 0.0f);
+	    CK(N->get_pan_l() == 0.5f);
+	    CK(N->get_pan_r() == 0.5f);
+	    CK(N->get_pitch() == 0.0f);
+	    CK(Note::keyToString(N->m_noteKey) == "C0");
+	    CK(N->get_length() == -1);
+	} else if (inst == i_list->get(8)) {
+	    CK(N->get_velocity() == 0.46f);
+	    CK(N->get_leadlag() == 0.0f);
+	    CK(N->get_pan_l() == 0.5f);
+	    CK(N->get_pan_r() == 0.5f);
+	    CK(N->get_pitch() == 0.0f);
+	    CK(Note::keyToString(N->m_noteKey) == "C0");
+	    CK(N->get_length() == -1);
+	} else {
+	    BOOST_ERROR("Pattern references invalid instrument");
+	}
+    }
+    CK(ctr == 2);
+
+    range = pat->note_map.equal_range(84);
+    ctr = 0;
+    for(it=range.first ; it!=range.second ; ++it) {
+	++ctr;
+	Note *N = it->second;
+	T<Instrument>::shared_ptr inst = N->get_instrument();
+	if(inst == i_list->get(7)) {
+	    CK(N->get_velocity() == 0.5f);
+	    CK(N->get_leadlag() == 0.0f);
+	    CK(N->get_pan_l() == 0.5f);
+	    CK(N->get_pan_r() == 0.5f);
+	    CK(N->get_pitch() == 0.0f);
+	    CK(Note::keyToString(N->m_noteKey) == "C0");
+	    CK(N->get_length() == -1);
+	    BOOST_ERROR("Pattern references invalid instrument");
+	}
+    }
+    CK(ctr == 1);
+
+    range = pat->note_map.equal_range(168);
+    ctr = 0;
+    for(it=range.first ; it!=range.second ; ++it) {
+	++ctr;
+	Note *N = it->second;
+	T<Instrument>::shared_ptr inst = N->get_instrument();
+	if(inst == i_list->get(5)) {
+	    CK(N->get_velocity() == 0.8f);
+	    CK(N->get_leadlag() == 0.0f);
+	    CK(N->get_pan_l() == 0.5f);
+	    CK(N->get_pan_r() == 0.5f);
+	    CK(N->get_pitch() == 0.0f);
+	    CK(Note::keyToString(N->m_noteKey) == "C0");
+	    CK(N->get_length() == -1);
+	} else if (inst == i_list->get(8)) {
+	    CK(N->get_velocity() == 0.54f);
+	    CK(N->get_leadlag() == 0.0f);
+	    CK(N->get_pan_l() == 0.5f);
+	    CK(N->get_pan_r() == 0.5f);
+	    CK(N->get_pitch() == 0.0f);
+	    CK(Note::keyToString(N->m_noteKey) == "C0");
+	    CK(N->get_length() == -1);
+	} else {
+	    BOOST_ERROR("Pattern references invalid instrument");
+	}
+    }
+    CK(ctr == 2);
+
+    // There should be nothing @ 192.
+    range = pat->note_map.equal_range(192);
+    CK(range.first == range.second);
+
 }
 
 TEST_CASE( 030_load_drumkit_check_drumkit )
