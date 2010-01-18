@@ -1,0 +1,128 @@
+COMPOSITE/HYDROGEN XML SCHEMA DOCUMENTATION
+============================================================
+
+REVISIONS:
+
+2010-01-18 Gabriel M. Beddingfield <gabriel@teuton.org>
+	- Create document with XML info
+
+ABSTRACT
+--------
+
+All of Composite/Hydrogen's serialization (file save/restore) uses XML
+to mark-up the data.  This schema is not documented in any DTD or XML
+schema grammer (XSD, RelaxNG, etc.), however it is fairly
+self-documenting.  This document does not so much document the schema
+as it documents weird things in the schema that are not obvious.
+
+TODO: Create an XML Schema.  IIRC, Qt is expected to have an XSD
+validator in a future release (e.g. 4.6).
+
+XML DECLARATION
+---------------
+
+Prior to Hydrogen 0.9.4, the XML parser used was TinyXML.  By default,
+Hydrogen did not put the XML declaration at the top of the file
+(i.e. "<?xml version='1.0' encoding='UTF-8' ?>").  In addition,
+non-ASCII characters were put into the document in a repeatable, but
+non-standard encoding.  See the documentation for
+LocalFileMng::convertFromTinyXMLString()
+(src/Tritum/src/LocalFileMng.cpp) for details on what was happening
+with this.
+
+For Hydrogen 0.9.4, the code began using Qt's XML parser.  It was
+decided that all files with an XML Declaration would be considered Qt
+XML-parsed (and thus striings were encoded in a standard codec).  If
+the file was missing the XML Declaration, it was considered to use
+TinyXML's non-standard codec... and the strings are transcoded.
+
+PATTERNS
+--------
+
+The schema for Patterns is different depending on if it happens inside
+a song (.h2song) or if it happens in a pattern (.h2pattern).  This can
+generally be detected by the existence / non-existence of the required
+elements.  TODO: In the future, this schema needs to be cleaned up so
+that a <pattern> element is interchangeable between a Song and Pattern
+file.
+
+Here are the types of patterns:
+
+    .h2song <pattern> (Pre-0.9.4)
+    -----------------------------
+
+    This ill typically be the child of a <patternList> and have the
+    following grammar.  This wraps each <noteList> inside a
+    <sequence>... which is also contained in a <sequenceList>.  There
+    are typically 32 <sequence>'s inside a <sequenceList>, implying
+    the instrument that the notes reference.  However, the <note> node
+    also has an <instrument> node.
+
+    <pattern>
+      <name>Pattern Name</name>
+      <size>192</size>
+      <sequenceList>
+        <sequence>
+          <noteList>
+            <note>
+              <position>0</position>
+              <!-- etc -->
+            </note>
+          </noteList>
+        </sequence>
+      <sequenceList>
+    </pattern>
+
+    .h2song Pattern (>=0.9.4)
+    -------------------------
+
+    It was realized that the <sequenceList> was a redundant container,
+    and removed.  This changed the grammar to:
+
+    <pattern>
+      <name>Pattern Name</name>
+      <size>192</size>
+      <noteList>
+        <note>
+          <position>0</position>
+          <!-- etc -->
+        </note>
+      </noteList>
+    </pattern>
+
+    There is no set number of <noteList>'s.
+
+    .h2pattern Pattern
+    ------------------
+
+    Very similar to the on inside a song, except that <name> is now
+    <pattern_name>, and the <pattern> node may also contain a
+    <category> node (for tagging the pattern).  There should only be
+    ONE <pattern> element inside the entire .h2pattern file.  As of
+    this writing (Composite 0.003), the code ignores any extra
+    <pattern> nodes.
+
+    <pattern>
+      <pattern_name>floor-tom</pattern_name>
+      <category></category>
+      <size>192</size>
+      <noteList>
+        <note>
+          <position>0</position>
+          <leadlag>0</leadlag>
+          <velocity>0.8</velocity>
+          <pan_L>0.5</pan_L>
+          <pan_R>0.5</pan_R>
+          <pitch>0</pitch>
+          <key>C0</key>
+          <length>-1</length>
+          <instrument>0</instrument>
+        </note>
+        <!-- etc -->
+      </noteList>
+      <noteList>
+        <!-- etc -->
+      </noteList>
+    </pattern>
+
+[EOF]
