@@ -711,10 +711,13 @@ T<Pattern>::shared_ptr SerializationQueue::handle_load_pattern_node(
     const deque< T<Instrument>::shared_ptr >& insts,
     QStringList& errors)
 {
+    // There are 3 different <pattern> schemas.  This is a
+    // switch to choose the correct one.  See Documentation/Xml_Schemas.txt
     QDomNode test = pat_node.firstChildElement("noteList");
     if( test.isNull() ) {
         return handle_load_pattern_node_pre094(pat_node, insts, errors);
     } else {
+        // Handles both .h2song and .h2pattern
         return handle_load_pattern_node_094(pat_node, insts, errors);
     }
 }
@@ -798,8 +801,14 @@ T<Pattern>::shared_ptr SerializationQueue::handle_load_pattern_node_094(
 {
     T<Pattern>::shared_ptr pPattern;
 
+    QDomNode test;
     QString sName;      // name
-    sName = LocalFileMng::readXmlString( pat_node, "name", sName );
+    test = pat_node.firstChildElement("name");
+    if( ! test.isNull() ) {
+        sName = LocalFileMng::readXmlString( pat_node, "name", sName );
+    } else {
+        sName = LocalFileMng::readXmlString( pat_node, "pattern_name", sName );
+    }
 
     QString sCategory = ""; // category
     sCategory = LocalFileMng::readXmlString( pat_node, "category", sCategory );

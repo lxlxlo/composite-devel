@@ -533,6 +533,7 @@ TEST_CASE( 020_load_pattern_check_pattern )
 	    CK(N->get_pitch() == 0.0f);
 	    CK(Note::keyToString(N->m_noteKey) == "C0");
 	    CK(N->get_length() == -1);
+	} else {
 	    BOOST_ERROR("Pattern references invalid instrument");
 	}
     }
