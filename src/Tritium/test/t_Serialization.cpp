@@ -384,8 +384,6 @@ TEST_CASE( 020_load_pattern_check_pattern )
 {
     SyncBundle bdl;
 
-    s->load_file(pattern_file_name, bdl, engine.get());
-
     // Set up some fake instruments
     T<InstrumentList>::auto_ptr inst_list( new InstrumentList );
     int k;
@@ -400,6 +398,8 @@ TEST_CASE( 020_load_pattern_check_pattern )
 	inst_list->add(i);
     }
     engine->getSong()->set_instrument_list(inst_list.release());
+
+    s->load_file(pattern_file_name, bdl, engine.get());
 
     while( ! bdl.done ) {
         sleep(1);

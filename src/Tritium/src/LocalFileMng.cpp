@@ -38,6 +38,8 @@
 #include <Tritium/Song.hpp>
 #include <Tritium/SoundLibrary.hpp>
 #include <Tritium/Sample.hpp>
+#include <Tritium/ObjectBundle.hpp>
+#include <Tritium/Serialization.hpp>
 #include <Tritium/fx/Effects.hpp>
 #include <Tritium/memory.hpp>
 
@@ -58,13 +60,24 @@
 //#include <cstdio>
 //#include <vector>
 
+using namespace Tritium::Serialization;
+
 namespace Tritium
 {
+    // class for synchronously loading/saving files
+    // using the asynchronous Serializer.
+    class SyncBundle : public ObjectBundle
+    {
+    public:
+        bool done;
+
+        SyncBundle() : done(false) {}
+        void operator()() { done = true; }
+    };
 
     LocalFileMng::LocalFileMng(Engine* parent) :
         m_engine(parent)
     {
-//      infoLog("INIT");
         assert(parent);
     }
 
@@ -72,7 +85,6 @@ namespace Tritium
 
     LocalFileMng::~LocalFileMng()
     {
-//      infoLog("DESTROY");
     }
 
     QString LocalFileMng::getDrumkitNameForPattern( const QString& patternDir )
@@ -124,83 +136,40 @@ namespace Tritium
     }
 
 
-    T<Pattern>::shared_ptr LocalFileMng::loadPattern( const QString& directory )
+    T<Pattern>::shared_ptr LocalFileMng::loadPattern( const QString& filename )
     {
-        InstrumentList* instrList = m_engine->getSong()->get_instrument_list();
-        T<Pattern>::shared_ptr pPattern;
-        QString patternInfoFile = directory;
+	T<Serializer>::auto_ptr serializer;
+	SyncBundle bdl;
 
-        QFile check( patternInfoFile );
-        if (check.exists() == false) {
-            ERRORLOG( QString("Load Pattern: Data file %1 not found." ).arg( patternInfoFile ) );
-            return pPattern; // empty
-        }
+	serializer.reset( Serializer::create_standalone(m_engine) );
+	serializer->load_file(filename, bdl, m_engine);
 
+	while( ! bdl.done ) {
+	    sleep(1);
+	}
 
-        QDomDocument doc  = LocalFileMng::openXmlDocument( patternInfoFile );
-        QFile file( patternInfoFile );
+	T<Pattern>::shared_ptr rv;
 
-        // root element
-        QDomNode rootNode = doc.firstChildElement( "drumkit_pattern" ); // root element
-        if (  rootNode.isNull() ) {
-            ERRORLOG( "Error reading Pattern: Pattern_drumkit_infonode not found" );
-            return pPattern; // empty
-        }
+	if( bdl.error ) {
+	    ERRORLOG(bdl.error_message);
+	    return rv;
+	}
 
-        QDomNode patternNode = rootNode.firstChildElement( "pattern" );
+	while( ! bdl.empty() ) {
+	    switch(bdl.peek_type()) {
+	    case ObjectItem::Pattern_t:
+		if( ! rv ) {
+		    rv = bdl.pop<Pattern>();
+		} else {
+		    ERRORLOG("Loading pattern returned more than one.");
+		}
+		break;
+	    default:
+		ERRORLOG("Loading pattern also loaded an unexpected type.");
+	    }
+	}
 
-        QString sName( LocalFileMng::readXmlString( patternNode,"pattern_name", "" ) );
-        QString sCategory( LocalFileMng::readXmlString( patternNode,"category", "" ) );
-
-        int nSize = -1;
-        nSize = LocalFileMng::readXmlInt( patternNode, "size",nSize ,false,false );
-        pPattern.reset( new Pattern( sName, sCategory, nSize ) );
-
-
-
-        QDomNode pNoteListNode = patternNode.firstChildElement( "noteList" );
-        if ( ! pNoteListNode.isNull() )
-        {
-            // new code  :)
-            QDomNode noteNode = pNoteListNode.firstChildElement( "note" );
-            while (  ! noteNode.isNull()  )
-            {
-                Note* pNote = NULL;
-                unsigned nPosition = LocalFileMng::readXmlInt( noteNode, "position", 0 );
-                float fLeadLag = LocalFileMng::readXmlFloat( noteNode, "leadlag", 0.0 , false , false);
-                float fVelocity = LocalFileMng::readXmlFloat( noteNode, "velocity", 0.8f );
-                float fPan_L = LocalFileMng::readXmlFloat( noteNode, "pan_L", 0.5 );
-                float fPan_R = LocalFileMng::readXmlFloat( noteNode, "pan_R", 0.5 );
-                int nLength = LocalFileMng::readXmlInt( noteNode, "length", -1, true );
-                float nPitch = LocalFileMng::readXmlFloat( noteNode, "pitch", 0.0, false, false );
-                QString sKey = LocalFileMng::readXmlString( noteNode, "key", "C0", false, false );
-
-                QString instrId = LocalFileMng::readXmlString( noteNode, "instrument", "" );
-
-                T<Instrument>::shared_ptr instrRef;
-                // search instrument by ref
-                for ( unsigned i = 0; i < instrList->get_size(); i++ ) {
-                    T<Instrument>::shared_ptr instr = instrList->get( i );
-                    if ( instrId == instr->get_id() ) {
-                        instrRef = instr;
-                        break;
-                    }
-                }
-                if ( !instrRef ) {
-                    ERRORLOG( QString( "Instrument with ID: '%1' not found. Note skipped." ).arg( instrId ) );
-                    noteNode = noteNode.nextSiblingElement( "note" );
-                    continue;
-                }
-                //assert( instrRef );
-
-                pNote = new Note( instrRef, fVelocity, fPan_L, fPan_R, nLength, nPitch, Note::stringToKey( sKey ) );
-                pNote->set_leadlag(fLeadLag);
-                pPattern->note_map.insert( std::make_pair( nPosition, pNote ) );
-                noteNode = noteNode.nextSiblingElement( "note" );
-            }
-        }
-
-        return pPattern;
+	return rv;
     }
 
 

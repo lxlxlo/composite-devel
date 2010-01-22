@@ -85,7 +85,7 @@ namespace Tritium
         T<Drumkit>::shared_ptr loadDrumkit( const QString& directory );
         int saveDrumkit( T<Drumkit>::shared_ptr pDrumkit );
 
-        T<Pattern>::shared_ptr loadPattern( const QString& directory );
+        T<Pattern>::shared_ptr loadPattern( const QString& filename );
         int savePattern( T<Song>::shared_ptr song,
                          int selectedpattern,
                          const QString& patternname,
