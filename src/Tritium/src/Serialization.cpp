@@ -40,6 +40,8 @@
 
 #include <QFile>
 #include <QtXml>
+#include <QFileInfo>
+#include <QDir>
 #include <cassert>
 
 using namespace Tritium;
@@ -330,7 +332,7 @@ void SerializationQueue::handle_load_song(SerializationQueue::event_data_t& ev)
 
     // LOAD INSTRUMENTS
     deque< T<Instrument>::shared_ptr > instrument_ra;
-    handle_load_instrumentlist_node(instrument_ra, instrumentList_node, errors);
+    handle_load_instrumentlist_node(instrument_ra, "-", instrumentList_node, errors);
 
     // LOAD PATTERNS
     deque< T<Pattern>::shared_ptr > pattern_ra;
@@ -410,7 +412,30 @@ void SerializationQueue::handle_load_drumkit(
     SerializationQueue::event_data_t& ev
     )
 {
+    // Path information
+    QFileInfo fn_info(ev.filename);
+    QString drumkit_dir = fn_info.absolutePath();
+
+    if( ! fn_info.exists() ) {
+        ERRORLOG( QString("Error loading %1 -- file not found.")
+                  .arg(fn_info.absoluteFilePath()) );
+        ev.report_load_to->error = true;
+        ev.report_load_to->error_message = "File not found.";
+        (*ev.report_load_to)();
+        return;
+    }
+
     QDomDocument drumkit_doc = LocalFileMng::openXmlDocument(ev.filename);
+
+    if( drumkit_doc.isNull() ) {
+        ERRORLOG( QString("Error loading %1 -- not an XML file.")
+                  .arg(fn_info.absoluteFilePath()) );
+        ev.report_load_to->error = true;
+        ev.report_load_to->error_message = "Not an XML file.";
+        (*ev.report_load_to)();
+        return;
+    }
+
     QDomElement drumkit_info_node = drumkit_doc.documentElement();
     QStringList errors;
 
@@ -435,7 +460,10 @@ void SerializationQueue::handle_load_drumkit(
         return;
     }
     deque< T<Instrument>::shared_ptr > instrument_ra;
-    handle_load_instrumentlist_node(instrument_ra, instrumentList_node, errors);
+    handle_load_instrumentlist_node(instrument_ra,
+				    drumkit_dir,
+				    instrumentList_node,
+				    errors);
 
     #warning "TODO: NEED TO HANDLE ERRORS"
     #warning "TODO: NEED TO VALIDATE OBJECTS"
@@ -545,6 +573,7 @@ T<Song>::shared_ptr SerializationQueue::handle_load_song_node(
 
 void SerializationQueue::handle_load_instrumentlist_node(
     deque< T<Instrument>::shared_ptr >& dest,
+    const QString& drumkit_path,
     QDomElement& instrumentList_node,
     QStringList& errors)
 {
@@ -552,7 +581,7 @@ void SerializationQueue::handle_load_instrumentlist_node(
     T<Instrument>::shared_ptr i;
     inst_node = instrumentList_node.firstChildElement("instrument");
     while( ! inst_node.isNull() ) {
-        i = handle_load_instrument_node(inst_node, errors);
+        i = handle_load_instrument_node(inst_node, drumkit_path, errors);
         if(i) dest.push_back(i);
         inst_node = inst_node.nextSiblingElement("instrument");
     }
@@ -560,6 +589,7 @@ void SerializationQueue::handle_load_instrumentlist_node(
 
 T<Instrument>::shared_ptr SerializationQueue::handle_load_instrument_node(
     QDomElement& instrumentNode,
+    const QString& drumkit_path,
     QStringList& errors)
 {
     QString sId = LocalFileMng::readXmlString( instrumentNode, "id", "" );                      // instrument id
@@ -619,7 +649,7 @@ T<Instrument>::shared_ptr SerializationQueue::handle_load_instrument_node(
 
     // Load the samples (layers)
     LocalFileMng localFileMng(m_engine);
-    QString drumkitPath;
+    QString drumkitPath = drumkit_path;
     if ( ( !sDrumkit.isEmpty() ) && ( sDrumkit != "-" ) ) {
         drumkitPath = localFileMng.getDrumkitDirectory( sDrumkit ) + sDrumkit;
     }

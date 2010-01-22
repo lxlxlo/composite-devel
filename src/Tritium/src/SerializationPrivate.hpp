@@ -131,11 +131,13 @@ namespace Tritium
 		);
 	    void handle_load_instrumentlist_node(
 		std::deque< T<Instrument>::shared_ptr >& dest,
+		const QString& drumkit_path,
 		QDomElement& inst_l_node,
 		QStringList& errors
 		);
 	    T<Instrument>::shared_ptr handle_load_instrument_node(
 		QDomElement& instrumentNode,
+		const QString& drumkit_path,
 		QStringList& errors
 		);
 	    void handle_load_patternlist_node(
