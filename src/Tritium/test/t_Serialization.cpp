@@ -70,6 +70,7 @@ namespace THIS_NAMESPACE
     const char temp_dir[] = "t_Serialization_tmp";
     const char song_file_name[] = TEST_DATA_DIR "/t_Serialization.h2song";
     const char pattern_file_name[] = TEST_DATA_DIR "/t_Serialization.h2pattern";
+    const char drumkit_manifest_file_name[] = TEST_DATA_DIR "/t_Serialization-drumkit/drumkit.xml";
 
     struct Fixture
     {
@@ -575,7 +576,97 @@ TEST_CASE( 020_load_pattern_check_pattern )
 
 TEST_CASE( 030_load_drumkit_check_drumkit )
 {
-    BOOST_ERROR("Need to write more tests");
+    SyncBundle bdl;
+
+    s->load_file(drumkit_manifest_file_name, bdl, engine.get());
+
+    while( ! bdl.done ) {
+        sleep(1);
+    }
+
+    BOOST_REQUIRE( ! bdl.error );
+
+    // Sort out all the components:
+    std::deque< T<Song>::shared_ptr > songs;
+    std::deque< T<Pattern>::shared_ptr > patterns;
+    std::deque< T<Instrument>::shared_ptr > instruments;
+    std::deque< T<LadspaFX>::shared_ptr > effects;
+
+    while( ! bdl.empty() ) {
+        switch(bdl.peek_type()) {
+        case ObjectItem::Song_t:
+            songs.push_back( bdl.pop<Song>() );
+            break;
+        case ObjectItem::Pattern_t:
+            patterns.push_back( bdl.pop<Pattern>() );
+            break;
+        case ObjectItem::Instrument_t:
+            instruments.push_back( bdl.pop<Instrument>() );
+            break;
+        case ObjectItem::LadspaFX_t:
+            effects.push_back( bdl.pop<LadspaFX>() );
+            break;
+        default:
+            CK(false); // should not reach this.
+        }
+    }
+
+    CK( songs.size() == 0 );
+    CK( patterns.size() == 0 );
+    CK( instruments.size() == 16 );
+    CK( effects.size() == 0 );
+
+    /********************************************
+     * Check instruments
+     ********************************************
+     */
+
+    // Checking 0, 7, 13, 15
+    BOOST_REQUIRE( instruments.size() == 16 );
+
+    T<Instrument>::shared_ptr inst;
+    InstrumentLayer *layer;
+
+    inst = instruments[0];
+    CK( inst->get_id() == "0" );
+    CK( inst->get_name() == "Kick" );
+    CK( inst->get_volume() == 1.0f );
+    CK( inst->is_muted() == false );
+    CK( inst->get_pan_l() == 1.0f );
+    CK( inst->get_pan_r() == 1.0f );
+    CK( inst->get_mute_group() == -1 );
+    layer = inst->get_layer(0);
+    BOOST_REQUIRE( layer != 0 );
+    CK( layer->get_sample()->get_filename().endsWith("kick_Dry_b.flac") );
+    CK( inst->get_layer(1) == 0 );
+
+    inst = instruments[7];
+    CK( inst->get_id() == "7" );
+    CK( inst->get_name() == "Tom Mid" );
+    CK( inst->get_volume() == 1.0f );
+    CK( inst->is_muted() == false );
+    CK( inst->get_pan_l() == 0.8f );
+    CK( inst->get_pan_r() == 1.0f );
+    CK( inst->get_mute_group() == -1 );
+
+    inst = instruments[13];
+    CK( inst->get_id() == "13" );
+    CK( inst->get_name() == "Crash" );
+    CK( inst->get_volume() == 0.69f );
+    CK( inst->is_muted() == false );
+    CK( inst->get_pan_l() == 1.0f );
+    CK( inst->get_pan_r() == 0.88f );
+    CK( inst->get_mute_group() == -1 );
+
+    inst = instruments[15];
+    CK( inst->get_id() == "15" );
+    CK( inst->get_name() == "Crash Jazz" );
+    CK( inst->get_volume() == 0.77f );
+    CK( inst->is_muted() == false );
+    CK( inst->get_pan_l() == 1.0f );
+    CK( inst->get_pan_r() == 0.78f );
+    CK( inst->get_mute_group() == -1 );
+
 }
 
 TEST_CASE( 040_save_song )
