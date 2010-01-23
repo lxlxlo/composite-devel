@@ -33,6 +33,7 @@
 #include <Tritium/Logger.hpp>
 #include <Tritium/Engine.hpp>
 
+#include <QFileInfo>
 #include <cassert>
 
 using namespace Tritium;
@@ -155,7 +156,11 @@ void Instrument::load_from_placeholder( Engine* engine, T<Instrument>::shared_pt
 	    T<Sample>::shared_ptr pNewSample = pNewLayer->get_sample();
 			
 	    // now we load the actal data:
-	    T<Sample>::shared_ptr pSample = Sample::load( path + pNewSample->get_filename() );
+	    QFileInfo samp_file( pNewSample->get_filename() );
+	    if( !samp_file.exists() ) {
+		samp_file.setFile( path + pNewSample->get_filename() );
+	    }
+	    T<Sample>::shared_ptr pSample = Sample::load( samp_file.absoluteFilePath() );
 	    InstrumentLayer *pOldLayer = this->get_layer( nLayer );
 
 	    if ( pSample == NULL ) {
