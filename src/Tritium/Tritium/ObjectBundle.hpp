@@ -43,6 +43,7 @@ namespace Tritium
 	    Pattern_t,
 	    Instrument_t,
 	    LadspaFX_t,
+	    Drumkit_t,
 	    _Reserved = 0xFF
 	} object_t;
 
@@ -128,7 +129,10 @@ namespace Tritium
 	    ObjectItem tmp = {ObjectItem::LadspaFX_t, T<void>::shared_ptr(obj)};
 	    objects.push_back(tmp);
 	}
-
+	void push(T<Drumkit>::shared_ptr obj) {
+	    ObjectItem tmp = {ObjectItem::Drumkit_t, T<void>::shared_ptr(obj)};
+	    objects.push_back(tmp);
+	}
 	/* Helper methods (access)
 	 */
 	bool empty() {

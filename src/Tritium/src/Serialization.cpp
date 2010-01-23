@@ -32,6 +32,7 @@
 #include <Tritium/Engine.hpp>
 #include <Tritium/Sample.hpp>
 #include <Tritium/Note.hpp>
+#include <Tritium/SoundLibrary.hpp>
 #include <Tritium/fx/Effects.hpp>
 #include <Tritium/memory.hpp>
 #include "version.h"
@@ -447,6 +448,19 @@ void SerializationQueue::handle_load_drumkit(
         (*ev.report_load_to)();
         return;
     }
+    // TODO: Do this with a handle_load_drumkit_info_node
+    // instead of inlining it like this
+    T<Drumkit>::shared_ptr drumkit(new Drumkit);
+    QString dk_name = LocalFileMng::readXmlString(drumkit_info_node, "name", "");
+    QString dk_author = LocalFileMng::readXmlString(drumkit_info_node, "author", "");
+    QString dk_info = LocalFileMng::readXmlString(drumkit_info_node, "info", "");
+    QString dk_license = LocalFileMng::readXmlString(drumkit_info_node, "license", "");
+
+    drumkit->setName( dk_name );
+    drumkit->setAuthor( dk_author );
+    drumkit->setInfo( dk_info );
+    drumkit->setLicense( dk_license );
+
     QDomElement instrumentList_node =
         drumkit_info_node.firstChildElement("instrumentList");
     if( instrumentList_node.isNull() ) {
@@ -475,6 +489,7 @@ void SerializationQueue::handle_load_drumkit(
 
     ObjectBundle& bdl = (*ev.report_load_to);
 
+    bdl.push( drumkit );
     deque< T<Instrument>::shared_ptr >::iterator i_it;
     for(i_it = instrument_ra.begin() ; i_it != instrument_ra.end() ; ++i_it ) {
         bdl.push( *i_it );

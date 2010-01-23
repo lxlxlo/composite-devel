@@ -594,158 +594,53 @@ namespace Tritium
         return "";      // FIXME
     }
 
-
-
-/// Restituisce un oggetto DrumkitInfo.
-/// Gli strumenti non hanno dei veri propri sample,
-/// viene utilizzato solo il campo filename.
     T<Drumkit>::shared_ptr LocalFileMng::loadDrumkit( const QString& directory )
     {
-        //INFOLOG( directory );
-
-        // che if the drumkit.xml file exists
 
         QString drumkitInfoFile = directory + "/drumkit.xml";
-        QFileInfo fInfo( directory );
 
-        if( fInfo.isFile() )
-            return T<Drumkit>::shared_ptr();
+	T<Serializer>::auto_ptr serializer;
+	SyncBundle bdl;
 
-        if ( QFile( drumkitInfoFile ).exists() == false ) {
-            ERRORLOG( "Load Instrument: Data file " + drumkitInfoFile + " not found." );
-            return T<Drumkit>::shared_ptr();
-        }
+	serializer.reset( Serializer::create_standalone(m_engine) );
+	serializer->load_file(drumkitInfoFile, bdl, m_engine);
 
-        QDomDocument doc  = LocalFileMng::openXmlDocument( drumkitInfoFile );
+	while( ! bdl.done ) {
+	    sleep(1);
+	}
 
-        // root element
-        QDomNode drumkitNode = doc.firstChildElement( "drumkit_info" ); // root element
-        if ( drumkitNode.isNull() ) {
-            ERRORLOG( "Error reading drumkit: drumkit_info node not found" );
-            return T<Drumkit>::shared_ptr();
-        }
+	T<Drumkit>::shared_ptr rv;
 
-        // Name
-        QString sDrumkitName = readXmlString( drumkitNode, "name", "" );
-        if ( sDrumkitName.isEmpty() ) {
-            ERRORLOG( "Error reading drumkit: name node not found" );
-            return T<Drumkit>::shared_ptr();
-        }
+	if( bdl.error ) {
+	    ERRORLOG(bdl.error_message);
+	    return rv;
+	}
 
-        QString author = readXmlString( drumkitNode, "author", "undefined author", true );
-        QString info = readXmlString( drumkitNode, "info", "defaultInfo", true );
-        QString license = readXmlString( drumkitNode, "license", "undefined license", true );
+	T<InstrumentList>::auto_ptr inst_list(new InstrumentList);
 
-        T<Drumkit>::shared_ptr drumkitInfo( new Drumkit() );
-        drumkitInfo->setName( sDrumkitName );
-        drumkitInfo->setAuthor( author );
-        drumkitInfo->setInfo( info );
-        drumkitInfo->setLicense( license );
+	while( ! bdl.empty() ) {
+	    switch(bdl.peek_type()) {
+	    case ObjectItem::Drumkit_t:
+		if( ! rv ) {
+		    rv = bdl.pop<Drumkit>();
+		} else {
+		    ERRORLOG("Loading drumkit returned more than one.");
+		}
+	    case ObjectItem::Instrument_t:
+		inst_list->add( bdl.pop<Instrument>() );
+		break;
+	    default:
+		ERRORLOG("Loading pattern also loaded an unexpected type.");
+	    }
+	}
 
-        InstrumentList *instrumentList = new InstrumentList();
+	if( ! rv ) {
+	    ERRORLOG("A drumkit object was not returned.");
+	} else {
+	    rv->setInstrumentList(inst_list.release());
+	}
 
-        QDomNode instrumentListNode = drumkitNode.firstChildElement( "instrumentList" );
-        if ( ! instrumentListNode.isNull() ) {
-            // INSTRUMENT NODE
-            int instrumentList_count = 0;
-            QDomNode instrumentNode = instrumentListNode.firstChildElement( "instrument" );
-            while (! instrumentNode.isNull()  ) {
-                instrumentList_count++;
-                if ( instrumentList_count > MAX_INSTRUMENTS ) {
-                    ERRORLOG( "Instrument count >= MAX_INSTRUMENTS. Drumkit: " + drumkitInfo->getName() );
-                    break;
-                }
-
-                QString id = readXmlString( instrumentNode, "id", "" );
-                QString name = readXmlString( instrumentNode, "name", "" );
-
-                float volume = readXmlFloat( instrumentNode, "volume", 1.0f );
-                bool isMuted = readXmlBool( instrumentNode, "isMuted", false );
-                float pan_L = readXmlFloat( instrumentNode, "pan_L", 1.0f );
-                float pan_R = readXmlFloat( instrumentNode, "pan_R", 1.0f );
-                bool bFilterActive = readXmlBool( instrumentNode, "filterActive", false, false );
-                float fFilterCutoff = readXmlFloat( instrumentNode, "filterCutoff", 1.0f, false, false );
-                float fFilterResonance = readXmlFloat( instrumentNode, "filterResonance", 0.0f, false, false );
-                float fRandomPitchFactor = readXmlFloat( instrumentNode, "randomPitchFactor", 0.0f, false, false );
-                float fAttack = LocalFileMng::readXmlFloat( instrumentNode, "Attack", 0, false, false );                // Attack
-                float fDecay = LocalFileMng::readXmlFloat( instrumentNode, "Decay", 0, false, false  );         // Decay
-                float fSustain = LocalFileMng::readXmlFloat( instrumentNode, "Sustain", 1.0, false, false );    // Sustain
-                float fRelease = LocalFileMng::readXmlFloat( instrumentNode, "Release", 1000, false, false );   // Release
-                float fGain = readXmlFloat( instrumentNode, "gain", 1.0f, false, false );
-                QString sMuteGroup = readXmlString( instrumentNode, "muteGroup", "-1", false, false );
-                int nMuteGroup = sMuteGroup.toInt();
-
-                // some sanity checks
-                if ( id.isEmpty() ) {
-                    ERRORLOG( "Empty ID for instrument. The drumkit '" + sDrumkitName + "' is corrupted. Skipping instrument '" + name + "'" );
-                    instrumentNode = instrumentNode.nextSiblingElement( "instrument" );
-                    continue;
-                }
-
-                T<Instrument>::shared_ptr pInstrument( new Instrument( id, name, new ADSR() ) );
-                pInstrument->set_volume( volume );
-
-
-                // back compatibility code
-                QDomNode filenameNode = instrumentNode.firstChildElement( "filename" );
-
-                if ( ! filenameNode.isNull() ) {
-                    //warningLog( "Using back compatibility code. filename node found" );
-                    QString sFilename = LocalFileMng::readXmlString( instrumentNode, "filename", "" );
-                    T<Sample>::shared_ptr pSample( new Sample( 0, sFilename, 0 ) );
-                    InstrumentLayer *pLayer = new InstrumentLayer( pSample );
-                    pInstrument->set_layer( pLayer, 0 );
-                }
-                //~ back compatibility code
-                else {
-                    unsigned nLayer = 0;
-                    QDomNode layerNode = instrumentNode.firstChildElement( "layer" );
-                    while ( !layerNode.isNull() ) {
-                        if ( nLayer >= MAX_LAYERS ) {
-                            ERRORLOG( "nLayer > MAX_LAYERS" );
-                            layerNode = layerNode.nextSiblingElement( "layer" );
-                            continue;
-                        }
-                        QString sFilename = LocalFileMng::readXmlString( layerNode, "filename", "" );
-                        float fMin = LocalFileMng::readXmlFloat( layerNode, "min", 0.0 );
-                        float fMax = LocalFileMng::readXmlFloat( layerNode, "max", 1.0 );
-                        float fGain = LocalFileMng::readXmlFloat( layerNode, "gain", 1.0, false, false );
-                        float fPitch = LocalFileMng::readXmlFloat( layerNode, "pitch", 0.0, false, false );
-
-                        T<Sample>::shared_ptr pSample( new Sample( 0, sFilename, 0 ) );
-                        InstrumentLayer *pLayer = new InstrumentLayer( pSample );
-                        pLayer->set_velocity_range( fMin, fMax );
-                        pLayer->set_gain( fGain );
-                        pLayer->set_pitch( fPitch );
-                        pInstrument->set_layer( pLayer, nLayer );
-
-                        nLayer++;
-
-                        layerNode = layerNode.nextSiblingElement( "layer" );
-                    }
-                }
-
-                pInstrument->set_filter_active( bFilterActive );
-                pInstrument->set_filter_cutoff( fFilterCutoff );
-                pInstrument->set_filter_resonance( fFilterResonance );
-                pInstrument->set_muted( isMuted );
-                pInstrument->set_pan_l( pan_L );
-                pInstrument->set_pan_r( pan_R );
-                pInstrument->set_random_pitch_factor( fRandomPitchFactor );
-                pInstrument->set_drumkit_name( drumkitInfo->getName() );
-                pInstrument->set_gain( fGain );
-                pInstrument->set_mute_group( nMuteGroup );
-
-                pInstrument->set_adsr( new ADSR( fAttack, fDecay, fSustain, fRelease ) );
-                instrumentList->add( pInstrument );
-                instrumentNode = instrumentNode.nextSiblingElement( "instrument" );
-            }
-        } else {
-            WARNINGLOG( "Error reading drumkit: instrumentList node not found" );
-        }
-        drumkitInfo->setInstrumentList( instrumentList );
-
-        return drumkitInfo;
+	return rv;
     }
 
 
