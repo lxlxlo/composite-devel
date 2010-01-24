@@ -264,8 +264,6 @@ int JackOutput::init( unsigned /*nBufferSize*/ )
 	*/
 	jack_on_shutdown ( client, jackDriverShutdown, ((void*)&m_jack_client) );
 
-	m_jack_client->activate();
-
 	/* create two ports */
 	output_port_1 = jack_port_register ( client, "out_L", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0 );
 	output_port_2 = jack_port_register ( client, "out_R", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0 );
