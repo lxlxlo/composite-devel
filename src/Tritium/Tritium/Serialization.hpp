@@ -68,6 +68,7 @@ namespace Tritium
 				      bool overwrite = false) = 0;
 	    virtual void save_pattern(const QString& filename,
 				      T<Pattern>::shared_ptr pattern,
+				      QString drumkit_name,
 				      SaveReport& report_to,
 				      Engine *engine,
 				      bool overwrite = false) = 0;
@@ -126,8 +127,8 @@ namespace Tritium
 
 	    virtual ~SaveReport() {}
 	    virtual void operator()() = 0;
-	    const QString filename;
-	    const QString message;
+	    QString filename;
+	    QString message;
 	    status_t status;
 	};
 

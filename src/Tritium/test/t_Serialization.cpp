@@ -43,6 +43,7 @@
 #include <Tritium/Note.hpp>
 #include <Tritium/ADSR.hpp>
 #include <cstdio>
+#include <cstdlib>
 #include <deque>
 #include <QString>
 #include <sys/stat.h> // for mkdir()
@@ -65,6 +66,15 @@ namespace THIS_NAMESPACE
 
         SyncBundle() : done(false) {}
         void operator()() { done = true; }
+    };
+
+    class SyncSaveReport : public SaveReport
+    {
+    public:
+	bool done;
+
+	SyncSaveReport() : done(false) {}
+	void operator()() { done = true; }
     };
 
     const char temp_dir[] = "t_Serialization_tmp";
@@ -607,7 +617,7 @@ TEST_CASE( 030_load_drumkit_check_drumkit )
             effects.push_back( bdl.pop<LadspaFX>() );
             break;
         default:
-            CK(false); // should not reach this.
+            BOOST_REQUIRE(false); // should not reach this.
         }
     }
 
@@ -676,7 +686,104 @@ TEST_CASE( 040_save_song )
 
 TEST_CASE( 050_save_pattern )
 {
-    BOOST_ERROR("Need to write more tests");
+    // Will load an existing pattern... and then save it.
+
+    SyncBundle bdl;
+
+    // Set up some fake instruments
+    T<InstrumentList>::auto_ptr inst_list( new InstrumentList );
+    int k;
+    for( k=0 ; k<32 ; ++k ) {
+	T<Instrument>::shared_ptr i(
+	    new Instrument(
+		QString::number(k),
+		QString::number(k),
+		new ADSR
+		)
+	    );
+	inst_list->add(i);
+    }
+    engine->getSong()->set_instrument_list(inst_list.release());
+
+    s->load_file(pattern_file_name, bdl, engine.get());
+
+    while( ! bdl.done ) {
+        sleep(1);
+    }
+
+    BOOST_REQUIRE( ! bdl.error );
+
+    // Sort out all the components:
+    std::deque< T<Song>::shared_ptr > songs;
+    std::deque< T<Pattern>::shared_ptr > patterns;
+    std::deque< T<Instrument>::shared_ptr > instruments;
+    std::deque< T<LadspaFX>::shared_ptr > effects;
+
+    while( ! bdl.empty() ) {
+        switch(bdl.peek_type()) {
+        case ObjectItem::Song_t:
+            songs.push_back( bdl.pop<Song>() );
+            break;
+        case ObjectItem::Pattern_t:
+            patterns.push_back( bdl.pop<Pattern>() );
+            break;
+        case ObjectItem::Instrument_t:
+            instruments.push_back( bdl.pop<Instrument>() );
+            break;
+        case ObjectItem::LadspaFX_t:
+            effects.push_back( bdl.pop<LadspaFX>() );
+            break;
+        default:
+            CK(false); // should not reach this.
+        }
+    }
+
+    CK( songs.size() == 0 );
+    CK( patterns.size() == 1 );
+    CK( instruments.size() == 0 );
+    CK( effects.size() == 0 );
+
+    SyncSaveReport ssr;
+    QString save_pattern_file_name = QString("%1/pat.h2pattern")
+	.arg(temp_dir);
+    s->save_pattern( save_pattern_file_name,
+		     patterns.front(),
+		     "GMkit",
+		     ssr,
+		     engine.get(),
+		     false );
+
+    while( ! ssr.done ) {
+	sleep(1);
+    }
+
+    BOOST_REQUIRE(ssr.status == SaveReport::SaveSuccess);
+
+    /**
+     * There is a limitation in boost unit test.  Whenver we make a
+     * call to system(), the execution monitor will segfault if the
+     * return value is non-zero because we receive a SIGCHLD.  This
+     * can be disabled by setting the environment variable
+     * BOOST_TEST_CATCH_SYSTEM_ERRORS to "no" before running the test.
+     *
+     * The library currently plans to add BOOST_TEST_IGNORE_SIGCHLD
+     * environment variable.  I know of no programmatic solutions.  I
+     * tried setting the environment variable on-the-fly... but it has
+     * to be avail. for the start-up code.
+     *
+     * References:
+     * - Boost Test documentation on the Program Execution Monitor
+     * - http://lists.boost.org/boost-users/2008/09/40603.php
+     * - http://lists.boost.org/boost-users/2009/05/48043.php
+     */
+
+    #warning "TODO If this test fails, Boost might segfault."
+    QString check_cmd = QString("diff -w \"%1\" \"%2\"")
+	.arg(pattern_file_name)
+	.arg(save_pattern_file_name);
+    int rv = system(check_cmd.toLocal8Bit());
+    CK(rv == 0);
+    ::remove(save_pattern_file_name.toLocal8Bit());
 }
 
 TEST_CASE( 060_save_drumkit )

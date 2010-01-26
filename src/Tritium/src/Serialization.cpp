@@ -100,11 +100,12 @@ void SerializerImpl::save_drumkit(const QString& filename,
 
 void SerializerImpl::save_pattern(const QString& filename,
                                   T<Pattern>::shared_ptr pattern,
+				  QString drumkit_name,
                                   SaveReport& report_to,
                                   Engine* engine,
                                   bool overwrite)
 {
-    m_queue->save_pattern(filename, pattern, report_to, engine, overwrite);
+    m_queue->save_pattern(filename, pattern, drumkit_name, report_to, engine, overwrite);
 }
 
 /*********************************************************************
@@ -177,6 +178,7 @@ void SerializationQueue::save_song(const QString& filename,
     event.engine = engine;
     event.song = song;
     event.overwrite = overwrite;
+    m_queue.push_back(event);
 }
 
 void SerializationQueue::save_drumkit(const QString& filename,
@@ -192,10 +194,12 @@ void SerializationQueue::save_drumkit(const QString& filename,
     event.engine = engine;
     event.drumkit = dk;
     event.overwrite = overwrite;
+    m_queue.push_back(event);
 }
 
 void SerializationQueue::save_pattern(const QString& filename,
                                       T<Pattern>::shared_ptr pattern,
+				      QString drumkit_name,
                                       SaveReport& report_t,
                                       Engine *engine,
                                       bool overwrite)
@@ -203,10 +207,12 @@ void SerializationQueue::save_pattern(const QString& filename,
     event_data_t event;
     event.ev = SavePattern;
     event.filename = filename;
+    event.drumkit_name = drumkit_name;
     event.report_save_to = &report_t;
     event.engine = engine;
     event.pattern = pattern;
     event.overwrite = overwrite;
+    m_queue.push_back(event);
 }
 
 int SerializationQueue::process()
@@ -273,7 +279,108 @@ void SerializationQueue::handle_save_drumkit(SerializationQueue::event_data_t& e
 
 void SerializationQueue::handle_save_pattern(SerializationQueue::event_data_t& ev)
 {
-    assert(false);
+    //int mode = 1 save, int mode = 2 save as
+    // INSTRUMENT NODE
+
+
+    // Requirements:  Must have ev.pattern and ev.drumkit set.
+    // ev.filename must be a full path.
+    assert(ev.ev == SavePattern);
+    assert(ev.pattern);
+    T<Pattern>::shared_ptr pat = ev.pattern;
+    QString drumkit_name = ev.drumkit_name;
+    QString sPatternXmlFilename = ev.filename;
+    if( ! sPatternXmlFilename.endsWith(".h2pattern") ) {
+	sPatternXmlFilename += ".h2pattern";
+    }
+
+    // check if the directory exists
+    QFileInfo pat_file_info(sPatternXmlFilename);
+    QDir dir = pat_file_info.dir();
+    if( !dir.exists() ) {
+	dir.mkdir( dir.path() );
+    }
+    if( !dir.exists() ) {
+	ev.report_save_to->filename = ev.filename;
+	ev.report_save_to->message = QString("Could not create directory '%1' for save.")
+	    .arg( dir.path() );
+	ev.report_save_to->status = SaveReport::SaveFailed;
+	(*ev.report_save_to)();
+	return;
+    }
+
+    QDomDocument doc;
+    QDomProcessingInstruction header = doc.createProcessingInstruction( "xml", "version=\"1.0\" encoding=\"UTF-8\"");
+    doc.appendChild( header );
+
+    QDomNode rootNode = doc.createElement( "drumkit_pattern" );
+    //LIB_ID just in work to get better usability
+    //writeXmlString( &rootNode, "LIB_ID", "in_work" );
+    LocalFileMng::writeXmlString( rootNode, "pattern_for_drumkit", drumkit_name );
+
+
+    // pattern
+    QDomNode patternNode = doc.createElement( "pattern" );
+    LocalFileMng::writeXmlString( patternNode, "pattern_name", ev.pattern->get_name() );
+    LocalFileMng::writeXmlString( patternNode, "category", pat->get_category() );
+    LocalFileMng::writeXmlString( patternNode, "size", QString("%1").arg( pat->get_length() ) );
+
+    QDomNode noteListNode = doc.createElement( "noteList" );
+    Pattern::note_map_t::iterator pos;
+    for ( pos = pat->note_map.begin(); pos != pat->note_map.end(); ++pos ) {
+	Note *pNote = pos->second;
+	assert( pNote );
+
+	QDomNode noteNode = doc.createElement( "note" );
+	LocalFileMng::writeXmlString( noteNode, "position", QString("%1").arg( pos->first ) );
+	LocalFileMng::writeXmlString( noteNode, "leadlag", QString("%1").arg( pNote->get_leadlag() ) );
+	LocalFileMng::writeXmlString( noteNode, "velocity", QString("%1").arg( pNote->get_velocity() ) );
+	LocalFileMng::writeXmlString( noteNode, "pan_L", QString("%1").arg( pNote->get_pan_l() ) );
+	LocalFileMng::writeXmlString( noteNode, "pan_R", QString("%1").arg( pNote->get_pan_r() ) );
+	LocalFileMng::writeXmlString( noteNode, "pitch", QString("%1").arg( pNote->get_pitch() ) );
+
+	LocalFileMng::writeXmlString( noteNode, "key", Note::keyToString( pNote->m_noteKey ) );
+
+	LocalFileMng::writeXmlString( noteNode, "length", QString("%1").arg( pNote->get_length() ) );
+	LocalFileMng::writeXmlString( noteNode, "instrument", pNote->get_instrument()->get_id() );
+	noteListNode.appendChild( noteNode );
+    }
+    patternNode.appendChild( noteListNode );
+
+    rootNode.appendChild( patternNode );
+
+    doc.appendChild( rootNode );
+
+    QFile file( sPatternXmlFilename );
+    if ( !file.open(QIODevice::WriteOnly) ) {
+	ev.report_save_to->filename = ev.filename;
+	ev.report_save_to->message = QString("Could not create file '%1' for save.")
+	    .arg( ev.filename );
+	ev.report_save_to->status = SaveReport::SaveFailed;
+	(*ev.report_save_to)();
+	return;
+    }
+
+    QTextStream TextStream( &file );
+    doc.save( TextStream, 1 );
+
+    file.close();
+
+
+    QFileInfo check_file_written( sPatternXmlFilename );
+    if ( !check_file_written.exists() ) {
+	ev.report_save_to->filename = ev.filename;
+	ev.report_save_to->message = QString("Could not create directory '%1' for save.")
+	    .arg( dir.path() );
+	ev.report_save_to->status = SaveReport::SaveFailed;
+	(*ev.report_save_to)();
+	return;
+    }
+
+    ev.report_save_to->filename = ev.filename;
+    ev.report_save_to->message = QString();
+    ev.report_save_to->status = SaveReport::SaveSuccess;
+    (*ev.report_save_to)();
 }
 
 void SerializationQueue::handle_load_song(SerializationQueue::event_data_t& ev)
