@@ -35,6 +35,7 @@
 #include <Tritium/SoundLibrary.hpp>
 #include <Tritium/fx/Effects.hpp>
 #include <Tritium/memory.hpp>
+#include <Tritium/Preferences.hpp>
 #include "version.h"
 
 #include <unistd.h> // usleep()
@@ -274,7 +275,141 @@ void SerializationQueue::handle_save_song(SerializationQueue::event_data_t& ev)
 
 void SerializationQueue::handle_save_drumkit(SerializationQueue::event_data_t& ev)
 {
-    assert(false);
+    INFOLOG( "[saveDrumkit]" );
+
+    T<Drumkit>::shared_ptr drumkit = ev.drumkit;
+    QString data_directory = m_engine->get_preferences()->getDataDirectory();
+    QString drumkit_name = drumkit->getName();
+
+    if( Logger::get_log_level() & Logger::Info ) {
+	drumkit->dump();
+    }
+
+    QVector<QString> tempVector(16);
+
+    QString sDrumkitDir = data_directory + "drumkits/" + drumkit_name;
+
+    // check if the directory exists
+    QDir dir( sDrumkitDir );
+    if ( !dir.exists() ) {
+	dir.mkdir( sDrumkitDir );
+    } else {
+	WARNINGLOG("Saving drumkit on top of an older one");
+	// We don't clean out the directory, in case we accidentally
+	// delete some old, valuable sample.
+    }
+
+    // create the drumkit.xml file
+    QString sDrumkitXmlFilename = sDrumkitDir + QString( "/drumkit.xml" );
+
+    QDomDocument doc;
+    QDomProcessingInstruction header = doc.createProcessingInstruction( "xml", "version=\"1.0\" encoding=\"UTF-8\"");
+    doc.appendChild( header );
+
+    QDomElement rootNode = doc.createElement( "drumkit_info" );
+
+    LocalFileMng::writeXmlString( rootNode, "name", drumkit->getName() );    // name
+    LocalFileMng::writeXmlString( rootNode, "author", drumkit->getAuthor() );        // author
+    LocalFileMng::writeXmlString( rootNode, "info", drumkit->getInfo() );    // info
+    LocalFileMng::writeXmlString( rootNode, "license", drumkit->getLicense() );      // license
+
+    //QDomNode instrumentListNode( "instrumentList" );              // instrument list
+    QDomElement instrumentListNode = doc.createElement( "instrumentList" );
+
+    unsigned nInstrument = drumkit->getInstrumentList()->get_size();
+    // INSTRUMENT NODE
+    for ( unsigned i = 0; i < nInstrument; i++ ) {
+	T<Instrument>::shared_ptr instr = drumkit->getInstrumentList()->get( i );
+
+	for ( unsigned nLayer = 0; nLayer < MAX_LAYERS; nLayer++ ) {
+	    InstrumentLayer *pLayer = instr->get_layer( nLayer );
+	    if ( pLayer ) {
+		T<Sample>::shared_ptr pSample = pLayer->get_sample();
+		QString sOrigFilename = pSample->get_filename();
+
+		QString sDestFilename = sOrigFilename;
+
+		/*
+		  Till rev. 743, the samples got copied into the
+		  root of the drumkit folder.
+
+		  Now the sample gets only copied to the folder
+		  if it doesn't reside in a subfolder of the drumkit dir.
+		*/
+
+		if( sOrigFilename.startsWith( sDrumkitDir ) ){
+		    INFOLOG("sample is already in drumkit dir");
+		    tempVector[ nLayer ] = sDestFilename.remove( sDrumkitDir + "/" );
+		} else {
+		    int nPos = sDestFilename.lastIndexOf( '/' );
+		    sDestFilename = sDestFilename.mid( nPos + 1, sDestFilename.size() - nPos - 1 );
+		    sDestFilename = sDrumkitDir + "/" + sDestFilename;
+
+		    QFile::copy( sOrigFilename, sDestFilename );
+		    tempVector[ nLayer ] = sDestFilename.remove( sDrumkitDir + "/" );
+		}
+	    }
+	}
+
+	QDomNode instrumentNode = doc.createElement( "instrument" );
+
+	LocalFileMng::writeXmlString( instrumentNode, "id", instr->get_id() );
+	LocalFileMng::writeXmlString( instrumentNode, "name", instr->get_name() );
+	LocalFileMng::writeXmlString( instrumentNode, "volume", QString("%1").arg( instr->get_volume() ) );
+	LocalFileMng::writeXmlBool( instrumentNode, "isMuted", instr->is_muted() );
+	LocalFileMng::writeXmlString( instrumentNode, "pan_L", QString("%1").arg( instr->get_pan_l() ) );
+	LocalFileMng::writeXmlString( instrumentNode, "pan_R", QString("%1").arg( instr->get_pan_r() ) );
+	LocalFileMng::writeXmlString( instrumentNode, "randomPitchFactor", QString("%1").arg( instr->get_random_pitch_factor() ) );
+	LocalFileMng::writeXmlString( instrumentNode, "gain", QString("%1").arg( instr->get_gain() ) );
+
+	LocalFileMng::writeXmlBool( instrumentNode, "filterActive", instr->is_filter_active() );
+	LocalFileMng::writeXmlString( instrumentNode, "filterCutoff", QString("%1").arg( instr->get_filter_cutoff() ) );
+	LocalFileMng::writeXmlString( instrumentNode, "filterResonance", QString("%1").arg( instr->get_filter_resonance() ) );
+
+	LocalFileMng::writeXmlString( instrumentNode, "Attack", QString("%1").arg( instr->get_adsr()->__attack ) );
+	LocalFileMng::writeXmlString( instrumentNode, "Decay", QString("%1").arg( instr->get_adsr()->__decay ) );
+	LocalFileMng::writeXmlString( instrumentNode, "Sustain", QString("%1").arg( instr->get_adsr()->__sustain ) );
+	LocalFileMng::writeXmlString( instrumentNode, "Release", QString("%1").arg( instr->get_adsr()->__release ) );
+
+	LocalFileMng::writeXmlString( instrumentNode, "muteGroup", QString("%1").arg( instr->get_mute_group() ) );
+
+	for ( unsigned nLayer = 0; nLayer < MAX_LAYERS; nLayer++ ) {
+	    InstrumentLayer *pLayer = instr->get_layer( nLayer );
+	    if ( pLayer == NULL ) continue;
+	    // Sample *pSample = pLayer->get_sample();
+
+	    QDomNode layerNode = doc.createElement( "layer" );
+	    LocalFileMng::writeXmlString( layerNode, "filename", tempVector[ nLayer ] );
+	    LocalFileMng::writeXmlString( layerNode, "min", QString("%1").arg( pLayer->get_min_velocity() ) );
+	    LocalFileMng::writeXmlString( layerNode, "max", QString("%1").arg( pLayer->get_max_velocity() ) );
+	    LocalFileMng::writeXmlString( layerNode, "gain", QString("%1").arg( pLayer->get_gain() ) );
+	    LocalFileMng::writeXmlString( layerNode, "pitch", QString("%1").arg( pLayer->get_pitch() ) );
+
+	    instrumentNode.appendChild( layerNode );
+	}
+
+	instrumentListNode.appendChild( instrumentNode );
+    }
+
+    rootNode.appendChild( instrumentListNode );
+
+    doc.appendChild( rootNode );
+
+    QFile file( sDrumkitXmlFilename );
+    if ( !file.open(QIODevice::WriteOnly) ) {
+	ev.report_save_to->status = SaveReport::SaveFailed;
+	ev.report_save_to->message = QString("Could not open file '%1' to write")
+	    .arg(sDrumkitXmlFilename);
+	(*ev.report_save_to)();
+    }
+
+    QTextStream TextStream( &file );
+    doc.save( TextStream, 1 );
+
+    file.close();
+
+    ev.report_save_to->status = SaveReport::SaveSuccess;
+    (*ev.report_save_to)();
 }
 
 void SerializationQueue::handle_save_pattern(SerializationQueue::event_data_t& ev)
