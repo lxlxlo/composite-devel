@@ -37,6 +37,7 @@
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/InstrumentLayer.hpp>
 #include <Tritium/Sample.hpp>
+#include <Tritium/SoundLibrary.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/fx/Effects.hpp>
 #include <Tritium/fx/LadspaFX.hpp>
@@ -601,6 +602,7 @@ TEST_CASE( 030_load_drumkit_check_drumkit )
     std::deque< T<Pattern>::shared_ptr > patterns;
     std::deque< T<Instrument>::shared_ptr > instruments;
     std::deque< T<LadspaFX>::shared_ptr > effects;
+    std::deque< T<Drumkit>::shared_ptr > drumkits;
 
     while( ! bdl.empty() ) {
         switch(bdl.peek_type()) {
@@ -616,6 +618,9 @@ TEST_CASE( 030_load_drumkit_check_drumkit )
         case ObjectItem::LadspaFX_t:
             effects.push_back( bdl.pop<LadspaFX>() );
             break;
+	case ObjectItem::Drumkit_t:
+	    drumkits.push_back( bdl.pop<Drumkit>() );
+	    break;
         default:
             BOOST_REQUIRE(false); // should not reach this.
         }
@@ -625,6 +630,19 @@ TEST_CASE( 030_load_drumkit_check_drumkit )
     CK( patterns.size() == 0 );
     CK( instruments.size() == 16 );
     CK( effects.size() == 0 );
+    CK( drumkits.size() == 1 );
+
+    /********************************************
+     * Check drumkit metadata
+     ********************************************
+     */
+    T<Drumkit>::shared_ptr dk;
+    dk = drumkits.front();
+    CK( dk->getName() == "GMkit" );
+    CK( dk->getAuthor() == "Artemio <artemio@artemio.net>" );
+    CK( dk->getInfo() == "GeneralMIDI acoustic drum set made of samples from "
+	"Roland XV-5080 synth module. Thanks to L.-E. Johansson for samples." );
+    CK( dk->getLicense() == "" );
 
     /********************************************
      * Check instruments
