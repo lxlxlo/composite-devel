@@ -75,6 +75,15 @@ namespace Tritium
         void operator()() { done = true; }
     };
 
+    class SyncSaveReport : public SaveReport
+    {
+    public:
+	bool done;
+
+	SyncSaveReport() : done(false) {}
+	void operator()() { done = true; }
+    };
+
     LocalFileMng::LocalFileMng(Engine* parent) :
         m_engine(parent)
     {
@@ -173,22 +182,31 @@ namespace Tritium
     }
 
 
+    /**
+     * This function is now a front-end for Serializer::save_pattern().
+     *
+     * mode: 1 == save, 2 == save as, 3 == save, but don't verify
+     *
+     * Returns: 0 if all OK, non-zero on error.
+     */
     int LocalFileMng::savePattern( T<Song>::shared_ptr song , int selectedpattern , const QString& patternname, const QString& realpatternname, int mode)
     {
-        //int mode = 1 save, int mode = 2 save as
-        // INSTRUMENT NODE
-        T<Instrument>::shared_ptr instr = song->get_instrument_list()->get( 0 );
-        assert( instr );
+	T<Serializer>::auto_ptr serializer;
+	SyncSaveReport save_report;
+
+	serializer.reset( Serializer::create_standalone(m_engine) );
 
         T<Pattern>::shared_ptr pat = song->get_pattern_list()->get( selectedpattern );
+        T<Instrument>::shared_ptr instr = song->get_instrument_list()->get( 0 );
+        assert( instr );
+	QString drumkit_name = instr->get_drumkit_name();
+	QString data_directory = m_engine->get_preferences()->getDataDirectory();
 
-        QString sPatternDir = m_engine->get_preferences()->getDataDirectory() + "patterns/" +  instr->get_drumkit_name();
-
+	QString sPatternDir = data_directory + "patterns/" + drumkit_name;
         INFOLOG( "[savePattern]" + sPatternDir );
 
         // check if the directory exists
         QDir dir( sPatternDir );
-        QDir dirPattern( sPatternDir );
         if ( !dir.exists() ) {
             dir.mkdir( sPatternDir );// create the drumkit directory
         }
@@ -207,75 +225,43 @@ namespace Tritium
             break;
         default:
             WARNINGLOG( "Pattern Save unknown status");
+	    sPatternXmlFilename = patternname;
             break;
-
         }
 
-//test if the file exists
         QFile testfile( sPatternXmlFilename );
         if ( testfile.exists() && mode == 1)
             return 1;
 
-        QDomDocument doc;
-        QDomProcessingInstruction header = doc.createProcessingInstruction( "xml", "version=\"1.0\" encoding=\"UTF-8\"");
-        doc.appendChild( header );
+	bool overwrite = true;
+	if( mode == 2 || mode > 3 ) {
+	    overwrite = false;
+	}
+	serializer->save_pattern(sPatternXmlFilename,
+				 pat,
+				 drumkit_name,
+				 save_report,
+				 m_engine,
+				 overwrite);
 
-        QDomNode rootNode = doc.createElement( "drumkit_pattern" );
-        //LIB_ID just in work to get better usability
-        //writeXmlString( &rootNode, "LIB_ID", "in_work" );
-        writeXmlString( rootNode, "pattern_for_drumkit", instr->get_drumkit_name() );
+	while( ! save_report.done ) {
+	    sleep(1);
+	}
 
+	int rv;
+	switch( save_report.status ) {
+	case SaveReport::SaveSuccess:
+	    rv = 0;
+	    break;
+	case SaveReport::SaveFailed:
+	default:
+	    rv = 1;
+	    ERRORLOG( QString("Error saving file %1: %2")
+		      .arg(save_report.filename)
+		      .arg(save_report.message) );
+	}
 
-        // pattern
-        QDomNode patternNode = doc.createElement( "pattern" );
-        writeXmlString( patternNode, "pattern_name", realpatternname );
-        writeXmlString( patternNode, "category", pat->get_category() );
-        writeXmlString( patternNode, "size", QString("%1").arg( pat->get_length() ) );
-
-        QDomNode noteListNode = doc.createElement( "noteList" );
-        Pattern::note_map_t::iterator pos;
-        for ( pos = pat->note_map.begin(); pos != pat->note_map.end(); ++pos ) {
-            Note *pNote = pos->second;
-            assert( pNote );
-
-            QDomNode noteNode = doc.createElement( "note" );
-            writeXmlString( noteNode, "position", QString("%1").arg( pos->first ) );
-            writeXmlString( noteNode, "leadlag", QString("%1").arg( pNote->get_leadlag() ) );
-            writeXmlString( noteNode, "velocity", QString("%1").arg( pNote->get_velocity() ) );
-            writeXmlString( noteNode, "pan_L", QString("%1").arg( pNote->get_pan_l() ) );
-            writeXmlString( noteNode, "pan_R", QString("%1").arg( pNote->get_pan_r() ) );
-            writeXmlString( noteNode, "pitch", QString("%1").arg( pNote->get_pitch() ) );
-
-            writeXmlString( noteNode, "key", Note::keyToString( pNote->m_noteKey ) );
-
-            writeXmlString( noteNode, "length", QString("%1").arg( pNote->get_length() ) );
-            writeXmlString( noteNode, "instrument", pNote->get_instrument()->get_id() );
-            noteListNode.appendChild( noteNode );
-        }
-        patternNode.appendChild( noteListNode );
-
-        rootNode.appendChild( patternNode );
-
-
-
-
-        doc.appendChild( rootNode );
-
-        QFile file( sPatternXmlFilename );
-        if ( !file.open(QIODevice::WriteOnly) )
-            return NULL;
-
-        QTextStream TextStream( &file );
-        doc.save( TextStream, 1 );
-
-        file.close();
-
-
-        QFile anotherTestfile( sPatternXmlFilename );
-        if ( !anotherTestfile.exists() )
-            return 1;
-
-        return 0; // ok
+	return rv;
     }
 
 
