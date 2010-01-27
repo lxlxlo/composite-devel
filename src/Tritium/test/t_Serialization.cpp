@@ -628,7 +628,7 @@ TEST_CASE( 030_load_drumkit_check_drumkit )
 
     CK( songs.size() == 0 );
     CK( patterns.size() == 0 );
-    CK( instruments.size() == 16 );
+    CK( instruments.size() == 32 );
     CK( effects.size() == 0 );
     CK( drumkits.size() == 1 );
 
@@ -638,10 +638,11 @@ TEST_CASE( 030_load_drumkit_check_drumkit )
      */
     T<Drumkit>::shared_ptr dk;
     dk = drumkits.front();
-    CK( dk->getName() == "GMkit" );
+    CK( dk->getName() == "test_kit" );
     CK( dk->getAuthor() == "Artemio <artemio@artemio.net>" );
     CK( dk->getInfo() == "GeneralMIDI acoustic drum set made of samples from "
-	"Roland XV-5080 synth module. Thanks to L.-E. Johansson for samples." );
+	"Roland XV-5080 synth module. Thanks to L.-E. Johansson for samples. "
+	"Based on the stock Hydrogen/Composite GMkit, used for unit testing." );
     CK( dk->getLicense() == "" );
 
     /********************************************
@@ -650,7 +651,7 @@ TEST_CASE( 030_load_drumkit_check_drumkit )
      */
 
     // Checking 0, 7, 13, 15
-    BOOST_REQUIRE( instruments.size() == 16 );
+    BOOST_REQUIRE( instruments.size() == 32 );
 
     T<Instrument>::shared_ptr inst;
     InstrumentLayer *layer;
