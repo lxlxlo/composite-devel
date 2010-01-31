@@ -52,23 +52,124 @@ namespace Tritium
 	public:
 	    virtual ~Serializer() {}
 
+	    /**
+	     * Loads the data pointed to by filename.
+	     *
+	     * The data is automatically detected based on the
+	     * filename (e.g. *.h2song).  At this time, the function
+	     * only supports loading drumkit.xml, .h2song, and
+	     * .h2pattern files.
+	     *
+	     * This function returns immediately.  After the data has
+	     * been loaded, report_to() will be called.
+	     *
+	     * \param filename relative or absolute path to data file.
+	     * For drumkits, this needs to be the path to the
+	     * drumkit.xml file (including 'drumkit.xml').
+	     *
+	     * \param report_to a function abject that carries the
+	     * payload of the load operation.  The callback
+	     * ObjectBundle::operator()() will be called after the data
+	     * has been loaded so that it can be utilized.
+	     *
+	     * \param engine a pointer to a valid Engine instance.
+	     */
 	    virtual void load_file(const QString& filename,
 				   ObjectBundle& report_to,
 				   Engine *engine) = 0;
 
+	    /**
+	     * Saves a song/sequence to a file.
+	     *
+	     * The data in song is saved to the file pointed to by
+	     * filename.
+	     *
+	     * \param filename the path and name to the file to be
+	     * saved.  Filename should end in '.h2song'.  It will not
+	     * be added.
+	     *
+	     * \param song pointer to the song object that will be saved.
+	     *
+	     * \param report_to a function object that reports when
+	     * and whether the song was saved.  After saving (or not)
+	     * then the callback SaveReport::operator()() will be
+	     * called.
+	     *
+	     * \param engine a pointer to a valid Engine instance.
+	     *
+	     * \param overwrite if true, will overwrite filename if it
+	     * already exists.  If false, the save will fail if
+	     * filename already exists.
+	     */
 	    virtual void save_song(const QString& filename,
 				   T<Song>::shared_ptr song,
 				   SaveReport& report_to,
 				   Engine *engine,
 				   bool overwrite = false) = 0;
-	    virtual void save_drumkit(const QString& filename,
-				      T<Drumkit>::shared_ptr song,
+
+	    /**
+	     * Saves a drumkit to a folder.
+	     *
+	     * The current drumkit data is saved to the folder dirname.
+	     *
+	     * \param dirname the path and name to the folder to be
+	     * saved.  It should \em not contain 'drumkit.xml'.  (Note
+	     * that this is different from load_file().)  It \em
+	     * should be the exact folder where the kit should be
+	     * saved.  This typically means that the last part of the
+	     * path is the name of the drumkit.  If the folder does
+	     * not already exist, it will be created.
+	     *
+	     * \param drumkit pointer to the drumkit object object
+	     * that will be saved.
+	     *
+	     * \param report_to a function object that reports when
+	     * and whether the drumkit was saved.  After saving (or
+	     * not) then the callback SaveReport::operator()() will be
+	     * called.
+	     *
+	     * \param engine a pointer to a valid Engine instance.
+	     *
+	     * \param overwrite if true, will overwrite the contents
+	     * of dirname if it already exists.  If false, the save
+	     * will fail if dirname already exists.
+	     */
+	    virtual void save_drumkit(const QString& dirname,
+				      T<Drumkit>::shared_ptr drumkit,
 				      SaveReport& report_to,
 				      Engine *engine,
 				      bool overwrite = false) = 0;
+
+	    /**
+	     * Saves a pattern/sequence to a file.
+	     *
+	     * The data in a pattern is saved to the file pointed to
+	     * by filename.
+	     *
+	     * \param filename the path and name to the file to be
+	     * saved.  Filename should end in '.h2pattern'.  It will
+	     * not be added.
+	     *
+	     * \param pattern pointer to the song object that will be
+	     * saved.
+	     *
+	     * \param drumkit_name the name of the drumkit that this
+	     * pattern is associated with.
+	     *
+	     * \param report_to a function object that reports when
+	     * and whether the song was saved.  After saving (or not)
+	     * then the callback SaveReport::operator()() will be
+	     * called.
+	     *
+	     * \param engine a pointer to a valid Engine instance.
+	     *
+	     * \param overwrite if true, will overwrite filename if it
+	     * already exists.  If false, the save will fail if
+	     * filename already exists.
+	     */
 	    virtual void save_pattern(const QString& filename,
 				      T<Pattern>::shared_ptr pattern,
-				      QString drumkit_name,
+				      const QString& drumkit_name,
 				      SaveReport& report_to,
 				      Engine *engine,
 				      bool overwrite = false) = 0;

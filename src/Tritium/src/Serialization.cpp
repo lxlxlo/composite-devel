@@ -90,18 +90,18 @@ void SerializerImpl::save_song(const QString& filename,
     m_queue->save_song(filename, song, report_t, engine, overwrite);
 }
 
-void SerializerImpl::save_drumkit(const QString& filename,
-                                  T<Drumkit>::shared_ptr song,
+void SerializerImpl::save_drumkit(const QString& dirname,
+                                  T<Drumkit>::shared_ptr dk,
                                   SaveReport& report_to,
                                   Engine* engine,
                                   bool overwrite)
 {
-    m_queue->save_drumkit(filename, song, report_to, engine, overwrite);
+    m_queue->save_drumkit(dirname, dk, report_to, engine, overwrite);
 }
 
 void SerializerImpl::save_pattern(const QString& filename,
                                   T<Pattern>::shared_ptr pattern,
-				  QString drumkit_name,
+				  const QString& drumkit_name,
                                   SaveReport& report_to,
                                   Engine* engine,
                                   bool overwrite)
@@ -200,7 +200,7 @@ void SerializationQueue::save_drumkit(const QString& filename,
 
 void SerializationQueue::save_pattern(const QString& filename,
                                       T<Pattern>::shared_ptr pattern,
-				      QString drumkit_name,
+				      const QString& drumkit_name,
                                       SaveReport& report_t,
                                       Engine *engine,
                                       bool overwrite)
@@ -273,13 +273,18 @@ void SerializationQueue::handle_save_song(SerializationQueue::event_data_t& ev)
     assert(false);
 }
 
+/**
+ * Saves a drumkit to a folder.
+ *
+ * ev.filename should point to a specific folder where the drumkit
+ * should be saved.  It should \em not point to the drumkit.xml
+ * manifest.  It \should point to the exact directory to store the kit
+ * (i.e. the last part of the path is typically the name of the
+ * drumkit).  If the folder does not exist, it will be created.
+ */
 void SerializationQueue::handle_save_drumkit(SerializationQueue::event_data_t& ev)
 {
-    INFOLOG( "[saveDrumkit]" );
-
     T<Drumkit>::shared_ptr drumkit = ev.drumkit;
-    QString data_directory = m_engine->get_preferences()->getDataDirectory();
-    QString drumkit_name = drumkit->getName();
 
     if( Logger::get_log_level() & Logger::Info ) {
 	drumkit->dump();
@@ -287,16 +292,23 @@ void SerializationQueue::handle_save_drumkit(SerializationQueue::event_data_t& e
 
     QVector<QString> tempVector(16);
 
-    QString sDrumkitDir = data_directory + "drumkits/" + drumkit_name;
+    QString sDrumkitDir = ev.filename;
 
     // check if the directory exists
     QDir dir( sDrumkitDir );
-    if ( !dir.exists() ) {
-	dir.mkdir( sDrumkitDir );
+    if( !dir.exists() ) {
+	dir.mkpath( "." );
     } else {
 	WARNINGLOG("Saving drumkit on top of an older one");
 	// We don't clean out the directory, in case we accidentally
 	// delete some old, valuable sample.
+    }
+
+    if( !dir.exists() ) {
+	ev.report_save_to->status = SaveReport::SaveFailed;
+	ev.report_save_to->message = QString("Could create folder '%1'")
+	    .arg( sDrumkitDir );
+	(*ev.report_save_to)();
     }
 
     // create the drumkit.xml file

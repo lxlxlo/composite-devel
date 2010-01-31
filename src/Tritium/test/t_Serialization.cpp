@@ -47,6 +47,7 @@
 #include <cstdlib>
 #include <deque>
 #include <QString>
+#include <QDir>
 #include <sys/stat.h> // for mkdir()
 #include <sys/types.h> // for mkdir()
 
@@ -83,6 +84,42 @@ namespace THIS_NAMESPACE
     const char pattern_file_name[] = TEST_DATA_DIR "/t_Serialization.h2pattern";
     const char drumkit_manifest_file_name[] = TEST_DATA_DIR "/t_Serialization-drumkit/drumkit.xml";
 
+    /**
+     * Recursively removes files and folders.
+     *
+     * Thanks to:
+     * http://lists.trolltech.com/qt-interest/2008-02/thread00720-0.html
+     */
+    bool RemoveDirectory(QDir& aDir)
+    {
+	bool has_err = false;
+	if( aDir.exists() ) {
+	    QFileInfoList entries = aDir.entryInfoList(
+		QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files
+		);
+	    int count = entries.size();
+	    for (int idx = 0; ((idx < count) && (false == has_err)); idx++)
+	    {
+		QFileInfo entryInfo = entries[idx];
+		QString path = entryInfo.absoluteFilePath();
+		if (entryInfo.isDir())
+		{
+		    QDir sub(path);
+		    has_err = RemoveDirectory(sub);
+		}
+		else
+		{
+		    QFile file(path);
+		    if (!file.remove())
+			has_err = true;
+		}
+	    }
+	    if (!aDir.rmdir(aDir.absolutePath()))
+		has_err = true;
+	}
+	return has_err;
+    }
+
     struct Fixture
     {
         // SETUP AND TEARDOWN OBJECTS FOR YOUR TESTS.
@@ -99,9 +136,11 @@ namespace THIS_NAMESPACE
             BOOST_REQUIRE( rv == 0 );
         }
         ~Fixture() {
-            int rv;
-            rv = ::remove(temp_dir);
-            BOOST_REQUIRE( rv == 0 );
+	    bool has_error;
+	    QDir td(temp_dir);
+	    has_error = RemoveDirectory(td);
+            BOOST_REQUIRE( ! has_error );
+	    BOOST_REQUIRE( ! td.exists() );
             s.reset();
             engine.reset();
             delete Logger::get_instance();
@@ -807,7 +846,125 @@ TEST_CASE( 050_save_pattern )
 
 TEST_CASE( 060_save_drumkit )
 {
-    BOOST_ERROR("Need to write more tests");
+    SyncBundle bdl;
+
+    s->load_file(drumkit_manifest_file_name, bdl, engine.get());
+
+    while( ! bdl.done ) {
+        sleep(1);
+    }
+
+    BOOST_REQUIRE( ! bdl.error );
+
+    // Sort out all the components:
+    std::deque< T<Song>::shared_ptr > songs;
+    std::deque< T<Pattern>::shared_ptr > patterns;
+    std::deque< T<Instrument>::shared_ptr > instruments;
+    std::deque< T<LadspaFX>::shared_ptr > effects;
+    std::deque< T<Drumkit>::shared_ptr > drumkits;
+
+    while( ! bdl.empty() ) {
+        switch(bdl.peek_type()) {
+        case ObjectItem::Song_t:
+            songs.push_back( bdl.pop<Song>() );
+            break;
+        case ObjectItem::Pattern_t:
+            patterns.push_back( bdl.pop<Pattern>() );
+            break;
+        case ObjectItem::Instrument_t:
+            instruments.push_back( bdl.pop<Instrument>() );
+            break;
+        case ObjectItem::LadspaFX_t:
+            effects.push_back( bdl.pop<LadspaFX>() );
+            break;
+	case ObjectItem::Drumkit_t:
+	    drumkits.push_back( bdl.pop<Drumkit>() );
+	    break;
+        default:
+            BOOST_REQUIRE(false); // should not reach this.
+        }
+    }
+
+    CK( songs.size() == 0 );
+    CK( patterns.size() == 0 );
+    CK( instruments.size() == 32 );
+    CK( effects.size() == 0 );
+    CK( drumkits.size() == 1 );
+
+    std::deque< T<Instrument>::shared_ptr >::iterator it;
+    T<InstrumentList>::auto_ptr instrument_list(new InstrumentList);
+    for( it = instruments.begin() ; it != instruments.end() ; ++it ) {
+	instrument_list->add( *it );
+    }
+    drumkits.front()->setInstrumentList( instrument_list.release() );
+
+    SyncSaveReport ssr;
+    QString save_drumkit_folder_name = QString("%1/test_kit")
+	.arg(temp_dir);
+    s->save_drumkit( save_drumkit_folder_name,
+		     drumkits.front(),
+		     ssr,
+		     engine.get(),
+		     false );
+
+    while( ! ssr.done ) {
+	sleep(1);
+    }
+
+    BOOST_REQUIRE(ssr.status == SaveReport::SaveSuccess);
+
+    BOOST_REQUIRE( bdl.empty() );
+    bdl.done = false;
+
+    s->load_file( save_drumkit_folder_name + "/drumkit.xml",
+		  bdl,
+		  engine.get() );
+
+    while( ! bdl.done ) {
+        sleep(1);
+    }
+
+    if( bdl.error ) {
+	BOOST_ERROR( bdl.error_message.toStdString() );
+    }
+    BOOST_REQUIRE( ! bdl.error );
+
+    // Sort out all the components:
+    songs.clear();
+    patterns.clear();
+    instruments.clear();
+    effects.clear();
+    drumkits.clear();
+
+    while( ! bdl.empty() ) {
+        switch(bdl.peek_type()) {
+        case ObjectItem::Song_t:
+            songs.push_back( bdl.pop<Song>() );
+            break;
+        case ObjectItem::Pattern_t:
+            patterns.push_back( bdl.pop<Pattern>() );
+            break;
+        case ObjectItem::Instrument_t:
+            instruments.push_back( bdl.pop<Instrument>() );
+            break;
+        case ObjectItem::LadspaFX_t:
+            effects.push_back( bdl.pop<LadspaFX>() );
+            break;
+	case ObjectItem::Drumkit_t:
+	    drumkits.push_back( bdl.pop<Drumkit>() );
+	    break;
+        default:
+            BOOST_REQUIRE(false); // should not reach this.
+        }
+    }
+
+    CK( songs.size() == 0 );
+    CK( patterns.size() == 0 );
+    CK( instruments.size() == 32 );
+    CK( effects.size() == 0 );
+    CK( drumkits.size() == 1 );
+
+    BOOST_ERROR("Need more tests...");
 }
 
 TEST_END()
