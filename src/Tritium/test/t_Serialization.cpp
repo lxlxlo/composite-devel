@@ -964,7 +964,69 @@ TEST_CASE( 060_save_drumkit )
     CK( effects.size() == 0 );
     CK( drumkits.size() == 1 );
 
-    BOOST_ERROR("Need more tests...");
+    /********************************************
+     * Check drumkit metadata
+     ********************************************
+     */
+    T<Drumkit>::shared_ptr dk;
+    dk = drumkits.front();
+    CK( dk->getName() == "test_kit" );
+    CK( dk->getAuthor() == "Artemio <artemio@artemio.net>" );
+    CK( dk->getInfo() == "GeneralMIDI acoustic drum set made of samples from "
+	"Roland XV-5080 synth module. Thanks to L.-E. Johansson for samples. "
+	"Based on the stock Hydrogen/Composite GMkit, used for unit testing." );
+    CK( dk->getLicense() == "" );
+
+    /********************************************
+     * Check instruments
+     ********************************************
+     */
+
+    // Checking 0, 7, 13, 15
+    BOOST_REQUIRE( instruments.size() == 32 );
+
+    T<Instrument>::shared_ptr inst;
+    InstrumentLayer *layer;
+
+    inst = instruments[0];
+    CK( inst->get_id() == "0" );
+    CK( inst->get_name() == "Kick" );
+    CK( inst->get_volume() == 1.0f );
+    CK( inst->is_muted() == false );
+    CK( inst->get_pan_l() == 1.0f );
+    CK( inst->get_pan_r() == 1.0f );
+    CK( inst->get_mute_group() == -1 );
+    layer = inst->get_layer(0);
+    BOOST_REQUIRE( layer != 0 );
+    CK( layer->get_sample()->get_filename().endsWith("kick_Dry_b.flac") );
+    CK( inst->get_layer(1) == 0 );
+
+    inst = instruments[7];
+    CK( inst->get_id() == "7" );
+    CK( inst->get_name() == "Tom Mid" );
+    CK( inst->get_volume() == 1.0f );
+    CK( inst->is_muted() == false );
+    CK( inst->get_pan_l() == 0.8f );
+    CK( inst->get_pan_r() == 1.0f );
+    CK( inst->get_mute_group() == -1 );
+
+    inst = instruments[13];
+    CK( inst->get_id() == "13" );
+    CK( inst->get_name() == "Crash" );
+    CK( inst->get_volume() == 0.69f );
+    CK( inst->is_muted() == false );
+    CK( inst->get_pan_l() == 1.0f );
+    CK( inst->get_pan_r() == 0.88f );
+    CK( inst->get_mute_group() == -1 );
+
+    inst = instruments[15];
+    CK( inst->get_id() == "15" );
+    CK( inst->get_name() == "Crash Jazz" );
+    CK( inst->get_volume() == 0.77f );
+    CK( inst->is_muted() == false );
+    CK( inst->get_pan_l() == 1.0f );
+    CK( inst->get_pan_r() == 0.78f );
+    CK( inst->get_mute_group() == -1 );
 }
 
 TEST_END()
