@@ -253,18 +253,18 @@ void SerializationQueue::handle_load_file(SerializationQueue::event_data_t& ev)
         } else if (ev.filename.endsWith("drumkit.xml")) {
             handle_load_drumkit(ev);
         } else {
-            ObjectBundle& bdl = *ev.report_load_to;
-            bdl.error = true;
-            bdl.error_message = QString("File '%1' is not in a valid format")
-                .arg(ev.filename);
-            bdl();
+	    handle_callback(
+		ev,
+		true,
+		QString("File '%1' is not in a valid format").arg(ev.filename)
+		);
         }
     } else {
-        ObjectBundle& bdl = *ev.report_load_to;
-        bdl.error = true;
-        bdl.error_message = QString("File '%1' does not exist")
-            .arg(ev.filename);
-        bdl();
+	handle_callback(
+	    ev,
+	    true,
+	    QString("File '%1' does not exist").arg(ev.filename)
+	    );
     }
 }
 
@@ -305,10 +305,12 @@ void SerializationQueue::handle_save_drumkit(SerializationQueue::event_data_t& e
     }
 
     if( !dir.exists() ) {
-	ev.report_save_to->status = SaveReport::SaveFailed;
-	ev.report_save_to->message = QString("Could create folder '%1'")
-	    .arg( sDrumkitDir );
-	(*ev.report_save_to)();
+	handle_callback(
+	    ev,
+	    true,
+	    QString("Could create folder '%1'").arg( sDrumkitDir )
+	    );
+	return;
     }
 
     // create the drumkit.xml file
@@ -409,10 +411,12 @@ void SerializationQueue::handle_save_drumkit(SerializationQueue::event_data_t& e
 
     QFile file( sDrumkitXmlFilename );
     if ( !file.open(QIODevice::WriteOnly) ) {
-	ev.report_save_to->status = SaveReport::SaveFailed;
-	ev.report_save_to->message = QString("Could not open file '%1' to write")
-	    .arg(sDrumkitXmlFilename);
-	(*ev.report_save_to)();
+	handle_callback(
+	    ev,
+	    true,
+	    QString("Could not open file '%1' to write").arg(sDrumkitXmlFilename)
+	    );
+	return;
     }
 
     QTextStream TextStream( &file );
@@ -420,8 +424,7 @@ void SerializationQueue::handle_save_drumkit(SerializationQueue::event_data_t& e
 
     file.close();
 
-    ev.report_save_to->status = SaveReport::SaveSuccess;
-    (*ev.report_save_to)();
+    handle_callback(ev);
 }
 
 void SerializationQueue::handle_save_pattern(SerializationQueue::event_data_t& ev)
@@ -448,11 +451,11 @@ void SerializationQueue::handle_save_pattern(SerializationQueue::event_data_t& e
 	dir.mkdir( dir.path() );
     }
     if( !dir.exists() ) {
-	ev.report_save_to->filename = ev.filename;
-	ev.report_save_to->message = QString("Could not create directory '%1' for save.")
-	    .arg( dir.path() );
-	ev.report_save_to->status = SaveReport::SaveFailed;
-	(*ev.report_save_to)();
+	handle_callback(
+	    ev,
+	    true,
+	    QString("Could not create directory '%1' for save.").arg( dir.path() )
+	    );
 	return;
     }
 
@@ -500,11 +503,11 @@ void SerializationQueue::handle_save_pattern(SerializationQueue::event_data_t& e
 
     QFile file( sPatternXmlFilename );
     if ( !file.open(QIODevice::WriteOnly) ) {
-	ev.report_save_to->filename = ev.filename;
-	ev.report_save_to->message = QString("Could not create file '%1' for save.")
-	    .arg( ev.filename );
-	ev.report_save_to->status = SaveReport::SaveFailed;
-	(*ev.report_save_to)();
+	handle_callback(
+	    ev,
+	    true,
+	    QString("Could not create file '%1' for save.").arg( ev.filename )
+	    );
 	return;
     }
 
@@ -516,18 +519,15 @@ void SerializationQueue::handle_save_pattern(SerializationQueue::event_data_t& e
 
     QFileInfo check_file_written( sPatternXmlFilename );
     if ( !check_file_written.exists() ) {
-	ev.report_save_to->filename = ev.filename;
-	ev.report_save_to->message = QString("Could not create directory '%1' for save.")
-	    .arg( dir.path() );
-	ev.report_save_to->status = SaveReport::SaveFailed;
-	(*ev.report_save_to)();
+	handle_callback(
+	    ev,
+	    true,
+	    QString("Could not create directory '%1' for save.").arg( dir.path() )
+	    );
 	return;
     }
 
-    ev.report_save_to->filename = ev.filename;
-    ev.report_save_to->message = QString();
-    ev.report_save_to->status = SaveReport::SaveSuccess;
-    (*ev.report_save_to)();
+    handle_callback(ev);
 }
 
 void SerializationQueue::handle_load_song(SerializationQueue::event_data_t& ev)
@@ -537,45 +537,40 @@ void SerializationQueue::handle_load_song(SerializationQueue::event_data_t& ev)
     QStringList errors;
 
     if( song_node.tagName() != "song" ) {
-        ERRORLOG( QString("Error loading %1 -- not a valid .h2song")
-                  .arg(ev.filename) );
-        ev.report_load_to->error = true;
-        ev.report_load_to->error_message = "Not a valid .h2song.";
-        (*ev.report_load_to)();
+	handle_callback(
+	    ev,
+	    true,
+	    "Not a valid .h2song."
+	    );
         return;
     }
     QDomElement instrumentList_node =
         song_node.firstChildElement("instrumentList");
     if( instrumentList_node.isNull() ) {
-        ERRORLOG( QString("Error loading %1 -- no instrumentList node"
-                          " in .h2song")
-                  .arg(ev.filename) );
-        ev.report_load_to->error = true;
-        ev.report_load_to->error_message =
-            ".h2song missing instrumentList section.";
-        (*ev.report_load_to)();
+	handle_callback(
+	    ev,
+	    true,
+            ".h2song missing instrumentList section."
+	    );
         return;
     }
     QDomElement patternList_node = song_node.firstChildElement("patternList");
     if( patternList_node.isNull() ) {
-        ERRORLOG( QString("Error loading %1 -- no patternList node in .h2song")
-                  .arg(ev.filename) );
-        ev.report_load_to->error = true;
-        ev.report_load_to->error_message =
-            ".h2song missing patternList section.";
-        (*ev.report_load_to)();
+	handle_callback(
+	    ev,
+	    true,
+            ".h2song missing patternList section."
+	    );
         return;
     }
     QDomElement patternSequence_node =
         song_node.firstChildElement("patternSequence");
     if( patternList_node.isNull() ) {
-        ERRORLOG( QString("Error loading %1 -- no patternSequence node "
-                          "in .h2song")
-                  .arg(ev.filename) );
-        ev.report_load_to->error = true;
-        ev.report_load_to->error_message =
-            ".h2song missing patternSequence section.";
-        (*ev.report_load_to)();
+	handle_callback(
+	    ev,
+	    true,
+            ".h2song missing patternSequence section."
+	    );
         return;
     }
     // Null is OK.
@@ -660,7 +655,7 @@ void SerializationQueue::handle_load_song(SerializationQueue::event_data_t& ev)
         bdl.push( *fx_it );
     }
 
-    bdl();
+    handle_callback(ev);
 }
 
 void SerializationQueue::handle_load_drumkit(
@@ -672,22 +667,22 @@ void SerializationQueue::handle_load_drumkit(
     QString drumkit_dir = fn_info.absolutePath();
 
     if( ! fn_info.exists() ) {
-        ERRORLOG( QString("Error loading %1 -- file not found.")
-                  .arg(fn_info.absoluteFilePath()) );
-        ev.report_load_to->error = true;
-        ev.report_load_to->error_message = "File not found.";
-        (*ev.report_load_to)();
+	handle_callback(
+	    ev,
+	    true,
+	    "File not found."
+	    );
         return;
     }
 
     QDomDocument drumkit_doc = LocalFileMng::openXmlDocument(ev.filename);
 
     if( drumkit_doc.isNull() ) {
-        ERRORLOG( QString("Error loading %1 -- not an XML file.")
-                  .arg(fn_info.absoluteFilePath()) );
-        ev.report_load_to->error = true;
-        ev.report_load_to->error_message = "Not an XML file.";
-        (*ev.report_load_to)();
+	handle_callback(
+	    ev,
+	    true,
+	    "Not an XML file."
+	    );
         return;
     }
 
@@ -695,11 +690,11 @@ void SerializationQueue::handle_load_drumkit(
     QStringList errors;
 
     if( drumkit_info_node.tagName() != "drumkit_info" ) {
-        ERRORLOG( QString("Error loading %1 -- not a valid drumkit.xml file")
-                  .arg(ev.filename) );
-        ev.report_load_to->error = true;
-        ev.report_load_to->error_message = "Not a valid drumkit.xml file.";
-        (*ev.report_load_to)();
+	handle_callback(
+	    ev,
+	    true,
+	    "Not a valid drumkit.xml file."
+	    );
         return;
     }
     // TODO: Do this with a handle_load_drumkit_info_node
@@ -718,13 +713,11 @@ void SerializationQueue::handle_load_drumkit(
     QDomElement instrumentList_node =
         drumkit_info_node.firstChildElement("instrumentList");
     if( instrumentList_node.isNull() ) {
-        ERRORLOG( QString("Error loading %1 -- no instrumentList node "
-                          "in drumkit.xml")
-                  .arg(ev.filename) );
-        ev.report_load_to->error = true;
-        ev.report_load_to->error_message =
-            "drumkit.xml missing instrumentList section.";
-        (*ev.report_load_to)();
+	handle_callback(
+	    ev,
+	    true,
+            "drumkit.xml missing instrumentList section."
+	    );
         return;
     }
     deque< T<Instrument>::shared_ptr > instrument_ra;
@@ -749,7 +742,7 @@ void SerializationQueue::handle_load_drumkit(
         bdl.push( *i_it );
     }
 
-    bdl();
+    handle_callback(ev);
 }
 
 void SerializationQueue::handle_load_pattern(
@@ -761,20 +754,20 @@ void SerializationQueue::handle_load_pattern(
     QStringList errors;
 
     if( dk_pattern_node.tagName() != "drumkit_pattern" ) {
-        ERRORLOG( QString("Error loading %1 -- not a valid .h2pattern file")
-                  .arg(ev.filename) );
-        ev.report_load_to->error = true;
-        ev.report_load_to->error_message = "Not a valid .h2pattern file.";
-        (*ev.report_load_to)();
+	handle_callback(
+	    ev,
+	    true,
+	    "Not a valid .h2pattern file."
+	    );
         return;
     }
     QDomElement pat_node = dk_pattern_node.firstChildElement("pattern");
     if( pat_node.isNull() ) {
-        ERRORLOG( QString("Error loading %1 -- no pattern node in drumkit.xml")
-                  .arg(ev.filename) );
-        ev.report_load_to->error = true;
-        ev.report_load_to->error_message = ".h2pattern missing pattern section.";
-        (*ev.report_load_to)();
+	handle_callback(
+	    ev,
+	    true,
+	    ".h2pattern missing pattern section."
+	    );
         return;
     }
 
@@ -792,8 +785,43 @@ void SerializationQueue::handle_load_pattern(
 
     ev.report_load_to->push(pat);
 
-    (*ev.report_load_to)();
+    handle_callback(ev);
 }
+
+/**
+ * Convenience function to handle the functors.
+ *
+ */
+void SerializationQueue::handle_callback(
+    event_data_t& ev,
+    bool error,
+    QString error_message
+    )
+{
+    switch(ev.ev) {
+    case LoadFile:
+	ev.report_load_to->error = error;
+	ev.report_load_to->error_message = (error) ? error_message : QString();
+	(*ev.report_load_to)();
+	break;
+    case SaveSong:
+    case SaveDrumkit:
+    case SavePattern:
+	ev.report_save_to->filename = ev.filename;
+	if(error) {
+	    ev.report_save_to->status = SaveReport::SaveFailed;
+	    ev.report_save_to->message = error_message;
+	} else {
+	    ev.report_save_to->status = SaveReport::SaveSuccess;
+	    ev.report_save_to->message = QString();
+	}
+	(*ev.report_save_to)();
+	break;
+    default:
+	assert(false);
+    }
+}
+
 
 T<Song>::shared_ptr SerializationQueue::handle_load_song_node(
     QDomElement songNode,

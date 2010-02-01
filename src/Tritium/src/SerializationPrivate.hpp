@@ -126,6 +126,12 @@ namespace Tritium
 	    void handle_load_drumkit(event_data_t& ev);
 	    void handle_load_pattern(event_data_t& ev);
 
+	    void handle_callback(
+		event_data_t& ev,
+		bool error = false,
+		QString error_message = QString()
+		);
+
 	    // Node translators
 	    T<Song>::shared_ptr handle_load_song_node(
 		QDomElement songNode,
