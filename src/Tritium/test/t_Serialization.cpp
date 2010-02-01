@@ -739,7 +739,38 @@ TEST_CASE( 030_load_drumkit_check_drumkit )
 
 TEST_CASE( 040_save_song )
 {
-    BOOST_ERROR("Need to write more tests");
+    T<Song>::shared_ptr song = Song::get_default_song(engine.get());
+    SyncSaveReport ssr;
+    QString save_name = QString("%1/%2").arg(temp_dir).arg("test_song.h2song");
+
+    s->save_song(save_name, song, ssr, engine.get(), false);
+
+    while(!ssr.done) {
+	sleep(1);
+    }
+
+    if(ssr.status != SaveReport::SaveSuccess) {
+	BOOST_ERROR(ssr.message.toStdString());
+    }
+
+    BOOST_REQUIRE(ssr.status == SaveReport::SaveSuccess);
+
+    song.reset();
+
+    SyncBundle bdl;
+    s->load_file(save_name, bdl, engine.get());
+
+    while( !bdl.done ) {
+	sleep(1);
+    }
+
+    if(bdl.error) {
+	BOOST_ERROR(bdl.error_message.toStdString());
+    }
+
+    BOOST_REQUIRE( ! bdl.error );
+
+    BOOST_ERROR("Need more tests...");
 }
 
 TEST_CASE( 050_save_pattern )
