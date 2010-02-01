@@ -631,135 +631,37 @@ namespace Tritium
 
 
 
-    int LocalFileMng::saveDrumkit( T<Drumkit>::shared_ptr info )
+    int LocalFileMng::saveDrumkit( T<Drumkit>::shared_ptr drumkit )
     {
         INFOLOG( "[saveDrumkit]" );
-        info->dump();   // debug
 
-        QVector<QString> tempVector(16);
+	T<Serializer>::auto_ptr serializer;
+	SyncSaveReport save_report;
 
-        QString sDrumkitDir = m_engine->get_preferences()->getDataDirectory() + "drumkits/" + info->getName();
+	serializer.reset( Serializer::create_standalone(m_engine) );
 
-        // check if the directory exists
-        QDir dir( sDrumkitDir );
-        if ( !dir.exists() ) {
-            dir.mkdir( sDrumkitDir );// create the drumkit directory
-            //mkdir( sDrumkitDir.c_str(), S_IRWXU );
-        } else {
+        QString sDrumkitDir = m_engine->get_preferences()->getDataDirectory() + "drumkits/" + drumkit->getName();
 
-            //warningLog( "[saveDrumkit] Cleaning directory " + sDrumkitDir );
-            // clear all the old files in the directory
-            //string clearCmd = "rm -f " + sDrumkitDir + "/*";
-            //system( clearCmd.c_str() );
-        }
+	serializer->save_drumkit(
+	    sDrumkitDir,
+	    drumkit,
+	    save_report,
+	    m_engine,
+	    true
+	    );
 
+	while( ! save_report.done ) {
+	    sleep(1);
+	}
 
-        // create the drumkit.xml file
-        QString sDrumkitXmlFilename = sDrumkitDir + QString( "/drumkit.xml" );
+	int rv;
+	if( save_report.status == SaveReport::SaveSuccess ) {
+	    rv = 0;
+	} else {
+	    rv = -1;
+	}
 
-        QDomDocument doc;
-        QDomProcessingInstruction header = doc.createProcessingInstruction( "xml", "version=\"1.0\" encoding=\"UTF-8\"");
-        doc.appendChild( header );
-
-        QDomElement rootNode = doc.createElement( "drumkit_info" );
-
-        writeXmlString( rootNode, "name", info->getName() );    // name
-        writeXmlString( rootNode, "author", info->getAuthor() );        // author
-        writeXmlString( rootNode, "info", info->getInfo() );    // info
-        writeXmlString( rootNode, "license", info->getLicense() );      // license
-
-        //QDomNode instrumentListNode( "instrumentList" );              // instrument list
-        QDomElement instrumentListNode = doc.createElement( "instrumentList" );
-
-        unsigned nInstrument = info->getInstrumentList()->get_size();
-        // INSTRUMENT NODE
-        for ( unsigned i = 0; i < nInstrument; i++ ) {
-            T<Instrument>::shared_ptr instr = info->getInstrumentList()->get( i );
-
-            for ( unsigned nLayer = 0; nLayer < MAX_LAYERS; nLayer++ ) {
-                InstrumentLayer *pLayer = instr->get_layer( nLayer );
-                if ( pLayer ) {
-                    T<Sample>::shared_ptr pSample = pLayer->get_sample();
-                    QString sOrigFilename = pSample->get_filename();
-
-                    QString sDestFilename = sOrigFilename;
-
-                    /*
-                      Till rev. 743, the samples got copied into the
-                      root of the drumkit folder.
-
-                      Now the sample gets only copied to the folder
-                      if it doesn't reside in a subfolder of the drumkit dir.
-                    */
-
-                    if( sOrigFilename.startsWith( sDrumkitDir ) ){
-                        INFOLOG("sample is already in drumkit dir");
-                        tempVector[ nLayer ] = sDestFilename.remove( sDrumkitDir + "/" );
-                    } else {
-                        int nPos = sDestFilename.lastIndexOf( '/' );
-                        sDestFilename = sDestFilename.mid( nPos + 1, sDestFilename.size() - nPos - 1 );
-                        sDestFilename = sDrumkitDir + "/" + sDestFilename;
-
-                        fileCopy( sOrigFilename, sDestFilename );
-                        tempVector[ nLayer ] = sDestFilename.remove( sDrumkitDir + "/" );
-                    }
-                }
-            }
-
-            QDomNode instrumentNode = doc.createElement( "instrument" );
-
-            LocalFileMng::writeXmlString( instrumentNode, "id", instr->get_id() );
-            LocalFileMng::writeXmlString( instrumentNode, "name", instr->get_name() );
-            LocalFileMng::writeXmlString( instrumentNode, "volume", QString("%1").arg( instr->get_volume() ) );
-            LocalFileMng::writeXmlBool( instrumentNode, "isMuted", instr->is_muted() );
-            LocalFileMng::writeXmlString( instrumentNode, "pan_L", QString("%1").arg( instr->get_pan_l() ) );
-            LocalFileMng::writeXmlString( instrumentNode, "pan_R", QString("%1").arg( instr->get_pan_r() ) );
-            LocalFileMng::writeXmlString( instrumentNode, "randomPitchFactor", QString("%1").arg( instr->get_random_pitch_factor() ) );
-            LocalFileMng::writeXmlString( instrumentNode, "gain", QString("%1").arg( instr->get_gain() ) );
-
-            LocalFileMng::writeXmlBool( instrumentNode, "filterActive", instr->is_filter_active() );
-            LocalFileMng::writeXmlString( instrumentNode, "filterCutoff", QString("%1").arg( instr->get_filter_cutoff() ) );
-            LocalFileMng::writeXmlString( instrumentNode, "filterResonance", QString("%1").arg( instr->get_filter_resonance() ) );
-
-            LocalFileMng::writeXmlString( instrumentNode, "Attack", QString("%1").arg( instr->get_adsr()->__attack ) );
-            LocalFileMng::writeXmlString( instrumentNode, "Decay", QString("%1").arg( instr->get_adsr()->__decay ) );
-            LocalFileMng::writeXmlString( instrumentNode, "Sustain", QString("%1").arg( instr->get_adsr()->__sustain ) );
-            LocalFileMng::writeXmlString( instrumentNode, "Release", QString("%1").arg( instr->get_adsr()->__release ) );
-
-            LocalFileMng::writeXmlString( instrumentNode, "muteGroup", QString("%1").arg( instr->get_mute_group() ) );
-
-            for ( unsigned nLayer = 0; nLayer < MAX_LAYERS; nLayer++ ) {
-                InstrumentLayer *pLayer = instr->get_layer( nLayer );
-                if ( pLayer == NULL ) continue;
-                // Sample *pSample = pLayer->get_sample();
-
-                QDomNode layerNode = doc.createElement( "layer" );
-                LocalFileMng::writeXmlString( layerNode, "filename", tempVector[ nLayer ] );
-                LocalFileMng::writeXmlString( layerNode, "min", QString("%1").arg( pLayer->get_min_velocity() ) );
-                LocalFileMng::writeXmlString( layerNode, "max", QString("%1").arg( pLayer->get_max_velocity() ) );
-                LocalFileMng::writeXmlString( layerNode, "gain", QString("%1").arg( pLayer->get_gain() ) );
-                LocalFileMng::writeXmlString( layerNode, "pitch", QString("%1").arg( pLayer->get_pitch() ) );
-
-                instrumentNode.appendChild( layerNode );
-            }
-
-            instrumentListNode.appendChild( instrumentNode );
-        }
-
-        rootNode.appendChild( instrumentListNode );
-
-        doc.appendChild( rootNode );
-
-        QFile file( sDrumkitXmlFilename );
-        if ( !file.open(QIODevice::WriteOnly) )
-            return 0;
-
-        QTextStream TextStream( &file );
-        doc.save( TextStream, 1 );
-
-        file.close();
-
-        return 0; // ok
+	return rv;
     }
 
     int LocalFileMng::savePlayList( const std::string& patternname)
