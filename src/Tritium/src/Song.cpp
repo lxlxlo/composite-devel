@@ -47,6 +47,7 @@
 #include <Tritium/Note.hpp>
 #include <Tritium/Engine.hpp>
 #include <Tritium/Serialization.hpp>
+#include <Tritium/ObjectBundle.hpp>
 
 #include <QDomDocument>
 
@@ -308,10 +309,65 @@ namespace Tritium
     ///Load a song from file
     T<Song>::shared_ptr Song::load( Engine* engine, const QString& filename )
     {
-	T<Song>::shared_ptr song;
+	using namespace Serialization;
 
-	SongReader reader;
-	song = reader.readSong( engine, filename );
+	class SyncObjectBundle : public ObjectBundle {
+	public:
+	    bool done;
+	    SyncObjectBundle() : done(false) {}
+	    void operator()() { done = true; }
+	};
+
+	T<Serializer>::auto_ptr serializer;
+	SyncObjectBundle bdl;
+
+	serializer.reset( Serializer::create_standalone(engine) );
+
+	serializer->load_file(
+	    filename,
+	    bdl,
+	    engine
+	    );
+
+	while( ! bdl.done ) {
+	    sleep(1);
+	}
+
+	T<Song>::shared_ptr song;
+	T<InstrumentList>::auto_ptr insts( new InstrumentList );
+
+	while( ! bdl.empty() ) {
+	    switch(bdl.peek_type()) {
+	    case ObjectItem::Song_t:
+		if( ! song ) {
+		    song = bdl.pop<Song>();
+		} else {
+		    ERRORLOG(QString("Serializer::load_file() yielded too many "
+				     "Song objects when loading '%1'")
+			     .arg(filename));
+		}
+		break;
+	    case ObjectItem::Instrument_t:
+		insts->add( bdl.pop<Instrument>() );
+		break;
+	    case ObjectItem::Pattern_t:
+		ERRORLOG(QString("Received unexpected pattern when "
+				 "loading song '%1'")
+			 .arg(filename));
+		break;
+	    case ObjectItem::LadspaFX_t:
+		ERRORLOG(QString("Received unexpected FX when "
+				 "loading song '%1'")
+			 .arg(filename));
+		break;
+	    default:
+		ERRORLOG(QString("Received unexpected object when "
+				 "loading song '%1'")
+			 .arg(filename));
+	    }
+	}
+
+	song->set_instrument_list(insts.release());
 
 	return song;
     }
