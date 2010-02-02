@@ -41,20 +41,6 @@ namespace Tritium
     class Pattern;
     class Song;
 
-    /**
-     * \brief Load a Hydrogen .h2song into memory.
-     */
-    class SongReader
-    {
-    public:
-	SongReader();
-	~SongReader();
-	T<Song>::shared_ptr readSong( Engine* engine, const QString& filename );
-
-    private:
-	QString m_sSongVersion;
-    };
-
     namespace Serialization
     {
 	class SerializationQueue : public WorkerThreadClient

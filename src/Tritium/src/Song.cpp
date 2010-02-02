@@ -51,8 +51,6 @@
 
 #include <QDomDocument>
 
-#include "SerializationPrivate.hpp"
-
 namespace Tritium
 {
 
@@ -668,12 +666,6 @@ namespace Tritium
     {
 	d->pat_mode->go_to_next_patterns();
     }
-
-    //::::::::::::::::::::
-
-    //-----------------------------------------------------------------------------
-    //	Implementation of SongReader class
-    //-----------------------------------------------------------------------------
 
     ////////////////////////////////////////////////////////////////
     // PatternModeList

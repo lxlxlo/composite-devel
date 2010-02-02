@@ -139,21 +139,6 @@ namespace Tritium
         std::vector<QString> m_allPatternList;
     };
 
-
-
-    /**
-     * Write XML file of a song
-     */
-    class SongWriter
-    {
-    public:
-        SongWriter();
-        ~SongWriter();
-
-        // Returns 0 on success.
-        int writeSong( Engine* engine, Song& song, const QString& filename );
-    };
-
 } // namespace Tritium
 
 #endif // TRITIUM_LOCALFILEMNG_HPP
