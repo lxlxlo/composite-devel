@@ -12,6 +12,7 @@ IF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
   FILE(GLOB_RECURSE test_HEADERS *.h ../Tritium/*.h ../src/*.h)
 
   CONFIGURE_FILE(test_config.hpp.in ${CMAKE_CURRENT_BINARY_DIR}/test_config.hpp @ONLY)
+  CONFIGURE_FILE(t_Serialization-default.h2song.in ${CMAKE_CURRENT_BINARY_DIR}/t_Serialization-default.h2song)
   INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
   LIST(APPEND test_LIST

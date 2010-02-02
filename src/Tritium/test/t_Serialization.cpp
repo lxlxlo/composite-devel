@@ -81,9 +81,9 @@ namespace THIS_NAMESPACE
 
     const char temp_dir[] = "t_Serialization_tmp";
     const char song_file_name[] = TEST_DATA_DIR "/t_Serialization.h2song";
+    const char song_master_default_name[] = TEST_BIN_DIR "/t_Serialization-default.h2song";
     const char pattern_file_name[] = TEST_DATA_DIR "/t_Serialization.h2pattern";
     const char drumkit_manifest_file_name[] = TEST_DATA_DIR "/t_Serialization-drumkit/drumkit.xml";
-
     /**
      * Recursively removes files and folders.
      *
@@ -770,7 +770,30 @@ TEST_CASE( 040_save_song )
 
     BOOST_REQUIRE( ! bdl.error );
 
-    BOOST_ERROR("Need more tests...");
+    /**
+     * There is a limitation in boost unit test.  Whenver we make a
+     * call to system(), the execution monitor will segfault if the
+     * return value is non-zero because we receive a SIGCHLD.  This
+     * can be disabled by setting the environment variable
+     * BOOST_TEST_CATCH_SYSTEM_ERRORS to "no" before running the test.
+     *
+     * The library currently plans to add BOOST_TEST_IGNORE_SIGCHLD
+     * environment variable.  I know of no programmatic solutions.  I
+     * tried setting the environment variable on-the-fly... but it has
+     * to be avail. for the start-up code.
+     *
+     * References:
+     * - Boost Test documentation on the Program Execution Monitor
+     * - http://lists.boost.org/boost-users/2008/09/40603.php
+     * - http://lists.boost.org/boost-users/2009/05/48043.php
+     */
+
+    #warning "TODO If this test fails, Boost might segfault."
+    QString check_cmd = QString("diff -w \"%1\" \"%2\"")
+	.arg(song_master_default_name)
+	.arg(save_name);
+    int rv = system(check_cmd.toLocal8Bit());
+    CK(rv == 0);
 }
 
 TEST_CASE( 050_save_pattern )

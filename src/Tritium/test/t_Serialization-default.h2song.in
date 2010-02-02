@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<song>
+ <version>@VERSION@</version>
+ <bpm>120</bpm>
+ <volume>0.5</volume>
+ <metronomeVolume>0.5</metronomeVolume>
+ <name>empty</name>
+ <author>Tritium</author>
+ <notes>...</notes>
+ <license></license>
+ <loopEnabled>false</loopEnabled>
+ <mode>pattern</mode>
+ <humanize_time>0</humanize_time>
+ <humanize_velocity>0</humanize_velocity>
+ <swing_factor>0</swing_factor>
+ <instrumentList>
+  <instrument>
+   <id></id>
+   <drumkit></drumkit>
+   <name>New instrument</name>
+   <volume>1</volume>
+   <isMuted>false</isMuted>
+   <pan_L>1</pan_L>
+   <pan_R>1</pan_R>
+   <gain>1</gain>
+   <filterActive>false</filterActive>
+   <filterCutoff>1</filterCutoff>
+   <filterResonance>0</filterResonance>
+   <FX1Level>0</FX1Level>
+   <FX2Level>0</FX2Level>
+   <FX3Level>0</FX3Level>
+   <FX4Level>0</FX4Level>
+   <Attack>0</Attack>
+   <Decay>0</Decay>
+   <Sustain>1</Sustain>
+   <Release>1000</Release>
+   <randomPitchFactor>0</randomPitchFactor>
+   <muteGroup>-1</muteGroup>
+  </instrument>
+ </instrumentList>
+ <patternList>
+  <pattern>
+   <name>Pattern 1</name>
+   <category>not_categorized</category>
+   <size>192</size>
+   <noteList/>
+  </pattern>
+ </patternList>
+ <patternSequence>
+  <group>
+   <patternID>Pattern 1</patternID>
+  </group>
+ </patternSequence>
+ <ladspa>
+  <fx>
+   <name>no plugin</name>
+   <filename>-</filename>
+   <enabled>false</enabled>
+   <volume>0.0</volume>
+  </fx>
+  <fx>
+   <name>no plugin</name>
+   <filename>-</filename>
+   <enabled>false</enabled>
+   <volume>0.0</volume>
+  </fx>
+  <fx>
+   <name>no plugin</name>
+   <filename>-</filename>
+   <enabled>false</enabled>
+   <volume>0.0</volume>
+  </fx>
+  <fx>
+   <name>no plugin</name>
+   <filename>-</filename>
+   <enabled>false</enabled>
+   <volume>0.0</volume>
+  </fx>
+ </ladspa>
+</song>
