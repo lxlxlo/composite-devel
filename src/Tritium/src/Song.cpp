@@ -46,6 +46,7 @@
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/Engine.hpp>
+#include <Tritium/Serialization.hpp>
 
 #include <QDomDocument>
 
@@ -320,14 +321,37 @@ namespace Tritium
     /// Save a song to file
     bool Song::save( Engine* engine, const QString& filename )
     {
-	SongWriter writer;
-	int err;
-	err = writer.writeSong( engine, *this, filename );
+	using namespace Serialization;
 
-	if( err ) {
+	class SyncSaveReport : public SaveReport {
+	public:
+	    bool done;
+	    SyncSaveReport() : done(false) {}
+	    void operator()() { done = true; }
+	};
+
+	T<Serializer>::auto_ptr serializer;
+	SyncSaveReport ssr;
+
+	serializer.reset(Serializer::create_standalone(engine));
+
+	serializer->save_song(
+	    filename,
+	    shared_from_this(),
+	    ssr,
+	    engine,
+	    true
+	    );
+
+	while( ! ssr.done ) {
+	    sleep(1);
+	}
+
+	if( ssr.status != SaveReport::SaveSuccess ) {
 	    return false;
 	}
-	return QFile::exists( filename );
+
+	return true;
     }
 
 

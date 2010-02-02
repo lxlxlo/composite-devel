@@ -28,6 +28,7 @@
 #include <map>
 #include <stdint.h>
 #include <Tritium/memory.hpp>
+#include <boost/enable_shared_from_this.hpp> // Workaround for Song::save() method
 
 namespace Tritium
 {
@@ -45,7 +46,7 @@ class Engine;
 /**
  *\brief Song (sequence) class.
  */
-class Song
+class Song : public boost::enable_shared_from_this<Song>
 {
 public:
     class SongPrivate;
