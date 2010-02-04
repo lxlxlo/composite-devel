@@ -48,6 +48,7 @@
 #include <Tritium/Engine.hpp>
 #include <Tritium/Serialization.hpp>
 #include <Tritium/ObjectBundle.hpp>
+#include <Tritium/Sampler.hpp>
 
 #include <QDomDocument>
 
@@ -69,7 +70,6 @@ namespace Tritium
 	, metronome_volume( 0.5 )
 	, pattern_list()
 	, pattern_group_sequence()
-	, instrument_list()
 	, filename( "" )
 	, is_loop_enabled( false )
 	, humanize_time_value( 0.0 )
@@ -81,7 +81,6 @@ namespace Tritium
 	pat_mode.reset( new PatternModeManager );
 	pattern_list.reset( new PatternList );
 	pattern_group_sequence.reset( new Song::pattern_group_t );
-	instrument_list.reset( new InstrumentList );
     }
 
     Song::SongPrivate::~SongPrivate()
@@ -219,16 +218,6 @@ namespace Tritium
 	d->pattern_group_sequence = vect;
     }
 
-    InstrumentList* Song::get_instrument_list()
-    {
-	return d->instrument_list.get();
-    }
-
-    void Song::set_instrument_list( InstrumentList *list )
-    {
-	d->instrument_list.reset( list );
-    }
-
     void Song::set_notes( const QString& notes )
     {
 	d->notes = notes;
@@ -332,7 +321,8 @@ namespace Tritium
 	}
 
 	T<Song>::shared_ptr song;
-	T<InstrumentList>::auto_ptr insts( new InstrumentList );
+	T<Sampler>::shared_ptr sampler = engine->get_sampler();
+	sampler->get_instrument_list()->clear();
 
 	while( ! bdl.empty() ) {
 	    switch(bdl.peek_type()) {
@@ -346,7 +336,7 @@ namespace Tritium
 		}
 		break;
 	    case ObjectItem::Instrument_t:
-		insts->add( bdl.pop<Instrument>() );
+		sampler->add_instrument( bdl.pop<Instrument>() );
 		break;
 	    case ObjectItem::Pattern_t:
 		ERRORLOG(QString("Received unexpected pattern when "
@@ -364,8 +354,6 @@ namespace Tritium
 			 .arg(filename));
 	    }
 	}
-
-	song->set_instrument_list(insts.release());
 
 	return song;
     }
@@ -422,11 +410,11 @@ namespace Tritium
 	song->set_humanize_velocity_value( 0.0 );
 	song->set_swing_factor( 0.0 );
 
-	InstrumentList* pList = new InstrumentList();
-	T<Instrument>::shared_ptr pNewInstr( new Instrument(QString( 0 ), "New instrument", new ADSR()) );
-	pList->add( pNewInstr );
-	song->set_instrument_list( pList );
-		
+	T<InstrumentList>::shared_ptr inst_list = engine->get_sampler()->get_instrument_list();
+	inst_list->clear();
+	T<Instrument>::shared_ptr inst( new Instrument( QString(0), "New instrument", new ADSR ) );
+	inst_list->add(inst);
+
 #ifdef JACK_SUPPORT
 	engine->renameJackPorts();
 #endif

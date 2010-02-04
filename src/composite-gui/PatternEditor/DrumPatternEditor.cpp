@@ -26,6 +26,7 @@
 #include <Tritium/globals.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/Engine.hpp>
+#include <Tritium/Sampler.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/Instrument.hpp>
@@ -144,7 +145,9 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 		return;
 	}
 	T<Song>::shared_ptr pSong = g_engine->getSong();
-	int nInstruments = pSong->get_instrument_list()->get_size();
+	T<InstrumentList>::shared_ptr instrument_list = g_engine->get_sampler()->get_instrument_list();
+
+	int nInstruments = instrument_list->get_size();
 
 	int row = (int)( ev->y()  / (float)m_nGridHeight);
 	if (row >= nInstruments) {
@@ -157,7 +160,7 @@ void DrumPatternEditor::mousePressEvent(QMouseEvent *ev)
 		update( 0, 0, width(), height() );
 		return;
 	}
-	T<Instrument>::shared_ptr pSelectedInstrument = pSong->get_instrument_list()->get( row );
+	T<Instrument>::shared_ptr pSelectedInstrument = instrument_list->get( row );
 
 	if (ev->button() == Qt::LeftButton ) {
 		m_bRightBtnPressed = false;
@@ -340,9 +343,7 @@ void DrumPatternEditor::__draw_pattern(QPainter& painter)
 	int nSelectedInstrument = g_engine->getSelectedInstrumentNumber();
 	T<Song>::shared_ptr pSong = g_engine->getSong();
 
-	InstrumentList * pInstrList = pSong->get_instrument_list();
-
-	
+	T<InstrumentList>::shared_ptr pInstrList = g_engine->get_sampler()->get_instrument_list();
 
 	if ( m_nEditorHeight != (int)( m_nGridHeight * pInstrList->get_size() ) ) {
 		// the number of instruments is changed...recreate all
@@ -404,7 +405,7 @@ void DrumPatternEditor::__draw_note( uint pos, Note *note, QPainter& p )
 	p.setRenderHint( QPainter::Antialiasing );
 
 	int nInstrument = -1;
-	InstrumentList * pInstrList = g_engine->getSong()->get_instrument_list();
+	T<InstrumentList>::shared_ptr pInstrList = g_engine->get_sampler()->get_instrument_list();
 	for ( uint nInstr = 0; nInstr < pInstrList->get_size(); ++nInstr ) {
 		T<Instrument>::shared_ptr pInstr = pInstrList->get( nInstr );
 		if ( pInstr == note->get_instrument() ) {
@@ -548,7 +549,7 @@ void DrumPatternEditor::__draw_grid( QPainter& p )
 	static const QColor selectedRowColor( pStyle->m_patternEditor_selectedRowColor.getRed(), pStyle->m_patternEditor_selectedRowColor.getGreen(), pStyle->m_patternEditor_selectedRowColor.getBlue() );
 	int nSelectedInstrument = g_engine->getSelectedInstrumentNumber();
 	T<Song>::shared_ptr pSong = g_engine->getSong();
-	int nInstruments = pSong->get_instrument_list()->get_size();
+	int nInstruments = g_engine->get_sampler()->get_instrument_list()->get_size();
 	for ( uint i = 0; i < (uint)nInstruments; i++ ) {
 		uint y = m_nGridHeight * i + 1;
 		if ( i == (uint)nSelectedInstrument ) {
@@ -575,7 +576,7 @@ void DrumPatternEditor::__create_background( QPainter& p)
 	}
 
 	T<Song>::shared_ptr pSong = g_engine->getSong();
-	int nInstruments = pSong->get_instrument_list()->get_size();
+	int nInstruments = g_engine->get_sampler()->get_instrument_list()->get_size();
 
 	if ( m_nEditorHeight != (int)( m_nGridHeight * nInstruments ) ) {
 		// the number of instruments is changed...recreate all

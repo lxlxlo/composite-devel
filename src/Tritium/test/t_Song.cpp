@@ -27,6 +27,7 @@
 #include <Tritium/Logger.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Pattern.hpp>
+#include <Tritium/Sampler.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentList.hpp>
 
@@ -89,7 +90,6 @@ TEST_CASE( 010_defaults )
     // Pattern and Instrument
     CK( z->get_pattern_list()->get_size() == 0 );
     CK( z->get_pattern_group_vector()->size() == 0 );
-    CK( z->get_instrument_list()->get_size() == 0 );
     CK( z->get_notes() == "" );
     CK( z->is_loop_enabled() == false );
     CK( z->get_humanize_time_value() == 0.0 );
@@ -129,7 +129,7 @@ TEST_CASE( 010_defaults )
     // Pattern and Instrument
     CK( w->get_pattern_list()->get_size() == 1 );
     CK( w->get_pattern_group_vector()->size() == 1 );
-    CK( w->get_instrument_list()->get_size() == 1 );
+    CK( engine->get_sampler()->get_instrument_list()->get_size() == 1 );
     CK( w->get_notes() == "..." );
     CK( w->is_loop_enabled() == false );
     CK( w->get_humanize_time_value() == 0.0f );
@@ -172,7 +172,7 @@ TEST_CASE( 015_song_loading )
     // Pattern and Instrument
     CK( s->get_pattern_list()->get_size() == 3 );
     CK( s->get_pattern_group_vector()->size() == 8 );
-    CK( s->get_instrument_list()->get_size() == 32 );
+    CK( engine->get_sampler()->get_instrument_list()->get_size() == 32 );
     CK( s->get_notes() == "Jazzy..." );
     CK( s->is_loop_enabled() == true );
     CK( s->get_humanize_time_value() == 0.23f );
@@ -197,8 +197,8 @@ TEST_CASE( 015_song_loading )
     // Basic instrument loading.
     // (Detailed instrument loading should be done in a
     // a different test.  This is t_Song.)
-    Tritium::InstrumentList *list;
-    T<Tritium::Instrument>::shared_ptr inst;
+    T<InstrumentList>::shared_ptr list;
+    T<Instrument>::shared_ptr inst;
     const char* names[] = {
 	"Kick", "Stick", "Snare Jazz", "Hand Clap", "Snare Rock", "Tom Low",
 	"Closed HH", "Tom Mid", "Pedal HH", "Tom Hi", "Open HH", "Cowbell",
@@ -208,7 +208,7 @@ TEST_CASE( 015_song_loading )
     };
     int k;
 
-    list = s->get_instrument_list();
+    list = engine->get_sampler()->get_instrument_list();
     CK( list->get_size() == 32 );
     for(k=0 ; k<list->get_size() ; ++k) {
 	inst = list->get(k);

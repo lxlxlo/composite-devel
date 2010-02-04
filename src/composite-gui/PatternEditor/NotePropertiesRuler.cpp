@@ -21,6 +21,7 @@
 
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Engine.hpp>
+#include <Tritium/Sampler.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/Pattern.hpp>
@@ -111,11 +112,12 @@ void NotePropertiesRuler::mousePressEvent(QMouseEvent *ev)
 	T<Song>::shared_ptr pSong = (g_engine)->getSong();
 
 	Pattern::note_map_t::iterator pos;
+	T<InstrumentList>::shared_ptr instrument_list = g_engine->get_sampler()->get_instrument_list();
 	for ( pos = m_pPattern->note_map.lower_bound( column ); pos != m_pPattern->note_map.upper_bound( column ); ++pos ) {
 		Note *pNote = pos->second;
 		assert( pNote );
 		assert( (int)pos->first == column );
-		if ( pNote->get_instrument() != pSong->get_instrument_list()->get( nSelectedInstrument ) ) {
+		if ( pNote->get_instrument() != instrument_list->get( nSelectedInstrument ) ) {
 			continue;
 		}
 
@@ -205,11 +207,12 @@ void NotePropertiesRuler::wheelEvent(QWheelEvent *ev)
 	T<Song>::shared_ptr pSong = (g_engine)->getSong();
 
 	Pattern::note_map_t::iterator pos;
+	T<InstrumentList>::shared_ptr instrument_list = g_engine->get_sampler()->get_instrument_list();
 	for ( pos = m_pPattern->note_map.lower_bound( column ); pos != m_pPattern->note_map.upper_bound( column ); ++pos ) {
 		Note *pNote = pos->second;
 		assert( pNote );
 		assert( pos->first == column );
-		if ( pNote->get_instrument() != pSong->get_instrument_list()->get( nSelectedInstrument ) ) {
+		if ( pNote->get_instrument() != instrument_list->get( nSelectedInstrument ) ) {
 			continue;
 		}
 		if ( m_mode == VELOCITY ) {
@@ -421,10 +424,11 @@ void NotePropertiesRuler::createVelocityBackground(QPixmap *pixmap)
 		int nSelectedInstrument = g_engine->getSelectedInstrumentNumber();
 		T<Song>::shared_ptr pSong = g_engine->getSong();
 		Pattern::note_map_t::iterator pos;
+		T<InstrumentList>::shared_ptr instrument_list = g_engine->get_sampler()->get_instrument_list();
 		for ( pos = m_pPattern->note_map.begin(); pos != m_pPattern->note_map.end(); ++pos ) {
 			Note *pNote = pos->second;
 			assert( pNote );
-			if ( pNote->get_instrument() != pSong->get_instrument_list()->get( nSelectedInstrument ) ) {
+			if ( pNote->get_instrument() != instrument_list->get( nSelectedInstrument ) ) {
 				continue;
 			}
 
@@ -586,10 +590,11 @@ void NotePropertiesRuler::createPanBackground(QPixmap *pixmap)
 		T<Song>::shared_ptr pSong = g_engine->getSong();
 
 		Pattern::note_map_t::iterator pos;
+		T<InstrumentList>::shared_ptr instrument_list = g_engine->get_sampler()->get_instrument_list();
 		for ( pos = m_pPattern->note_map.begin(); pos != m_pPattern->note_map.end(); ++pos ) {
 			Note *pNote = pos->second;
 			assert( pNote );
-			if ( pNote->get_instrument() != pSong->get_instrument_list()->get( nSelectedInstrument ) ) {
+			if ( pNote->get_instrument() != instrument_list->get( nSelectedInstrument ) ) {
 				continue;
 			}
 			uint x_pos = 20 + pos->first * m_nGridWidth;
@@ -741,10 +746,11 @@ void NotePropertiesRuler::createLeadLagBackground(QPixmap *pixmap)
 		T<Song>::shared_ptr pSong = g_engine->getSong();
  
 		Pattern::note_map_t::iterator pos;
+		T<InstrumentList>::shared_ptr instrument_list = g_engine->get_sampler()->get_instrument_list();
 		for ( pos = m_pPattern->note_map.begin(); pos != m_pPattern->note_map.end(); ++pos ) {
 			Note *pNote = pos->second;
 			assert( pNote );
-			if ( pNote->get_instrument() != pSong->get_instrument_list()->get( nSelectedInstrument ) ) {
+			if ( pNote->get_instrument() != instrument_list->get( nSelectedInstrument ) ) {
 				continue;
 			}
 			uint x_pos = 20 + pos->first * m_nGridWidth;

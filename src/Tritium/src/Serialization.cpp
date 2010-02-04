@@ -31,6 +31,7 @@
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Engine.hpp>
 #include <Tritium/Sample.hpp>
+#include <Tritium/Sampler.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/SoundLibrary.hpp>
 #include <Tritium/fx/Effects.hpp>
@@ -317,11 +318,12 @@ void SerializationQueue::handle_save_song(SerializationQueue::event_data_t& ev)
 
     // instrument list
     QDomNode instrumentListNode = doc.createElement( "instrumentList" );
-    unsigned nInstrument = song.get_instrument_list()->get_size();
+    T<InstrumentList>::shared_ptr instrument_list = m_engine->get_sampler()->get_instrument_list();
+    unsigned nInstrument = instrument_list->get_size();
 
     // INSTRUMENT NODE
     for ( unsigned i = 0; i < nInstrument; i++ ) {
-	T<Instrument>::shared_ptr instr = song.get_instrument_list()->get( i );
+	T<Instrument>::shared_ptr instr = instrument_list->get( i );
 	assert( instr );
 
 	QDomNode instrumentNode = doc.createElement( "instrument" );
@@ -1006,7 +1008,7 @@ void SerializationQueue::handle_load_pattern(
 
     #warning "TODO: Converting InstrumentList to std::deque<>... not a great practice"
     deque< T<Instrument>::shared_ptr > insts;
-    InstrumentList* ilist = ev.engine->getSong()->get_instrument_list();
+    T<InstrumentList>::shared_ptr ilist = ev.engine->get_sampler()->get_instrument_list();
     for( unsigned k=0 ; k < ilist->get_size() ; ++k ) {
         insts.push_back( ilist->get(k) );
     }

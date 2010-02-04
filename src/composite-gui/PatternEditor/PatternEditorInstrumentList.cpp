@@ -23,6 +23,7 @@
 
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/Engine.hpp>
+#include <Tritium/Sampler.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/Note.hpp>
@@ -149,11 +150,9 @@ void InstrumentLine::setSoloed( bool soloed )
 
 void InstrumentLine::muteClicked()
 {
-	Engine *engine = g_engine;
-	T<Song>::shared_ptr song = engine->getSong();
-	InstrumentList *instrList = song->get_instrument_list();
+	T<Instrument>::shared_ptr pInstr = g_engine->get_sampler()->get_instrument_list()
+	    ->get(m_nInstrumentNumber);
 
-	T<Instrument>::shared_ptr pInstr = instrList->get(m_nInstrumentNumber);
 	pInstr->set_muted( !pInstr->is_muted());
 }
 
@@ -178,7 +177,8 @@ void InstrumentLine::mousePressEvent(QMouseEvent *ev)
 		const float fPitch = 0.0f;
 		T<Song>::shared_ptr pSong = g_engine->getSong();
 		
-		T<Instrument>::shared_ptr pInstr = pSong->get_instrument_list()->get( m_nInstrumentNumber );
+		T<Instrument>::shared_ptr pInstr = g_engine->get_sampler()
+		    ->get_instrument_list()->get( m_nInstrumentNumber );
 		
 		Note *pNote = new Note( pInstr, velocity, pan_L, pan_R, nLength, fPitch);
 		g_engine->midi_noteOn(pNote);
@@ -218,7 +218,7 @@ void InstrumentLine::functionClearNotes()
 	T<Pattern>::shared_ptr pCurrentPattern = getCurrentPattern();
 
 	int nSelectedInstrument = m_nInstrumentNumber;
-	T<Instrument>::shared_ptr pSelectedInstrument = H->getSong()->get_instrument_list()->get( nSelectedInstrument );
+	T<Instrument>::shared_ptr pSelectedInstrument = H->get_sampler()->get_instrument_list()->get( nSelectedInstrument );
 	
 	pCurrentPattern->purge_instrument( pSelectedInstrument, H );
 // 	Pattern::note_map_t::iterator pos;
@@ -269,12 +269,13 @@ void InstrumentLine::functionFillNotes()
 	T<Song>::shared_ptr pSong = pEngine->getSong();
 
 	T<Pattern>::shared_ptr pCurrentPattern = getCurrentPattern();
+	T<InstrumentList>::shared_ptr instrument_list = g_engine->get_sampler()->get_instrument_list();
 	if (pCurrentPattern != NULL) {
 		int nPatternSize = pCurrentPattern->get_length();
 		int nSelectedInstrument = pEngine->getSelectedInstrumentNumber();
 
 		if (nSelectedInstrument != -1) {
-			T<Instrument>::shared_ptr instrRef = (pSong->get_instrument_list())->get( nSelectedInstrument );
+			T<Instrument>::shared_ptr instrRef = instrument_list->get( nSelectedInstrument );
 
 			for (int i = 0; i < nPatternSize; i += nResolution) {
 				bool noteAlreadyPresent = false;
@@ -329,12 +330,13 @@ void InstrumentLine::functionRandomizeVelocity()
 	T<Song>::shared_ptr pSong = pEngine->getSong();
 
 	T<Pattern>::shared_ptr pCurrentPattern = getCurrentPattern();
+	T<InstrumentList>::shared_ptr instrument_list = g_engine->get_sampler()->get_instrument_list();
 	if (pCurrentPattern != NULL) {
 		int nPatternSize = pCurrentPattern->get_length();
 		int nSelectedInstrument = pEngine->getSelectedInstrumentNumber();
 
 		if (nSelectedInstrument != -1) {
-			T<Instrument>::shared_ptr instrRef = (pSong->get_instrument_list())->get( nSelectedInstrument );
+			T<Instrument>::shared_ptr instrRef = instrument_list->get( nSelectedInstrument );
 
 			for (int i = 0; i < nPatternSize; i += nResolution) {
 				Pattern::note_map_t::iterator pos;
@@ -443,7 +445,7 @@ void PatternEditorInstrumentList::moveInstrumentLine( int nSourceInstrument , in
 		g_engine->lock( RIGHT_HERE );
 
 		T<Song>::shared_ptr pSong = engine->getSong();
-		InstrumentList *pInstrumentList = pSong->get_instrument_list();
+		T<InstrumentList>::shared_ptr pInstrumentList = g_engine->get_sampler()->get_instrument_list();
 
 		if ( ( nTargetInstrument > (int)pInstrumentList->get_size() ) || ( nTargetInstrument < 0) ) {
 			g_engine->unlock();
@@ -488,7 +490,7 @@ void PatternEditorInstrumentList::updateInstrumentLines()
 
 	Engine *pEngine = g_engine;
 	T<Song>::shared_ptr pSong = pEngine->getSong();
-	InstrumentList *pInstrList = pSong->get_instrument_list();
+	T<InstrumentList>::shared_ptr pInstrList = g_engine->get_sampler()->get_instrument_list();
 	Mixer * mixer = CompositeApp::get_instance()->getMixer();
 
 	unsigned nSelectedInstr = pEngine->getSelectedInstrumentNumber();
@@ -540,8 +542,8 @@ void PatternEditorInstrumentList::dragEnterEvent(QDragEnterEvent *event)
 {
 	INFOLOG( "[dragEnterEvent]" );
 	if ( event->mimeData()->hasFormat("text/plain") ) {
-		T<Song>::shared_ptr song = (g_engine)->getSong();
-		int nInstruments = song->get_instrument_list()->get_size();
+		T<InstrumentList>::shared_ptr instrument_list = g_engine->get_sampler()->get_instrument_list();
+		int nInstruments = instrument_list->get_size();
 		if ( nInstruments < MAX_INSTRUMENTS ) {
 			event->acceptProposedAction();
 		}
@@ -586,8 +588,9 @@ void PatternEditorInstrumentList::dropEvent(QDropEvent *event)
 
 		// create a new valid ID for this instrument
 		int nID = -1;
-		for ( uint i = 0; i < pEngine->getSong()->get_instrument_list()->get_size(); ++i ) {
-			T<Instrument>::shared_ptr pInstr = pEngine->getSong()->get_instrument_list()->get( i );
+		T<InstrumentList>::shared_ptr instrument_list = g_engine->get_sampler()->get_instrument_list();
+		for ( uint i = 0; i < instrument_list->get_size(); ++i ) {
+			T<Instrument>::shared_ptr pInstr = instrument_list->get( i );
 			if ( pInstr->get_id().toInt() > nID ) {
 				nID = pInstr->get_id().toInt();
 			}
@@ -597,7 +600,7 @@ void PatternEditorInstrumentList::dropEvent(QDropEvent *event)
 		pNewInstrument->set_id( QString("%1").arg( nID ) );
 
 		g_engine->lock( RIGHT_HERE );
-		pEngine->getSong()->get_instrument_list()->add( pNewInstrument );
+		pEngine->get_sampler()->add_instrument( pNewInstrument );
 
 		#ifdef JACK_SUPPORT
 		pEngine->renameJackPorts();
@@ -616,7 +619,7 @@ void PatternEditorInstrumentList::dropEvent(QDropEvent *event)
 		if (  event->pos().x() > 181 ) nTargetInstrument = ( event->pos().y() - 90 )  / m_nGridHeight ;
 
 		//move instrument to the position where it was dropped
-		moveInstrumentLine(pEngine->getSong()->get_instrument_list()->get_size() - 1 , nTargetInstrument );
+		moveInstrumentLine(pEngine->get_sampler()->get_instrument_list()->get_size() - 1 , nTargetInstrument );
 
 
 
@@ -650,7 +653,7 @@ void PatternEditorInstrumentList::mouseMoveEvent(QMouseEvent *event)
 
 	Engine *pEngine = g_engine;
 	int nSelectedInstr = pEngine->getSelectedInstrumentNumber();
-	T<Instrument>::shared_ptr pInstr = pEngine->getSong()->get_instrument_list()->get(nSelectedInstr);
+	T<Instrument>::shared_ptr pInstr = pEngine->get_sampler()->get_instrument_list()->get(nSelectedInstr);
 
 	QString sText = QString("move instrument:%1").arg( pInstr->get_name() );
 

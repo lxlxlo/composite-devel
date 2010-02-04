@@ -270,7 +270,7 @@ void Instrument::load_from_name(
     assert( pDrumkitInfo );
 
     // find the instrument
-    InstrumentList *pInstrList = pDrumkitInfo->getInstrumentList();
+    T<InstrumentList>::shared_ptr pInstrList = pDrumkitInfo->getInstrumentList();
     for ( unsigned nInstr = 0; nInstr < pInstrList->get_size(); ++nInstr ) {
 	pInstr = pInstrList->get( nInstr );
 	if ( pInstr->get_name() == instrument_name ) {

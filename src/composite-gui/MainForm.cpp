@@ -21,6 +21,7 @@
 #include "version.h"
 
 #include <Tritium/Engine.hpp>
+#include <Tritium/Sampler.hpp>
 #include <Tritium/Transport.hpp>
 #include <Tritium/Playlist.hpp>
 #include <Tritium/ADSR.hpp>
@@ -405,7 +406,7 @@ void MainForm::action_file_export_pattern_as()
 	T<Song>::shared_ptr song = engine->getSong();
 	T<Pattern>::shared_ptr pat = song->get_pattern_list()->get ( selectedpattern );
 
-	T<Instrument>::shared_ptr instr = song->get_instrument_list()->get ( 0 );
+	T<Instrument>::shared_ptr instr = g_engine->get_sampler()->get_instrument_list()->get ( 0 );
 	assert ( instr );
 
 	QDir dir  = g_engine->get_preferences()->__lastspatternDirectory;
@@ -514,7 +515,7 @@ void MainForm::action_file_openPattern()
 	T<Song>::shared_ptr song = engine->getSong();
 	PatternList *pPatternList = song->get_pattern_list();
 
-	T<Instrument>::shared_ptr instr = song->get_instrument_list()->get ( 0 );
+	T<Instrument>::shared_ptr instr = g_engine->get_sampler()->get_instrument_list()->get ( 0 );
 	assert ( instr );
 
 	QDir dirPattern( g_engine->get_preferences()->getDataDirectory() + "/patterns" );
@@ -636,7 +637,7 @@ void MainForm::action_window_showSongEditor()
 void MainForm::action_instruments_addInstrument()
 {
 	g_engine->lock( RIGHT_HERE );
-	InstrumentList* pList = g_engine->getSong()->get_instrument_list();
+	T<InstrumentList>::shared_ptr pList = g_engine->get_sampler()->get_instrument_list();
 
 	// create a new valid ID for this instrument
 	int nID = -1;
@@ -686,7 +687,7 @@ void MainForm::action_instruments_clearAll()
 	// Remove all layers
 	g_engine->lock( RIGHT_HERE );
 	T<Song>::shared_ptr pSong = g_engine->getSong();
-	InstrumentList* pList = pSong->get_instrument_list();
+	T<InstrumentList>::shared_ptr pList = g_engine->get_sampler()->get_instrument_list();
 	for (uint i = 0; i < pList->get_size(); i++) {
 		T<Instrument>::shared_ptr pInstr = pList->get( i );
 		pInstr->set_name( (QString( trUtf8( "Instrument %1" ) ).arg( i + 1 )) );
@@ -1256,7 +1257,9 @@ void MainForm::action_file_export_midi()
 
 		// create the Standard Midi File object
 		SMFWriter *pSmfWriter = new SMFWriter();
-		pSmfWriter->save( sFilename, pSong );
+		T<InstrumentList>::shared_ptr instrument_list =
+		    g_engine->get_sampler()->get_instrument_list();
+		pSmfWriter->save( sFilename, pSong, instrument_list );
 
 		delete pSmfWriter;
 	}

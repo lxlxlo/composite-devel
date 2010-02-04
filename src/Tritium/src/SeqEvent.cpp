@@ -30,7 +30,6 @@ bool SeqEvent::operator==(const SeqEvent& o) const
     return ((frame == o.frame)
 	    && (type == o.type)
 	    && (quantize == o.quantize)
-	    && (instrument_index == o.instrument_index)
 	    && (note.get_instrument() == o.note.get_instrument())
 	    && (note.get_velocity() == o.note.get_velocity()) );
 }
@@ -40,7 +39,6 @@ bool SeqEvent::operator!=(const SeqEvent& o) const
     return ((frame != o.frame)
 	    || (type != o.type)
 	    || (quantize != o.quantize)
-	    || (instrument_index != o.instrument_index)
 	    || (note.get_instrument() != o.note.get_instrument())
 	    || (note.get_velocity() != o.note.get_velocity()) );
 }

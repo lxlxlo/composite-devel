@@ -30,6 +30,7 @@
 #include "../widgets/PixmapWidget.hpp"
 
 #include <Tritium/Engine.hpp>
+#include <Tritium/Sampler.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/Song.hpp>
@@ -199,7 +200,7 @@ void Mixer::muteClicked(MixerLine* ref)
 
 	Engine *engine = g_engine;
 	T<Song>::shared_ptr song = engine->getSong();
-	InstrumentList *instrList = song->get_instrument_list();
+	T<InstrumentList>::shared_ptr instrList = g_engine->get_sampler()->get_instrument_list();
 
 	T<Instrument>::shared_ptr pInstr = instrList->get(nLine);
 	pInstr->set_muted( isMuteClicked);
@@ -213,7 +214,7 @@ void Mixer::soloClicked(MixerLine* ref)
 {
 	Engine *pEngine = g_engine;
 	T<Song>::shared_ptr pSong = pEngine->getSong();
-	InstrumentList *pInstrList = pSong->get_instrument_list();
+	T<InstrumentList>::shared_ptr pInstrList = g_engine->get_sampler()->get_instrument_list();
 	int nInstruments = pInstrList->get_size();
 
 	int nLine = findMixerLineByRef(ref);
@@ -291,7 +292,7 @@ void Mixer::noteOnClicked( MixerLine* ref )
 
 	Engine *engine = g_engine;
 	T<Song>::shared_ptr song = engine->getSong();
-	InstrumentList *instrList = song->get_instrument_list();
+	T<InstrumentList>::shared_ptr instrList = g_engine->get_sampler()->get_instrument_list();
 
 	const float fPitch = 0.0f;
 	Note *note = new Note( instrList->get(nLine), 1.0, 0.5f, 0.5f, -1, fPitch );
@@ -310,7 +311,7 @@ void Mixer::noteOnClicked( MixerLine* ref )
 
 	Engine *engine = g_engine;
 	T<Song>::shared_ptr song = engine->getSong();
-	InstrumentList *instrList = song->get_instrument_list();
+	T<InstrumentList>::shared_ptr instrList = g_engine->get_sampler()->get_instrument_list();
 
 	const float fPitch = 0.0f;
 	Note *note = new Note( instrList->get( nLine ), 1.0, 0.5, 0.5, -1, fPitch );
@@ -340,7 +341,7 @@ void Mixer::volumeChanged(MixerLine* ref)
 
 	Engine *engine = g_engine;
 	T<Song>::shared_ptr song = engine->getSong();
-	InstrumentList *instrList = song->get_instrument_list();
+	T<InstrumentList>::shared_ptr instrList = g_engine->get_sampler()->get_instrument_list();
 
 	T<Instrument>::shared_ptr instr = instrList->get(nLine);
 
@@ -368,7 +369,7 @@ void Mixer::updateMixer()
 
 	Engine *pEngine = g_engine;
 	T<Song>::shared_ptr pSong = pEngine->getSong();
-	InstrumentList *pInstrList = pSong->get_instrument_list();
+	T<InstrumentList>::shared_ptr pInstrList = g_engine->get_sampler()->get_instrument_list();
 
 	uint nSelectedInstr = pEngine->getSelectedInstrumentNumber();
 
@@ -622,7 +623,7 @@ void Mixer::panChanged(MixerLine* ref) {
 
 	Engine *engine = g_engine;
 	T<Song>::shared_ptr song = engine->getSong();
-	InstrumentList *instrList = song->get_instrument_list();
+	T<InstrumentList>::shared_ptr instrList = g_engine->get_sampler()->get_instrument_list();
 
 	T<Instrument>::shared_ptr instr = instrList->get(nLine);
 	instr->set_pan_l( pan_L );
@@ -640,7 +641,7 @@ void Mixer::knobChanged(MixerLine* ref, int nKnob) {
 
 	Engine *engine = g_engine;
 	T<Song>::shared_ptr song = engine->getSong();
-	InstrumentList *instrList = song->get_instrument_list();
+	T<InstrumentList>::shared_ptr instrList = g_engine->get_sampler()->get_instrument_list();
 	T<Instrument>::shared_ptr pInstr = instrList->get(nLine);
 	pInstr->set_fx_level( ref->getFXLevel(nKnob), nKnob );
 	QString sInfo = trUtf8( "Set FX %1 level ").arg( nKnob + 1 );

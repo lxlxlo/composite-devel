@@ -96,10 +96,7 @@ void SamplerPrivate::handle_note_on(const SeqEvent& ev)
 	pInstr->enqueue();
 	current_notes.push_back( ev.note );
 	current_notes.back().m_nSilenceOffset = ev.frame;
-	current_notes.back().m_uInstrumentIndex = ev.instrument_index;
 	current_notes.back().m_nReleaseOffset = (uint32_t)-1;
-	assert(ev.instrument_index >= 0);
-	assert(ev.instrument_index < MAX_INSTRUMENTS);
 }
 
 void SamplerPrivate::handle_note_off(const SeqEvent& ev)
@@ -767,4 +764,20 @@ void Sampler::preview_instrument( T<Instrument>::shared_ptr instr )
 
 	note_on( previewNote );	// exclusive note
 	d->engine->unlock();
+}
+
+/**
+ * \brief Convenience method for adding an instrument to the sampler.
+ */
+void Sampler::add_instrument(T<Instrument>::shared_ptr instr)
+{
+    d->instrument_list->add(instr);
+}
+
+/**
+ * \brief Direct access to the instruments in the sampler.
+ */
+T<InstrumentList>::shared_ptr Sampler::get_instrument_list()
+{
+    return d->instrument_list;
 }

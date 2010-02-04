@@ -30,6 +30,7 @@
 #include <Tritium/globals.hpp>
 #include <Tritium/ADSR.hpp>
 #include <Tritium/Sample.hpp>
+#include <Tritium/Sampler.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentLayer.hpp>
 #include <Tritium/InstrumentList.hpp>
@@ -342,7 +343,7 @@ void InstrumentEditor::selectedInstrumentChangedEvent()
 
 	T<Song>::shared_ptr pSong = g_engine->getSong();
 	if (pSong != NULL) {
-		InstrumentList *pInstrList = pSong->get_instrument_list();
+		T<InstrumentList>::shared_ptr pInstrList = g_engine->get_sampler()->get_instrument_list();
 		int nInstr = g_engine->getSelectedInstrumentNumber();
 		if ( nInstr >= (int)pInstrList->get_size() ) {
 			nInstr = -1;
@@ -605,9 +606,9 @@ void InstrumentEditor::loadLayer()
 			T<Instrument>::shared_ptr pInstr;
 	
 			g_engine->lock( RIGHT_HERE );
-			T<Song>::shared_ptr song = engine->getSong();
-			InstrumentList *instrList = song->get_instrument_list();
-			pInstr = instrList->get( engine->getSelectedInstrumentNumber() );
+			T<Song>::shared_ptr song = g_engine->getSong();
+			T<InstrumentList>::shared_ptr instrList = g_engine->get_sampler()->get_instrument_list();
+			pInstr = instrList->get( g_engine->getSelectedInstrumentNumber() );
 	
 			/* 
 				if we're using multiple layers, we start inserting the first layer 

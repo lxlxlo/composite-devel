@@ -28,31 +28,29 @@
 namespace Tritium
 {
 
-class InstrumentList;
+    class InstrumentList;
 
 
-/**
-\ingroup H2CORE
-\brief	SoundLibrary class.
-*/
-class SoundLibrary
-{
-public:
+    /**
+     * \brief	SoundLibrary class.
+     */
+    class SoundLibrary
+    {
+    public:
 	SoundLibrary();
 	~SoundLibrary();
 
-private:
-};
+    private:
+    };
 
-class Engine;
+    class Engine;
 
-/**
-\ingroup H2CORE
-\brief	Drumkit info
-*/
-class Drumkit
-{
-public:
+    /**
+     * \brief	Drumkit info
+     */
+    class Drumkit
+    {
+    public:
 	Drumkit();
 	~Drumkit();
 
@@ -75,50 +73,50 @@ public:
 	/// Remove a Drumkit from the disk
 	static void removeDrumkit( Engine* engine, const QString& sDrumkitName );
 
-	InstrumentList *getInstrumentList() {
-		return m_pInstrumentList;
+	T<InstrumentList>::shared_ptr getInstrumentList() {
+	    return m_pInstrumentList;
 	}
-	void setInstrumentList( InstrumentList* instr ) {
-		this->m_pInstrumentList = instr;
+	void setInstrumentList( T<InstrumentList>::shared_ptr instr ) {
+	    this->m_pInstrumentList = instr;
 	}
 
 	void setName( const QString& name ) {
-		this->m_sName = name;
+	    this->m_sName = name;
 	}
 	const QString& getName() {
-		return m_sName;
+	    return m_sName;
 	}
 
 	void setAuthor( const QString& author ) {
-		this->m_sAuthor = author;
+	    this->m_sAuthor = author;
 	}
 	const QString& getAuthor() {
-		return m_sAuthor;
+	    return m_sAuthor;
 	}
 
 	void setInfo( const QString& info ) {
-		this->m_sInfo = info;
+	    this->m_sInfo = info;
 	}
 	const QString& getInfo() {
-		return m_sInfo;
+	    return m_sInfo;
 	}
 
 	void setLicense( const QString& license ) {
-		this->m_sLicense = license;
+	    this->m_sLicense = license;
 	}
 	const QString& getLicense() {
-		return m_sLicense;
+	    return m_sLicense;
 	}
 
 	void dump();
 
-private:
-	InstrumentList *m_pInstrumentList;
+    private:
+	T<InstrumentList>::shared_ptr m_pInstrumentList;
 	QString m_sName;
 	QString m_sAuthor;
 	QString m_sInfo;
 	QString m_sLicense;
-};
+    };
 
 } // namespace Tritium
 

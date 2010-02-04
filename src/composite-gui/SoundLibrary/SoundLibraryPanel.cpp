@@ -178,7 +178,7 @@ void SoundLibraryPanel::updateDrumkitList()
 				pDrumkitItem->setBackgroundColor( 0, QColor( 50, 50, 50) );
 			}
 
-			InstrumentList *pInstrList = pInfo->getInstrumentList();
+			T<InstrumentList>::shared_ptr pInstrList = pInfo->getInstrumentList();
 			for ( uint nInstr = 0; nInstr < pInstrList->get_size(); ++nInstr ) {
 				T<Instrument>::shared_ptr pInstr = pInstrList->get( nInstr );
 
@@ -205,7 +205,7 @@ void SoundLibraryPanel::updateDrumkitList()
 				pDrumkitItem->setBackgroundColor( 0, QColor( 50, 50, 50) );
 			}
 
-			InstrumentList *pInstrList = pInfo->getInstrumentList();
+			T<InstrumentList>::shared_ptr pInstrList = pInfo->getInstrumentList();
 			for ( uint nInstr = 0; nInstr < pInstrList->get_size(); ++nInstr ) {
 				T<Instrument>::shared_ptr pInstr = pInstrList->get( nInstr );
 

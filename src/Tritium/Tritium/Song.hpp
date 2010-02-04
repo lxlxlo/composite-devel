@@ -102,9 +102,6 @@ public:
     static T<Song>::shared_ptr load( Engine* engine, const QString& sFilename );
     bool save( Engine* engine, const QString& sFilename );
 
-    InstrumentList* get_instrument_list();
-    void set_instrument_list( InstrumentList *list );
-
     void set_notes( const QString& notes );
     const QString& get_notes();
 

@@ -101,9 +101,6 @@ namespace Tritium
             ev.type = SeqEvent::NOTE_ON;
             ev.note = *pNote;
             ev.quantize = quantize;
-            ev.instrument_index =
-                m_engine->getSong()
-                ->get_instrument_list()->get_pos( pNote->get_instrument() );
             __events.push_back(ev);
         }
 
@@ -114,9 +111,6 @@ namespace Tritium
             ev.type = SeqEvent::NOTE_OFF;
             ev.note = *pNote;
             ev.quantize = quantize;
-            ev.instrument_index =
-                m_engine->getSong()
-                ->get_instrument_list()->get_pos( pNote->get_instrument() );
             __events.push_back(ev);
         }
 
@@ -126,7 +120,6 @@ namespace Tritium
             __events.clear();
             ev.frame = 0;
             ev.type = SeqEvent::ALL_OFF;
-            ev.instrument_index = 0;
             __events.push_front(ev);
         }
 

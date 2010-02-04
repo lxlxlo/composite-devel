@@ -24,6 +24,7 @@
 #include <Tritium/Sampler.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/memory.hpp>
+#include <Tritium/InstrumentList.hpp>
 #include <cassert>
 
 namespace Tritium
@@ -36,6 +37,7 @@ namespace Tritium
 	Engine* engine;
 	typedef std::list<Note> NoteList;
 	NoteList current_notes;                // Replaces __playing_notes_queue
+	T<InstrumentList>::shared_ptr instrument_list;
 	T<Instrument>::shared_ptr preview_instrument;         // Replaces __preview_instrument
 #ifdef JACK_SUPPORT
 	float* track_out_L[ MAX_INSTRUMENTS ];  // Replaces __track_out_L
@@ -44,6 +46,7 @@ namespace Tritium
 	SamplerPrivate(Sampler* par, Engine* e_par) :
 	    parent( *par ),
 	    engine(e_par),
+	    instrument_list( new InstrumentList ),
 	    preview_instrument()
 	    { assert(e_par); }
 

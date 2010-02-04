@@ -143,7 +143,7 @@ void LayerPreview::selectedInstrumentChangedEvent()
 	g_engine->lock( RIGHT_HERE );
 	T<Song>::shared_ptr pSong = g_engine->getSong();
 	if (pSong != NULL) {
-		InstrumentList *pInstrList = pSong->get_instrument_list();
+		T<InstrumentList>::shared_ptr pInstrList = g_engine->get_sampler()->get_instrument_list();
 		int nInstr = g_engine->getSelectedInstrumentNumber();
 		if ( nInstr >= (int)pInstrList->get_size() ) {
 			nInstr = -1;

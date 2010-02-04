@@ -93,3 +93,14 @@ void InstrumentList::del( int pos )
     assert( pos >= 0 );
     m_list.erase( m_list.begin() + pos );
 }
+
+/**
+ * Removes all instruments from the list.
+ */
+void InstrumentList::clear()
+{
+    unsigned size = get_size();
+    while( size-- > 0 ) {
+	del(size);
+    }
+}

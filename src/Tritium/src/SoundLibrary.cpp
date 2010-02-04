@@ -26,6 +26,7 @@
 #include <Tritium/InstrumentLayer.hpp>
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/Sample.hpp>
+#include <Tritium/Sampler.hpp>
 #include <Tritium/LocalFileMng.hpp>
 #include <Tritium/H2Exception.hpp>
 #include <Tritium/Engine.hpp>
@@ -69,7 +70,7 @@ SoundLibrary::~SoundLibrary()
 
 
 
-Drumkit::Drumkit() : m_pInstrumentList( NULL )
+Drumkit::Drumkit()
 {
 }
 
@@ -77,7 +78,6 @@ Drumkit::Drumkit() : m_pInstrumentList( NULL )
 
 Drumkit::~Drumkit()
 {
-	delete m_pInstrumentList;
 }
 
 
@@ -248,8 +248,8 @@ void Drumkit::save( Engine* engine, const QString& sName, const QString& sAuthor
 	pDrumkitInfo->setLicense( sLicense );
 
 	T<Song>::shared_ptr pSong = engine->getSong();
-	InstrumentList *pSongInstrList = pSong->get_instrument_list();
-	InstrumentList *pInstrumentList = new InstrumentList();
+	T<InstrumentList>::shared_ptr pSongInstrList = engine->get_sampler()->get_instrument_list();
+	T<InstrumentList>::shared_ptr pInstrumentList( new InstrumentList() );
 
 	for ( uint nInstrument = 0; nInstrument < pSongInstrList->get_size(); nInstrument++ ) {
 		T<Instrument>::shared_ptr pOldInstr = pSongInstrList->get( nInstrument );

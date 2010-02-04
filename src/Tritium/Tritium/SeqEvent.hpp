@@ -37,14 +37,12 @@ namespace Tritium
         enum { NOTE_ON, NOTE_OFF, ALL_OFF } type;
 	Note note;
 	bool quantize;
-	unsigned instrument_index;  // For tracking outputs.
 
 	SeqEvent() :
 	    frame(0),
 	    type(NOTE_ON),
 	    note(),
-	    quantize(false),
-	    instrument_index(0)
+	    quantize(false)
 	    {}
 
 	bool operator==(const SeqEvent& o) const;

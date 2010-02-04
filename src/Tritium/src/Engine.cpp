@@ -1047,7 +1047,7 @@ namespace Tritium
                                   uint32_t frame )
     {
         T<Preferences>::shared_ptr pref = get_preferences();
-        T<Instrument>::shared_ptr i = getSong()->get_instrument_list()->get(instrument);
+        T<Instrument>::shared_ptr i = d->m_sampler->get_instrument_list()->get(instrument);
         Note note( i,
                    velocity,
                    pan_L,
@@ -1270,10 +1270,10 @@ namespace Tritium
 
 
         //current instrument list
-        InstrumentList *songInstrList = d->m_pSong->get_instrument_list();
+        T<InstrumentList>::shared_ptr currInstrList = d->m_sampler->get_instrument_list();
 
         //new instrument list
-        InstrumentList *pDrumkitInstrList = drumkitInfo->getInstrumentList();
+        T<InstrumentList>::shared_ptr pDrumkitInstrList = drumkitInfo->getInstrumentList();
 
         /*
           If the old drumkit is bigger then the new drumkit,
@@ -1291,27 +1291,27 @@ namespace Tritium
           2. all not used instruments will complete deleted
 
           old funktion:
-          while ( pDrumkitInstrList->get_size() < songInstrList->get_size() )
+          while ( pDrumkitInstrList->get_size() < currInstrList->get_size() )
           {
-          songInstrList->del(songInstrList->get_size() - 1);
+          currInstrList->del(currInstrList->get_size() - 1);
           }
         */
 
         //needed for the new delete function
-        int instrumentDiff =  songInstrList->get_size() - pDrumkitInstrList->get_size();
+        int instrumentDiff =  currInstrList->get_size() - pDrumkitInstrList->get_size();
 
         for ( unsigned nInstr = 0; nInstr < pDrumkitInstrList->get_size(); ++nInstr ) {
             T<Instrument>::shared_ptr pInstr;
-            if ( nInstr < songInstrList->get_size() ) {
+            if ( nInstr < currInstrList->get_size() ) {
                 //instrument exists already
-                pInstr = songInstrList->get( nInstr );
+                pInstr = currInstrList->get( nInstr );
                 assert( pInstr );
             } else {
                 pInstr = Instrument::create_empty();
                 // The instrument isn't playing yet; no need for locking
                 // :-) - Jakob Lund.  lock(
                 // "Engine::loadDrumkit" );
-                songInstrList->add( pInstr );
+                currInstrList->add( pInstr );
                 // unlock();
             }
 
@@ -1332,7 +1332,7 @@ namespace Tritium
         if ( instrumentDiff >=0 ){
             for ( int i = 0; i < instrumentDiff ; i++ ){
                 removeInstrument(
-                    d->m_pSong->get_instrument_list()->get_size() - 1,
+                    d->m_sampler->get_instrument_list()->get_size() - 1,
                     true
                     );
             }
@@ -1354,7 +1354,7 @@ namespace Tritium
 //Engine::loadDrumkit to delete the instruments by number
     void Engine::removeInstrument( int instrumentnumber, bool conditional )
     {
-        T<Instrument>::shared_ptr pInstr = d->m_pSong->get_instrument_list()->get( instrumentnumber );
+        T<Instrument>::shared_ptr pInstr = d->m_sampler->get_instrument_list()->get( instrumentnumber );
 
 
         PatternList* pPatternList = getSong()->get_pattern_list();
@@ -1376,7 +1376,7 @@ namespace Tritium
         }
 
         T<Song>::shared_ptr pSong = getSong();
-        InstrumentList* pList = pSong->get_instrument_list();
+        T<InstrumentList>::shared_ptr pList = d->m_sampler->get_instrument_list();
         if(pList->get_size()==1){
             lock( RIGHT_HERE );
             T<Instrument>::shared_ptr zInstr = pList->get( 0 );
@@ -1395,13 +1395,12 @@ namespace Tritium
 
         // if the instrument was the last on the instruments list, select the
         // next-last
-        if ( instrumentnumber
-             >= (int)getSong()->get_instrument_list()->get_size() - 1 ) {
+        if ( instrumentnumber >= pList->get_size() - 1 ) {
             setSelectedInstrumentNumber(std::max(0, instrumentnumber - 1));
         }
         // delete the instrument from the instruments list
         lock( RIGHT_HERE );
-        getSong()->get_instrument_list()->del( instrumentnumber );
+        pList->del( instrumentnumber );
         getSong()->set_modified(true);
         unlock();
 

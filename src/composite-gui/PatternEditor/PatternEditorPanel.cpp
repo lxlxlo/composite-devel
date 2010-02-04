@@ -21,6 +21,7 @@
 
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Engine.hpp>
+#include <Tritium/Sampler.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/Pattern.hpp>
@@ -868,7 +869,7 @@ void PatternEditorPanel::moveUpBtnClicked(Button *)
 	g_engine->lock( RIGHT_HERE );
 
 	T<Song>::shared_ptr pSong = engine->getSong();
-	InstrumentList *pInstrumentList = pSong->get_instrument_list();
+	T<InstrumentList>::shared_ptr pInstrumentList = g_engine->get_sampler()->get_instrument_list();
 
 	if ( ( nSelectedInstrument - 1 ) >= 0 ) {
 		T<Instrument>::shared_ptr pTemp = pInstrumentList->get( nSelectedInstrument - 1 );
@@ -909,7 +910,7 @@ void PatternEditorPanel::moveDownBtnClicked(Button *)
 	g_engine->lock( RIGHT_HERE );
 
 	T<Song>::shared_ptr pSong = engine->getSong();
-	InstrumentList *pInstrumentList = pSong->get_instrument_list();
+	T<InstrumentList>::shared_ptr pInstrumentList = g_engine->get_sampler()->get_instrument_list();
 
 	if ( ( nSelectedInstrument + 1 ) < (int)pInstrumentList->get_size() ) {
 		T<Instrument>::shared_ptr pTemp = pInstrumentList->get( nSelectedInstrument + 1 );

@@ -53,6 +53,7 @@ namespace Tritium
 	unsigned get_size();
 
 	void del( int pos );
+	void clear();
 
 	void replace( T<Instrument>::shared_ptr pNewInstr, unsigned nPos );
 

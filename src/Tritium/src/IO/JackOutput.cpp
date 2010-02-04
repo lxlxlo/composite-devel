@@ -31,6 +31,7 @@
 #include <Tritium/Engine.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentList.hpp>
+#include <Tritium/Sampler.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/globals.hpp>
@@ -295,7 +296,7 @@ void JackOutput::makeTrackOutputs( T<Song>::shared_ptr song )
 			return;
 	///
 
-	InstrumentList * instruments = song->get_instrument_list();
+	T<InstrumentList>::shared_ptr instruments = m_engine->get_sampler()->get_instrument_list();
 	T<Instrument>::shared_ptr instr;
 	int nInstruments = ( int )instruments->get_size();
 

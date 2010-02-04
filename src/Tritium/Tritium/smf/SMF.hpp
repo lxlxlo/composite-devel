@@ -33,9 +33,9 @@
 namespace Tritium
 {
 
-class SMFHeader : public SMFBase
-{
-public:
+    class SMFHeader : public SMFBase
+    {
+    public:
 	SMFHeader( int nFormat, int nTracks, int nTPQN );
 	~SMFHeader();
 
@@ -44,13 +44,13 @@ public:
 	int m_nTPQN;		///< ticks per quarter note
 
 	virtual std::vector<char> getBuffer();
-};
+    };
 
 
 
-class SMFTrack : public SMFBase
-{
-public:
+    class SMFTrack : public SMFBase
+    {
+    public:
 	SMFTrack( const QString& sTrackName );
 	~SMFTrack();
 
@@ -58,42 +58,46 @@ public:
 
 	virtual std::vector<char> getBuffer();
 
-private:
+    private:
 	std::vector<SMFEvent*> m_eventList;
-};
+    };
 
 
 
-class SMF : public SMFBase
-{
-public:
+    class SMF : public SMFBase
+    {
+    public:
 	SMF();
 	~SMF();
 
 	void addTrack( SMFTrack *pTrack );
 	virtual std::vector<char> getBuffer();
 
-private:
+    private:
 	std::vector<SMFTrack*> m_trackList;
 
 	SMFHeader* m_pHeader;
 
-};
+    };
 
 
 
-class SMFWriter
-{
-public:
+    class SMFWriter
+    {
+    public:
 	SMFWriter();
 	~SMFWriter();
 
-	void save( const QString& sFilename, T<Song>::shared_ptr pSong );
+	void save(
+	    const QString& sFilename,
+	    T<Song>::shared_ptr pSong,
+	    T<InstrumentList>::shared_ptr iList
+	    );
 
-private:
+    private:
 	FILE *m_file;
 
-};
+    };
 
 } // namespace Tritium
 

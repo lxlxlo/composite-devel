@@ -28,7 +28,7 @@
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/Song.hpp>
-
+#include <Tritium/Sampler.hpp>
 
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Action.hpp>
@@ -123,7 +123,7 @@ static bool Tritium::setAbsoluteFXLevel(
 	engine->setSelectedInstrumentNumber( nLine );
 
 	T<Song>::shared_ptr song = engine->getSong();
-	InstrumentList *instrList = song->get_instrument_list();
+	T<InstrumentList>::shared_ptr instrList = engine->get_sampler()->get_instrument_list();
 	T<Instrument>::shared_ptr instr = instrList->get( nLine );
 	if ( instr == NULL) return false;
 
@@ -315,7 +315,7 @@ bool ActionManager::handleAction( Action * pAction ){
 
 		Engine *engine = m_engine;
 		T<Song>::shared_ptr song = engine->getSong();
-		InstrumentList *instrList = song->get_instrument_list();
+		T<InstrumentList>::shared_ptr instrList = engine->get_sampler()->get_instrument_list();
 
 		T<Instrument>::shared_ptr instr = instrList->get( nLine );
 
@@ -347,7 +347,7 @@ bool ActionManager::handleAction( Action * pAction ){
 
 		Engine *engine = m_engine;
 		T<Song>::shared_ptr song = engine->getSong();
-		InstrumentList *instrList = song->get_instrument_list();
+		T<InstrumentList>::shared_ptr instrList = engine->get_sampler()->get_instrument_list();
 
 		T<Instrument>::shared_ptr instr = instrList->get( nLine );
 
@@ -388,7 +388,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		Engine *engine = m_engine;
 		engine->setSelectedInstrumentNumber( nLine );
 		T<Song>::shared_ptr song = engine->getSong();
-		InstrumentList *instrList = song->get_instrument_list();
+		T<InstrumentList>::shared_ptr instrList = engine->get_sampler()->get_instrument_list();
 
 		T<Instrument>::shared_ptr instr = instrList->get( nLine );
 		
@@ -446,7 +446,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		Engine *engine = m_engine;
 		engine->setSelectedInstrumentNumber( nLine );
 		T<Song>::shared_ptr song = engine->getSong();
-		InstrumentList *instrList = song->get_instrument_list();
+		T<InstrumentList>::shared_ptr instrList = engine->get_sampler()->get_instrument_list();
 
 		T<Instrument>::shared_ptr instr = instrList->get( nLine );
 		

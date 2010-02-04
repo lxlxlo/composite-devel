@@ -101,9 +101,6 @@ int SongSequencer::process(SeqScript& seq, const TransportPosition& pos, uint32_
 				ev.frame = cur.frame - pos.frame;
 				ev.type = SeqEvent::NOTE_ON;
 				ev.note = *pNote;
-				ev.instrument_index =
-				    pSong->get_instrument_list()
-				    ->get_pos( pNote->get_instrument() );
 				if( pNote->get_length() < 0 ) {
 					length = default_note_length;
 				} else {

@@ -37,6 +37,7 @@ namespace Tritium
 class Note;
 class Sample;
 class Instrument;
+class InstrumentList;
 class AudioOutput;
 class Engine;
 
@@ -46,9 +47,9 @@ struct TransportPosition;
 ///
 /// Waveform based sampler.
 ///
-class Sampler
-{
-public:
+    class Sampler
+    {
+    public:
 	float *__main_out_L;	///< sampler main out (left channel)
 	float *__main_out_R;	///< sampler main out (right channel)
 
@@ -70,9 +71,12 @@ public:
 
 	void makeTrackOutputQueues();
 
-private:
+	void add_instrument( T<Instrument>::shared_ptr instr );
+	T<InstrumentList>::shared_ptr get_instrument_list();
+
+    private:
 	SamplerPrivate *d;
-}; // class Sampler
+    }; // class Sampler
 
 } // namespace Tritium
 

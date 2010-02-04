@@ -113,7 +113,6 @@ namespace THIS_NAMESPACE
 		tmp.type = (x_pat[p].on_off) ? SeqEvent::NOTE_ON : SeqEvent::NOTE_OFF;
 		tmp.note.set_instrument( inst_refs[ x_pat[p].inst ] );
 		tmp.note.set_velocity(x_pat[p].vel);
-		tmp.instrument_index = x_pat[p].inst;
 		x.insert(tmp);
 	    }
 
@@ -241,7 +240,6 @@ TEST_CASE( 040_check_contents )
 	    CK( cur->type == ((x_pat[k].on_off) ? SeqEvent::NOTE_ON : SeqEvent::NOTE_OFF) );
 	    CK( cur->note.get_instrument() == inst_refs[ x_pat[k].inst ] );
 	    CK( cur->note.get_velocity() == x_pat[k].vel );
-	    CK( cur->instrument_index == x_pat[k].inst );
 	    ++cur;
 	}
     }

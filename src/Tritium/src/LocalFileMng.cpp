@@ -38,6 +38,7 @@
 #include <Tritium/Song.hpp>
 #include <Tritium/SoundLibrary.hpp>
 #include <Tritium/Sample.hpp>
+#include <Tritium/Sampler.hpp>
 #include <Tritium/ObjectBundle.hpp>
 #include <Tritium/Serialization.hpp>
 #include <Tritium/fx/Effects.hpp>
@@ -197,7 +198,7 @@ namespace Tritium
 	serializer.reset( Serializer::create_standalone(m_engine) );
 
         T<Pattern>::shared_ptr pat = song->get_pattern_list()->get( selectedpattern );
-        T<Instrument>::shared_ptr instr = song->get_instrument_list()->get( 0 );
+        T<Instrument>::shared_ptr instr = m_engine->get_sampler()->get_instrument_list()->get( 0 );
         assert( instr );
 	QString drumkit_name = instr->get_drumkit_name();
 	QString data_directory = m_engine->get_preferences()->getDataDirectory();
@@ -602,7 +603,7 @@ namespace Tritium
 	    return rv;
 	}
 
-	T<InstrumentList>::auto_ptr inst_list(new InstrumentList);
+	T<InstrumentList>::shared_ptr inst_list(new InstrumentList);
 
 	while( ! bdl.empty() ) {
 	    switch(bdl.peek_type()) {
@@ -623,7 +624,7 @@ namespace Tritium
 	if( ! rv ) {
 	    ERRORLOG("A drumkit object was not returned.");
 	} else {
-	    rv->setInstrumentList(inst_list.release());
+	    rv->setInstrumentList(inst_list);
 	}
 
 	return rv;

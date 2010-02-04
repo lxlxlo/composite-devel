@@ -28,6 +28,7 @@
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Pattern.hpp>
 #include <Tritium/EventQueue.hpp>
+#include <Tritium/Sampler.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/Logger.hpp>
@@ -925,7 +926,7 @@ void SongEditorPatternList::patternPopup_load()
 	int tmpselectedpatternpos = engine->getSelectedPatternNumber();
 	T<Song>::shared_ptr song = engine->getSong();
 	PatternList *pPatternList = song->get_pattern_list();
-	T<Instrument>::shared_ptr instr = song->get_instrument_list()->get( 0 );
+	T<Instrument>::shared_ptr instr = engine->get_sampler()->get_instrument_list()->get( 0 );
 	assert( instr );
 	
 	QDir dirPattern( g_engine->get_preferences()->getDataDirectory() + "/patterns" );

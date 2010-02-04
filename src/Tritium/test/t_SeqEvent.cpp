@@ -54,7 +54,6 @@ namespace THIS_NAMESPACE
 	    xev.frame = 0xFEEEEEEE;
 	    xev.type = SeqEvent::ALL_OFF;
 	    xev.quantize = true;
-	    xev.instrument_index = 0xFF;
 	    xev.note.set_instrument( instr );
 	}
 
@@ -75,7 +74,6 @@ TEST_CASE( 001_defaults )
     CK( ev.frame == 0 );
     CK( ev.type == SeqEvent::NOTE_ON );
     CK( ev.quantize == false );
-    CK( ev.instrument_index == 0 );
 }
 
 TEST_CASE( 002_copy )
@@ -86,38 +84,32 @@ TEST_CASE( 002_copy )
     CK( cp.type == ev.type );
     // CK( cp.note == ev.note );  // TODO
     CK( cp.quantize == ev.quantize );
-    CK( cp.instrument_index == ev.instrument_index );
 
     cp = xev;
     CK( cp.frame == xev.frame );
     CK( cp.type == xev.type );
     // CK( cp.note == xev.note ); // TODO
     CK( cp.quantize == xev.quantize );
-    CK( cp.instrument_index == xev.instrument_index );
 
     // Verify independence
     ++cp.frame;
     cp.type = SeqEvent::NOTE_OFF;
     cp.quantize = !cp.quantize;
-    ++cp.instrument_index;
     CK( cp.frame != xev.frame );
     CK( cp.type != xev.type );
     // CK( cp.note != xev.note ); // TODO
     CK( cp.quantize != xev.quantize );
-    CK( cp.instrument_index != xev.instrument_index );
 
     xev = ev;
     CK( ev.frame == xev.frame );
     CK( ev.type == xev.type );
     // CK( ev.note == xev.note ); // TODO
     CK( ev.quantize == xev.quantize );
-    CK( ev.instrument_index == xev.instrument_index );
 
     // Confirm xev
     CK( xev.frame == 0 );
     CK( xev.type == SeqEvent::NOTE_ON );
     CK( xev.quantize == false );
-    CK( xev.instrument_index == 0 );
 }
 
 TEST_CASE( 003_less )

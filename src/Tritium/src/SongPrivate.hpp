@@ -49,7 +49,6 @@ namespace Tritium
         QString notes;
 	T<PatternList>::auto_ptr pattern_list;                        ///< Pattern list
         T<Song::pattern_group_t>::shared_ptr pattern_group_sequence;  ///< Sequence of pattern groups
-	T<InstrumentList>::auto_ptr instrument_list;                  ///< Instrument list
         QString filename;
         bool is_loop_enabled;
         float humanize_time_value;

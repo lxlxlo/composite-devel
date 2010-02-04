@@ -37,6 +37,7 @@
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/InstrumentLayer.hpp>
 #include <Tritium/Sample.hpp>
+#include <Tritium/Sampler.hpp>
 #include <Tritium/SoundLibrary.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/fx/Effects.hpp>
@@ -231,7 +232,6 @@ TEST_CASE( 010_load_song_check_song )
     CK( s->get_pattern_group_vector()->size() == 8 );
     // Serializer doesn't load instruments into Song,
     // since that's about to be wrong.
-    CK( s->get_instrument_list()->get_size() == 0 );
     CK( s->get_notes() == "Jazzy..." );
     CK( s->is_loop_enabled() == true );
     CK( s->get_humanize_time_value() == 0.23f );
@@ -436,6 +436,8 @@ TEST_CASE( 020_load_pattern_check_pattern )
 
     // Set up some fake instruments
     T<InstrumentList>::auto_ptr inst_list( new InstrumentList );
+    T<Sampler>::shared_ptr sampler = engine->get_sampler();
+    sampler->get_instrument_list()->clear();
     int k;
     for( k=0 ; k<32 ; ++k ) {
 	T<Instrument>::shared_ptr i(
@@ -445,9 +447,8 @@ TEST_CASE( 020_load_pattern_check_pattern )
 		new ADSR
 		)
 	    );
-	inst_list->add(i);
+	sampler->add_instrument(i);
     }
-    engine->getSong()->set_instrument_list(inst_list.release());
 
     s->load_file(pattern_file_name, bdl, engine.get());
 
@@ -504,7 +505,7 @@ TEST_CASE( 020_load_pattern_check_pattern )
     std::pair<iter_t, iter_t> range;
     iter_t it;
     int ctr;
-    InstrumentList *i_list = engine->getSong()->get_instrument_list();
+    T<InstrumentList>::shared_ptr i_list = engine->get_sampler()->get_instrument_list();
 
     range = pat->note_map.equal_range(0);
     ctr = 0;
@@ -804,6 +805,7 @@ TEST_CASE( 050_save_pattern )
 
     // Set up some fake instruments
     T<InstrumentList>::auto_ptr inst_list( new InstrumentList );
+    T<Sampler>::shared_ptr sampler = engine->get_sampler();
     int k;
     for( k=0 ; k<32 ; ++k ) {
 	T<Instrument>::shared_ptr i(
@@ -813,9 +815,8 @@ TEST_CASE( 050_save_pattern )
 		new ADSR
 		)
 	    );
-	inst_list->add(i);
+	sampler->add_instrument(i);
     }
-    engine->getSong()->set_instrument_list(inst_list.release());
 
     s->load_file(pattern_file_name, bdl, engine.get());
 
@@ -946,11 +947,11 @@ TEST_CASE( 060_save_drumkit )
     CK( drumkits.size() == 1 );
 
     std::deque< T<Instrument>::shared_ptr >::iterator it;
-    T<InstrumentList>::auto_ptr instrument_list(new InstrumentList);
+    T<InstrumentList>::shared_ptr instrument_list(new InstrumentList);
     for( it = instruments.begin() ; it != instruments.end() ; ++it ) {
 	instrument_list->add( *it );
     }
-    drumkits.front()->setInstrumentList( instrument_list.release() );
+    drumkits.front()->setInstrumentList( instrument_list );
 
     SyncSaveReport ssr;
     QString save_drumkit_folder_name = QString("%1/test_kit")

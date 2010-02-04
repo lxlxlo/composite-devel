@@ -216,7 +216,7 @@ SMFWriter::~SMFWriter()
 
 
 
-void SMFWriter::save( const QString& sFilename, T<Song>::shared_ptr pSong )
+void SMFWriter::save( const QString& sFilename, T<Song>::shared_ptr pSong, T<InstrumentList>::shared_ptr iList )
 {
 	INFOLOG( "save" );
 	const int DRUM_CHANNEL = 9;
@@ -227,7 +227,6 @@ void SMFWriter::save( const QString& sFilename, T<Song>::shared_ptr pSong )
 	SMFTrack *pTrack1 = new SMFTrack( "Hydrogen song!!" );
 	smf.addTrack( pTrack1 );
 
-	InstrumentList *iList = pSong->get_instrument_list();
 	// ogni pattern sara' una diversa traccia
 	int nTick = 1;
 	for ( unsigned nPatternList = 0 ;
