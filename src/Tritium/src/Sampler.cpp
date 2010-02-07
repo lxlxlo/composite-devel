@@ -374,7 +374,7 @@ int SamplerPrivate::render_note_no_resample(
 	int nInitialSamplePos = ( int )note.m_fSamplePosition;
 	int nSamplePos = nInitialSamplePos;
 	int nTimes = nInitialBufferPos + nAvail_bytes;
-	int nInstrument = note.m_uInstrumentIndex;
+	int nInstrument = instrument_list->get_pos( note.get_instrument() );
 
 	// filter
 	bool bUseLPF = note.get_instrument()->is_filter_active();
@@ -539,7 +539,7 @@ int SamplerPrivate::render_note_resample(
 	float fInitialSamplePos = note.m_fSamplePosition;
 	float fSamplePos = note.m_fSamplePosition;
 	int nTimes = nInitialBufferPos + nAvail_bytes;
-	int nInstrument = note.m_uInstrumentIndex;
+	int nInstrument = instrument_list->get_pos( note.get_instrument() );
 
 	// filter
 	bool bUseLPF = note.get_instrument()->is_filter_active();

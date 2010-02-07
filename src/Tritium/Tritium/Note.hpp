@@ -82,7 +82,6 @@ public:
 	uint32_t m_nSilenceOffset; ///< Used when scheduling note start in process() cycle
 	uint32_t m_nReleaseOffset; ///< Used when scheduling not lengths.
 	float m_fSamplePosition; ///< Place marker for overlapping process() cycles
-	unsigned m_uInstrumentIndex;  /// For tracking outputs
 	NoteKey m_noteKey;
 	ADSR m_adsr;
 	// Low pass resonant filter
