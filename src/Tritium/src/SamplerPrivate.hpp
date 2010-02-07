@@ -43,11 +43,20 @@ namespace Tritium
 	float* track_out_L[ MAX_INSTRUMENTS ];  // Replaces __track_out_L
 	float* track_out_R[ MAX_INSTRUMENTS ];  // Replaces __track_out_R
 #endif
+
+	// Configuration
+	int max_notes; // Maximum number of notes played at any one time
+	bool per_instrument_outs; // Enable an output for each instrument.
+	bool instrument_outs_prefader;
+
 	SamplerPrivate(Sampler* par, Engine* e_par) :
 	    parent( *par ),
 	    engine(e_par),
 	    instrument_list( new InstrumentList ),
-	    preview_instrument()
+	    preview_instrument(),
+	    max_notes(-1),
+	    per_instrument_outs(false),
+	    instrument_outs_prefader(false)
 	    { assert(e_par); }
 
 	// Add/Remove notes from current_notes based on event 'ev'

@@ -36,6 +36,7 @@
 
 #include <Tritium/MidiMap.hpp>
 #include <Tritium/Engine.hpp>
+#include <Tritium/Sampler.hpp> // for setting max_note_limit
 #include <Tritium/Preferences.hpp>
 #include <Tritium/IO/MidiInput.hpp>
 #include <Tritium/Logger.hpp>
@@ -94,6 +95,7 @@ PreferencesDialog::PreferencesDialog(QWidget* parent)
 	metronomeVolumeSpinBox->setValue(metronomeVol);
 
 	// max voices
+	pPref->m_nMaxNotes = g_engine->get_sampler()->get_max_note_limit();
 	maxVoicesTxt->setValue( pPref->m_nMaxNotes );
 
 	// JACK
@@ -276,9 +278,8 @@ void PreferencesDialog::on_okBtn_clicked()
 	pPref->m_fMetronomeVolume = (metronomeVolumeSpinBox->value()) / 100.0;
 
 	// maxVoices
-	pPref->m_nMaxNotes = maxVoicesTxt->value();
-
-
+	g_engine->get_sampler()->set_max_note_limit( maxVoicesTxt->value() );
+	pPref->m_nMaxNotes = g_engine->get_sampler()->get_max_note_limit();
 
 	if ( m_pMidiDriverComboBox->currentText() == "JackMidi" ) {
 		pPref->m_sMidiDriver = "JackMidi";

@@ -69,10 +69,19 @@ struct TransportPosition;
 	void preview_sample( T<Sample>::shared_ptr sample, int length );
 	void preview_instrument( T<Instrument>::shared_ptr instr );
 
-	void makeTrackOutputQueues();
-
 	void add_instrument( T<Instrument>::shared_ptr instr );
 	T<InstrumentList>::shared_ptr get_instrument_list();
+
+	// CONFIGURATION
+	// -------------
+
+	void set_max_note_limit(int max = -1);
+	int get_max_note_limit();
+
+	void set_per_instrument_outs(bool enabled = false);
+	bool get_per_instrument_outs();
+	void set_per_instrument_outs_prefader(bool enabled = false);
+	bool get_per_instrument_outs_prefader();
 
     private:
 	SamplerPrivate *d;

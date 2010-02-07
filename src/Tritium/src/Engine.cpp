@@ -200,6 +200,7 @@ namespace Tritium
         m_jack_client.reset( new JackClient(m_engine, false) );
 #endif
         m_sampler.reset( new Sampler(m_engine) );
+	m_sampler->set_max_note_limit( m_engine->get_preferences()->m_nMaxNotes );
 #ifdef LADSPA_SUPPORT
         m_effects.reset( new Effects(m_engine) );
 #endif
@@ -813,6 +814,9 @@ namespace Tritium
 #ifdef JACK_SUPPORT
             audioEngine_renameJackPorts();
 #endif
+	    m_sampler->set_per_instrument_outs_prefader(
+		m_preferences->m_nJackTrackOutputMode == Preferences::PRE_FADER
+		);
 
             audioEngine_setupLadspaFX( m_pAudioDriver->getBufferSize() );
         }
@@ -1591,7 +1595,13 @@ namespace Tritium
     {
         if( get_preferences()->m_bJackTrackOuts == true ){
             d->audioEngine_renameJackPorts();
-        }
+	    d->m_sampler->set_per_instrument_outs(true);
+	    d->m_sampler->set_per_instrument_outs_prefader(
+		get_preferences()->m_nJackTrackOutputMode == Preferences::PRE_FADER
+		);
+        } else {
+	    d->m_sampler->set_per_instrument_outs(false);
+	}
     }
 #endif
 
