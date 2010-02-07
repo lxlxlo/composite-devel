@@ -22,6 +22,7 @@
 #include <cassert>
 #include <cmath>
 #include <list>
+#include <QMutexLocker>
 
 #include "SamplerPrivate.hpp"
 
@@ -93,6 +94,7 @@ void SamplerPrivate::handle_note_on(const SeqEvent& ev)
 	}
     }
     pInstr->enqueue();
+    QMutexLocker lk( &mutex_current_notes );
     current_notes.push_back( ev.note );
     current_notes.back().m_nSilenceOffset = ev.frame;
     current_notes.back().m_nReleaseOffset = (uint32_t)-1;
@@ -166,10 +168,13 @@ void Sampler::process( SeqScriptConstIterator beg,
 
     // Max notes limit
     // If max_notes == -1, this means "unlimited"
-    while ( d->current_notes.size() > (unsigned)d->max_notes ) {
-	assert(d->max_notes >= 0);
-	d->current_notes.front().get_instrument()->dequeue();
-	d->current_notes.pop_front();
+    if ( d->current_notes.size() > (unsigned)d->max_notes ) {
+	QMutexLocker lk( &d->mutex_current_notes );
+	while( d->current_notes.size() > (unsigned)d->max_notes) {
+	    assert(d->max_notes >= 0);
+	    d->current_notes.front().get_instrument()->dequeue();
+	    d->current_notes.pop_front();
+	}
     }
 
     // Handle new events from the sequencer (add/remove notes from the "currently playing"
@@ -181,6 +186,7 @@ void Sampler::process( SeqScriptConstIterator beg,
 
     // Play all of the currently playing notes.
     SamplerPrivate::NoteList::iterator k, die;
+    QMutexLocker lk( &d->mutex_current_notes );
     for( k=d->current_notes.begin() ; k != d->current_notes.end() ; /*++k*/ ) {
 	unsigned res = d->render_note( *k, nFrames, pos.frame_rate );
 	if( res == 1 ) { // Note is finished playing
@@ -686,14 +692,28 @@ int SamplerPrivate::render_note_resample(
     return retValue;
 }
 
-void note_on( Note* note )
+void SamplerPrivate::note_on( Note& note )
 {
-    assert(false);
+    SeqEvent ev;
+
+    ev.frame = 0;
+    ev.type = SeqEvent::NOTE_ON;
+    ev.note = note;
+    ev.quantize = false;
+
+    handle_note_on(ev);
 }
 
-void note_off( Note* note )
+void SamplerPrivate::note_off( Note& note )
 {
-    assert(false);
+    SeqEvent ev;
+
+    ev.frame = 0;
+    ev.type = SeqEvent::NOTE_OFF;
+    ev.note = note;
+    ev.quantize = false;
+
+    handle_note_on(ev);
 }
 
 void Sampler::stop_playing_notes( T<Instrument>::shared_ptr instrument )
@@ -711,7 +731,9 @@ void Sampler::stop_playing_notes( T<Instrument>::shared_ptr instrument )
 	for( k=d->current_notes.begin() ; k!=d->current_notes.end() ; /* ++k */ ) {
 	    if( k->get_instrument() == instrument ) {
 		die = k; ++k;
+		QMutexLocker lk( &d->mutex_current_notes );
 		d->current_notes.erase(die);
+		lk.unlock();
 		instrument->dequeue();
 	    } else {
 		++k;
@@ -722,6 +744,7 @@ void Sampler::stop_playing_notes( T<Instrument>::shared_ptr instrument )
 	for( k=d->current_notes.begin() ; k!=d->current_notes.end() ; ++k ) {
 	    k->get_instrument()->dequeue();
 	}
+	QMutexLocker lk( &d->mutex_current_notes );
 	d->current_notes.clear();
     }
 }
@@ -731,19 +754,15 @@ void Sampler::stop_playing_notes( T<Instrument>::shared_ptr instrument )
 /// Preview, uses only the first layer
 void Sampler::preview_sample( T<Sample>::shared_ptr sample, int length )
 {
-    d->engine->lock( RIGHT_HERE );
-
     InstrumentLayer *pLayer = d->preview_instrument->get_layer( 0 );
 
     T<Sample>::shared_ptr pOldSample = pLayer->get_sample();
     pLayer->set_sample( sample );
 
-    Note *previewNote = new Note( d->preview_instrument, 0, 1.0, 0.5, 0.5, 0 );
+    Note previewNote( d->preview_instrument, 1.0, 1.0, 0.5, 0.5, 0 );
 
     stop_playing_notes( d->preview_instrument );
-    note_on( previewNote );
-
-    d->engine->unlock();
+    d->note_on( previewNote );
 }
 
 
@@ -751,17 +770,14 @@ void Sampler::preview_sample( T<Sample>::shared_ptr sample, int length )
 void Sampler::preview_instrument( T<Instrument>::shared_ptr instr )
 {
     T<Instrument>::shared_ptr old_preview;
-    d->engine->lock( RIGHT_HERE );
 
     stop_playing_notes( d->preview_instrument );
 
     old_preview = d->preview_instrument;
     d->preview_instrument = instr;
+    Note previewNote( d->preview_instrument, 1.0, 1.0, 0.5, 0.5, 0 );
 
-    Note *previewNote = new Note( d->preview_instrument, 0, 1.0, 0.5, 0.5, 0 );
-
-    note_on( previewNote );	// exclusive note
-    d->engine->unlock();
+    d->note_on( previewNote );	// exclusive note
 }
 
 /**

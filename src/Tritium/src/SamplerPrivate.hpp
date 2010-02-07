@@ -25,6 +25,7 @@
 #include <Tritium/Note.hpp>
 #include <Tritium/memory.hpp>
 #include <Tritium/InstrumentList.hpp>
+#include <QMutex>
 #include <cassert>
 
 namespace Tritium
@@ -36,7 +37,8 @@ namespace Tritium
 	Sampler& parent;
 	Engine* engine;
 	typedef std::list<Note> NoteList;
-	NoteList current_notes;                // Replaces __playing_notes_queue
+	QMutex mutex_current_notes;            // Must be locked when adding/removing elements
+	NoteList current_notes;
 	T<InstrumentList>::shared_ptr instrument_list;
 	T<Instrument>::shared_ptr preview_instrument;         // Replaces __preview_instrument
 #ifdef JACK_SUPPORT
@@ -66,6 +68,10 @@ namespace Tritium
 	void panic();  // Cease all sounc
 	void handle_note_on(const SeqEvent& ev);
 	void handle_note_off(const SeqEvent& ev);
+
+	// These are primarily for preview instrument.
+	void note_on(Note& note);
+	void note_off(Note& note);
 
 	// Actually render the specific note(s) to the buffers.
 	int render_note(Note& note, uint32_t nFrames, uint32_t frame_rate);
