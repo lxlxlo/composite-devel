@@ -231,19 +231,21 @@ Mixer::channel_t Mixer::port_data(size_t n)
  */
 void MixerPrivate::eval_pan(float gain, float pan, float& left, float& right)
 {
-    if(pan > 1.0f) return;
-    if(pan < 0.0f) return;
     float L = 0.0f, R = 0.0f;
+    if( (pan > 1.0f) || (pan < 0.0f) ) {
+	left = L;
+	right = R;
+	return;
+    }
 
     if(pan < .5) {
 	R = pan * gain / (1.0f - pan);
 	L = gain;
-	assert( ::fabs(pan - (R / (R+L))) < 1.0e-32 );
     } else {
 	L = gain * (1.0f - pan) / pan;
 	R = gain;
-	assert( ::fabs(pan - (R / (R+L))) < 1.0e-32 );
     }
+    if( gain > 1.0e-6 ) assert( ::fabs(pan - (R / (R+L))) < 1.0e-32 );
     left = L;
     right = R;
 }
