@@ -53,6 +53,7 @@ const QString& AudioPortImpl::get_name() const
 
 AudioPort::Float* AudioPortImpl::get_buffer(unsigned chan)
 {
+    set_zero_flag(false);
     if(chan == 0) {
 	return &_left.front();
     } else if (chan == 1) {

@@ -66,6 +66,9 @@ namespace Tritium
 	 * is only one channel (0).  For stereo buffers, channel 1 is
 	 * the Right channel.
 	 *
+	 * Side effect: Calling this function WILL clear the zero
+	 * flag.
+	 *
 	 * \param chan 0 for the Left (or Mono) buffer, 1 for the
 	 * Right buffer.
 	 */
