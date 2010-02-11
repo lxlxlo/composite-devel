@@ -146,7 +146,7 @@ TEST_CASE( 020_write_read )
     }
 }
 
-TEST_CASE( 020_write_then_zero )
+TEST_CASE( 030_write_then_zero )
 {
     typedef T<AudioPort>::shared_ptr port_ref_t;
     typedef std::deque< port_ref_t > list_t;
@@ -200,7 +200,7 @@ TEST_CASE( 020_write_then_zero )
     }
 }
 
-TEST_CASE( 020_write_then_zero_64 )
+TEST_CASE( 040_write_then_zero_64 )
 {
     typedef T<AudioPort>::shared_ptr port_ref_t;
     typedef std::deque< port_ref_t > list_t;
@@ -261,7 +261,7 @@ TEST_CASE( 020_write_then_zero_64 )
     }
 }
 
-TEST_CASE( 020_write_then_zero_size )
+TEST_CASE( 050_write_then_zero_size )
 {
     typedef T<AudioPort>::shared_ptr port_ref_t;
     typedef std::deque< port_ref_t > list_t;
