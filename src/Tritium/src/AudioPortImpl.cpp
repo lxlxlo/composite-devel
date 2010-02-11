@@ -41,6 +41,16 @@ AudioPortImpl::~AudioPortImpl()
 {
 }
 
+void AudioPortImpl::set_name(const QString& name)
+{
+    _name = name;
+}
+
+const QString& AudioPortImpl::get_name() const
+{
+    return _name;
+}
+
 AudioPort::Float* AudioPortImpl::get_buffer(unsigned chan)
 {
     if(chan == 0) {

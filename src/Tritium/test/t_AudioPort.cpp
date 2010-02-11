@@ -58,12 +58,16 @@ namespace THIS_NAMESPACE
 	    T<AudioPortImpl>::shared_ptr tmp;
 	    tmp.reset( new AudioPortImpl() );
 	    mono[0] = boost::dynamic_pointer_cast<AudioPort, AudioPortImpl>(tmp);
+	    mono[0]->set_name("mono-0");
 	    tmp.reset( new AudioPortImpl(AudioPort::MONO, 128) );
 	    mono[1] = boost::dynamic_pointer_cast<AudioPort, AudioPortImpl>(tmp);
+	    mono[1]->set_name("mono-1");
 	    tmp.reset( new AudioPortImpl(AudioPort::STEREO) );
 	    stereo[0] = boost::dynamic_pointer_cast<AudioPort, AudioPortImpl>(tmp);
+	    stereo[0]->set_name("stereo-0");
 	    tmp.reset( new AudioPortImpl(AudioPort::STEREO, 128) );
 	    stereo[1] = boost::dynamic_pointer_cast<AudioPort, AudioPortImpl>(tmp);
+	    stereo[1]->set_name("stereo-1");
 	}
 	~Fixture() {}
     };
@@ -79,24 +83,28 @@ TEST_CASE( 010_defaults )
     CK( mono[0]->size() == MAX_BUFFER_SIZE );
     CK( mono[0]->type() == AudioPort::MONO );
     CK( mono[0]->zero_flag() == true );
+    CK( mono[0]->get_name() == "mono-0");
 
     CK( mono[1]->get_buffer() != 0 );
     CK( mono[1]->get_buffer(1) == 0 );
     CK( mono[1]->size() == 128 );
     CK( mono[1]->type() == AudioPort::MONO );
     CK( mono[1]->zero_flag() == true );
+    CK( mono[1]->get_name() == "mono-1");
 
     CK( stereo[0]->get_buffer() != 0 );
     CK( stereo[0]->get_buffer(1) != 0 );
     CK( stereo[0]->size() == MAX_BUFFER_SIZE );
     CK( stereo[0]->type() == AudioPort::STEREO );
     CK( stereo[0]->zero_flag() == true );
+    CK( stereo[0]->get_name() == "stereo-0");
 
     CK( stereo[1]->get_buffer() != 0 );
     CK( stereo[1]->get_buffer(1) != 0 );
     CK( stereo[1]->size() == 128 );
     CK( stereo[1]->type() == AudioPort::STEREO );
     CK( stereo[1]->zero_flag() == true );
+    CK( stereo[1]->get_name() == "stereo-1");
 }
 
 TEST_CASE( 020_write_read )

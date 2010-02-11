@@ -24,6 +24,8 @@
 #include <stdint.h>
 #include <Tritium/memory.hpp>
 
+class QString;
+
 namespace Tritium
 {
     /**
@@ -45,6 +47,16 @@ namespace Tritium
 	} type_t;
 
 	virtual ~AudioPort() {}
+
+	/**
+	 * Sets a human-readable name for the port.
+	 */
+	virtual void set_name(const QString& name) = 0;
+
+	/**
+	 * Retrieve human-readable name for this port.
+	 */
+	virtual const QString& get_name() const = 0;
 
 	/**
 	 * Returns a pointer to the port's buffer.

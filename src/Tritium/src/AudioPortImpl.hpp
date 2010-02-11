@@ -26,6 +26,8 @@
 #include <Tritium/globals.hpp>
 #include <vector>
 
+#include <QString>
+
 namespace Tritium
 {
     /**
@@ -40,6 +42,8 @@ namespace Tritium
 	    );
 	virtual ~AudioPortImpl();
 
+	virtual void set_name(const QString& name);
+	virtual const QString& get_name() const;
 	virtual Float* get_buffer(unsigned chan = 0);
 	virtual uint32_t size();
 	virtual AudioPort::type_t type();
@@ -51,6 +55,7 @@ namespace Tritium
 	std::vector<Float> _left;
 	std::vector<Float> _right;
 	bool _zero;
+	QString _name;
     };
 
 } // namespace Tritium
