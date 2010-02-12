@@ -125,4 +125,25 @@ Here are the types of patterns:
       </noteList>
     </pattern>
 
+MISC PARAMETERS
+---------------
+
+PAN:
+
+    In the XML files, panning is really just another per-channel gain
+    with range [0.0, 1.0].  Typically Left will be 1.0, Right will be
+    1.0.
+
+VOLUME (Instrument):
+
+    Instrument Volume is actually the /mixer/ setting... and is
+    intended to be controlled by a fader.
+
+GAIN (Instrument):
+
+    Instrument Gain is a drumkit setting allowing you to set the
+    overall volume for a sample in the drum-kit.  It is similar to
+    Volume, except that it is a property of the Instrument rather than
+    the mixer.
+
 [EOF]

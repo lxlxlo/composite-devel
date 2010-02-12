@@ -1,0 +1,105 @@
+AUDIO MATTERS
+-------------
+
+Notes regarding properties and internals that reflect the way that the
+audio is processed.  Things like gain stages, clipping, pan, etc.
+
+GAIN STAGES AND GAIN RANGE
+--------------------------
+
+Tritium has the following gain stages (as inherited from Hydrogen):
+
+                                     FACTOR       dB
+                                   ----------  -----------
+   Raw Sample (at whatever volume)
+   x Leyer Gain                    [0.0, 5.0]  [-inf, 7.0]  (a)
+   x Velocity                      [0.0, 1.0]  [-inf, 0.0]
+   x Instrument Gain               [0.0, 5.0]  [-inf, 7.0]  (a)
+   x Instrument Volume (mixer)     [0.0, 1.5]  [-inf, 1.8]  (a)
+   x Master Volume (mixer)         [0.0, 1.5]  [-inf, 1.8]  (a)
+
+   (a) - These limits are actually enforced by the GUI rather
+         than the underlying models.
+
+Therefore the total gain range is [0.0, 56.25]... or [-inf, 17.5] dB.
+
+TAPER
+-----
+
+Tritium's volume controls all have a linear taper on the gain factor
+(multiplier).  In the future, it is likely we will change this to:
+
+  * Using decibels instead of the raw factor.
+
+  * Using some manner of "audio taper" rather
+    than one that is linear on the gain factor.
+
+The most popular tapers tend to be piece-wise continuous... with
+several zones.  For example:
+
+  TRADITIONAL FADER:
+
+    [ 0,   4%] ==> [  -inf, -60dB] (use linear factor)
+    [ 4%, 16%] ==> [ -60dB, -40dB] @ 20dB per 12%
+    [16%, 52%] ==> [ -40dB, -10dB] @ 10dB per 12%
+    [52%,100%] ==> [ -10dB, +10dB] @  5dB per 12%
+
+    Source: http://www.musicdsp.org/archive.php?classid=5#94
+
+  LINEAR dB FADER:
+
+    [ 0, 100%] ==> [ MIN dB, MAX dB] dB is linear
+
+  IEC 60-268-18:
+
+    [  0%, 2.5%] ==> [- inf, -60dB]
+    [2.5%, 7.5%] ==> [-60dB, -50dB] (dB is linear)
+    [7.5%,  15%] ==> [-50dB, -40dB] (dB is linear)
+    [ 15%,  35%] ==> [-40dB, -30dB] (dB is linear)
+    [ 30%,  50%] ==> [-30dB, -20dB] (dB is linear)
+    [ 50%,  75%] ==> [-20dB, -9dB]  (dB is linear)
+    [ 75%, 100%] ==> [ -9dB, 0dB]   (dB is linear)
+
+  CUBIC MAPPING:
+
+    f = fader position, typ. range [0.0, 1.0]
+    dB = 10.0 * log10( f*f*f )
+
+    This is effectively:
+
+        [  0,  10%] ==> [- inf, -30dB]
+        [10%,  20%] ==> [-30dB, -20dB]
+        [20%,  50%] ==> [-20dB, - 9dB]
+        [50%, 100%] ==> [- 9dB,   0dB]
+
+  ARDOUR'S MAPPING:
+
+    in addition to chris' suggestion, there is ardour's rather arbitrary
+    but definitely comfortable mapping. these map between a gain
+    coefficient (not a dB level) and a fader position that varies from 0.0
+    to 1.0 (gain_t is a double, btw)
+
+    --p
+
+    -------------------------------------------------------------------
+
+
+    static inline double
+    gain_to_slider_position (ARDOUR::gain_t g)
+    {
+            if (g == 0) return 0;
+            return pow((6.0*log(g)/log(2.0)+192.0)/198.0, 8.0);
+    
+    }
+
+    static inline ARDOUR::gain_t
+    slider_position_to_gain (double pos)
+    {
+            /* XXX Marcus writes: this doesn't seem right to me. but i don't have a better answer ... */
+            if (pos == 0.0) return 0;
+            return pow (2.0,(sqrt(sqrt(sqrt(pos)))*198.0-192.0)/6.0);
+    }
+
+
+For a good discussion of these types of faders, see the LAD discussion
+in May 2009: http://lalists.stanford.edu/lad/2009/05/0231.html
