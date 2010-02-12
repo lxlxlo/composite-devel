@@ -40,6 +40,8 @@ class Instrument;
 class InstrumentList;
 class AudioOutput;
 class Engine;
+class AudioPortManager;
+class AudioPort;
 
 struct SamplerPrivate;
 struct TransportPosition;
@@ -50,10 +52,7 @@ struct TransportPosition;
     class Sampler
     {
     public:
-	float *__main_out_L;	///< sampler main out (left channel)
-	float *__main_out_R;	///< sampler main out (right channel)
-
-	Sampler(Engine* parent);
+	Sampler(Engine* parent, T<AudioPortManager>::shared_ptr apm);
 	~Sampler();
 
 	void process( SeqScriptConstIterator beg,

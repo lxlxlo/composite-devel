@@ -199,7 +199,8 @@ namespace Tritium
 #ifdef JACK_SUPPORT
         m_jack_client.reset( new JackClient(m_engine, false) );
 #endif
-        m_sampler.reset( new Sampler(m_engine) );
+	m_mixer.reset( new Mixer );
+        m_sampler.reset( new Sampler(m_engine, boost::dynamic_pointer_cast<AudioPortManager>(m_mixer)) );
 	m_sampler->set_max_note_limit( m_engine->get_preferences()->m_nMaxNotes );
 #ifdef LADSPA_SUPPORT
         m_effects.reset( new Effects(m_engine) );
@@ -392,6 +393,7 @@ namespace Tritium
         timeval startTimeval = currentTime2();
         m_nFreeRollingFrameCounter += nframes;
 
+	m_mixer->pre_process();
         audioEngine_process_clearAudioBuffers( nframes );
 
         if( m_audioEngineState < Engine::StateReady) {
@@ -436,12 +438,9 @@ namespace Tritium
                            pos,
                            nframes
             );
-        float* out_L = m_engine->get_sampler()->__main_out_L;
-        float* out_R = m_engine->get_sampler()->__main_out_R;
-        for ( unsigned i = 0; i < nframes; ++i ) {
-            m_pMainBuffer_L[ i ] += out_L[ i ];
-            m_pMainBuffer_R[ i ] += out_R[ i ];
-        }
+
+	m_mixer->mix_send_return(nframes);
+	m_mixer->mix_down(nframes, m_pMainBuffer_L, m_pMainBuffer_R);
 
         timeval renderTime_end = currentTime2();
 

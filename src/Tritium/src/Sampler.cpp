@@ -110,17 +110,12 @@ void SamplerPrivate::handle_note_off(const SeqEvent& ev)
     }
 }
 
-Sampler::Sampler(Engine* parent) :
-    __main_out_L( 0 )
-    , __main_out_R( 0 )
+Sampler::Sampler(Engine* parent, T<AudioPortManager>::shared_ptr apm)
 {
     INFOLOG( "INIT" );
     assert(parent);
 
-    d = new SamplerPrivate(this, parent);
-
-    __main_out_L = new float[ MAX_BUFFER_SIZE ];
-    __main_out_R = new float[ MAX_BUFFER_SIZE ];
+    d = new SamplerPrivate(this, parent, apm);
 
     // instrument used in file preview
     QString sEmptySampleFilename = DataPath::get_data_path() + "/emptySample.wav";
@@ -133,10 +128,7 @@ Sampler::Sampler(Engine* parent) :
 
 Sampler::~Sampler()
 {
-    INFOLOG( "DESTROY" );
-
-    delete[] __main_out_L;
-    delete[] __main_out_R;
+    delete d;
 }
 
 void Sampler::panic()
@@ -156,15 +148,14 @@ void Sampler::process( SeqScriptConstIterator beg,
 		       const TransportPosition& pos,
 		       uint32_t nFrames )
 {
-    //infoLog( "[process]" );
-    T<AudioOutput>::shared_ptr audio_output = d->engine->get_audio_output();
-    assert( audio_output.use_count() );
+    d->main_out->write_zeros(nFrames);
+    d->main_out->set_zero_flag(false);
 
-    memset( __main_out_L, 0, nFrames * sizeof( float ) );
-    memset( __main_out_R, 0, nFrames * sizeof( float ) );
-
-    // Track output queues are zeroed by
-    // audioEngine_process_clearAudioBuffers()
+    if(d->per_instrument_outs) {
+	for(int k=0 ; k<MAX_INSTRUMENTS ; ++k) {
+	    d->track_out[k]->set_zero_flag(true);
+	}
+    }
 
     // Max notes limit
     // If max_notes == -1, this means "unlimited"
@@ -361,7 +352,6 @@ int SamplerPrivate::render_note_no_resample(
     float fSendFXLevel_R
     )
 {
-    T<AudioOutput>::shared_ptr audio_output = engine->get_audio_output();
     int retValue = 1; // the note is ended
 
     int nAvail_bytes = pSample->get_n_frames() - ( int )note.m_fSamplePosition;   // verifico 
@@ -404,16 +394,16 @@ int SamplerPrivate::render_note_no_resample(
 	nInstrument = 0;
     }
 
-#ifdef JACK_SUPPORT
-    JackOutput* jao = 0;
-    float *track_out_L = 0;
-    float *track_out_R = 0;
-    if( audio_output->has_track_outs()
-	&& (jao = dynamic_cast<JackOutput*>(audio_output.get())) ) {
-	track_out_L = jao->getTrackOut_L( nInstrument );
-	track_out_R = jao->getTrackOut_R( nInstrument );
+    float *buf_track_L = 0;
+    float *buf_track_R = 0;
+    if(per_instrument_outs) {
+	assert( track_out[nInstrument]->size() >= nFrames );
+	buf_track_L = track_out[nInstrument]->get_buffer(0);
+	buf_track_R = track_out[nInstrument]->get_buffer(1);
     }
-#endif
+
+    float *buf_L = main_out->get_buffer(0);
+    float *buf_R = main_out->get_buffer(1);
     for ( int nBufferPos = nInitialBufferPos; nBufferPos < nTimes; ++nBufferPos ) {
 	if( note.m_nReleaseOffset != (uint32_t)-1
 	    && nBufferPos >= note.m_nReleaseOffset ) {
@@ -438,11 +428,11 @@ int SamplerPrivate::render_note_no_resample(
 	}
 
 #ifdef JACK_SUPPORT
-	if( track_out_L ) {
-	    track_out_L[nBufferPos] += fVal_L * cost_track_L;
+	if( buf_track_L ) {
+	    buf_track_L[nBufferPos] += fVal_L * cost_track_L;
 	}
-	if( track_out_R ) {
-	    track_out_R[nBufferPos] += fVal_R * cost_track_R;
+	if( buf_track_R ) {
+	    buf_track_R[nBufferPos] += fVal_R * cost_track_R;
 	}
 #endif
 
@@ -458,8 +448,8 @@ int SamplerPrivate::render_note_no_resample(
 	}
 
 	// to main mix
-	parent.__main_out_L[nBufferPos] += fVal_L;
-	parent.__main_out_R[nBufferPos] += fVal_R;
+	buf_L[nBufferPos] += fVal_L;
+	buf_R[nBufferPos] += fVal_R;
 
 	++nSamplePos;
     }
@@ -518,7 +508,6 @@ int SamplerPrivate::render_note_resample(
     float fSendFXLevel_R
     )
 {
-    T<AudioOutput>::shared_ptr audio_output = engine->get_audio_output();
     float fNotePitch = note.get_pitch() + fLayerPitch;
     fNotePitch += note.m_noteKey.m_nOctave * 12 + note.m_noteKey.m_key;
 
@@ -570,17 +559,16 @@ int SamplerPrivate::render_note_resample(
 	nInstrument = 0;
     }
 
-
-#ifdef JACK_SUPPORT
-    JackOutput* jao = 0;
-    float *track_out_L = 0;
-    float *track_out_R = 0;
-    if( audio_output->has_track_outs()
-	&& (jao = dynamic_cast<JackOutput*>(audio_output.get())) ) {
-	track_out_L = jao->getTrackOut_L( nInstrument );
-	track_out_R = jao->getTrackOut_R( nInstrument );
+    float *buf_track_L = 0;
+    float *buf_track_R = 0;
+    if(per_instrument_outs) {
+	assert( track_out[nInstrument]->size() >= nFrames );
+	buf_track_L = track_out[nInstrument]->get_buffer(0);
+	buf_track_R = track_out[nInstrument]->get_buffer(1);
     }
-#endif
+
+    float *buf_L = main_out->get_buffer(0);
+    float *buf_R = main_out->get_buffer(1);
     for ( int nBufferPos = nInitialBufferPos; nBufferPos < nTimes; ++nBufferPos ) {
 	if( note.m_nReleaseOffset != (uint32_t)-1
 	    && nBufferPos >= note.m_nReleaseOffset )
@@ -618,11 +606,11 @@ int SamplerPrivate::render_note_resample(
 
 
 #ifdef JACK_SUPPORT
-	if( track_out_L ) {
-	    track_out_L[nBufferPos] += (fVal_L * cost_track_L);
+	if( buf_track_L ) {
+	    buf_track_L[nBufferPos] += (fVal_L * cost_track_L);
 	}
-	if( track_out_R ) {
-	    track_out_R[nBufferPos] += (fVal_R * cost_track_R);
+	if( buf_track_R ) {
+	    buf_track_R[nBufferPos] += (fVal_R * cost_track_R);
 	}
 #endif
 
@@ -638,8 +626,8 @@ int SamplerPrivate::render_note_resample(
 	}
 
 	// to main mix
-	parent.__main_out_L[nBufferPos] += fVal_L;
-	parent.__main_out_R[nBufferPos] += fVal_R;
+	buf_L[nBufferPos] += fVal_L;
+	buf_R[nBufferPos] += fVal_R;
 
 	fSamplePos += fStep;
     }
@@ -808,7 +796,9 @@ int Sampler::get_max_note_limit()
 
 void Sampler::set_per_instrument_outs(bool enabled)
 {
-    d->per_instrument_outs = enabled;
+    #warning "Code disabled:"
+    // d->per_instrument_outs = enabled;
+    ERRORLOG("Per instrument outs is not implemented");
 }
 
 bool Sampler::get_per_instrument_outs()

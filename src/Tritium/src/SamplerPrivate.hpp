@@ -22,6 +22,8 @@
 #define TRITIUM_SAMPLERPRIVATE_HPP
 
 #include <Tritium/Sampler.hpp>
+#include <Tritium/AudioPort.hpp>
+#include <Tritium/AudioPortManager.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/memory.hpp>
 #include <Tritium/InstrumentList.hpp>
@@ -41,25 +43,37 @@ namespace Tritium
 	NoteList current_notes;
 	T<InstrumentList>::shared_ptr instrument_list;
 	T<Instrument>::shared_ptr preview_instrument;         // Replaces __preview_instrument
-#ifdef JACK_SUPPORT
-	float* track_out_L[ MAX_INSTRUMENTS ];  // Replaces __track_out_L
-	float* track_out_R[ MAX_INSTRUMENTS ];  // Replaces __track_out_R
-#endif
+	T<AudioPortManager>::shared_ptr port_manager;
+	T<AudioPort>::shared_ptr main_out;
+	T<AudioPort>::shared_ptr track_out[ MAX_INSTRUMENTS ];
 
 	// Configuration
 	int max_notes; // Maximum number of notes played at any one time
 	bool per_instrument_outs; // Enable an output for each instrument.
 	bool instrument_outs_prefader;
 
-	SamplerPrivate(Sampler* par, Engine* e_par) :
+	SamplerPrivate(Sampler* par, Engine* e_par, T<AudioPortManager>::shared_ptr apm) :
 	    parent( *par ),
 	    engine(e_par),
+	    port_manager(apm),
 	    instrument_list( new InstrumentList ),
 	    preview_instrument(),
 	    max_notes(-1),
 	    per_instrument_outs(false),
 	    instrument_outs_prefader(false)
-	    { assert(e_par); }
+	    {
+		assert(e_par);
+		main_out = port_manager->allocate_port(
+		    "sampler-main",
+		    AudioPort::OUTPUT,
+		    AudioPort::STEREO,
+		    MAX_BUFFER_SIZE
+		    );
+	    }
+
+	~SamplerPrivate() {
+	    port_manager->release_port(main_out);
+	}
 
 	// Add/Remove notes from current_notes based on event 'ev'
 	void handle_event(const SeqEvent& ev);

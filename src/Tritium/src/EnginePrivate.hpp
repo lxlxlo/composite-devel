@@ -30,6 +30,7 @@
 #include <Tritium/SeqEvent.hpp>
 #include <Tritium/SeqScript.hpp>
 #include <Tritium/SeqScriptIterator.hpp>
+#include <Tritium/Mixer.hpp>
 #include <Tritium/memory.hpp>
 
 #include <QMutex>
@@ -226,6 +227,7 @@ namespace Tritium
 
 	T<Preferences>::shared_ptr m_preferences;
 	T<ActionManager>::shared_ptr m_action_manager;
+	T<Mixer>::shared_ptr m_mixer;
 	T<Sampler>::shared_ptr m_sampler;
 	T<EventQueue>::shared_ptr m_event_queue;
 	T<H2Transport>::shared_ptr m_pTransport;
