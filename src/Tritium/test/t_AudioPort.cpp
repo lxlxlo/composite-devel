@@ -78,32 +78,36 @@ TEST_BEGIN( Fixture );
 
 TEST_CASE( 010_defaults )
 {
+    CK( mono[0]->zero_flag() == true );
     CK( mono[0]->get_buffer() != 0 );
     CK( mono[0]->get_buffer(1) == 0 );
+    CK( mono[0]->zero_flag() == false );
     CK( mono[0]->size() == MAX_BUFFER_SIZE );
     CK( mono[0]->type() == AudioPort::MONO );
-    CK( mono[0]->zero_flag() == true );
     CK( mono[0]->get_name() == "mono-0");
 
+    CK( mono[1]->zero_flag() == true );
     CK( mono[1]->get_buffer() != 0 );
     CK( mono[1]->get_buffer(1) == 0 );
+    CK( mono[1]->zero_flag() == false );
     CK( mono[1]->size() == 128 );
     CK( mono[1]->type() == AudioPort::MONO );
-    CK( mono[1]->zero_flag() == true );
     CK( mono[1]->get_name() == "mono-1");
 
+    CK( stereo[0]->zero_flag() == true );
     CK( stereo[0]->get_buffer() != 0 );
     CK( stereo[0]->get_buffer(1) != 0 );
+    CK( stereo[0]->zero_flag() == false );
     CK( stereo[0]->size() == MAX_BUFFER_SIZE );
     CK( stereo[0]->type() == AudioPort::STEREO );
-    CK( stereo[0]->zero_flag() == true );
     CK( stereo[0]->get_name() == "stereo-0");
 
+    CK( stereo[1]->zero_flag() == true );
     CK( stereo[1]->get_buffer() != 0 );
     CK( stereo[1]->get_buffer(1) != 0 );
+    CK( stereo[1]->zero_flag() == false );
     CK( stereo[1]->size() == 128 );
     CK( stereo[1]->type() == AudioPort::STEREO );
-    CK( stereo[1]->zero_flag() == true );
     CK( stereo[1]->get_name() == "stereo-1");
 }
 
