@@ -92,11 +92,6 @@ static void set_zero_flag_fun(Mixer::channel_t& x) {
 
 void Mixer::pre_process()
 {
-    struct SetZero {
-	void operator()(Mixer::channel_t& x) {
-	    x.port->set_zero_flag(true);
-	}
-    };
     std::for_each(d->_in_ports.begin(), d->_in_ports.end(), set_zero_flag_fun);
 }
 
