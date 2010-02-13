@@ -29,6 +29,7 @@
 namespace Tritium
 {
     class MixerPrivate;
+    class ChannelPrivate;
 
     /**
      * \brief The master mix device
@@ -37,11 +38,37 @@ namespace Tritium
     class Mixer : public AudioPortManager
     {
     public:
-	struct channel_t {
-	    T<AudioPort>::shared_ptr port;
-	    float gain;
-	    float pan_L; // 0.0 full left, 0.5 center, 1.0 full right
-	    float pan_R; // 0.0 full left, 0.5 center, 1.0 full right
+
+	class Channel
+	{
+	public:
+	    Channel();
+	    ~Channel();
+
+	    Channel(const Channel& c);
+	    Channel& operator=(const Channel& o);
+
+	    const T<AudioPort>::shared_ptr port() const;
+	    T<AudioPort>::shared_ptr& port();
+
+	    float gain() const;
+	    void gain(float gain);
+
+	    // Note: pan() and pan_L() are identical.  When dealing
+	    // with mono channels, it makes more sense to code pan()
+	    // rather than pan_L().
+
+	    float pan() const;
+	    void pan(float pan);
+
+	    float pan_L() const;
+	    void pan_L(float pan);
+
+	    float pan_R() const;
+	    void pan_R(float pan);
+
+	private:
+	    ChannelPrivate *d; // Declared in MixerPrivate.hpp
 	};
 
 	Mixer(uint32_t max_buffer = MAX_BUFFER_SIZE);
@@ -91,9 +118,14 @@ namespace Tritium
 	T<AudioPort>::shared_ptr port(size_t n);
 
 	/**
-	 * Returns the port and mixer-specific metadata (gain, pan, etc.).
+	 * Returns the port and mixer-specific settings (gain, pan, etc.).
 	 */
-	channel_t port_data(size_t n);
+	T<Channel>::shared_ptr channel(size_t n);
+
+	/**
+	 * Convenience class if you already have a port pointer.
+	 */
+	T<Channel>::shared_ptr channel(const T<AudioPort>::shared_ptr port);
 
     private:
 	MixerPrivate *d;

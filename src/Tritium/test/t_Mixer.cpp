@@ -124,4 +124,73 @@ TEST_CASE( 020_simple_mix )
     CK(stereo.use_count() == 1);
 }
 
+TEST_CASE( 030_channel_properties )
+{
+    T<AudioPort>::shared_ptr mono, stereo;
+
+    mono = m->allocate_port("mono", AudioPort::OUTPUT, AudioPort::MONO);
+    stereo = m->allocate_port("stereo", AudioPort::OUTPUT, AudioPort::STEREO);
+
+    T<Mixer::Channel>::shared_ptr c_mono = m->channel(0);
+    T<Mixer::Channel>::shared_ptr c_stereo = m->channel(1);
+
+    c_mono->gain( 2.0f );
+    c_mono->pan( .75f );
+
+    c_stereo->gain( 4.0f );
+    c_stereo->pan_L( 1.0f ); // Reverse L/R
+    c_stereo->pan_R( 0.0f );
+
+    m->pre_process();
+
+    // These writers are the same as for 020_simple_mix
+
+    float* buf;
+    size_t k, N=1024;
+    buf = mono->get_buffer();
+    BOOST_REQUIRE( N <= mono->size() );
+    for(k=0 ; k<N ; ++k) {
+	buf[k] = 0.1f;
+    }
+
+    buf = stereo->get_buffer(0);
+    BOOST_REQUIRE( N <= stereo->size() );
+    for(k=0 ; k<N ; ++k) {
+	buf[k] = 0.2f;
+    }
+
+    buf = stereo->get_buffer(1);
+    for(k=0 ; k<N ; ++k) {
+	buf[k] = 0.3f;
+    }
+
+    // End of 020_simple_mix writers
+
+    m->mix_send_return(4096);
+    float left[1024], right[1024];
+    float Lv, Rv, Lvm, Lvs, Rvm, Rvs;
+    Lvm = .1f * 2.0f * .25f / .75f; // Left mono
+    Rvm = .1f * 2.0f; // Right mono
+    Lvs = 0.3f * 4.0f; // Left stereo
+    Rvs = 0.2f * 4.0f; // Right stereo
+    Lv = Lvm + Lvs;
+    Rv = Rvm + Rvs;
+    m->mix_down(N, left, right);
+
+    for(k=0 ; k<N ; ++k) {
+	CK( left[k] == Lv );
+	CK( right[k] == Rv );
+    }
+
+    m->release_port(mono);
+    m->release_port(stereo);
+
+    CK(c_mono.use_count() == 1);
+    CK(c_stereo.use_count() == 1);
+    c_mono.reset();
+    c_stereo.reset();
+    CK(mono.use_count() == 1);
+    CK(stereo.use_count() == 1);
+}
+
 TEST_END()

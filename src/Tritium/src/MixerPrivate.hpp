@@ -35,7 +35,9 @@ namespace Tritium
     public:
 	typedef AudioPortImpl act_port_t;
 	typedef T<AudioPort>::shared_ptr port_ref_t;
-	typedef std::deque< Mixer::channel_t > port_list_t;
+	typedef Mixer::Channel channel_t;
+	typedef T<channel_t>::shared_ptr channel_ref_t;
+	typedef std::deque< channel_ref_t > port_list_t;
 
 	uint32_t _max_buf;
 	port_list_t _in_ports;
@@ -44,6 +46,7 @@ namespace Tritium
 	port_ref_t new_stereo_port();
 	port_ref_t new_mono_port();
 	void delete_port(port_ref_t port);
+	channel_ref_t channel_for_port( const port_ref_t port );
 
 	static void eval_pan(float gain, float pan, float& left, float& right);
 	static void copy_buffer_no_gain(float* dst, float* src, uint32_t nframes);
@@ -68,15 +71,83 @@ namespace Tritium
 	};
     };
 
-    bool operator==(const Mixer::channel_t& chan, const T<AudioPort>::shared_ptr port) {
-	return chan.port == port;
+    bool operator==(const T<Mixer::Channel>::shared_ptr chan, const T<AudioPort>::shared_ptr port) {
+	return chan->port() == port;
     }
 
-    bool operator==(const T<AudioPort>::shared_ptr port, const Mixer::channel_t& chan) {
-	return chan.port == port;
+    bool operator==(const T<AudioPort>::shared_ptr port, const T<Mixer::Channel>::shared_ptr chan) {
+	return chan->port() == port;
     }
 
+    class ChannelPrivate
+    {
+    public:
+	template <typename Float>
+	class PanProperty
+	{
+	public:
+	    PanProperty(Float f) : _f(f) {}
+	    PanProperty(const PanProperty& p) : _f(p._f) {}
 
+	    PanProperty& operator=(const PanProperty& p) {
+		_f = p._f;
+		return *this;
+	    }
+
+	    Float operator()() const {
+		return _f;
+	    }
+
+	    void operator()(Float f) {
+		if(f <= 0.0f) {
+		    _f = 0.0f;
+		} else if (f >= 1.0f) {
+		    _f = 1.0f;
+		} else {
+		    _f = f;
+		}
+	    }
+
+	private:
+	    Float _f;
+	};
+
+	T<AudioPort>::shared_ptr _port;
+	float _gain;
+	PanProperty<float> _pan_L;
+	PanProperty<float> _pan_R;
+
+	/* Default settings are for a stereo channel.
+	 */
+	ChannelPrivate(
+	    T<AudioPort>::shared_ptr port = T<AudioPort>::shared_ptr(),
+	    float gain = 1.0f,
+	    float pan_L = 0.0f,
+	    float pan_R = 1.0f
+	    ) :
+	    _port(port),
+	    _gain(gain),
+	    _pan_L(pan_L),
+	    _pan_R(pan_R)
+	    {
+	    }
+
+	ChannelPrivate(const ChannelPrivate& c) :
+	    _port(c._port),
+	    _gain(c._gain),
+	    _pan_L(c._pan_L),
+	    _pan_R(c._pan_R)
+	    {
+	    }
+
+	ChannelPrivate& operator=(const ChannelPrivate& c) {
+	    _port = c._port;
+	    _gain = c._gain;
+	    _pan_L = c._pan_L;
+	    _pan_R = c._pan_R;
+	    return *this;
+	}
+    };
 
 } // namespace Tritium
 

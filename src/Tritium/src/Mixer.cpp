@@ -27,25 +27,9 @@
 
 using namespace Tritium;
 
-MixerPrivate::port_ref_t MixerPrivate::new_mono_port()
-{
-    port_ref_t tmp( new AudioPortImpl(AudioPort::MONO, _max_buf) );
-    return boost::dynamic_pointer_cast<AudioPort>(tmp);
-}
-
-MixerPrivate::port_ref_t MixerPrivate::new_stereo_port()
-{
-    port_ref_t tmp( new AudioPortImpl(AudioPort::STEREO, _max_buf) );
-    return boost::dynamic_pointer_cast<AudioPort>(tmp);
-}
-
-void MixerPrivate::delete_port(MixerPrivate::port_ref_t port)
-{
-    port_list_t::iterator it;
-    it = find(_in_ports.begin(), _in_ports.end(), port);
-    QMutexLocker lk( &_in_ports_mutex );
-    _in_ports.erase(it);
-}
+////////////////////////////////////////////////////////////
+// Mixer
+////////////////////////////////////////////////////////////
 
 Mixer::Mixer(uint32_t max_buffer)
 {
@@ -65,20 +49,20 @@ T<AudioPort>::shared_ptr Mixer::allocate_port(
     AudioPort::type_t type,
     uint32_t /*size*/)
 {
-    Mixer::channel_t tmp;
-    tmp.gain = 1.0f;
+    T<Mixer::Channel>::shared_ptr tmp(new Mixer::Channel);
+    tmp->gain( 1.0f );
     if( type == AudioPort::MONO ) {
-	tmp.port = d->new_mono_port();
-	tmp.pan_L = 0.5f;
+	tmp->port() = d->new_mono_port();
+	tmp->pan_L( 0.5f );
     } else {
 	assert(type == AudioPort::STEREO);
-	tmp.port = d->new_stereo_port();
-	tmp.pan_L = 0.0f;
-	tmp.pan_R = 1.0f;
+	tmp->port() = d->new_stereo_port();
+	tmp->pan_L( 0.0f );
+	tmp->pan_R( 1.0f );
     }
     QMutexLocker lk(&d->_in_ports_mutex);
     d->_in_ports.push_back(tmp);
-    return tmp.port;
+    return tmp->port();
 }
 
 void Mixer::release_port(T<AudioPort>::shared_ptr port)
@@ -86,8 +70,8 @@ void Mixer::release_port(T<AudioPort>::shared_ptr port)
     d->delete_port(port);
 }
 
-static void set_zero_flag_fun(Mixer::channel_t& x) {
-    x.port->set_zero_flag(true);
+static void set_zero_flag_fun(T<Mixer::Channel>::shared_ptr x) {
+    if(x && x->port()) x->port()->set_zero_flag(true);
 }
 
 void Mixer::pre_process()
@@ -110,12 +94,13 @@ void Mixer::mix_down(uint32_t nframes, float* left, float* right)
      * the "Theory of Pan"
      */
     for(it=d->_in_ports.begin() ; it!=d->_in_ports.end() ; ++it) {
-	T<AudioPort>::shared_ptr port = (*it).port;
+	Channel& chan = **it;
+	T<AudioPort>::shared_ptr port = chan.port();
 	if( port->zero_flag() ) continue;
 	if( port->type() == AudioPort::MONO ) {
 	    float gL, gR, pan, gain;
-	    gain = (*it).gain;
-	    pan = (*it).pan_L;
+	    gain = chan.gain();
+	    pan = chan.pan();
 	    MixerPrivate::eval_pan(gain, pan, gL, gR);
 	    if(zero) {
 		MixerPrivate::copy_buffer_with_gain(left, port->get_buffer(), nframes, gL);
@@ -129,8 +114,8 @@ void Mixer::mix_down(uint32_t nframes, float* left, float* right)
 	    float gL, gR, pan, gain;
 
 	    // Left
-	    gain = (*it).gain;
-	    pan = (*it).pan_L;
+	    gain = chan.gain();
+	    pan = chan.pan_L();
 	    MixerPrivate::eval_pan(gain, pan, gL, gR);
 	    if(zero) {
 		MixerPrivate::copy_buffer_with_gain(left, port->get_buffer(), nframes, gL);
@@ -139,7 +124,7 @@ void Mixer::mix_down(uint32_t nframes, float* left, float* right)
 		MixerPrivate::mix_buffer_with_gain(left, port->get_buffer(), nframes, gL);
 		MixerPrivate::mix_buffer_with_gain(right, port->get_buffer(), nframes, gR);
 	    }
-	    pan = (*it).pan_R;
+	    pan = chan.pan_R();
 	    MixerPrivate::eval_pan(gain, pan, gL, gR);
 	    MixerPrivate::mix_buffer_with_gain(left, port->get_buffer(1), nframes, gL);
 	    MixerPrivate::mix_buffer_with_gain(right, port->get_buffer(1), nframes, gR);
@@ -160,13 +145,50 @@ size_t Mixer::count()
 T<AudioPort>::shared_ptr Mixer::port(size_t n)
 {
     assert( n < d->_in_ports.size() );
-    return d->_in_ports[n].port;
+    return d->_in_ports[n]->port();
 }
 
-Mixer::channel_t Mixer::port_data(size_t n)
+T<Mixer::Channel>::shared_ptr Mixer::channel(size_t n)
 {
     assert( n < d->_in_ports.size() );
     return d->_in_ports[n];
+}
+
+T<Mixer::Channel>::shared_ptr Mixer::channel(const T<AudioPort>::shared_ptr port)
+{
+    return d->channel_for_port(port);
+}
+
+////////////////////////////////////////////////////////////
+// MixerPrivate
+////////////////////////////////////////////////////////////
+
+MixerPrivate::port_ref_t MixerPrivate::new_mono_port()
+{
+    port_ref_t tmp( new AudioPortImpl(AudioPort::MONO, _max_buf) );
+    return boost::dynamic_pointer_cast<AudioPort>(tmp);
+}
+
+MixerPrivate::port_ref_t MixerPrivate::new_stereo_port()
+{
+    port_ref_t tmp( new AudioPortImpl(AudioPort::STEREO, _max_buf) );
+    return boost::dynamic_pointer_cast<AudioPort>(tmp);
+}
+
+void MixerPrivate::delete_port(MixerPrivate::port_ref_t port)
+{
+    port_list_t::iterator it;
+    it = find(_in_ports.begin(), _in_ports.end(), port);
+    QMutexLocker lk( &_in_ports_mutex );
+    _in_ports.erase(it);
+}
+
+T<Mixer::Channel>::shared_ptr MixerPrivate::channel_for_port(const MixerPrivate::port_ref_t port)
+{
+    for(size_t k; k<_in_ports.size() ; ++k) {
+	if( _in_ports[k]->port() == port ) return _in_ports[k];
+    }
+    return T<Mixer::Channel>::shared_ptr();
 }
 
 /**
@@ -240,7 +262,7 @@ void MixerPrivate::eval_pan(float gain, float pan, float& left, float& right)
 	L = gain * (1.0f - pan) / pan;
 	R = gain;
     }
-    if( gain > 1.0e-6 ) assert( ::fabs(pan - (R / (R+L))) < 1.0e-32 );
+    if( gain > 1.0e-6 ) assert( ::fabs(pan - (R / (R+L))) < 1.0e-6 );
     left = L;
     right = R;
 }
@@ -267,4 +289,85 @@ void MixerPrivate::mix_buffer_with_gain(float* dst, float* src, uint32_t nframes
     add_with_gain t;
     t.gain = gain;
     std::transform(src, src+nframes, dst, dst, t);
+}
+
+////////////////////////////////////////////////////////////
+// Mixer::Channel
+////////////////////////////////////////////////////////////
+
+Mixer::Channel::Channel()
+{
+    d = new ChannelPrivate();
+}
+
+Mixer::Channel::~Channel()
+{
+    delete d;
+    d = 0;
+}
+
+Mixer::Channel::Channel(const Channel& c)
+{
+    d = new ChannelPrivate();
+    (*d) = (*c.d);
+}
+
+Mixer::Channel& Mixer::Channel::operator=(const Channel& c)
+{
+    (*d) = (*c.d);
+    return *this;
+}
+
+const T<AudioPort>::shared_ptr Mixer::Channel::port() const
+{
+    return d->_port;
+}
+
+T<AudioPort>::shared_ptr& Mixer::Channel::port()
+{
+    return d->_port;
+}
+
+float Mixer::Channel::gain() const
+{
+    return d->_gain;
+}
+
+void Mixer::Channel::gain(float gain)
+{
+    if(gain < 0.0f) {
+	d->_gain = 0.0f;
+    } else {
+	d->_gain = gain;
+    }
+}
+
+float Mixer::Channel::pan() const
+{
+    return pan_L();
+}
+
+void Mixer::Channel::pan(float pan)
+{
+    pan_L(pan);
+}
+
+float Mixer::Channel::pan_L() const
+{
+    return d->_pan_L();
+}
+
+void Mixer::Channel::pan_L(float pan)
+{
+    d->_pan_L(pan);
+}
+
+float Mixer::Channel::pan_R() const
+{
+    return d->_pan_R();
+}
+
+void Mixer::Channel::pan_R(float pan)
+{
+    d->_pan_R(pan);
 }
