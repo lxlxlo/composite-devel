@@ -24,7 +24,7 @@
  *
  */
 
-#include <Tritium/Mixer.hpp>
+#include <Tritium/MixerImpl.hpp>
 #include <Tritium/AudioPort.hpp>
 #include <cstring>
 #include <QString>
@@ -42,10 +42,10 @@ namespace THIS_NAMESPACE
     struct Fixture
     {
 	// SETUP AND TEARDOWN OBJECTS FOR YOUR TESTS.
-	T<Mixer>::auto_ptr m;
+	T<MixerImpl>::auto_ptr m;
 
 	Fixture() {
-	    m.reset( new Mixer() );
+	    m.reset( new MixerImpl() );
 	}
 	~Fixture() {}
     };
@@ -58,7 +58,7 @@ TEST_CASE( 010_defaults )
 {
     BOOST_REQUIRE( m.get() );
     CK( m->count() == 0 );
-    m->pre_process();
+    m->pre_process(4096);
 
     float left[4096], right[4096];
     memset(left, ~0, 4096 * sizeof(float));
@@ -84,10 +84,11 @@ TEST_CASE( 020_simple_mix )
     mono = m->allocate_port("mono", AudioPort::OUTPUT, AudioPort::MONO);
     stereo = m->allocate_port("stereo", AudioPort::OUTPUT, AudioPort::STEREO);
 
-    m->pre_process();
-
     float* buf;
     size_t k, N=1024;
+
+    m->pre_process(N);
+
     buf = mono->get_buffer();
     BOOST_REQUIRE( N <= mono->size() );
     for(k=0 ; k<N ; ++k) {
@@ -141,12 +142,13 @@ TEST_CASE( 030_channel_properties )
     c_stereo->pan_L( 1.0f ); // Reverse L/R
     c_stereo->pan_R( 0.0f );
 
-    m->pre_process();
-
     // These writers are the same as for 020_simple_mix
 
     float* buf;
     size_t k, N=1024;
+
+    m->pre_process(N);
+
     buf = mono->get_buffer();
     BOOST_REQUIRE( N <= mono->size() );
     for(k=0 ; k<N ; ++k) {

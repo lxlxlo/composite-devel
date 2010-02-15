@@ -19,8 +19,8 @@
  *
  */
 
-#include <Tritium/Mixer.hpp>
-#include "MixerPrivate.hpp"
+#include <Tritium/MixerImpl.hpp>
+#include "MixerImplPrivate.hpp"
 #include <cstring> // memcpy
 #include <algorithm>
 #include <cmath>
@@ -28,22 +28,22 @@
 using namespace Tritium;
 
 ////////////////////////////////////////////////////////////
-// Mixer
+// MixerImpl
 ////////////////////////////////////////////////////////////
 
-Mixer::Mixer(uint32_t max_buffer)
+MixerImpl::MixerImpl(uint32_t max_buffer)
 {
-    d = new MixerPrivate();
+    d = new MixerImplPrivate();
     d->_max_buf = max_buffer;
 }
 
-Mixer::~Mixer()
+MixerImpl::~MixerImpl()
 {
     delete d;
     d = 0;
 }
 
-T<AudioPort>::shared_ptr Mixer::allocate_port(
+T<AudioPort>::shared_ptr MixerImpl::allocate_port(
     const QString& name,
     AudioPort::flow_t /*in_or_out*/,
     AudioPort::type_t type,
@@ -65,7 +65,7 @@ T<AudioPort>::shared_ptr Mixer::allocate_port(
     return tmp->port();
 }
 
-void Mixer::release_port(T<AudioPort>::shared_ptr port)
+void MixerImpl::release_port(T<AudioPort>::shared_ptr port)
 {
     d->delete_port(port);
 }
@@ -74,20 +74,20 @@ static void set_zero_flag_fun(T<Mixer::Channel>::shared_ptr x) {
     if(x && x->port()) x->port()->set_zero_flag(true);
 }
 
-void Mixer::pre_process()
+void MixerImpl::pre_process(uint32_t /*nframes*/)
 {
     std::for_each(d->_in_ports.begin(), d->_in_ports.end(), set_zero_flag_fun);
 }
 
-void Mixer::mix_send_return(uint32_t nframes)
+void MixerImpl::mix_send_return(uint32_t nframes)
 {
     #warning "TO-DO"
 }
 
-void Mixer::mix_down(uint32_t nframes, float* left, float* right)
+void MixerImpl::mix_down(uint32_t nframes, float* left, float* right)
 {
     #warning "This is the prosaic approach.  Need an optimized one."
-    MixerPrivate::port_list_t::iterator it;
+    MixerImplPrivate::port_list_t::iterator it;
     bool zero = true;
 
     /* See below for
@@ -101,13 +101,13 @@ void Mixer::mix_down(uint32_t nframes, float* left, float* right)
 	    float gL, gR, pan, gain;
 	    gain = chan.gain();
 	    pan = chan.pan();
-	    MixerPrivate::eval_pan(gain, pan, gL, gR);
+	    MixerImplPrivate::eval_pan(gain, pan, gL, gR);
 	    if(zero) {
-		MixerPrivate::copy_buffer_with_gain(left, port->get_buffer(), nframes, gL);
-		MixerPrivate::copy_buffer_with_gain(right, port->get_buffer(), nframes, gR);
+		MixerImplPrivate::copy_buffer_with_gain(left, port->get_buffer(), nframes, gL);
+		MixerImplPrivate::copy_buffer_with_gain(right, port->get_buffer(), nframes, gR);
 	    } else {
-		MixerPrivate::mix_buffer_with_gain(left, port->get_buffer(), nframes, gL);
-		MixerPrivate::mix_buffer_with_gain(right, port->get_buffer(), nframes, gR);
+		MixerImplPrivate::mix_buffer_with_gain(left, port->get_buffer(), nframes, gL);
+		MixerImplPrivate::mix_buffer_with_gain(right, port->get_buffer(), nframes, gR);
 	    }
 	} else {
 	    assert( port->type() == AudioPort::STEREO );
@@ -116,18 +116,18 @@ void Mixer::mix_down(uint32_t nframes, float* left, float* right)
 	    // Left
 	    gain = chan.gain();
 	    pan = chan.pan_L();
-	    MixerPrivate::eval_pan(gain, pan, gL, gR);
+	    MixerImplPrivate::eval_pan(gain, pan, gL, gR);
 	    if(zero) {
-		MixerPrivate::copy_buffer_with_gain(left, port->get_buffer(), nframes, gL);
-		MixerPrivate::copy_buffer_with_gain(right, port->get_buffer(), nframes, gR);
+		MixerImplPrivate::copy_buffer_with_gain(left, port->get_buffer(), nframes, gL);
+		MixerImplPrivate::copy_buffer_with_gain(right, port->get_buffer(), nframes, gR);
 	    } else {
-		MixerPrivate::mix_buffer_with_gain(left, port->get_buffer(), nframes, gL);
-		MixerPrivate::mix_buffer_with_gain(right, port->get_buffer(), nframes, gR);
+		MixerImplPrivate::mix_buffer_with_gain(left, port->get_buffer(), nframes, gL);
+		MixerImplPrivate::mix_buffer_with_gain(right, port->get_buffer(), nframes, gR);
 	    }
 	    pan = chan.pan_R();
-	    MixerPrivate::eval_pan(gain, pan, gL, gR);
-	    MixerPrivate::mix_buffer_with_gain(left, port->get_buffer(1), nframes, gL);
-	    MixerPrivate::mix_buffer_with_gain(right, port->get_buffer(1), nframes, gR);
+	    MixerImplPrivate::eval_pan(gain, pan, gL, gR);
+	    MixerImplPrivate::mix_buffer_with_gain(left, port->get_buffer(1), nframes, gL);
+	    MixerImplPrivate::mix_buffer_with_gain(right, port->get_buffer(1), nframes, gR);
 	}
 	zero = false;
     }
@@ -137,45 +137,45 @@ void Mixer::mix_down(uint32_t nframes, float* left, float* right)
     }
 }
 
-size_t Mixer::count()
+size_t MixerImpl::count()
 {
     return d->_in_ports.size();
 }
 
-T<AudioPort>::shared_ptr Mixer::port(size_t n)
+T<AudioPort>::shared_ptr MixerImpl::port(size_t n)
 {
     assert( n < d->_in_ports.size() );
     return d->_in_ports[n]->port();
 }
 
-T<Mixer::Channel>::shared_ptr Mixer::channel(size_t n)
+T<Mixer::Channel>::shared_ptr MixerImpl::channel(size_t n)
 {
     assert( n < d->_in_ports.size() );
     return d->_in_ports[n];
 }
 
-T<Mixer::Channel>::shared_ptr Mixer::channel(const T<AudioPort>::shared_ptr port)
+T<Mixer::Channel>::shared_ptr MixerImpl::channel(const T<AudioPort>::shared_ptr port)
 {
     return d->channel_for_port(port);
 }
 
 ////////////////////////////////////////////////////////////
-// MixerPrivate
+// MixerImplPrivate
 ////////////////////////////////////////////////////////////
 
-MixerPrivate::port_ref_t MixerPrivate::new_mono_port()
+MixerImplPrivate::port_ref_t MixerImplPrivate::new_mono_port()
 {
     port_ref_t tmp( new AudioPortImpl(AudioPort::MONO, _max_buf) );
     return boost::dynamic_pointer_cast<AudioPort>(tmp);
 }
 
-MixerPrivate::port_ref_t MixerPrivate::new_stereo_port()
+MixerImplPrivate::port_ref_t MixerImplPrivate::new_stereo_port()
 {
     port_ref_t tmp( new AudioPortImpl(AudioPort::STEREO, _max_buf) );
     return boost::dynamic_pointer_cast<AudioPort>(tmp);
 }
 
-void MixerPrivate::delete_port(MixerPrivate::port_ref_t port)
+void MixerImplPrivate::delete_port(MixerImplPrivate::port_ref_t port)
 {
     port_list_t::iterator it;
     it = find(_in_ports.begin(), _in_ports.end(), port);
@@ -183,7 +183,7 @@ void MixerPrivate::delete_port(MixerPrivate::port_ref_t port)
     _in_ports.erase(it);
 }
 
-T<Mixer::Channel>::shared_ptr MixerPrivate::channel_for_port(const MixerPrivate::port_ref_t port)
+T<Mixer::Channel>::shared_ptr MixerImplPrivate::channel_for_port(const MixerImplPrivate::port_ref_t port)
 {
     for(size_t k; k<_in_ports.size() ; ++k) {
 	if( _in_ports[k]->port() == port ) return _in_ports[k];
@@ -246,7 +246,7 @@ T<Mixer::Channel>::shared_ptr MixerPrivate::channel_for_port(const MixerPrivate:
  *    Right = Gain
  *
  */
-void MixerPrivate::eval_pan(float gain, float pan, float& left, float& right)
+void MixerImplPrivate::eval_pan(float gain, float pan, float& left, float& right)
 {
     float L = 0.0f, R = 0.0f;
     if( (pan > 1.0f) || (pan < 0.0f) ) {
@@ -267,24 +267,24 @@ void MixerPrivate::eval_pan(float gain, float pan, float& left, float& right)
     right = R;
 }
 
-void MixerPrivate::copy_buffer_no_gain(float* dst, float* src, uint32_t nframes)
+void MixerImplPrivate::copy_buffer_no_gain(float* dst, float* src, uint32_t nframes)
 {
     memcpy(dst, src, nframes * sizeof(float));
 }
 
-void MixerPrivate::copy_buffer_with_gain(float* dst, float* src, uint32_t nframes, float gain)
+void MixerImplPrivate::copy_buffer_with_gain(float* dst, float* src, uint32_t nframes, float gain)
 {
     mult_gain t;
     t.gain = gain;
     std::transform(src, src+nframes, dst, t);
 }
 
-void MixerPrivate::mix_buffer_no_gain(float* dst, float* src, uint32_t nframes)
+void MixerImplPrivate::mix_buffer_no_gain(float* dst, float* src, uint32_t nframes)
 {
     std::transform(src, src+nframes, dst, dst, std::plus<float>());
 }
 
-void MixerPrivate::mix_buffer_with_gain(float* dst, float* src, uint32_t nframes, float gain)
+void MixerImplPrivate::mix_buffer_with_gain(float* dst, float* src, uint32_t nframes, float gain)
 {
     add_with_gain t;
     t.gain = gain;

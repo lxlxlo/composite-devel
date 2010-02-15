@@ -199,7 +199,7 @@ namespace Tritium
 #ifdef JACK_SUPPORT
         m_jack_client.reset( new JackClient(m_engine, false) );
 #endif
-	m_mixer.reset( new Mixer );
+	m_mixer.reset( new MixerImpl );
         m_sampler.reset( new Sampler(m_engine, boost::dynamic_pointer_cast<AudioPortManager>(m_mixer)) );
 	m_sampler->set_max_note_limit( m_engine->get_preferences()->m_nMaxNotes );
 #ifdef LADSPA_SUPPORT
@@ -393,7 +393,7 @@ namespace Tritium
         timeval startTimeval = currentTime2();
         m_nFreeRollingFrameCounter += nframes;
 
-	m_mixer->pre_process();
+	m_mixer->pre_process(nframes);
         audioEngine_process_clearAudioBuffers( nframes );
 
         if( m_audioEngineState < Engine::StateReady) {

@@ -28,14 +28,13 @@
 
 namespace Tritium
 {
-    class MixerPrivate;
     class ChannelPrivate;
 
     /**
-     * \brief The master mix device
+     * \brief Abstract "public" interface for a mixer device
      *
      */
-    class Mixer : public AudioPortManager
+    class Mixer
     {
     public:
 
@@ -68,67 +67,32 @@ namespace Tritium
 	    void pan_R(float pan);
 
 	private:
-	    ChannelPrivate *d; // Declared in MixerPrivate.hpp
+	    ChannelPrivate *d; // Declared in MixerImplPrivate.hpp
 	};
 
-	Mixer(uint32_t max_buffer = MAX_BUFFER_SIZE);
-	virtual ~Mixer();
-
-	// AudioPortManager interface
-
-	virtual T<AudioPort>::shared_ptr allocate_port(
-	    const QString& name,
-	    AudioPort::flow_t in_or_out = AudioPort::OUTPUT,
-	    AudioPort::type_t type = AudioPort::MONO,
-	    size_t size = -1
-	    );
-	virtual void release_port(T<AudioPort>::shared_ptr port);
-
-	/**
-	 * Prepare for another audio cycle.
-	 */
-	void pre_process();
-
-	/**
-	 * Signals that all channels are written and it's time to render send/returns
-	 *
-	 * i.e. Sends to effects.
-	 */
-	void mix_send_return(uint32_t nframes);
-
-	/**
-	 * Mix to output buffers.
-	 *
-	 * This function is an intermediate API.  In the future, it's
-	 * intended to have a more flexible output system, and
-	 * possible manage the audio drivers internally.
-	 */
-	void mix_down(uint32_t nframes, float* left, float* right);
+	virtual ~Mixer() {}
 
 	/**
 	 * Returns the number of audio channels being input into mixer.
 	 *
 	 * Does not count send/return or FX loops.
 	 */
-	size_t count();
+	virtual size_t count() = 0;
 
 	/**
 	 * Returns the port at index n
 	 */
-	T<AudioPort>::shared_ptr port(size_t n);
+	virtual T<AudioPort>::shared_ptr port(size_t n) = 0;
 
 	/**
 	 * Returns the port and mixer-specific settings (gain, pan, etc.).
 	 */
-	T<Channel>::shared_ptr channel(size_t n);
+	virtual T<Channel>::shared_ptr channel(size_t n) = 0;
 
 	/**
 	 * Convenience class if you already have a port pointer.
 	 */
-	T<Channel>::shared_ptr channel(const T<AudioPort>::shared_ptr port);
-
-    private:
-	MixerPrivate *d;
+	virtual T<Channel>::shared_ptr channel(const T<AudioPort>::shared_ptr port) = 0;
     };
 
 } // namespace Tritium

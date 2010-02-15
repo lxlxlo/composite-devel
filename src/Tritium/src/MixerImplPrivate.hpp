@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef TRITIUM_MIXERPRIVATE_HPP
-#define TRITIUM_MIXERPRIVATE_HPP
+#ifndef TRITIUM_MIXERIMPLPRIVATE_HPP
+#define TRITIUM_MIXERIMPLPRIVATE_HPP
 
 #include <Tritium/AudioPort.hpp>
 #include <Tritium/memory.hpp>
@@ -30,7 +30,7 @@
 
 namespace Tritium
 {
-    class MixerPrivate
+    class MixerImplPrivate
     {
     public:
 	typedef AudioPortImpl act_port_t;
@@ -151,4 +151,4 @@ namespace Tritium
 
 } // namespace Tritium
 
-#endif // TRITIUM_MIXERPRIVATE_HPP
+#endif // TRITIUM_MIXERIMPLPRIVATE_HPP
