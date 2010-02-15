@@ -491,7 +491,7 @@ void PatternEditorInstrumentList::updateInstrumentLines()
 	Engine *pEngine = g_engine;
 	T<Song>::shared_ptr pSong = pEngine->getSong();
 	T<InstrumentList>::shared_ptr pInstrList = g_engine->get_sampler()->get_instrument_list();
-	Mixer * mixer = CompositeApp::get_instance()->getMixer();
+	::Mixer * mixer = CompositeApp::get_instance()->getMixer();
 
 	unsigned nSelectedInstr = pEngine->getSelectedInstrumentNumber();
 

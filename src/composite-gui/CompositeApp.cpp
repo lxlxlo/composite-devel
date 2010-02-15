@@ -239,7 +239,7 @@ void CompositeApp::setupSinglePanedInterface()
 
 
 	// MIXER
-	m_pMixer = new Mixer(0);
+	m_pMixer = new ::Mixer(0);
 	WindowProperties mixerProp = pPref->getMixerProperties();
 	m_pMixer->resize( mixerProp.width, mixerProp.height );
 	m_pMixer->move( mixerProp.x, mixerProp.y );

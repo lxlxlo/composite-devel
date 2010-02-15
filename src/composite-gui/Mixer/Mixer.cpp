@@ -39,9 +39,19 @@
 #include <Tritium/fx/Effects.hpp>
 #include <Tritium/memory.hpp>
 
-using namespace Tritium;
-
 #include <cassert>
+
+// These workaround the namespace clash between
+// Tritium::Mixer and Composite's ::Mixer.
+using Tritium::Engine;
+using Tritium::g_engine;
+using Tritium::T;
+using Tritium::Instrument;
+using Tritium::InstrumentList;
+using Tritium::Song;
+using Tritium::Note;
+using Tritium::Preferences;
+using Tritium::LadspaFX;
 
 #define MIXER_STRIP_WIDTH	56
 #define MASTERMIXER_STRIP_WIDTH	126

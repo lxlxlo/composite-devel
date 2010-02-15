@@ -77,7 +77,7 @@ class CompositeApp : public QObject
 		void showPlaylistDialog();
 //		void showAudioFileBrowser();
 
-		Mixer* getMixer() {	return m_pMixer;	}
+		::Mixer* getMixer() {	return m_pMixer;	}
 		MainForm* getMainForm() {	return m_pMainForm;	}
 		SongEditorPanel* getSongEditorPanel() {	return m_pSongEditorPanel;	}
 		AudioEngineInfoForm* getAudioEngineInfoForm() {	return m_pAudioEngineInfoForm;	}
@@ -113,7 +113,7 @@ class CompositeApp : public QObject
 #endif
 
 		MainForm *m_pMainForm;
-		Mixer *m_pMixer;
+		::Mixer *m_pMixer;
 		PatternEditorPanel* m_pPatternEditorPanel;
 		AudioEngineInfoForm *m_pAudioEngineInfoForm;
 		SongEditorPanel *m_pSongEditorPanel;

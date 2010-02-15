@@ -51,6 +51,7 @@ namespace Tritium
     class Playlist;
     class Preferences;
     class Sampler;
+    class Mixer;
     class Transport;
 
     class EnginePrivate;
@@ -78,6 +79,7 @@ namespace Tritium
 	T<MidiInput>::shared_ptr get_midi_input();
 	T<ActionManager>::shared_ptr get_action_manager();
 	T<Sampler>::shared_ptr get_sampler();
+	T<Mixer>::shared_ptr get_mixer();
 	T<EventQueue>::shared_ptr get_event_queue();
         Playlist& get_playlist();
 #ifdef LADSPA_SUPPORT

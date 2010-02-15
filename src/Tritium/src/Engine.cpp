@@ -932,6 +932,11 @@ namespace Tritium
         return d->m_sampler;
     }
 
+    T<Mixer>::shared_ptr Engine::get_mixer()
+    {
+	return boost::dynamic_pointer_cast<Mixer>(d->m_mixer);
+    }
+
     T<Transport>::shared_ptr Engine::get_transport()
     {
         return static_cast<T<Transport>::shared_ptr>(d->m_pTransport);
