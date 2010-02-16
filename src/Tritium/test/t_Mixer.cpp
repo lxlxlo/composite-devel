@@ -138,7 +138,7 @@ TEST_CASE( 030_channel_properties )
     c_mono->gain( 2.0f );
     c_mono->pan( .75f );
 
-    c_stereo->gain( 4.0f );
+    c_stereo->gain( 0.25f );
     c_stereo->pan_L( 1.0f ); // Reverse L/R
     c_stereo->pan_R( 0.0f );
 
@@ -173,8 +173,8 @@ TEST_CASE( 030_channel_properties )
     float Lv, Rv, Lvm, Lvs, Rvm, Rvs;
     Lvm = .1f * 2.0f * .25f / .75f; // Left mono
     Rvm = .1f * 2.0f; // Right mono
-    Lvs = 0.3f * 4.0f; // Left stereo
-    Rvs = 0.2f * 4.0f; // Right stereo
+    Lvs = 0.3f * 0.25f; // Left stereo
+    Rvs = 0.2f * 0.25f; // Right stereo
     Lv = Lvm + Lvs;
     Rv = Rvm + Rvs;
     m->mix_down(N, left, right);

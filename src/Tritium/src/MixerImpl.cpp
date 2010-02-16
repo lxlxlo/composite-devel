@@ -20,6 +20,8 @@
  */
 
 #include <Tritium/MixerImpl.hpp>
+#include <Tritium/fx/Effects.hpp>
+#include <Tritium/fx/LadspaFX.hpp>
 #include "MixerImplPrivate.hpp"
 #include <cstring> // memcpy
 #include <algorithm>
@@ -31,10 +33,14 @@ using namespace Tritium;
 // MixerImpl
 ////////////////////////////////////////////////////////////
 
-MixerImpl::MixerImpl(uint32_t max_buffer)
+MixerImpl::MixerImpl(uint32_t max_buffer,
+		     T<Effects>::shared_ptr fx_man,
+		     size_t fx_count)
 {
     d = new MixerImplPrivate();
     d->_max_buf = max_buffer;
+    d->_fx = fx_man;
+    d->_fx_count = fx_count;
 }
 
 MixerImpl::~MixerImpl()
@@ -49,7 +55,7 @@ T<AudioPort>::shared_ptr MixerImpl::allocate_port(
     AudioPort::type_t type,
     uint32_t /*size*/)
 {
-    T<Mixer::Channel>::shared_ptr tmp(new Mixer::Channel);
+    T<Mixer::Channel>::shared_ptr tmp(new Mixer::Channel(d->_fx_count));
     tmp->gain( 1.0f );
     if( type == AudioPort::MONO ) {
 	tmp->port() = d->new_mono_port();
@@ -81,7 +87,44 @@ void MixerImpl::pre_process(uint32_t /*nframes*/)
 
 void MixerImpl::mix_send_return(uint32_t nframes)
 {
-    #warning "TO-DO"
+    if( !d->_fx ) return;
+
+    size_t count = d->_fx->getPluginList().size();
+    if( count > d->_fx_count ) count = d->_fx_count;
+
+    size_t k;
+    for(k=0 ; k<count; ++k) {
+	T<LadspaFX>::shared_ptr effect = d->_fx->getLadspaFX(k);
+	if( !effect ) continue;
+	memset(effect->m_pBuffer_L, 0, nframes * sizeof(float));
+	memset(effect->m_pBuffer_R, 0, nframes * sizeof(float));
+    }
+
+    MixerImplPrivate::port_list_t::iterator it;
+    for(it=d->_in_ports.begin() ; it != d->_in_ports.end() ; ++it) {
+	Mixer::Channel& chan = **it;
+	T<AudioPort>::shared_ptr port = chan.port();
+	if(port->zero_flag()) continue;
+	for(k=0 ; k<count ; ++k) {
+	    if(chan.send_gain(k) == 0.0f) continue;
+	    T<LadspaFX>::shared_ptr effect = d->_fx->getLadspaFX(k);
+	    if(!effect) continue;
+	    float *L, *R;
+	    L = port->get_buffer();
+	    if(port->type() == AudioPort::STEREO) {
+		R = port->get_buffer(1);
+	    } else {
+		R = L;
+	    }
+	    MixerImplPrivate::mix_buffer_with_gain(effect->m_pBuffer_L, L, nframes, chan.send_gain(k));
+	    MixerImplPrivate::mix_buffer_with_gain(effect->m_pBuffer_R, R, nframes, chan.send_gain(k));
+	}
+    }
+
+    for(k=0 ; k<count ; ++k) {
+	T<LadspaFX>::shared_ptr effect = d->_fx->getLadspaFX(k);
+	effect->processFX(nframes);
+    }
 }
 
 void MixerImpl::mix_down(uint32_t nframes, float* left, float* right)
@@ -135,6 +178,22 @@ void MixerImpl::mix_down(uint32_t nframes, float* left, float* right)
 	memset(left, 0, nframes * sizeof(float));
 	memset(right, 0, nframes * sizeof(float));
     }
+    size_t k, plugin_count;
+    if(d->_fx) {
+	plugin_count = d->_fx->getPluginList().size();
+    } else {
+	plugin_count = 0;
+    }
+    for(k=0 ; k<plugin_count ; ++k) {
+	assert(d->_fx);
+	T<LadspaFX>::shared_ptr effect = d->_fx->getLadspaFX(k);
+	if(!effect) continue;
+	MixerImplPrivate::mix_buffer_with_gain(left, effect->m_pBuffer_L, effect->getVolume(), nframes);
+	#warning "What about mono/stereo effects?"
+	MixerImplPrivate::mix_buffer_with_gain(right, effect->m_pBuffer_R, effect->getVolume(), nframes);
+    }
+    float peak_L = MixerImplPrivate::clip_buffer_get_peak(left, nframes);
+    float peak_R = MixerImplPrivate::clip_buffer_get_peak(right, nframes);
 }
 
 size_t MixerImpl::count()
@@ -291,6 +350,31 @@ void MixerImplPrivate::mix_buffer_with_gain(float* dst, float* src, uint32_t nfr
     std::transform(src, src+nframes, dst, dst, t);
 }
 
+float MixerImplPrivate::clip_buffer_get_peak(float* buf, uint32_t nframes)
+{
+    float max = 0.0, min = 0.0, tmp;
+    while(nframes>0) {
+	--nframes;
+	tmp = buf[nframes];
+	if(tmp > max) {
+	    if(tmp > 1.0f) {
+		buf[nframes] = max = 1.0f;
+	    } else {
+		max = tmp;
+	    }
+	} else if (tmp < min) {
+	    if(tmp < -1.0f) {
+		buf[nframes] = min = -1.0f;
+	    } else {
+		min = tmp;
+	    }
+	}
+    }
+    min = -min;
+    if(min > max) return min;
+    return max;
+}
+
 ////////////////////////////////////////////////////////////
 // Mixer::Channel
 ////////////////////////////////////////////////////////////
@@ -298,6 +382,11 @@ void MixerImplPrivate::mix_buffer_with_gain(float* dst, float* src, uint32_t nfr
 Mixer::Channel::Channel()
 {
     d = new ChannelPrivate();
+}
+
+Mixer::Channel::Channel(size_t sends)
+{
+    d = new ChannelPrivate(sends);
 }
 
 Mixer::Channel::~Channel()
@@ -370,4 +459,19 @@ float Mixer::Channel::pan_R() const
 void Mixer::Channel::pan_R(float pan)
 {
     d->_pan_R(pan);
+}
+
+size_t Mixer::Channel::send_count() const
+{
+    return d->_send_gain.size();
+}
+
+float Mixer::Channel::send_gain(size_t index) const
+{
+    return d->_send_gain[index];
+}
+
+void Mixer::Channel::send_gain(size_t index, float gain)
+{
+    d->_send_gain[index] = gain;
 }

@@ -31,6 +31,7 @@ namespace Tritium
 {
     class MixerImplPrivate;
     class ChannelPrivate;
+    class Effects;
 
     /**
      * \brief The master mix device
@@ -40,7 +41,9 @@ namespace Tritium
     {
     public:
 
-	MixerImpl(uint32_t max_buffer = MAX_BUFFER_SIZE);
+	MixerImpl(uint32_t max_buffer = MAX_BUFFER_SIZE,
+		  T<Effects>::shared_ptr fx_man = T<Effects>::shared_ptr(),
+		  size_t effect_ct = 0);
 	virtual ~MixerImpl();
 
 	// AudioPortManager interface
@@ -66,7 +69,7 @@ namespace Tritium
 	void pre_process(uint32_t nframes);
 
 	/**
-	 * Signals that all channels are written and it's time to render send/returns
+	 * Process all send/return channels.
 	 *
 	 * i.e. Sends to effects.
 	 */

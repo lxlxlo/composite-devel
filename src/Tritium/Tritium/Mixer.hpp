@@ -42,6 +42,7 @@ namespace Tritium
 	{
 	public:
 	    Channel();
+	    Channel(size_t sends);
 	    ~Channel();
 
 	    Channel(const Channel& c);
@@ -65,6 +66,14 @@ namespace Tritium
 
 	    float pan_R() const;
 	    void pan_R(float pan);
+
+	    /**
+	     * Return maximum number of "send" gains.
+	     */
+	    size_t send_count() const;
+
+	    float send_gain(size_t index) const;
+	    void send_gain(size_t index, float gain);
 
 	private:
 	    ChannelPrivate *d; // Declared in MixerImplPrivate.hpp
