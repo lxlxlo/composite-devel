@@ -40,7 +40,7 @@ MixerImpl::MixerImpl(uint32_t max_buffer,
     d = new MixerImplPrivate();
     d->_max_buf = max_buffer;
     d->_fx = fx_man;
-    d->_fx_count = fx_count;
+    d->_fx_count = (fx_count < MAX_FX) ? fx_count : MAX_FX;
 }
 
 MixerImpl::~MixerImpl()
@@ -123,11 +123,13 @@ void MixerImpl::mix_send_return(uint32_t nframes)
 
     for(k=0 ; k<count ; ++k) {
 	T<LadspaFX>::shared_ptr effect = d->_fx->getLadspaFX(k);
-	effect->processFX(nframes);
+	if(effect) {
+	    effect->processFX(nframes);
+	}
     }
 }
 
-void MixerImpl::mix_down(uint32_t nframes, float* left, float* right)
+void MixerImpl::mix_down(uint32_t nframes, float* left, float* right, float* peak_left, float* peak_right)
 {
     #warning "This is the prosaic approach.  Need an optimized one."
     MixerImplPrivate::port_list_t::iterator it;
@@ -184,6 +186,9 @@ void MixerImpl::mix_down(uint32_t nframes, float* left, float* right)
     } else {
 	plugin_count = 0;
     }
+    if(plugin_count > d->_fx_count) {
+	plugin_count = d->_fx_count;
+    }
     for(k=0 ; k<plugin_count ; ++k) {
 	assert(d->_fx);
 	T<LadspaFX>::shared_ptr effect = d->_fx->getLadspaFX(k);
@@ -192,8 +197,12 @@ void MixerImpl::mix_down(uint32_t nframes, float* left, float* right)
 	#warning "What about mono/stereo effects?"
 	MixerImplPrivate::mix_buffer_with_gain(right, effect->m_pBuffer_R, effect->getVolume(), nframes);
     }
-    float peak_L = MixerImplPrivate::clip_buffer_get_peak(left, nframes);
-    float peak_R = MixerImplPrivate::clip_buffer_get_peak(right, nframes);
+    if(peak_left) {
+	(*peak_left) = MixerImplPrivate::clip_buffer_get_peak(left, nframes);
+    }
+    if(peak_right) {
+	(*peak_right) = MixerImplPrivate::clip_buffer_get_peak(right, nframes);
+    }
 }
 
 size_t MixerImpl::count()

@@ -199,12 +199,12 @@ namespace Tritium
 #ifdef JACK_SUPPORT
         m_jack_client.reset( new JackClient(m_engine, false) );
 #endif
-	m_mixer.reset( new MixerImpl );
-        m_sampler.reset( new Sampler(m_engine, boost::dynamic_pointer_cast<AudioPortManager>(m_mixer)) );
-	m_sampler->set_max_note_limit( m_engine->get_preferences()->m_nMaxNotes );
 #ifdef LADSPA_SUPPORT
         m_effects.reset( new Effects(m_engine) );
 #endif
+	m_mixer.reset( new MixerImpl(MAX_BUFFER_SIZE, m_effects, 4) );
+        m_sampler.reset( new Sampler(m_engine, boost::dynamic_pointer_cast<AudioPortManager>(m_mixer)) );
+	m_sampler->set_max_note_limit( m_engine->get_preferences()->m_nMaxNotes );
         m_playlist.reset( new Playlist(m_engine) );
 
         m_pSong = Song::get_default_song(m_engine);
@@ -370,21 +370,6 @@ namespace Tritium
 #endif
 
         mx.unlock();
-
-#ifdef LADSPA_SUPPORT
-        if ( m_audioEngineState >= Engine::StateReady ) {
-            T<Effects>::shared_ptr pEffects = m_engine->get_effects();
-            for ( unsigned i = 0; i < MAX_FX; ++i ) {   // clear FX buffers
-                T<LadspaFX>::shared_ptr pFX = pEffects->getLadspaFX( i );
-                if ( pFX ) {
-                    assert( pFX->m_pBuffer_L );
-                    assert( pFX->m_pBuffer_R );
-                    memset( pFX->m_pBuffer_L, 0, nFrames * sizeof( float ) );
-                    memset( pFX->m_pBuffer_R, 0, nFrames * sizeof( float ) );
-                }
-            }
-        }
-#endif
     }
 
 /// Main audio processing function. Called by audio drivers.
@@ -439,57 +424,14 @@ namespace Tritium
                            nframes
             );
 
-	m_mixer->mix_send_return(nframes);
-	m_mixer->mix_down(nframes, m_pMainBuffer_L, m_pMainBuffer_R);
-
         timeval renderTime_end = currentTime2();
 
         timeval ladspaTime_start = renderTime_end;
-#ifdef LADSPA_SUPPORT
-        // Process LADSPA FX
-        if ( m_audioEngineState >= Engine::StateReady ) {
-            for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
-                T<LadspaFX>::shared_ptr pFX = m_engine->get_effects()->getLadspaFX( nFX );
-                if ( ( pFX ) && ( pFX->isEnabled() ) ) {
-                    pFX->processFX( nframes );
-                    float *buf_L = NULL;
-                    float *buf_R = NULL;
-                    if ( pFX->getPluginType() == LadspaFX::STEREO_FX ) {
-                        buf_L = pFX->m_pBuffer_L;
-                        buf_R = pFX->m_pBuffer_R;
-                    } else { // MONO FX
-                        buf_L = pFX->m_pBuffer_L;
-                        buf_R = buf_L;
-                    }
-                    for ( unsigned i = 0; i < nframes; ++i ) {
-                        m_pMainBuffer_L[ i ] += buf_L[ i ];
-                        m_pMainBuffer_R[ i ] += buf_R[ i ];
-                        if ( buf_L[ i ] > m_fFXPeak_L[nFX] )
-                            m_fFXPeak_L[nFX] = buf_L[ i ];
-                        if ( buf_R[ i ] > m_fFXPeak_R[nFX] )
-                            m_fFXPeak_R[nFX] = buf_R[ i ];
-                    }
-                }
-            }
-        }
-#endif
+	m_mixer->mix_send_return(nframes);
         timeval ladspaTime_end = currentTime2();
 
-        // update master peaks
-        float val_L;
-        float val_R;
-        if ( m_audioEngineState >= Engine::StateReady ) {
-            for ( unsigned i = 0; i < nframes; ++i ) {
-                val_L = m_pMainBuffer_L[i];
-                val_R = m_pMainBuffer_R[i];
-                if ( val_L > m_fMasterPeak_L ) {
-                    m_fMasterPeak_L = val_L;
-                }
-                if ( val_R > m_fMasterPeak_R ) {
-                    m_fMasterPeak_R = val_R;
-                }
-            }
-        }
+	m_mixer->mix_down(nframes, m_pMainBuffer_L, m_pMainBuffer_R,
+			  &m_fMasterPeak_L, &m_fMasterPeak_R);
 
 //      float fRenderTime = (renderTime_end.tv_sec - renderTime_start.tv_sec) * 1000.0 + (renderTime_end.tv_usec - renderTime_start.tv_usec) / 1000.0;
         float fLadspaTime =

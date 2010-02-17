@@ -81,8 +81,35 @@ namespace Tritium
 	 * This function is an intermediate API.  In the future, it's
 	 * intended to have a more flexible output system, and
 	 * possible manage the audio drivers internally.
+	 *
+	 * \param nframes - The number of frames to process for the
+	 * current cycle.
+	 *
+	 * \param left - Pointer to an array of float's that is at
+	 * least nframes large.  The left channel audio data will be
+	 * written to this buffer.  Values will be clipped to the
+	 * range [-1.0, 1.0].
+	 *
+	 * \param right - Pointer to an array of float's that is at
+	 * least nframes large.  The right channel audio data will be
+	 * written to this buffer.  Values will be clipped to the
+	 * range [-1.0, 1.0].
+	 *
+	 * \param peak_left - Pointer to a float where the
+	 * left-channel peak value should be stored.  Will return a
+	 * number between 0.0f and 1.0f.  If this pointer is null (0),
+	 * it will be ignored.
+	 *
+	 * \param peak_left - Pointer to a float where the
+	 * right-channel peak value should be stored.  Will return a
+	 * number between 0.0f and 1.0f.  If this pointer is null (0),
+	 * it will be ignored.
+	 *
+	 * \return The parameters left, right, peak_left, and
+	 * peak_right are the return values.
 	 */
-	void mix_down(uint32_t nframes, float* left, float* right);
+	void mix_down(uint32_t nframes, float* left, float* right,
+		      float* peak_left = 0, float* peak_right = 0);
 
     private:
 	MixerImplPrivate *d;
