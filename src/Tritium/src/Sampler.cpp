@@ -34,7 +34,6 @@
 #include <Tritium/ADSR.hpp>
 #include <Tritium/DataPath.hpp>
 #include <Tritium/globals.hpp>
-#include <Tritium/Engine.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentLayer.hpp>
 #include <Tritium/Note.hpp>
@@ -112,12 +111,11 @@ void SamplerPrivate::handle_note_off(const SeqEvent& ev)
     }
 }
 
-Sampler::Sampler(Engine* parent, T<AudioPortManager>::shared_ptr apm)
+Sampler::Sampler(T<AudioPortManager>::shared_ptr apm)
 {
     INFOLOG( "INIT" );
-    assert(parent);
 
-    d = new SamplerPrivate(this, parent, apm);
+    d = new SamplerPrivate(this, apm);
 
     // instrument used in file preview
     QString sEmptySampleFilename = DataPath::get_data_path() + "/emptySample.wav";

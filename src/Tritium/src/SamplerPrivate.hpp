@@ -37,7 +37,6 @@ namespace Tritium
     struct SamplerPrivate
     {
 	Sampler& parent;
-	Engine* engine;
 	typedef std::list<Note> NoteList;
 	QMutex mutex_current_notes;            // Must be locked when adding/removing elements
 	NoteList current_notes;
@@ -51,9 +50,8 @@ namespace Tritium
 	bool per_instrument_outs; // Enable an output for each instrument.
 	bool instrument_outs_prefader;
 
-	SamplerPrivate(Sampler* par, Engine* e_par, T<AudioPortManager>::shared_ptr apm) :
+	SamplerPrivate(Sampler* par, T<AudioPortManager>::shared_ptr apm) :
 	    parent( *par ),
-	    engine(e_par),
 	    port_manager(apm),
 	    instrument_list( new InstrumentList ),
 	    preview_instrument(),
@@ -61,7 +59,6 @@ namespace Tritium
 	    per_instrument_outs(false),
 	    instrument_outs_prefader(false)
 	    {
-		assert(e_par);
 	    }
 
 	~SamplerPrivate() {

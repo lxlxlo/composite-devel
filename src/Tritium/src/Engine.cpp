@@ -203,7 +203,7 @@ namespace Tritium
         m_effects.reset( new Effects(m_engine) );
 #endif
 	m_mixer.reset( new MixerImpl(MAX_BUFFER_SIZE, m_effects, 4) );
-        m_sampler.reset( new Sampler(m_engine, boost::dynamic_pointer_cast<AudioPortManager>(m_mixer)) );
+        m_sampler.reset( new Sampler(boost::dynamic_pointer_cast<AudioPortManager>(m_mixer)) );
 	m_sampler->set_max_note_limit( m_engine->get_preferences()->m_nMaxNotes );
         m_playlist.reset( new Playlist(m_engine) );
 
