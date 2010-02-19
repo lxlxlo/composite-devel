@@ -69,6 +69,8 @@ struct TransportPosition;
 	void preview_instrument( T<Instrument>::shared_ptr instr );
 
 	void add_instrument( T<Instrument>::shared_ptr instr );
+	void remove_instrument( T<Instrument>::shared_ptr instr );
+	void clear();
 	T<InstrumentList>::shared_ptr get_instrument_list();
 
 	// CONFIGURATION

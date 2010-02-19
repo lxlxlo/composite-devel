@@ -44,8 +44,7 @@ namespace Tritium
 	T<InstrumentList>::shared_ptr instrument_list;
 	T<Instrument>::shared_ptr preview_instrument;         // Replaces __preview_instrument
 	T<AudioPortManager>::shared_ptr port_manager;
-	T<AudioPort>::shared_ptr main_out;
-	T<AudioPort>::shared_ptr track_out[ MAX_INSTRUMENTS ];
+	std::deque< T<AudioPort>::shared_ptr > instrument_ports;
 
 	// Configuration
 	int max_notes; // Maximum number of notes played at any one time
@@ -63,16 +62,10 @@ namespace Tritium
 	    instrument_outs_prefader(false)
 	    {
 		assert(e_par);
-		main_out = port_manager->allocate_port(
-		    "sampler-main",
-		    AudioPort::OUTPUT,
-		    AudioPort::STEREO,
-		    MAX_BUFFER_SIZE
-		    );
 	    }
 
 	~SamplerPrivate() {
-	    port_manager->release_port(main_out);
+	    parent.clear();
 	}
 
 	// Add/Remove notes from current_notes based on event 'ev'
@@ -94,11 +87,7 @@ namespace Tritium
 	    Note& note,
 	    int nFrames,
 	    float cost_L,
-	    float cost_R,
-	    float cost_track_L,
-	    float cost_track_R,
-	    float fSendFXLevel_L,
-	    float fSendFXLevel_R
+	    float cost_R
 	    );
 	int render_note_resample(
 	    T<Sample>::shared_ptr pSample,
@@ -107,11 +96,7 @@ namespace Tritium
 	    uint32_t frame_rate,
 	    float cost_L,
 	    float cost_R,
-	    float cost_track_L,
-	    float cost_track_R,
-	    float fLayerPitch,
-	    float fSendFXLevel_L,
-	    float fSendFXLevel_R
+	    float fLayerPitch
 	    );
 
     }; // class SamplerPrivate

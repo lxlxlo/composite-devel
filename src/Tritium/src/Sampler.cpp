@@ -23,6 +23,8 @@
 #include <cmath>
 #include <list>
 #include <QMutexLocker>
+#include <algorithm>
+#include <functional>
 
 #include "SamplerPrivate.hpp"
 
@@ -148,12 +150,9 @@ void Sampler::process( SeqScriptConstIterator beg,
 		       const TransportPosition& pos,
 		       uint32_t nFrames )
 {
-    d->main_out->write_zeros(nFrames);
-    d->main_out->set_zero_flag(false);
-
     if(d->per_instrument_outs) {
 	for(int k=0 ; k<MAX_INSTRUMENTS ; ++k) {
-	    d->track_out[k]->set_zero_flag(true);
+	    d->instrument_ports[k]->set_zero_flag(true);
 	}
     }
 
@@ -234,34 +233,21 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
 
     float cost_L = 1.0f;
     float cost_R = 1.0f;
+/*
     float cost_track_L = 1.0f;
     float cost_track_R = 1.0f;
     float fSendFXLevel_L = 1.0f;
     float fSendFXLevel_R = 1.0f;
-
+*/
     if ( pInstr->is_muted() ) {                             // is instrument muted?
 	cost_L = 0.0;
 	cost_R = 0.0;
-	if ( ! instrument_outs_prefader ) {
-	    // Post-Fader
-	    cost_track_L = 0.0;
-	    cost_track_R = 0.0;
-	}
-
-	fSendFXLevel_L = 0.0f;
-	fSendFXLevel_R = 0.0f;
     } else {	// Precompute some values...
 	cost_L = cost_L * note.get_velocity();		// note velocity
 	cost_L = cost_L * note.get_pan_l();		// note pan
 	cost_L = cost_L * fLayerGain;				// layer gain
 	cost_L = cost_L * pInstr->get_pan_l();		// instrument pan
 	cost_L = cost_L * pInstr->get_gain();		// instrument gain
-	fSendFXLevel_L = cost_L;
-
-	if ( instrument_outs_prefader ) {
-	    // Post-Fader
-	    cost_track_L = cost_L * 2;
-	}
 	cost_L = cost_L * pInstr->get_volume();		// instrument volume
 #warning "WTF is song volume???"
 	/*
@@ -275,23 +261,12 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
 	cost_R = cost_R * fLayerGain;				// layer gain
 	cost_R = cost_R * pInstr->get_pan_r();		// instrument pan
 	cost_R = cost_R * pInstr->get_gain();		// instrument gain
-	fSendFXLevel_R = cost_R;
-
-	if ( instrument_outs_prefader ) {
-	    // Post-Fader
-	    cost_track_R = cost_R * 2;
-	}
 	cost_R = cost_R * pInstr->get_volume();		// instrument volume
 #warning "WTF is song volume???"
 	/*
 	  cost_R = cost_R * pSong->get_volume();	// song pan
 	*/
 	cost_R = cost_R * 2; // max pan is 0.5
-    }
-
-    if ( ! instrument_outs_prefader ) {
-	cost_track_L = cost_L;
-	cost_track_R = cost_R;
     }
 
     // Se non devo fare resample (drumkit) posso evitare di utilizzare i float e gestire il tutto in
@@ -313,11 +288,7 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
 	    note,
 	    nFrames,
 	    cost_L,
-	    cost_R,
-	    cost_track_L,
-	    cost_track_R,
-	    fSendFXLevel_L,
-	    fSendFXLevel_R
+	    cost_R
 	    );
     } else {
 	// RESAMPLE
@@ -328,11 +299,7 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
 	    frame_rate,
 	    cost_L,
 	    cost_R,
-	    cost_track_L,
-	    cost_track_R,
-	    fLayerPitch,
-	    fSendFXLevel_L,
-	    fSendFXLevel_R
+	    fLayerPitch
 	    );
     }
 } // SamplerPrivate::render_note()
@@ -345,11 +312,7 @@ int SamplerPrivate::render_note_no_resample(
     Note& note,
     int nFrames,
     float cost_L,
-    float cost_R,
-    float cost_track_L,
-    float cost_track_R,
-    float fSendFXLevel_L,
-    float fSendFXLevel_R
+    float cost_R
     )
 {
     int retValue = 1; // the note is ended
@@ -394,16 +357,11 @@ int SamplerPrivate::render_note_no_resample(
 	nInstrument = 0;
     }
 
-    float *buf_track_L = 0;
-    float *buf_track_R = 0;
-    if(per_instrument_outs) {
-	assert( track_out[nInstrument]->size() >= nFrames );
-	buf_track_L = track_out[nInstrument]->get_buffer(0);
-	buf_track_R = track_out[nInstrument]->get_buffer(1);
+    if(instrument_ports[nInstrument]->zero_flag()) {
+	instrument_ports[nInstrument]->write_zeros();
     }
-
-    float *buf_L = main_out->get_buffer(0);
-    float *buf_R = main_out->get_buffer(1);
+    float *buf_L = instrument_ports[nInstrument]->get_buffer(0);
+    float *buf_R = instrument_ports[nInstrument]->get_buffer(1);
     for ( int nBufferPos = nInitialBufferPos; nBufferPos < nTimes; ++nBufferPos ) {
 	if( note.m_nReleaseOffset != (uint32_t)-1
 	    && nBufferPos >= note.m_nReleaseOffset ) {
@@ -427,15 +385,6 @@ int SamplerPrivate::render_note_no_resample(
 	    fVal_R = note.m_fLowPassFilterBuffer_R;
 	}
 
-#ifdef JACK_SUPPORT
-	if( buf_track_L ) {
-	    buf_track_L[nBufferPos] += fVal_L * cost_track_L;
-	}
-	if( buf_track_R ) {
-	    buf_track_R[nBufferPos] += fVal_R * cost_track_R;
-	}
-#endif
-
 	fVal_L = fVal_L * cost_L;
 	fVal_R = fVal_R * cost_R;
 
@@ -458,7 +407,7 @@ int SamplerPrivate::render_note_no_resample(
     note.get_instrument()->set_peak_l( fInstrPeak_L );
     note.get_instrument()->set_peak_r( fInstrPeak_R );
 
-
+#if 0
 #ifdef LADSPA_SUPPORT
     // LADSPA
     for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
@@ -488,7 +437,7 @@ int SamplerPrivate::render_note_no_resample(
     }
     // ~LADSPA
 #endif
-
+#endif
     return retValue;
 }
 
@@ -501,11 +450,7 @@ int SamplerPrivate::render_note_resample(
     uint32_t frame_rate,
     float cost_L,
     float cost_R,
-    float cost_track_L,
-    float cost_track_R,
-    float fLayerPitch,
-    float fSendFXLevel_L,
-    float fSendFXLevel_R
+    float fLayerPitch
     )
 {
     float fNotePitch = note.get_pitch() + fLayerPitch;
@@ -559,16 +504,11 @@ int SamplerPrivate::render_note_resample(
 	nInstrument = 0;
     }
 
-    float *buf_track_L = 0;
-    float *buf_track_R = 0;
-    if(per_instrument_outs) {
-	assert( track_out[nInstrument]->size() >= nFrames );
-	buf_track_L = track_out[nInstrument]->get_buffer(0);
-	buf_track_R = track_out[nInstrument]->get_buffer(1);
+    if(instrument_ports[nInstrument]->zero_flag()) {
+	instrument_ports[nInstrument]->write_zeros();
     }
-
-    float *buf_L = main_out->get_buffer(0);
-    float *buf_R = main_out->get_buffer(1);
+    float *buf_L = instrument_ports[nInstrument]->get_buffer(0);
+    float *buf_R = instrument_ports[nInstrument]->get_buffer(1);
     for ( int nBufferPos = nInitialBufferPos; nBufferPos < nTimes; ++nBufferPos ) {
 	if( note.m_nReleaseOffset != (uint32_t)-1
 	    && nBufferPos >= note.m_nReleaseOffset )
@@ -605,15 +545,6 @@ int SamplerPrivate::render_note_resample(
 	}
 
 
-#ifdef JACK_SUPPORT
-	if( buf_track_L ) {
-	    buf_track_L[nBufferPos] += (fVal_L * cost_track_L);
-	}
-	if( buf_track_R ) {
-	    buf_track_R[nBufferPos] += (fVal_R * cost_track_R);
-	}
-#endif
-
 	fVal_L = fVal_L * cost_L;
 	fVal_R = fVal_R * cost_R;
 
@@ -637,7 +568,7 @@ int SamplerPrivate::render_note_resample(
     note.get_instrument()->set_peak_r( fInstrPeak_R );
 
 
-
+#if 0
 #ifdef LADSPA_SUPPORT
     // LADSPA
     for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
@@ -675,6 +606,7 @@ int SamplerPrivate::render_note_resample(
 	    }
 	}
     }
+#endif
 #endif
 
     return retValue;
@@ -769,15 +701,65 @@ void Sampler::preview_instrument( T<Instrument>::shared_ptr instr )
 }
 
 /**
- * \brief Convenience method for adding an instrument to the sampler.
+ * \brief Method for adding an instrument to the sampler. 
+ *
+ * Do not do it directly with the instrument list.
  */
 void Sampler::add_instrument(T<Instrument>::shared_ptr instr)
 {
-    d->instrument_list->add(instr);
+    if(!instr) {
+	ERRORLOG("Attempted to add NULL instrument to Sampler.");
+	return;
+    }
+    T<AudioPort>::shared_ptr port;
+    port = d->port_manager->allocate_port(
+	instr->get_name(),
+	AudioPort::OUTPUT,
+	AudioPort::STEREO
+	);
+    if(port && instr) {
+	d->instrument_list->add(instr);
+	d->instrument_ports.push_back(port);
+    }
+}
+
+/**
+ * \brief Method for removing instrument from the sampler.
+ *
+ * Do not do it directly with the instrument list.
+ */
+void Sampler::remove_instrument(T<Instrument>::shared_ptr instr)
+{
+    if(!instr) return;
+    int pos = d->instrument_list->get_pos(instr);
+    if(pos == -1) return;
+    d->instrument_list->del(pos);
+    std::deque< T<AudioPort>::shared_ptr >::iterator pit;
+    pit = d->instrument_ports.begin() + pos;
+    d->port_manager->release_port(*pit);
+    d->instrument_ports.erase(pit);
+}
+
+/**
+ * \brief Clears out all instruments.
+ *
+ */
+void Sampler::clear()
+{
+    std::deque< T<AudioPort>::shared_ptr >& ports = d->instrument_ports;
+    std::deque< T<AudioPort>::shared_ptr >::iterator pit;
+
+    for(pit = ports.begin() ; pit != ports.end() ; ++pit) {
+	d->port_manager->release_port(*pit);
+    }
+    d->instrument_list->clear();
+    d->instrument_ports.clear();
 }
 
 /**
  * \brief Direct access to the instruments in the sampler.
+ *
+ * Do not use this to add instruments to the sampler.
  */
 T<InstrumentList>::shared_ptr Sampler::get_instrument_list()
 {

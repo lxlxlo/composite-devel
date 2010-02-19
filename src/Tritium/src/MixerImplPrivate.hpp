@@ -67,7 +67,7 @@ namespace Tritium
 	    }
 	};
 
-	struct add_with_gain : public std::unary_function<float, float>
+	struct add_with_gain : public std::binary_function<float, float, float>
 	{
 	    float gain;
 	    float operator()(float _new, float orig) {
