@@ -32,6 +32,7 @@
 #include <Tritium/Engine.hpp>
 #include <Tritium/Sample.hpp>
 #include <Tritium/Sampler.hpp>
+#include <Tritium/Mixer.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/SoundLibrary.hpp>
 #include <Tritium/fx/Effects.hpp>
@@ -275,7 +276,6 @@ void SerializationQueue::handle_save_song(SerializationQueue::event_data_t& ev)
     Song& song = *(ev.song);
     QString filename = ev.filename;
 
-
     INFOLOG( "Saving song " + filename );
     int rv = 0; // return value
 
@@ -324,6 +324,8 @@ void SerializationQueue::handle_save_song(SerializationQueue::event_data_t& ev)
     // INSTRUMENT NODE
     for ( unsigned i = 0; i < nInstrument; i++ ) {
 	T<Instrument>::shared_ptr instr = instrument_list->get( i );
+	T<Mixer::Channel>::shared_ptr chan = m_engine->get_mixer()->channel( i );
+
 	assert( instr );
 
 	QDomNode instrumentNode = doc.createElement( "instrument" );
@@ -331,7 +333,7 @@ void SerializationQueue::handle_save_song(SerializationQueue::event_data_t& ev)
 	LocalFileMng::writeXmlString( instrumentNode, "id", instr->get_id() );
 	LocalFileMng::writeXmlString( instrumentNode, "drumkit", instr->get_drumkit_name() );
 	LocalFileMng::writeXmlString( instrumentNode, "name", instr->get_name() );
-	LocalFileMng::writeXmlString( instrumentNode, "volume", QString("%1").arg( instr->get_volume() ) );
+	LocalFileMng::writeXmlString( instrumentNode, "volume", QString("%1").arg( chan->gain() ) );
 	LocalFileMng::writeXmlBool( instrumentNode, "isMuted", instr->is_muted() );
 	LocalFileMng::writeXmlString( instrumentNode, "pan_L", QString("%1").arg( instr->get_pan_l() ) );
 	LocalFileMng::writeXmlString( instrumentNode, "pan_R", QString("%1").arg( instr->get_pan_r() ) );
@@ -341,10 +343,10 @@ void SerializationQueue::handle_save_song(SerializationQueue::event_data_t& ev)
 	LocalFileMng::writeXmlString( instrumentNode, "filterCutoff", QString("%1").arg( instr->get_filter_cutoff() ) );
 	LocalFileMng::writeXmlString( instrumentNode, "filterResonance", QString("%1").arg( instr->get_filter_resonance() ) );
 
-	LocalFileMng::writeXmlString( instrumentNode, "FX1Level", QString("%1").arg( instr->get_fx_level( 0 ) ) );
-	LocalFileMng::writeXmlString( instrumentNode, "FX2Level", QString("%1").arg( instr->get_fx_level( 1 ) ) );
-	LocalFileMng::writeXmlString( instrumentNode, "FX3Level", QString("%1").arg( instr->get_fx_level( 2 ) ) );
-	LocalFileMng::writeXmlString( instrumentNode, "FX4Level", QString("%1").arg( instr->get_fx_level( 3 ) ) );
+	LocalFileMng::writeXmlString( instrumentNode, "FX1Level", QString("%1").arg( chan->send_gain(0) ) );
+	LocalFileMng::writeXmlString( instrumentNode, "FX2Level", QString("%1").arg( chan->send_gain(1) ) );
+	LocalFileMng::writeXmlString( instrumentNode, "FX3Level", QString("%1").arg( chan->send_gain(2) ) );
+	LocalFileMng::writeXmlString( instrumentNode, "FX4Level", QString("%1").arg( chan->send_gain(3) ) );
 
 	assert( instr->get_adsr() );
 	LocalFileMng::writeXmlString( instrumentNode, "Attack", QString("%1").arg( instr->get_adsr()->__attack ) );
@@ -569,6 +571,7 @@ void SerializationQueue::handle_save_drumkit(SerializationQueue::event_data_t& e
     // INSTRUMENT NODE
     for ( unsigned i = 0; i < nInstrument; i++ ) {
 	T<Instrument>::shared_ptr instr = drumkit->getInstrumentList()->get( i );
+	T<Mixer::Channel>::shared_ptr chan = drumkit->channels()[i];
 
 	for ( unsigned nLayer = 0; nLayer < MAX_LAYERS; nLayer++ ) {
 	    InstrumentLayer *pLayer = instr->get_layer( nLayer );
@@ -604,7 +607,7 @@ void SerializationQueue::handle_save_drumkit(SerializationQueue::event_data_t& e
 
 	LocalFileMng::writeXmlString( instrumentNode, "id", instr->get_id() );
 	LocalFileMng::writeXmlString( instrumentNode, "name", instr->get_name() );
-	LocalFileMng::writeXmlString( instrumentNode, "volume", QString("%1").arg( instr->get_volume() ) );
+	LocalFileMng::writeXmlString( instrumentNode, "volume", QString("%1").arg( chan->gain() ) );
 	LocalFileMng::writeXmlBool( instrumentNode, "isMuted", instr->is_muted() );
 	LocalFileMng::writeXmlString( instrumentNode, "pan_L", QString("%1").arg( instr->get_pan_l() ) );
 	LocalFileMng::writeXmlString( instrumentNode, "pan_R", QString("%1").arg( instr->get_pan_r() ) );
@@ -817,7 +820,8 @@ void SerializationQueue::handle_load_song(SerializationQueue::event_data_t& ev)
 
     // LOAD INSTRUMENTS
     deque< T<Instrument>::shared_ptr > instrument_ra;
-    handle_load_instrumentlist_node(instrument_ra, "-", instrumentList_node, errors);
+    deque< T<Mixer::Channel>::shared_ptr > channel_ra;
+    handle_load_instrumentlist_node(instrument_ra, channel_ra, "-", instrumentList_node, errors);
 
     // LOAD PATTERNS
     deque< T<Pattern>::shared_ptr > pattern_ra;
@@ -848,8 +852,10 @@ void SerializationQueue::handle_load_song(SerializationQueue::event_data_t& ev)
     bdl.push(song);
 
     deque< T<Instrument>::shared_ptr >::iterator i_it;
-    for(i_it = instrument_ra.begin() ; i_it != instrument_ra.end() ; ++i_it ) {
-        bdl.push( *i_it );
+    size_t k;
+    for(k=0 ; k<instrument_ra.size() && k<channel_ra.size() ; ++k) {
+	bdl.push( instrument_ra[k] );
+	bdl.push( channel_ra[k] );
     }
 
     T<PatternList>::auto_ptr pattern_list( new PatternList );
@@ -956,7 +962,9 @@ void SerializationQueue::handle_load_drumkit(
         return;
     }
     deque< T<Instrument>::shared_ptr > instrument_ra;
+    deque< T<Mixer::Channel>::shared_ptr > channel_ra;
     handle_load_instrumentlist_node(instrument_ra,
+				    channel_ra,
 				    drumkit_dir,
 				    instrumentList_node,
 				    errors);
@@ -972,9 +980,10 @@ void SerializationQueue::handle_load_drumkit(
     ObjectBundle& bdl = (*ev.report_load_to);
 
     bdl.push( drumkit );
-    deque< T<Instrument>::shared_ptr >::iterator i_it;
-    for(i_it = instrument_ra.begin() ; i_it != instrument_ra.end() ; ++i_it ) {
-        bdl.push( *i_it );
+    size_t k;
+    for(k=0 ; k<instrument_ra.size() && k<channel_ra.size() ; ++k) {
+	bdl.push( instrument_ra[k] );
+	bdl.push( channel_ra[k] );
     }
 
     handle_callback(ev);
@@ -1104,25 +1113,31 @@ T<Song>::shared_ptr SerializationQueue::handle_load_song_node(
 }
 
 void SerializationQueue::handle_load_instrumentlist_node(
-    deque< T<Instrument>::shared_ptr >& dest,
+    deque< T<Instrument>::shared_ptr >& inst_dest,
+    deque< T<Mixer::Channel>::shared_ptr >& chan_dest,
     const QString& drumkit_path,
     QDomElement& instrumentList_node,
     QStringList& errors)
 {
     QDomElement inst_node;
     T<Instrument>::shared_ptr i;
+    T<Mixer::Channel>::shared_ptr c;
     inst_node = instrumentList_node.firstChildElement("instrument");
     while( ! inst_node.isNull() ) {
-        i = handle_load_instrument_node(inst_node, drumkit_path, errors);
-        if(i) dest.push_back(i);
+        handle_load_instrument_node(inst_node, drumkit_path, i, c, errors);
+        if(i) inst_dest.push_back(i);
+	if(c) chan_dest.push_back(c);
         inst_node = inst_node.nextSiblingElement("instrument");
     }
 }
 
-T<Instrument>::shared_ptr SerializationQueue::handle_load_instrument_node(
+void SerializationQueue::handle_load_instrument_node(
     QDomElement& instrumentNode,
     const QString& drumkit_path,
-    QStringList& errors)
+    T<Instrument>::shared_ptr& inst_rv,
+    T<Mixer::Channel>::shared_ptr& chan_rv,
+    QStringList& errors
+    )
 {
     QString sId = LocalFileMng::readXmlString( instrumentNode, "id", "" );                      // instrument id
     QString sDrumkit = LocalFileMng::readXmlString( instrumentNode, "drumkit", "" );    // drumkit
@@ -1152,7 +1167,7 @@ T<Instrument>::shared_ptr SerializationQueue::handle_load_instrument_node(
 
     if ( sId.isEmpty() ) {
         errors << QString("Empty ID for instrument %1... skipping").arg(sName);
-        return T<Instrument>::shared_ptr();
+        return;
     }
 
     // create a new instrument
@@ -1163,15 +1178,17 @@ T<Instrument>::shared_ptr SerializationQueue::handle_load_instrument_node(
             new ADSR( fAttack, fDecay, fSustain, fRelease )
             )
         );
-    pInstrument->set_volume( fVolume );
+    T<Mixer::Channel>::shared_ptr channel( new Mixer::Channel(4) );
+
+    channel->gain( fVolume );
     pInstrument->set_muted( bIsMuted );
     pInstrument->set_pan_l( fPan_L );
     pInstrument->set_pan_r( fPan_R );
     pInstrument->set_drumkit_name( sDrumkit );
-    pInstrument->set_fx_level( fFX1Level, 0 );
-    pInstrument->set_fx_level( fFX2Level, 1 );
-    pInstrument->set_fx_level( fFX3Level, 2 );
-    pInstrument->set_fx_level( fFX4Level, 3 );
+    channel->send_gain(0, fFX1Level);
+    channel->send_gain(1, fFX2Level);
+    channel->send_gain(2, fFX3Level);
+    channel->send_gain(3, fFX4Level);
     pInstrument->set_random_pitch_factor( fRandomPitchFactor );
     pInstrument->set_filter_active( bFilterActive );
     pInstrument->set_filter_cutoff( fFilterCutoff );
@@ -1249,7 +1266,8 @@ T<Instrument>::shared_ptr SerializationQueue::handle_load_instrument_node(
 
     #warning "TODO: NEED TO VALIDATE INSTRUMENT BEFORE PASSING IT BACK"
 
-    return pInstrument;
+    inst_rv = pInstrument;
+    chan_rv = channel;
 }
 
 void SerializationQueue::handle_load_patternlist_node(

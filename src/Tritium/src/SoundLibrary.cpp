@@ -255,7 +255,6 @@ void Drumkit::save( Engine* engine, const QString& sName, const QString& sAuthor
 		T<Instrument>::shared_ptr pOldInstr = pSongInstrList->get( nInstrument );
 		T<Instrument>::shared_ptr pNewInstr( new Instrument( pOldInstr->get_id(), pOldInstr->get_name(), new ADSR( *( pOldInstr->get_adsr() ) ) ) );
 		pNewInstr->set_gain( pOldInstr->get_gain() );
-		pNewInstr->set_volume( pOldInstr->get_volume() );
 		pNewInstr->set_pan_l( pOldInstr->get_pan_l() );
 		pNewInstr->set_pan_r( pOldInstr->get_pan_r() );
 		pNewInstr->set_muted( pOldInstr->is_muted() );
@@ -289,6 +288,19 @@ void Drumkit::save( Engine* engine, const QString& sName, const QString& sAuthor
 	}
 
 	pDrumkitInfo->setInstrumentList( pInstrumentList );
+
+	T<Mixer>::shared_ptr mixer = engine->get_mixer();
+	for( uint nChannel = 0 ; mixer->count() ; ++nChannel ) {
+	    pDrumkitInfo->channels().push_back( mixer->channel(nChannel) );
+	}
+
+	if( pInstrumentList->get_size() != pDrumkitInfo->channels().size() ) {
+	    ERRORLOG( QString("When saving drumkit, instrument and channel counts "
+			      "did not match (%1 and %2)")
+		      .arg(pInstrumentList->get_size())
+		      .arg(pDrumkitInfo->channels().size())
+		);
+	}
 
 	LocalFileMng fileMng(engine);
 	int err = fileMng.saveDrumkit( pDrumkitInfo );

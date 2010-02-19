@@ -30,6 +30,7 @@
 #include "../widgets/PixmapWidget.hpp"
 
 #include <Tritium/Engine.hpp>
+#include <Tritium/Mixer.hpp>
 #include <Tritium/Sampler.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentList.hpp>
@@ -349,14 +350,8 @@ void Mixer::volumeChanged(MixerLine* ref)
 	int nLine = findMixerLineByRef(ref);
 	g_engine->setSelectedInstrumentNumber( nLine );
 
-	Engine *engine = g_engine;
-	T<Song>::shared_ptr song = engine->getSong();
-	T<InstrumentList>::shared_ptr instrList = g_engine->get_sampler()->get_instrument_list();
-
-	T<Instrument>::shared_ptr instr = instrList->get(nLine);
-
-	instr->set_volume( ref->getVolume() );
-
+	T<Tritium::Mixer::Channel>::shared_ptr chan = g_engine->get_mixer()->channel(nLine);
+	chan->gain( ref->getVolume() );
 	g_engine->setSelectedInstrumentNumber(nLine);
 }
 
@@ -415,6 +410,8 @@ void Mixer::updateMixer()
 			MixerLine *pLine = m_pMixerLine[ nInstr ];
 
 			T<Instrument>::shared_ptr pInstr = pInstrList->get( nInstr );
+			T<Tritium::Mixer::Channel>::shared_ptr chan = g_engine->get_mixer()->channel(nInstr);
+
 			assert( pInstr );
 
 			float fNewPeak_L = pInstr->get_peak_l();
@@ -423,7 +420,7 @@ void Mixer::updateMixer()
 			float fNewPeak_R = pInstr->get_peak_r();
 			pInstr->set_peak_r( 0.0f );	// reset instrument peak
 
-			float fNewVolume = pInstr->get_volume();
+			float fNewVolume = chan->gain();
 			bool bMuted = pInstr->is_muted();
 
 			QString sName = pInstr->get_name();
@@ -486,7 +483,7 @@ void Mixer::updateMixer()
 			}
 
 			for (uint nFX = 0; nFX < MAX_FX; nFX++) {
-				pLine->setFXLevel( nFX, pInstr->get_fx_level( nFX ) );
+			    pLine->setFXLevel( nFX, chan->send_gain(nFX) );
 			}
 
 			pLine->setSelected( nInstr == nSelectedInstr );
@@ -648,12 +645,9 @@ void Mixer::panChanged(MixerLine* ref) {
 void Mixer::knobChanged(MixerLine* ref, int nKnob) {
 	int nLine = findMixerLineByRef(ref);
 	g_engine->setSelectedInstrumentNumber( nLine );
+	T<Tritium::Mixer::Channel>::shared_ptr chan = g_engine->get_mixer()->channel(nLine);
+	chan->send_gain(nKnob, ref->getFXLevel(nKnob));
 
-	Engine *engine = g_engine;
-	T<Song>::shared_ptr song = engine->getSong();
-	T<InstrumentList>::shared_ptr instrList = g_engine->get_sampler()->get_instrument_list();
-	T<Instrument>::shared_ptr pInstr = instrList->get(nLine);
-	pInstr->set_fx_level( ref->getFXLevel(nKnob), nKnob );
 	QString sInfo = trUtf8( "Set FX %1 level ").arg( nKnob + 1 );
 	( CompositeApp::get_instance() )->setStatusBarMessage( sInfo+ QString( "[%1]" ).arg( ref->getFXLevel(nKnob), 0, 'f', 2 ), 2000 );
 

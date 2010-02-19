@@ -172,10 +172,12 @@ namespace Tritium
 		    rv = bdl.pop<Pattern>();
 		} else {
 		    ERRORLOG("Loading pattern returned more than one.");
+		    bdl.pop();
 		}
 		break;
 	    default:
 		ERRORLOG("Loading pattern also loaded an unexpected type.");
+		bdl.pop();
 	    }
 	}
 
@@ -612,12 +614,18 @@ namespace Tritium
 		    rv = bdl.pop<Drumkit>();
 		} else {
 		    ERRORLOG("Loading drumkit returned more than one.");
+		    bdl.pop();
 		}
 	    case ObjectItem::Instrument_t:
 		inst_list->add( bdl.pop<Instrument>() );
 		break;
+	    case ObjectItem::Channel_t:
+		assert(rv);
+		rv->channels().push_back( bdl.pop<Mixer::Channel>() );
+		break;
 	    default:
 		ERRORLOG("Loading pattern also loaded an unexpected type.");
+		bdl.pop();
 	    }
 	}
 

@@ -75,6 +75,11 @@ namespace Tritium
 	    float send_gain(size_t index) const;
 	    void send_gain(size_t index, float gain);
 
+	    /**
+	     * Make everything except port() match the parameter.
+	     */
+	    void match_props(const Channel& other);
+
 	private:
 	    ChannelPrivate *d; // Declared in MixerImplPrivate.hpp
 	};
@@ -102,6 +107,7 @@ namespace Tritium
 	 * Convenience class if you already have a port pointer.
 	 */
 	virtual T<Channel>::shared_ptr channel(const T<AudioPort>::shared_ptr port) = 0;
+
     };
 
 } // namespace Tritium

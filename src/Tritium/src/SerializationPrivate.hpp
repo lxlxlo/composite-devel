@@ -124,14 +124,17 @@ namespace Tritium
 		QStringList& errors
 		);
 	    void handle_load_instrumentlist_node(
-		std::deque< T<Instrument>::shared_ptr >& dest,
+		std::deque< T<Instrument>::shared_ptr >& inst_dest,
+		std::deque< T<Mixer::Channel>::shared_ptr >& chan_dest,
 		const QString& drumkit_path,
 		QDomElement& inst_l_node,
 		QStringList& errors
 		);
-	    T<Instrument>::shared_ptr handle_load_instrument_node(
+	    void handle_load_instrument_node(
 		QDomElement& instrumentNode,
 		const QString& drumkit_path,
+		T<Instrument>::shared_ptr& inst_rv,
+		T<Mixer::Channel>::shared_ptr& chan_rv,
 		QStringList& errors
 		);
 	    void handle_load_patternlist_node(

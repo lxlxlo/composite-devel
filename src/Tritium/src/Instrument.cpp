@@ -54,7 +54,6 @@ Instrument::InstrumentPrivate::InstrumentPrivate(
     , pan_l( 1.0 )
     , pan_r( 1.0 )
     , gain( 1.0 )
-    , volume( 1.0 )
     , filter_resonance( 0.0 )
     , filter_cutoff( 1.0 )
     , peak_l( 0.0 )
@@ -68,10 +67,6 @@ Instrument::InstrumentPrivate::InstrumentPrivate(
     , soloed( false )
     , stop_notes( false )
 {
-    for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
-	fx_level[ nFX ] = 0.0;
-    }
-
     for ( unsigned nLayer = 0; nLayer < MAX_LAYERS; ++nLayer ) {
 	layer_list[ nLayer ] = NULL;
     }
@@ -211,7 +206,6 @@ void Instrument::load_from_placeholder( Engine* engine, T<Instrument>::shared_pt
     this->set_name( placeholder->get_name() );
     this->set_pan_l( placeholder->get_pan_l() );
     this->set_pan_r( placeholder->get_pan_r() );
-    this->set_volume( placeholder->get_volume() );
     this->set_drumkit_name( placeholder->get_drumkit_name() );
     this->set_muted( placeholder->is_muted() );
     this->set_random_pitch_factor( placeholder->get_random_pitch_factor() );
@@ -359,16 +353,6 @@ void Instrument::set_gain( float gain )
     d->gain = gain;
 }
 
-float Instrument::get_volume()
-{
-    return d->volume;
-}
-
-void Instrument::set_volume( float volume )
-{
-    d->volume = volume;
-}
-
 bool Instrument::is_filter_active()
 {
     return d->filter_active;
@@ -417,16 +401,6 @@ float Instrument::get_peak_r()
 void Instrument::set_peak_r( float val )
 {
     d->peak_r = val;
-}
-
-float Instrument::get_fx_level( int index )
-{
-    return d->fx_level[index];
-}
-
-void Instrument::set_fx_level( float level, int index )
-{
-    d->fx_level[index] = level;
 }
 
 float Instrument::get_random_pitch_factor()

@@ -106,11 +106,11 @@ TEST_CASE( 020_simple_mix )
 	buf[k] = 0.3f;
     }
 
-    m->mix_send_return(4096);
     float left[1024], right[1024];
     float Lv, Rv;
     Lv = .1f + .2f;
     Rv = .1f + .3f;
+    m->mix_send_return(N);
     m->mix_down(N, left, right);
 
     for(k=0 ; k<N ; ++k) {
@@ -168,7 +168,6 @@ TEST_CASE( 030_channel_properties )
 
     // End of 020_simple_mix writers
 
-    m->mix_send_return(4096);
     float left[1024], right[1024];
     float Lv, Rv, Lvm, Lvs, Rvm, Rvs;
     Lvm = .1f * 2.0f * .25f / .75f; // Left mono
@@ -177,6 +176,7 @@ TEST_CASE( 030_channel_properties )
     Rvs = 0.2f * 0.25f; // Right stereo
     Lv = Lvm + Lvs;
     Rv = Rvm + Rvs;
+    m->mix_send_return(N);
     m->mix_down(N, left, right);
 
     for(k=0 ; k<N ; ++k) {
@@ -193,6 +193,64 @@ TEST_CASE( 030_channel_properties )
     c_stereo.reset();
     CK(mono.use_count() == 1);
     CK(stereo.use_count() == 1);
+}
+
+TEST_CASE( 040_channel_methods )
+{
+    Mixer::Channel c_a;
+    T<AudioPort>::shared_ptr p_a = m->allocate_port("tmp-0");
+
+    c_a.port() = p_a;
+    c_a.gain(0.73914f);
+    c_a.pan(0.2519f);
+    c_a.pan_R(0.99134f);
+    BOOST_REQUIRE(c_a.send_count() >= 4);
+    c_a.send_gain(0, 0.0f);
+    c_a.send_gain(1, 0.1f);
+    c_a.send_gain(2, 0.2f);
+    c_a.send_gain(3, 0.3f);
+
+    CK(c_a.port() == p_a);
+    CK(c_a.gain() == 0.73914f);
+    CK(c_a.pan() == 0.2519f);
+    CK(c_a.pan_L() == 0.2519f);
+    CK(c_a.pan_R() == 0.99134f);
+    CK(c_a.send_gain(0) == 0.0f);
+    CK(c_a.send_gain(1) == 0.1f);
+    CK(c_a.send_gain(2) == 0.2f);
+    CK(c_a.send_gain(3) == 0.3f);
+
+    Mixer::Channel c_b(c_a);
+    CK(c_b.port() == p_a);
+    CK(c_b.gain() == 0.73914f);
+    CK(c_b.pan() == 0.2519f);
+    CK(c_b.pan_L() == 0.2519f);
+    CK(c_b.pan_R() == 0.99134f);
+    CK(c_b.send_gain(0) == 0.0f);
+    CK(c_b.send_gain(1) == 0.1f);
+    CK(c_b.send_gain(2) == 0.2f);
+    CK(c_b.send_gain(3) == 0.3f);
+
+    Mixer::Channel c_c;
+    T<AudioPort>::shared_ptr p_c = m->allocate_port("tmp-1");
+    CK( p_c != p_a );
+    c_c.port() = p_c;
+    CK( c_c.port() != p_a );
+    CK( c_c.port() == p_c );
+    c_c.gain(1.125f);
+    CK( c_c.gain() == 1.125f );
+    c_c.match_props(c_a);
+    CK(c_c.port() != p_a);
+    CK(c_c.port() == p_c);
+    CK(c_c.gain() == 0.73914f);
+    CK(c_c.pan() == 0.2519f);
+    CK(c_c.pan_L() == 0.2519f);
+    CK(c_c.pan_R() == 0.99134f);
+    CK(c_c.send_gain(0) == 0.0f);
+    CK(c_c.send_gain(1) == 0.1f);
+    CK(c_c.send_gain(2) == 0.2f);
+    CK(c_c.send_gain(3) == 0.3f);
+
 }
 
 TEST_END()

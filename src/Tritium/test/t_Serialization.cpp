@@ -36,6 +36,7 @@
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/InstrumentLayer.hpp>
+#include <Tritium/Mixer.hpp>
 #include <Tritium/Sample.hpp>
 #include <Tritium/Sampler.hpp>
 #include <Tritium/SoundLibrary.hpp>
@@ -183,6 +184,7 @@ TEST_CASE( 010_load_song_check_song )
     std::deque< T<Song>::shared_ptr > songs;
     std::deque< T<Pattern>::shared_ptr > patterns;
     std::deque< T<Instrument>::shared_ptr > instruments;
+    std::deque< T<Mixer::Channel>::shared_ptr > channels;
     std::deque< T<LadspaFX>::shared_ptr > effects;
 
     while( ! bdl.empty() ) {
@@ -199,14 +201,18 @@ TEST_CASE( 010_load_song_check_song )
         case ObjectItem::LadspaFX_t:
             effects.push_back( bdl.pop<LadspaFX>() );
             break;
+	case ObjectItem::Channel_t:
+	    channels.push_back( bdl.pop<Mixer::Channel>() );
+	    break;
         default:
-            CK(false); // should not reach this.
+            BOOST_REQUIRE(false); // should not reach this.
         }
     }
 
     CK( songs.size() == 1 );
     CK( patterns.size() == 0 );
     CK( instruments.size() == 32 );
+    CK( channels.size() == 32 );
     CK( effects.size() == 0 );
 
     /********************************************
@@ -262,23 +268,28 @@ TEST_CASE( 010_load_song_check_song )
     // 30, and 31.
     int k;
     std::deque< T<Instrument>::shared_ptr >::iterator inst;
-    for( k=0, inst=instruments.begin() ; inst != instruments.end() ; ++inst, ++k ) {
+    std::deque< T<Mixer::Channel>::shared_ptr >::iterator ch;
+    for( k=0, inst=instruments.begin(), ch=channels.begin()
+	     ; inst != instruments.end(), ch != channels.end()
+	     ; ++k, ++inst, ++ch ) {
         Instrument& in = *(*inst);
         InstrumentLayer *lay = 0;
+	Mixer::Channel& chan = **ch;
+
         T<Sample>::shared_ptr samp;
         switch(k) {
         case 0:
             CK( in.get_id() == "0" );
             CK( in.get_drumkit_name() == "GMkit" );
             CK( in.get_name() == "Kick" );
-            CK( in.get_volume() == 1.0f );
+	    CK( chan.gain() == 1.0f );
             CK( in.is_muted() == false );
             CK( in.get_pan_l() == 1.0f );
             CK( in.get_pan_r() == 1.0f );
-            CK( in.get_fx_level(0) == 0.0f );
-            CK( in.get_fx_level(1) == 0.0f );
-            CK( in.get_fx_level(2) == 0.0f );
-            CK( in.get_fx_level(3) == 0.0f );
+            CK( chan.send_gain(0) == 0.0f );
+            CK( chan.send_gain(1) == 0.0f );
+            CK( chan.send_gain(2) == 0.0f );
+            CK( chan.send_gain(3) == 0.0f );
             lay = in.get_layer(0);
             CK( lay );
             CK( lay->get_min_velocity() == 0.0f );
@@ -295,14 +306,14 @@ TEST_CASE( 010_load_song_check_song )
             CK( in.get_id() == "1" );
             CK( in.get_drumkit_name() == "GMkit" );
             CK( in.get_name() == "Stick" );
-            CK( in.get_volume() == 0.69f );
+            CK( chan.gain() == 0.69f );
             CK( in.is_muted() == false );
             CK( in.get_pan_l() == 1.0f );
             CK( in.get_pan_r() == 1.0f );
-            CK( in.get_fx_level(0) == 0.0f );
-            CK( in.get_fx_level(1) == 0.0f );
-            CK( in.get_fx_level(2) == 0.0f );
-            CK( in.get_fx_level(3) == 0.0f );
+            CK( chan.send_gain(0) == 0.0f );
+            CK( chan.send_gain(1) == 0.0f );
+            CK( chan.send_gain(2) == 0.0f );
+            CK( chan.send_gain(3) == 0.0f );
             lay = in.get_layer(0);
             CK( lay );
             CK( lay->get_min_velocity() == 0.0f );
@@ -319,14 +330,14 @@ TEST_CASE( 010_load_song_check_song )
             CK( in.get_id() == "13" );
             CK( in.get_drumkit_name() == "GMkit" );
             CK( in.get_name() == "Crash" );
-            CK( in.get_volume() == 0.69f );
+            CK( chan.gain() == 0.69f );
             CK( in.is_muted() == false );
             CK( in.get_pan_l() == 1.0f );
             CK( in.get_pan_r() == 0.88f );
-            CK( in.get_fx_level(0) == 0.0f );
-            CK( in.get_fx_level(1) == 0.0f );
-            CK( in.get_fx_level(2) == 0.0f );
-            CK( in.get_fx_level(3) == 0.0f );
+            CK( chan.send_gain(0) == 0.0f );
+            CK( chan.send_gain(1) == 0.0f );
+            CK( chan.send_gain(2) == 0.0f );
+            CK( chan.send_gain(3) == 0.0f );
             lay = in.get_layer(0);
             CK( lay );
             CK( lay->get_min_velocity() == 0.0f );
@@ -343,14 +354,14 @@ TEST_CASE( 010_load_song_check_song )
             CK( in.get_id() == "30" );
             CK( in.get_drumkit_name() == "GMkit" );
             CK( in.get_name() == "31" );
-            CK( in.get_volume() == 0.8f );
+            CK( chan.gain() == 0.8f );
             CK( in.is_muted() == false );
             CK( in.get_pan_l() == 1.0f );
             CK( in.get_pan_r() == 1.0f );
-            CK( in.get_fx_level(0) == 0.0f );
-            CK( in.get_fx_level(1) == 0.0f );
-            CK( in.get_fx_level(2) == 0.0f );
-            CK( in.get_fx_level(3) == 0.0f );
+            CK( chan.send_gain(0) == 0.0f );
+            CK( chan.send_gain(1) == 0.0f );
+            CK( chan.send_gain(2) == 0.0f );
+            CK( chan.send_gain(3) == 0.0f );
             lay = in.get_layer(0);
             CK( lay );
             CK( lay->get_min_velocity() == 0.0f );
@@ -367,14 +378,14 @@ TEST_CASE( 010_load_song_check_song )
             CK( in.get_id() == "31" );
             CK( in.get_drumkit_name() == "GMkit" );
             CK( in.get_name() == "32" );
-            CK( in.get_volume() == 0.8f );
+            CK( chan.gain() == 0.8f );
             CK( in.is_muted() == false );
             CK( in.get_pan_l() == 1.0f );
             CK( in.get_pan_r() == 1.0f );
-            CK( in.get_fx_level(0) == 0.0f );
-            CK( in.get_fx_level(1) == 0.0f );
-            CK( in.get_fx_level(2) == 0.0f );
-            CK( in.get_fx_level(3) == 0.0f );
+            CK( chan.send_gain(0) == 0.0f );
+            CK( chan.send_gain(1) == 0.0f );
+            CK( chan.send_gain(2) == 0.0f );
+            CK( chan.send_gain(3) == 0.0f );
             lay = in.get_layer(0);
             CK( lay );
             CK( lay->get_min_velocity() == 0.0f );
@@ -479,7 +490,7 @@ TEST_CASE( 020_load_pattern_check_pattern )
             effects.push_back( bdl.pop<LadspaFX>() );
             break;
         default:
-            CK(false); // should not reach this.
+            BOOST_REQUIRE(false); // should not reach this.
         }
     }
 
@@ -641,6 +652,7 @@ TEST_CASE( 030_load_drumkit_check_drumkit )
     std::deque< T<Song>::shared_ptr > songs;
     std::deque< T<Pattern>::shared_ptr > patterns;
     std::deque< T<Instrument>::shared_ptr > instruments;
+    std::deque< T<Mixer::Channel>::shared_ptr > channels;
     std::deque< T<LadspaFX>::shared_ptr > effects;
     std::deque< T<Drumkit>::shared_ptr > drumkits;
 
@@ -661,6 +673,9 @@ TEST_CASE( 030_load_drumkit_check_drumkit )
 	case ObjectItem::Drumkit_t:
 	    drumkits.push_back( bdl.pop<Drumkit>() );
 	    break;
+	case ObjectItem::Channel_t:
+	    channels.push_back( bdl.pop<Mixer::Channel>() );
+	    break;
         default:
             BOOST_REQUIRE(false); // should not reach this.
         }
@@ -669,6 +684,7 @@ TEST_CASE( 030_load_drumkit_check_drumkit )
     CK( songs.size() == 0 );
     CK( patterns.size() == 0 );
     CK( instruments.size() == 32 );
+    CK( channels.size() == 32 );
     CK( effects.size() == 0 );
     CK( drumkits.size() == 1 );
 
@@ -694,12 +710,14 @@ TEST_CASE( 030_load_drumkit_check_drumkit )
     BOOST_REQUIRE( instruments.size() == 32 );
 
     T<Instrument>::shared_ptr inst;
+    T<Mixer::Channel>::shared_ptr chan;
     InstrumentLayer *layer;
-
+    
     inst = instruments[0];
+    chan = channels[0];
     CK( inst->get_id() == "0" );
     CK( inst->get_name() == "Kick" );
-    CK( inst->get_volume() == 1.0f );
+    CK( chan->gain() == 1.0f );
     CK( inst->is_muted() == false );
     CK( inst->get_pan_l() == 1.0f );
     CK( inst->get_pan_r() == 1.0f );
@@ -710,27 +728,30 @@ TEST_CASE( 030_load_drumkit_check_drumkit )
     CK( inst->get_layer(1) == 0 );
 
     inst = instruments[7];
+    chan = channels[7];
     CK( inst->get_id() == "7" );
     CK( inst->get_name() == "Tom Mid" );
-    CK( inst->get_volume() == 1.0f );
+    CK( chan->gain() == 1.0f );
     CK( inst->is_muted() == false );
     CK( inst->get_pan_l() == 0.8f );
     CK( inst->get_pan_r() == 1.0f );
     CK( inst->get_mute_group() == -1 );
 
     inst = instruments[13];
+    chan = channels[13];
     CK( inst->get_id() == "13" );
     CK( inst->get_name() == "Crash" );
-    CK( inst->get_volume() == 0.69f );
+    CK( chan->gain() == 0.69f );
     CK( inst->is_muted() == false );
     CK( inst->get_pan_l() == 1.0f );
     CK( inst->get_pan_r() == 0.88f );
     CK( inst->get_mute_group() == -1 );
 
     inst = instruments[15];
+    chan = channels[15];
     CK( inst->get_id() == "15" );
     CK( inst->get_name() == "Crash Jazz" );
-    CK( inst->get_volume() == 0.77f );
+    CK( chan->gain() == 0.77f );
     CK( inst->is_muted() == false );
     CK( inst->get_pan_l() == 1.0f );
     CK( inst->get_pan_r() == 0.78f );
@@ -830,6 +851,7 @@ TEST_CASE( 050_save_pattern )
     std::deque< T<Song>::shared_ptr > songs;
     std::deque< T<Pattern>::shared_ptr > patterns;
     std::deque< T<Instrument>::shared_ptr > instruments;
+    std::deque< T<Mixer::Channel>::shared_ptr > channels;
     std::deque< T<LadspaFX>::shared_ptr > effects;
 
     while( ! bdl.empty() ) {
@@ -846,14 +868,18 @@ TEST_CASE( 050_save_pattern )
         case ObjectItem::LadspaFX_t:
             effects.push_back( bdl.pop<LadspaFX>() );
             break;
+	case ObjectItem::Channel_t:
+	    channels.push_back( bdl.pop<Mixer::Channel>() );
+	    break;
         default:
-            CK(false); // should not reach this.
+            BOOST_REQUIRE(false); // should not reach this.
         }
     }
 
     CK( songs.size() == 0 );
     CK( patterns.size() == 1 );
     CK( instruments.size() == 0 );
+    CK( channels.size() == 0 );
     CK( effects.size() == 0 );
 
     SyncSaveReport ssr;
@@ -915,6 +941,7 @@ TEST_CASE( 060_save_drumkit )
     std::deque< T<Song>::shared_ptr > songs;
     std::deque< T<Pattern>::shared_ptr > patterns;
     std::deque< T<Instrument>::shared_ptr > instruments;
+    std::deque< T<Mixer::Channel>::shared_ptr > channels;
     std::deque< T<LadspaFX>::shared_ptr > effects;
     std::deque< T<Drumkit>::shared_ptr > drumkits;
 
@@ -935,6 +962,9 @@ TEST_CASE( 060_save_drumkit )
 	case ObjectItem::Drumkit_t:
 	    drumkits.push_back( bdl.pop<Drumkit>() );
 	    break;
+	case ObjectItem::Channel_t:
+	    channels.push_back( bdl.pop<Mixer::Channel>() );
+	    break;
         default:
             BOOST_REQUIRE(false); // should not reach this.
         }
@@ -943,6 +973,7 @@ TEST_CASE( 060_save_drumkit )
     CK( songs.size() == 0 );
     CK( patterns.size() == 0 );
     CK( instruments.size() == 32 );
+    CK( channels.size() == 32 );
     CK( effects.size() == 0 );
     CK( drumkits.size() == 1 );
 
@@ -952,6 +983,11 @@ TEST_CASE( 060_save_drumkit )
 	instrument_list->add( *it );
     }
     drumkits.front()->setInstrumentList( instrument_list );
+    drumkits.front()->channels().clear();
+    drumkits.front()->channels().insert( drumkits.front()->channels().end(),
+					 channels.begin(),
+					 channels.end()
+	);
 
     SyncSaveReport ssr;
     QString save_drumkit_folder_name = QString("%1/test_kit")
@@ -988,6 +1024,7 @@ TEST_CASE( 060_save_drumkit )
     songs.clear();
     patterns.clear();
     instruments.clear();
+    channels.clear();
     effects.clear();
     drumkits.clear();
 
@@ -1008,6 +1045,9 @@ TEST_CASE( 060_save_drumkit )
 	case ObjectItem::Drumkit_t:
 	    drumkits.push_back( bdl.pop<Drumkit>() );
 	    break;
+	case ObjectItem::Channel_t:
+	    channels.push_back( bdl.pop<Mixer::Channel>() );
+	    break;
         default:
             BOOST_REQUIRE(false); // should not reach this.
         }
@@ -1016,6 +1056,7 @@ TEST_CASE( 060_save_drumkit )
     CK( songs.size() == 0 );
     CK( patterns.size() == 0 );
     CK( instruments.size() == 32 );
+    CK( channels.size() == 32 );
     CK( effects.size() == 0 );
     CK( drumkits.size() == 1 );
 
@@ -1041,12 +1082,14 @@ TEST_CASE( 060_save_drumkit )
     BOOST_REQUIRE( instruments.size() == 32 );
 
     T<Instrument>::shared_ptr inst;
+    T<Mixer::Channel>::shared_ptr chan;
     InstrumentLayer *layer;
 
     inst = instruments[0];
+    chan = channels[0];
     CK( inst->get_id() == "0" );
     CK( inst->get_name() == "Kick" );
-    CK( inst->get_volume() == 1.0f );
+    CK( chan->gain() == 1.0f );
     CK( inst->is_muted() == false );
     CK( inst->get_pan_l() == 1.0f );
     CK( inst->get_pan_r() == 1.0f );
@@ -1057,27 +1100,30 @@ TEST_CASE( 060_save_drumkit )
     CK( inst->get_layer(1) == 0 );
 
     inst = instruments[7];
+    chan = channels[7];
     CK( inst->get_id() == "7" );
     CK( inst->get_name() == "Tom Mid" );
-    CK( inst->get_volume() == 1.0f );
+    CK( chan->gain() == 1.0f );
     CK( inst->is_muted() == false );
     CK( inst->get_pan_l() == 0.8f );
     CK( inst->get_pan_r() == 1.0f );
     CK( inst->get_mute_group() == -1 );
 
     inst = instruments[13];
+    chan = channels[13];
     CK( inst->get_id() == "13" );
     CK( inst->get_name() == "Crash" );
-    CK( inst->get_volume() == 0.69f );
+    CK( chan->gain() == 0.69f );
     CK( inst->is_muted() == false );
     CK( inst->get_pan_l() == 1.0f );
     CK( inst->get_pan_r() == 0.88f );
     CK( inst->get_mute_group() == -1 );
 
     inst = instruments[15];
+    chan = channels[15];
     CK( inst->get_id() == "15" );
     CK( inst->get_name() == "Crash Jazz" );
-    CK( inst->get_volume() == 0.77f );
+    CK( chan->gain() == 0.77f );
     CK( inst->is_muted() == false );
     CK( inst->get_pan_l() == 1.0f );
     CK( inst->get_pan_r() == 0.78f );

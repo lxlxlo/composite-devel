@@ -22,6 +22,7 @@
 #define TRITIUM_OBJECTBUNDLE_HPP
 
 #include <Tritium/memory.hpp>
+#include <Tritium/Mixer.hpp>
 #include <QString>
 #include <list>
 
@@ -44,6 +45,7 @@ namespace Tritium
 	    Instrument_t,
 	    LadspaFX_t,
 	    Drumkit_t,
+	    Channel_t,
 	    _Reserved = 0xFF
 	} object_t;
 
@@ -133,6 +135,10 @@ namespace Tritium
 	    ObjectItem tmp = {ObjectItem::Drumkit_t, T<void>::shared_ptr(obj)};
 	    objects.push_back(tmp);
 	}
+	void push(T<Mixer::Channel>::shared_ptr obj) {
+	    ObjectItem tmp = {ObjectItem::Channel_t, T<void>::shared_ptr(obj)};
+	    objects.push_back(tmp);
+	}
 	/* Helper methods (access)
 	 */
 	bool empty() {
@@ -149,6 +155,12 @@ namespace Tritium
 	    rv = boost::static_pointer_cast< X, void >(objects.front().ref);
 	    objects.pop_front();
 	    return rv;
+	}
+
+	/** Deletes the object on the top of the stack.
+	 */
+	void pop() {
+	    objects.pop_front();
 	}
 
     };

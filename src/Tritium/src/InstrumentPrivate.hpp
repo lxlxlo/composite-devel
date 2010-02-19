@@ -45,12 +45,10 @@ namespace Tritium
 	float pan_l;                ///< Pan of the instrument (left)
 	float pan_r;                ///< Pan of the instrument (right)
 	float gain;
-	float volume;               ///< Volume of the instrument
 	float filter_resonance;     ///< Filter resonant frequency (0..1)
 	float filter_cutoff;        ///< Filter cutoff (0..1)
 	float peak_l;               ///< current peak value (left)
 	float peak_r;               ///< current peak value (right)
-	float fx_level[MAX_FX];     ///< Ladspa FX level
 	float random_pitch_factor;
 	QString id;                 ///< ID of the instrument
 	QString drumkit_name;       ///< Drumkit name

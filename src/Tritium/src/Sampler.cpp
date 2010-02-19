@@ -122,7 +122,6 @@ Sampler::Sampler(Engine* parent, T<AudioPortManager>::shared_ptr apm)
     // instrument used in file preview
     QString sEmptySampleFilename = DataPath::get_data_path() + "/emptySample.wav";
     d->preview_instrument.reset( new Instrument( sEmptySampleFilename, "preview", new ADSR() ) );
-    d->preview_instrument->set_volume( 0.8 );
     d->preview_instrument->set_layer( new InstrumentLayer( Sample::load( sEmptySampleFilename ) ), 0 );
 }
 
@@ -248,7 +247,6 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
 	cost_L = cost_L * fLayerGain;				// layer gain
 	cost_L = cost_L * pInstr->get_pan_l();		// instrument pan
 	cost_L = cost_L * pInstr->get_gain();		// instrument gain
-	cost_L = cost_L * pInstr->get_volume();		// instrument volume
 #warning "WTF is song volume???"
 	/*
 	  cost_L = cost_L * pSong->get_volume();	// song volume
@@ -261,7 +259,6 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
 	cost_R = cost_R * fLayerGain;				// layer gain
 	cost_R = cost_R * pInstr->get_pan_r();		// instrument pan
 	cost_R = cost_R * pInstr->get_gain();		// instrument gain
-	cost_R = cost_R * pInstr->get_volume();		// instrument volume
 #warning "WTF is song volume???"
 	/*
 	  cost_R = cost_R * pSong->get_volume();	// song pan
@@ -407,37 +404,6 @@ int SamplerPrivate::render_note_no_resample(
     note.get_instrument()->set_peak_l( fInstrPeak_L );
     note.get_instrument()->set_peak_r( fInstrPeak_R );
 
-#if 0
-#ifdef LADSPA_SUPPORT
-    // LADSPA
-    for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
-	T<LadspaFX>::shared_ptr pFX = engine->get_effects()->getLadspaFX( nFX );
-
-	float fLevel = note.get_instrument()->get_fx_level( nFX );
-
-	if ( ( pFX ) && ( fLevel != 0.0 ) ) {
-	    fLevel = fLevel * pFX->getVolume();
-	    float *pBuf_L = pFX->m_pBuffer_L;
-	    float *pBuf_R = pFX->m_pBuffer_R;
-
-//			float fFXCost_L = cost_L * fLevel;
-//			float fFXCost_R = cost_R * fLevel;
-	    float fFXCost_L = fLevel * fSendFXLevel_L;
-	    float fFXCost_R = fLevel * fSendFXLevel_R;
-
-	    int nBufferPos = nInitialBufferPos;
-	    int nSamplePos = nInitialSamplePos;
-	    for ( int i = 0; i < nAvail_bytes; ++i ) {
-		pBuf_L[ nBufferPos ] += pSample_data_L[ nSamplePos ] * fFXCost_L * cost_L;
-		pBuf_R[ nBufferPos ] += pSample_data_R[ nSamplePos ] * fFXCost_R * cost_R;
-		++nSamplePos;
-		++nBufferPos;
-	    }
-	}
-    }
-    // ~LADSPA
-#endif
-#endif
     return retValue;
 }
 
@@ -566,48 +532,6 @@ int SamplerPrivate::render_note_resample(
     note.m_nSilenceOffset = 0;
     note.get_instrument()->set_peak_l( fInstrPeak_L );
     note.get_instrument()->set_peak_r( fInstrPeak_R );
-
-
-#if 0
-#ifdef LADSPA_SUPPORT
-    // LADSPA
-    for ( unsigned nFX = 0; nFX < MAX_FX; ++nFX ) {
-	T<LadspaFX>::shared_ptr pFX = engine->get_effects()->getLadspaFX( nFX );
-	float fLevel = note.get_instrument()->get_fx_level( nFX );
-	if ( ( pFX ) && ( fLevel != 0.0 ) ) {
-	    fLevel = fLevel * pFX->getVolume();
-
-	    float *pBuf_L = pFX->m_pBuffer_L;
-	    float *pBuf_R = pFX->m_pBuffer_R;
-
-//			float fFXCost_L = cost_L * fLevel;
-//			float fFXCost_R = cost_R * fLevel;
-	    float fFXCost_L = fLevel * fSendFXLevel_L;
-	    float fFXCost_R = fLevel * fSendFXLevel_R;
-
-	    int nBufferPos = nInitialBufferPos;
-	    float fSamplePos = fInitialSamplePos;
-	    for ( int i = 0; i < nAvail_bytes; ++i ) {
-		int nSamplePos = ( int )fSamplePos;
-		double fDiff = fSamplePos - nSamplePos;
-
-		if ( ( nSamplePos + 1 ) >= nSampleFrames ) {
-		    fVal_L = linear_interpolation( pSample_data_L[nSamplePos], 0, fDiff );
-		    fVal_R = linear_interpolation( pSample_data_R[nSamplePos], 0, fDiff );
-		} else {
-		    fVal_L = linear_interpolation( pSample_data_L[nSamplePos], pSample_data_L[nSamplePos + 1], fDiff );
-		    fVal_R = linear_interpolation( pSample_data_R[nSamplePos], pSample_data_R[nSamplePos + 1], fDiff );
-		}
-
-		pBuf_L[ nBufferPos ] += fVal_L * fFXCost_L * cost_L;
-		pBuf_R[ nBufferPos ] += fVal_R * fFXCost_R * cost_R;
-		fSamplePos += fStep;
-		++nBufferPos;
-	    }
-	}
-    }
-#endif
-#endif
 
     return retValue;
 }

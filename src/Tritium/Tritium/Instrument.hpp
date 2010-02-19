@@ -98,9 +98,6 @@ namespace Tritium
 	float get_gain();
 	void set_gain( float gain );
 
-	float get_volume();
-	void set_volume( float volume );
-
 	bool is_filter_active();
 	void set_filter_active( bool active );
 
@@ -115,9 +112,6 @@ namespace Tritium
 
 	float get_peak_r();
 	void set_peak_r( float val );
-
-	float get_fx_level( int index );
-	void set_fx_level( float level, int index );
 
 	float get_random_pitch_factor();
 	void set_random_pitch_factor( float val );

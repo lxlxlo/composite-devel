@@ -23,7 +23,9 @@
 #define TRITIUM_SOUNDLIBRARY_HPP
 
 #include <Tritium/memory.hpp>
+#include <Tritium/Mixer.hpp>
 #include <vector>
+#include <deque>
 
 namespace Tritium
 {
@@ -51,6 +53,8 @@ namespace Tritium
     class Drumkit
     {
     public:
+	typedef std::deque< T<Mixer::Channel>::shared_ptr > channel_list_t;
+
 	Drumkit();
 	~Drumkit();
 
@@ -78,6 +82,11 @@ namespace Tritium
 	}
 	void setInstrumentList( T<InstrumentList>::shared_ptr instr ) {
 	    this->m_pInstrumentList = instr;
+	}
+
+	// Mixer data for each instrument in the instrumentlist.
+	channel_list_t& channels() {
+	    return m_channels;
 	}
 
 	void setName( const QString& name ) {
@@ -112,6 +121,7 @@ namespace Tritium
 
     private:
 	T<InstrumentList>::shared_ptr m_pInstrumentList;
+	channel_list_t m_channels;
 	QString m_sName;
 	QString m_sAuthor;
 	QString m_sInfo;

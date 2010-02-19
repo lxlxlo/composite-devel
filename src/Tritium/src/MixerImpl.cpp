@@ -425,6 +425,15 @@ Mixer::Channel& Mixer::Channel::operator=(const Channel& c)
     return *this;
 }
 
+void Mixer::Channel::match_props(const Mixer::Channel& other)
+{
+    // XXX TODO: This is not very efficient, but reliable!
+    T<ChannelPrivate>::auto_ptr o_d( new ChannelPrivate );
+    (*o_d) = (*other.d);
+    o_d->_port = d->_port;
+    (*d) = (*o_d);
+}
+
 const T<AudioPort>::shared_ptr Mixer::Channel::port() const
 {
     return d->_port;

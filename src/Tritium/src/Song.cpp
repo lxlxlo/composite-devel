@@ -30,6 +30,7 @@
 #include <QtCore/QMutex>
 #include <QtCore/QMutexLocker>
 #include <algorithm>
+#include <deque>
 
 #include <Tritium/ADSR.hpp>
 #include <Tritium/DataPath.hpp>
@@ -46,6 +47,7 @@
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/Engine.hpp>
+#include <Tritium/Mixer.hpp>
 #include <Tritium/Serialization.hpp>
 #include <Tritium/ObjectBundle.hpp>
 #include <Tritium/Sampler.hpp>
@@ -322,6 +324,8 @@ namespace Tritium
 
 	T<Song>::shared_ptr song;
 	T<Sampler>::shared_ptr sampler = engine->get_sampler();
+	std::deque< T<Mixer::Channel>::shared_ptr > channels;
+
 	sampler->get_instrument_list()->clear();
 
 	while( ! bdl.empty() ) {
@@ -333,26 +337,39 @@ namespace Tritium
 		    ERRORLOG(QString("Serializer::load_file() yielded too many "
 				     "Song objects when loading '%1'")
 			     .arg(filename));
+		    bdl.pop();
 		}
 		break;
 	    case ObjectItem::Instrument_t:
 		sampler->add_instrument( bdl.pop<Instrument>() );
 		break;
+	    case ObjectItem::Channel_t:
+		channels.push_back( bdl.pop<Mixer::Channel>() );
+		break;
 	    case ObjectItem::Pattern_t:
 		ERRORLOG(QString("Received unexpected pattern when "
 				 "loading song '%1'")
 			 .arg(filename));
+		bdl.pop();
 		break;
 	    case ObjectItem::LadspaFX_t:
 		ERRORLOG(QString("Received unexpected FX when "
 				 "loading song '%1'")
 			 .arg(filename));
+		bdl.pop();
 		break;
 	    default:
 		ERRORLOG(QString("Received unexpected object when "
 				 "loading song '%1'")
 			 .arg(filename));
+		bdl.pop();
 	    }
+	}
+
+	size_t k;
+	T<Mixer>::shared_ptr mixer = engine->get_mixer();
+	for(k=0 ; k<channels.size() ; ++k) {
+	    mixer->channel(k)->match_props( *channels[k] );
 	}
 
 	return song;
@@ -410,10 +427,10 @@ namespace Tritium
 	song->set_humanize_velocity_value( 0.0 );
 	song->set_swing_factor( 0.0 );
 
-	T<InstrumentList>::shared_ptr inst_list = engine->get_sampler()->get_instrument_list();
-	inst_list->clear();
 	T<Instrument>::shared_ptr inst( new Instrument( QString(0), "New instrument", new ADSR ) );
-	inst_list->add(inst);
+	T<Sampler>::shared_ptr sampler = engine->get_sampler();
+	sampler->clear();
+	sampler->add_instrument( inst );
 
 #ifdef JACK_SUPPORT
 	engine->renameJackPorts();

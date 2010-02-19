@@ -22,6 +22,7 @@
 
 #include <Tritium/EventQueue.hpp>
 #include <Tritium/Engine.hpp>
+#include <Tritium/Mixer.hpp>
 #include <Tritium/Transport.hpp>
 #include <Tritium/Logger.hpp>
 
@@ -127,10 +128,11 @@ static bool Tritium::setAbsoluteFXLevel(
 	T<Instrument>::shared_ptr instr = instrList->get( nLine );
 	if ( instr == NULL) return false;
 
-	if( fx_param != 0 ){
-			instr->set_fx_level(  ( (float) (fx_param / 127.0 ) ), fx_channel );
+	T<Tritium::Mixer::Channel>::shared_ptr chan = engine->get_mixer()->channel(nLine);
+	if( chan && fx_param != 0 && fx_param < chan->send_count() ){
+	    chan->send_gain(fx_channel, ((float)(fx_param/127.0)));
 	} else {
-			instr->set_fx_level( 0 , fx_channel );
+	    chan->send_gain(fx_channel, 0.0f);
 	}
 		
 	engine->setSelectedInstrumentNumber(nLine);
@@ -316,21 +318,21 @@ bool ActionManager::handleAction( Action * pAction ){
 		Engine *engine = m_engine;
 		T<Song>::shared_ptr song = engine->getSong();
 		T<InstrumentList>::shared_ptr instrList = engine->get_sampler()->get_instrument_list();
-
 		T<Instrument>::shared_ptr instr = instrList->get( nLine );
 
 		if ( instr == NULL) return 0;
 
+		T<Tritium::Mixer::Channel>::shared_ptr chan;
+		chan = engine->get_mixer()->channel(nLine);
+
 		if( vol_param != 0 ){
-				if ( vol_param == 1 && instr->get_volume() < 1.5 ){
-					instr->set_volume( instr->get_volume() + 0.1 );  
+				if ( vol_param == 1 ){
+				    chan->gain( chan->gain() + 0.1f );
 				}  else  {
-					if( instr->get_volume() >= 0.0 ){
-						instr->set_volume( instr->get_volume() - 0.1 );
-					}
+				    chan->gain( chan->gain() - 0.1f );
 				}
 		} else {
-			instr->set_volume( 0 );
+		    chan->gain( 0.0f );
 		}
 
 		m_engine->setSelectedInstrumentNumber(nLine);
@@ -353,10 +355,13 @@ bool ActionManager::handleAction( Action * pAction ){
 
 		if ( instr == NULL) return 0;
 
+		T<Tritium::Mixer::Channel>::shared_ptr chan;
+		chan = m_engine->get_mixer()->channel(nLine);
+
 		if( vol_param != 0 ){
-				instr->set_volume( 1.5* ( (float) (vol_param / 127.0 ) ));
+		    chan->gain( 1.5f * ((float)(vol_param/127.0f)) );
 		} else {
-				instr->set_volume( 0 );
+		    chan->gain( 0.0f );
 		}
 
 		m_engine->setSelectedInstrumentNumber(nLine);
