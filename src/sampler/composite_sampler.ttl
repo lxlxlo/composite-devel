@@ -1,0 +1,37 @@
+# composite_sampler.ttl
+#
+# See also manifest.ttl
+#
+@prefix lv2:  <http://lv2plug.in/ns/lv2core#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix doap: <http://usefulinc.com/ns/doap#>.
+@prefix llext: <http://ll-plugins.nongnu.org/lv2/ext/>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+
+<http://gabe.is-a-geek.org/composite/plugins/sampler/1>
+  a lv2:Plugin;
+  doap:maintainer [
+    foaf:name "Gabriel M. Beddingfield";
+    foaf:homepage <http://www.teuton.org/~gabriel/>;
+    foaf:mbox <mailto:gabriel@teuton.org>;
+  ];
+  doap:name "composite_sampler";
+  doap:homepage <http://gabe.is-a-geek.org/composite/>;
+  doap:license <http://usefulinc.com/doap/licenses/gpl>;
+
+  lv2:port
+  [
+    a lv2:OutputPort, lv2:AudioPort;
+    lv2:datatype lv2:float;
+    lv2:index 0;
+    lv2:symbol "out_left";
+    lv2:name "Audio Output Left";
+  ],
+
+  [
+    a lv2:OutputPort, lv2:AudioPort;
+    lv2:datatype lv2:float;
+    lv2:index 1;
+    lv2:symbol "out_right";
+    lv2:name "Audio Output Right";
+  ].
