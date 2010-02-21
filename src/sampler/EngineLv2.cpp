@@ -28,11 +28,19 @@
 #include <Tritium/SeqScript.hpp>
 #include <Tritium/TransportPosition.hpp>
 #include <Tritium/Logger.hpp>
+#include <Tritium/Instrument.hpp>
+#include <Tritium/InstrumentList.hpp>
 
 #include <lv2.h>
+#include <event.lv2/event.h>
+#include <event.lv2/event-helpers.h>
 #include <cstdlib>
+#include <cstring>
 
 #define PLUGIN_URI "http://gabe.is-a-geek.org/composite/plugins/sampler/1"
+#define EVENT_URI "http://lv2plug.in/ns/ext/event"
+// Sanity check
+#define MAX_URI_LEN 128
 
 static LV2_Descriptor *pluginDescriptor = NULL;
 
@@ -72,7 +80,9 @@ void EngineLv2::cleanup(LV2_Handle instance)
 EngineLv2::EngineLv2() :
     _sample_rate(48000.0),
     _out_L(0),
-    _out_R(0)
+    _out_R(0),
+    _ev_in(0),
+    _event_feature(0)
 {
 }
 
@@ -83,12 +93,19 @@ EngineLv2::~EngineLv2()
 LV2_Handle EngineLv2::instantiate(const LV2_Descriptor * /*descriptor*/,
 				  double sample_rate,
 				  const char * /*bundle_path*/,
-				  const LV2_Feature * const * /*features*/)
+				  const LV2_Feature * const * features)
 {
     Logger::create_instance();
     T<EngineLv2>::auto_ptr inst( new EngineLv2 );
     if( inst.get() ) {
 	inst->set_sample_rate( sample_rate );
+	while(*features) {
+	    const LV2_Feature *feat = *features;
+	    if( 0 == strncmp(EVENT_URI, feat->URI, strnlen(EVENT_URI, MAX_URI_LEN)) ) {
+		inst->_event_feature = static_cast<const LV2_Event_Feature*>(feat->data);
+	    }
+	    ++features;
+	}
 	return ((LV2_Handle) inst.release());
     }
     return 0;
@@ -102,6 +119,9 @@ void EngineLv2::_connect_port(uint32_t port, void* data_location)
 	break;
     case 1:
 	_out_R = static_cast<float*>(data_location);
+	break;
+    case 2:
+	_ev_in = static_cast<LV2_Event_Buffer*>(data_location);
 	break;
     }
 }
@@ -135,6 +155,7 @@ void EngineLv2::_run(uint32_t nframes)
     // Sampler needs a TransportPosition, but only uses it for
     // the frame rate.
     pos.frame_rate = _sample_rate;
+    process_events(nframes);
     _sampler->process(_seq->begin_const(),
 		      _seq->end_const(nframes),
 		      pos,
@@ -158,6 +179,49 @@ void EngineLv2::_deactivate()
     _mixer.reset();
     _sampler.reset();
     _seq.reset();
+}
+
+void EngineLv2::process_events(uint32_t nframes)
+{
+    if( ! _ev_in ) return;
+
+    LV2_Event_Iterator it;
+    lv2_event_begin(&it, _ev_in);
+    for( ; lv2_event_is_valid(&it) ; lv2_event_increment(&it) ) {
+	uint8_t *data;
+	LV2_Event& ev = *lv2_event_get(&it, &data);
+	SeqEvent sev;
+
+	ERRORLOG("Got event");
+	sev.frame = ev.frames;
+	// ev.subframes ignored
+	if(0 == ev.type) {
+	    // Data is non-POD, and we don't support any such
+	    // data.
+	    _event_feature->lv2_event_unref(
+		_event_feature->callback_data,
+		&ev
+		);
+	} else {
+	    #warning "This is not a real MIDI implementation"
+	    // Just trigger a note to play
+	    if( (data[0] && 0xF0) == 0x90 ) {
+		sev.type = SeqEvent::NOTE_ON;
+		sev.quantize = false;
+		sev.note.set_velocity(0.85);
+
+		T<InstrumentList>::shared_ptr i_list = _sampler->get_instrument_list();
+		T<Instrument>::shared_ptr inst;
+		if(i_list->get_size() > 0) {
+		    sev.note.set_instrument( i_list->get(0) );
+		}
+		if(sev.note.get_instrument()) {
+		    ERRORLOG("Scheduled note");
+		    _seq->insert(sev);
+		}
+	    }
+	}	
+    }
 }
 
 const void* EngineLv2::extension_data(const char * /*uri*/)

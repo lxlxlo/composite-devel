@@ -22,6 +22,7 @@
 #define COMPOSITE_PLUGIN_ENGINELV2_HPP
 
 #include <lv2.h>
+#include <event.lv2/event.h>
 
 #include <Tritium/memory.hpp>
 
@@ -79,10 +80,15 @@ namespace Composite
 		return _sample_rate;
 	    }
 
+	protected:
+	    void process_events(uint32_t sample_count);
+
 	private:
 	    double _sample_rate;
-	    float *_out_L; // external
-	    float *_out_R; // external
+	    float *_out_L; // Port 0, extern
+	    float *_out_R; // Port 1, extern
+	    LV2_Event_Buffer *_ev_in; // Port 2, extern
+	    const LV2_Event_Feature *_event_feature; // Host's Event callbacks.
 	    Tritium::T<Tritium::MixerImpl>::shared_ptr _mixer;
 	    Tritium::T<Tritium::Sampler>::shared_ptr _sampler;
 	    Tritium::T<Tritium::SeqScript>::auto_ptr _seq;
