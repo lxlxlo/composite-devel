@@ -113,6 +113,11 @@ TARGET_LINK_LIBRARIES(Tritium
   ${LIBS}
   )
 
+SET_TARGET_PROPERTIES(Tritium
+  PROPERTIES
+  LINK_INTERFACE_LIBRARIES ""
+  )
+
 INSTALL(TARGETS Tritium LIBRARY DESTINATION lib)
 
 ######################################################################
