@@ -7,6 +7,7 @@
 @prefix doap: <http://usefulinc.com/ns/doap#>.
 @prefix llext: <http://ll-plugins.nongnu.org/lv2/ext/>.
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix ev: <http://lv2plug.in/ns/ext/event#>.
 
 <http://gabe.is-a-geek.org/composite/plugins/sampler/1>
   a lv2:Plugin;
@@ -15,7 +16,7 @@
     foaf:homepage <http://www.teuton.org/~gabriel/>;
     foaf:mbox <mailto:gabriel@teuton.org>;
   ];
-  doap:name "composite_sampler";
+  doap:name "Composite Sampler";
   doap:homepage <http://gabe.is-a-geek.org/composite/>;
   doap:license <http://usefulinc.com/doap/licenses/gpl>;
 
@@ -25,7 +26,7 @@
     lv2:datatype lv2:float;
     lv2:index 0;
     lv2:symbol "out_left";
-    lv2:name "Audio Output Left";
+    lv2:name "Left";
   ],
 
   [
@@ -33,5 +34,13 @@
     lv2:datatype lv2:float;
     lv2:index 1;
     lv2:symbol "out_right";
-    lv2:name "Audio Output Right";
+    lv2:name "Right";
+  ],
+
+  [
+    a ev:EventPort, lv2:InputPort;
+    lv2:index 2;
+    ev:supportsEvent <http://lv2plug.in/ns/ext/midi#MidiEvent>;
+    lv2:symbol "midi";
+    lv2:name "MIDI";
   ].
