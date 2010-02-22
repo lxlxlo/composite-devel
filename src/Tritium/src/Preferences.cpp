@@ -1007,7 +1007,7 @@ void Preferences::setRecentFiles( std::vector<QString> recentFiles )
 
 
 /// Read the xml nodes related to window properties
-WindowProperties Preferences::readWindowProperties( QDomNode parent, const QString& windowName, WindowProperties defaultProp )
+WindowProperties Preferences::readWindowProperties( const QDomNode& parent, const QString& windowName, WindowProperties defaultProp )
 {
 	WindowProperties prop = defaultProp;
 
@@ -1028,7 +1028,7 @@ WindowProperties Preferences::readWindowProperties( QDomNode parent, const QStri
 
 
 /// Write the xml nodes related to window properties
-void Preferences::writeWindowProperties( QDomNode parent, const QString& windowName, const WindowProperties& prop )
+void Preferences::writeWindowProperties( QDomNode& parent, const QString& windowName, const WindowProperties& prop )
 {
 	QDomDocument doc;
 	QDomNode windowPropNode = doc.createElement( windowName );
@@ -1047,7 +1047,7 @@ void Preferences::writeWindowProperties( QDomNode parent, const QString& windowN
 
 
 
-void Preferences::writeUIStyle( QDomNode parent )
+void Preferences::writeUIStyle( QDomNode& parent )
 {
 	QDomDocument doc;
 	QDomNode node = doc.createElement( "UI_Style" );
@@ -1082,7 +1082,7 @@ void Preferences::writeUIStyle( QDomNode parent )
 
 
 
-void Preferences::readUIStyle( QDomNode parent )
+void Preferences::readUIStyle( const QDomNode& parent )
 {
 	// SONG EDITOR
 	QDomNode pSongEditorNode = parent.firstChildElement( "songEditor" );

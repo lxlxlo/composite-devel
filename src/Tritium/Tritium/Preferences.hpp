@@ -31,7 +31,8 @@
 
 #include <QString>
 #include <QStringList>
-#include <QDomDocument>
+
+class QDomNode;
 
 namespace Tritium
 {
@@ -491,11 +492,11 @@ private:
 	/// Create soundLibrary directory
 	void createSoundLibraryDirectories();
 
-	WindowProperties readWindowProperties( QDomNode parent, const QString& windowName, WindowProperties defaultProp );
-	void writeWindowProperties( QDomNode parent, const QString& windowName, const WindowProperties& prop );
+	WindowProperties readWindowProperties( const QDomNode& parent, const QString& windowName, WindowProperties defaultProp );
+	void writeWindowProperties( QDomNode& parent, const QString& windowName, const WindowProperties& prop );
 
-	void writeUIStyle( QDomNode parent );
-	void readUIStyle( QDomNode parent );
+	void writeUIStyle( QDomNode& parent );
+	void readUIStyle( const QDomNode& parent );
 };
 
 } // namespace Tritium

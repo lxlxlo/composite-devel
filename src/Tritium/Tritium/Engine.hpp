@@ -22,6 +22,7 @@
 #define TRITIUM_ENGINE_HPP
 
 #include <stdint.h> // for uint32_t et al
+#include <Tritium/EngineInterface.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/memory.hpp>
 #include <QMutex>
@@ -59,7 +60,7 @@ namespace Tritium
     /**
      * \brief This is the main Tritium Engine.
      */
-    class Engine
+    class Engine : public EngineInterface
     {
     public:
         // The preferences object must be created and

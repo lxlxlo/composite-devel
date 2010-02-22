@@ -30,6 +30,7 @@
 #include <Tritium/Logger.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentList.hpp>
+#include <Tritium/Preferences.hpp>
 
 #include <lv2.h>
 #include <event.lv2/event.h>
@@ -128,6 +129,7 @@ void EngineLv2::_connect_port(uint32_t port, void* data_location)
 
 void EngineLv2::_activate()
 {
+    _prefs.reset( new Preferences );
     _mixer.reset( new MixerImpl(MAX_BUFFER_SIZE) );
     _sampler.reset( new Sampler(_mixer) );
     _seq.reset( new SeqScript );
@@ -229,14 +231,27 @@ const void* EngineLv2::extension_data(const char * /*uri*/)
     return 0;
 }
 
-T<Tritium::Sampler>::shared_ptr EngineLv2::sampler()
+T<Tritium::Preferences>::shared_ptr EngineLv2::get_preferences()
+{
+    return _prefs;
+}
+
+T<Tritium::Sampler>::shared_ptr EngineLv2::get_sampler()
 {
     return _sampler;
 }
 
-T<Tritium::MixerImpl>::shared_ptr EngineLv2::mixer()
+T<Tritium::Mixer>::shared_ptr EngineLv2::get_mixer()
 {
-    return _mixer;
+    return boost::dynamic_pointer_cast<Tritium::Mixer>(_mixer);
+}
+
+/**
+ * Always returns a null pointer
+ */
+T<Tritium::Effects>::shared_ptr EngineLv2::get_effects()
+{
+    return T<Tritium::Effects>::shared_ptr();
 }
 
 static void plugin_init()

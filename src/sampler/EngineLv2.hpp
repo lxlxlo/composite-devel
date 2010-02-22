@@ -25,6 +25,7 @@
 #include <event.lv2/event.h>
 
 #include <Tritium/memory.hpp>
+#include <Tritium/EngineInterface.hpp>
 
 namespace Tritium
 {
@@ -42,7 +43,7 @@ namespace Composite
 	 * \brief The main engine for the LV2 plugin version of the sampler.
 	 *
 	 */
-	class EngineLv2
+	class EngineLv2 : public Tritium::EngineInterface
 	{
 	public:
 	    EngineLv2();
@@ -63,8 +64,11 @@ namespace Composite
 	    static void cleanup(LV2_Handle instance);
 	    static const void* extension_data(const char * uri);
 
-	    Tritium::T<Tritium::Sampler>::shared_ptr sampler();
-	    Tritium::T<Tritium::MixerImpl>::shared_ptr mixer();
+	    // EngineInterface Methods
+	    Tritium::T<Tritium::Preferences>::shared_ptr get_preferences();
+	    Tritium::T<Tritium::Sampler>::shared_ptr get_sampler();
+	    Tritium::T<Tritium::Mixer>::shared_ptr get_mixer();
+	    Tritium::T<Tritium::Effects>::shared_ptr get_effects();
 
 	    // The real versions of the callbacks above.
 	    void _connect_port(uint32_t port, void* data_location);
@@ -89,6 +93,7 @@ namespace Composite
 	    float *_out_R; // Port 1, extern
 	    LV2_Event_Buffer *_ev_in; // Port 2, extern
 	    const LV2_Event_Feature *_event_feature; // Host's Event callbacks.
+	    Tritium::T<Tritium::Preferences>::shared_ptr _prefs;
 	    Tritium::T<Tritium::MixerImpl>::shared_ptr _mixer;
 	    Tritium::T<Tritium::Sampler>::shared_ptr _sampler;
 	    Tritium::T<Tritium::SeqScript>::auto_ptr _seq;

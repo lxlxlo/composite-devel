@@ -450,7 +450,11 @@ void SerializationQueue::handle_save_song(SerializationQueue::event_data_t& ev)
 	QDomNode fxNode = doc.createElement( "fx" );
 
 #ifdef LADSPA_SUPPORT
-	T<LadspaFX>::shared_ptr pFX = engine->get_effects()->getLadspaFX( nFX );
+	T<Effects>::shared_ptr effects = engine->get_effects();
+	T<LadspaFX>::shared_ptr pFX;
+	if(effects) {
+	    pFX = effects->getLadspaFX( nFX );
+	}
 	if ( pFX ) {
 	    LocalFileMng::writeXmlString( fxNode, "name", pFX->getPluginLabel() );
 	    LocalFileMng::writeXmlString( fxNode, "filename", pFX->getLibraryPath() );
