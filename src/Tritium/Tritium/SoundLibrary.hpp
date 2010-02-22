@@ -45,7 +45,7 @@ namespace Tritium
     private:
     };
 
-    class Engine;
+    class EngineInterface;
 
     /**
      * \brief	Drumkit info
@@ -59,23 +59,23 @@ namespace Tritium
 	~Drumkit();
 
 	/// Loads a single Drumkit
-	static T<Drumkit>::shared_ptr load( Engine* engine, const QString& sFilename );
+	static T<Drumkit>::shared_ptr load( EngineInterface* engine, const QString& sFilename );
 
 	/// Lists the User drumkit list
-	static std::vector<QString> getUserDrumkitList(Engine* engine);
+	static std::vector<QString> getUserDrumkitList(EngineInterface* engine);
 
 	/// Lists the System drumkit list
-	static std::vector<QString> getSystemDrumkitList(Engine* engine);
+	static std::vector<QString> getSystemDrumkitList(EngineInterface* engine);
 
 	/// Installs a drumkit
-	static void install( Engine* engine, const QString& filename );
+	static void install( EngineInterface* engine, const QString& filename );
 
 	// Save a drumkit
-	static void save( Engine* engine, const QString& sName, const QString& sAuthor, const QString& sInfo, const QString& sLicense );
+	static void save( EngineInterface* engine, const QString& sName, const QString& sAuthor, const QString& sInfo, const QString& sLicense );
 
 
 	/// Remove a Drumkit from the disk
-	static void removeDrumkit( Engine* engine, const QString& sDrumkitName );
+	static void removeDrumkit( EngineInterface* engine, const QString& sDrumkitName );
 
 	T<InstrumentList>::shared_ptr getInstrumentList() {
 	    return m_pInstrumentList;

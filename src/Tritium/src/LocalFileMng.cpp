@@ -26,6 +26,7 @@
 #include <Tritium/Logger.hpp>
 #include <Tritium/ADSR.hpp>
 #include <Tritium/DataPath.hpp>
+#include <Tritium/EngineInterface.hpp>
 #include <Tritium/Engine.hpp>
 #include <Tritium/H2Exception.hpp>
 #include <Tritium/Instrument.hpp>
@@ -85,7 +86,7 @@ namespace Tritium
 	void operator()() { done = true; }
     };
 
-    LocalFileMng::LocalFileMng(Engine* parent) :
+    LocalFileMng::LocalFileMng(EngineInterface* parent) :
         m_engine(parent)
     {
         assert(parent);
@@ -691,17 +692,21 @@ namespace Tritium
         writeXmlString( rootNode, "LIB_ID", "in_work" );
 
         QDomNode playlistNode = doc.createElement( "Songs" );
-        for ( uint i = 0; i < m_engine->get_internal_playlist().size(); ++i ){
-            QDomNode nextNode = doc.createElement( "next" );
+	Engine *eng;
+	eng = dynamic_cast<Engine*>(m_engine);
+	if(eng) {
+	    for ( uint i = 0; i < eng->get_internal_playlist().size(); ++i ){
+		QDomNode nextNode = doc.createElement( "next" );
 
-            LocalFileMng::writeXmlString ( nextNode, "song", m_engine->get_internal_playlist()[i].m_hFile );
+		LocalFileMng::writeXmlString ( nextNode, "song", eng->get_internal_playlist()[i].m_hFile );
 
-            LocalFileMng::writeXmlString ( nextNode, "script", m_engine->get_internal_playlist()[i].m_hScript );
+		LocalFileMng::writeXmlString ( nextNode, "script", eng->get_internal_playlist()[i].m_hScript );
 
-            LocalFileMng::writeXmlString ( nextNode, "enabled", m_engine->get_internal_playlist()[i].m_hScriptEnabled );
+		LocalFileMng::writeXmlString ( nextNode, "enabled", eng->get_internal_playlist()[i].m_hScriptEnabled );
 
-            playlistNode.appendChild( nextNode );
-        }
+		playlistNode.appendChild( nextNode );
+	    }
+	}
 
         rootNode.appendChild( playlistNode );
         doc.appendChild( rootNode );
@@ -733,8 +738,6 @@ namespace Tritium
 
         QDomDocument doc = LocalFileMng::openXmlDocument( QString( patternname.c_str() ) );
 
-        m_engine->get_internal_playlist().clear();
-
         QDomNode rootNode = doc.firstChildElement( "playlist" );        // root element
         if ( rootNode.isNull() ) {
             ERRORLOG( "Error reading playlist: playlist node not found" );
@@ -744,16 +747,21 @@ namespace Tritium
 
         if ( ! playlistNode.isNull() ) {
             // new code :)
-            m_engine->get_internal_playlist().clear();
-            QDomNode nextNode = playlistNode.firstChildElement( "next" );
-            while (  ! nextNode.isNull() ) {
-                Engine::HPlayListNode playListItem;
-                playListItem.m_hFile = LocalFileMng::readXmlString( nextNode, "song", "" );
-                playListItem.m_hScript = LocalFileMng::readXmlString( nextNode, "script", "" );
-                playListItem.m_hScriptEnabled = LocalFileMng::readXmlString( nextNode, "enabled", "" );
-                m_engine->get_internal_playlist().push_back( playListItem );
-                nextNode = nextNode.nextSiblingElement( "next" );
-            }
+	    Tritium::Engine *eng;
+	    eng = dynamic_cast<Tritium::Engine*>(m_engine);
+
+	    if(eng) {
+		eng->get_internal_playlist().clear();
+		QDomNode nextNode = playlistNode.firstChildElement( "next" );
+		while (  ! nextNode.isNull() ) {
+		    Engine::HPlayListNode playListItem;
+		    playListItem.m_hFile = LocalFileMng::readXmlString( nextNode, "song", "" );
+		    playListItem.m_hScript = LocalFileMng::readXmlString( nextNode, "script", "" );
+		    playListItem.m_hScriptEnabled = LocalFileMng::readXmlString( nextNode, "enabled", "" );
+		    eng->get_internal_playlist().push_back( playListItem );
+		    nextNode = nextNode.nextSiblingElement( "next" );
+		}
+	    }
         }
         return 0; // ok
     }

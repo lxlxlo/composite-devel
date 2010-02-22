@@ -40,7 +40,7 @@ namespace Tritium
     class Pattern;
     class Song;
     class Drumkit;
-    class Engine;
+    class EngineInterface;
 
     /**
      *
@@ -48,7 +48,7 @@ namespace Tritium
     class LocalFileMng
     {
     public:
-        LocalFileMng(Engine* parent);
+        LocalFileMng(EngineInterface* parent);
         ~LocalFileMng();
 
         /* Methods for determining where resource locations
@@ -133,7 +133,7 @@ namespace Tritium
         static QDomDocument openXmlDocument( const QString& filename );
 
     private:
-        Engine* m_engine;
+        EngineInterface* m_engine;
         void fileCopy( const QString& sOrigFilename,
                        const QString& sDestFilename );
         std::vector<QString> m_allPatternList;

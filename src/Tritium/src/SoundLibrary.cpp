@@ -29,7 +29,7 @@
 #include <Tritium/Sampler.hpp>
 #include <Tritium/LocalFileMng.hpp>
 #include <Tritium/H2Exception.hpp>
-#include <Tritium/Engine.hpp>
+#include <Tritium/EngineInterface.hpp>
 #include <Tritium/ADSR.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/Logger.hpp>
@@ -83,7 +83,7 @@ Drumkit::~Drumkit()
 
 
 
-T<Drumkit>::shared_ptr Drumkit::load( Engine* eng, const QString& sFilename )
+T<Drumkit>::shared_ptr Drumkit::load( EngineInterface* eng, const QString& sFilename )
 {
 	LocalFileMng mng(eng);
 	T<Drumkit>::shared_ptr rv( mng.loadDrumkit( sFilename ) );
@@ -92,7 +92,7 @@ T<Drumkit>::shared_ptr Drumkit::load( Engine* eng, const QString& sFilename )
 
 
 
-std::vector<QString> Drumkit::getUserDrumkitList(Engine* eng)
+std::vector<QString> Drumkit::getUserDrumkitList(EngineInterface* eng)
 {
 	LocalFileMng mng(eng);
 	return mng.getUserDrumkitList();
@@ -100,7 +100,7 @@ std::vector<QString> Drumkit::getUserDrumkitList(Engine* eng)
 
 
 
-std::vector<QString> Drumkit::getSystemDrumkitList(Engine* eng)
+std::vector<QString> Drumkit::getSystemDrumkitList(EngineInterface* eng)
 {
 	LocalFileMng mng(eng);
 	return mng.getSystemDrumkitList();
@@ -142,7 +142,7 @@ void Drumkit::dump()
 }
 
 #ifdef LIBARCHIVE_SUPPORT
-void Drumkit::install( Engine* engine, const QString& filename )
+void Drumkit::install( EngineInterface* engine, const QString& filename )
 {
 	INFOLOG( "[Drumkit::install] drumkit = " + filename );
 	QString dataDir = engine->get_preferences()->getDataDirectory() + "drumkits/";
@@ -190,7 +190,7 @@ void Drumkit::install( Engine* engine, const QString& filename )
 #else //use libtar
 
 #ifndef WIN32
-void Drumkit::install( Engine* engine, const QString& filename )
+void Drumkit::install( EngineInterface* engine, const QString& filename )
 {
         INFOLOG( "[Drumkit::install] drumkit = " + filename );
         QString dataDir = engine->get_preferences()->getDataDirectory() + "drumkits/";
@@ -237,7 +237,7 @@ void Drumkit::install( Engine* engine, const QString& filename )
 
 #endif
 
-void Drumkit::save( Engine* engine, const QString& sName, const QString& sAuthor, const QString& sInfo, const QString& sLicense )
+void Drumkit::save( EngineInterface* engine, const QString& sName, const QString& sAuthor, const QString& sInfo, const QString& sLicense )
 {
 	INFOLOG( "Saving drumkit" );
 
@@ -247,7 +247,6 @@ void Drumkit::save( Engine* engine, const QString& sName, const QString& sAuthor
 	pDrumkitInfo->setInfo( sInfo );
 	pDrumkitInfo->setLicense( sLicense );
 
-	T<Song>::shared_ptr pSong = engine->getSong();
 	T<InstrumentList>::shared_ptr pSongInstrList = engine->get_sampler()->get_instrument_list();
 	T<InstrumentList>::shared_ptr pInstrumentList( new InstrumentList() );
 
@@ -316,7 +315,7 @@ void Drumkit::save( Engine* engine, const QString& sName, const QString& sAuthor
 
 
 
-void Drumkit::removeDrumkit( Engine* engine, const QString& sDrumkitName )
+void Drumkit::removeDrumkit( EngineInterface* engine, const QString& sDrumkitName )
 {
 	INFOLOG( "Removing drumkit: " + sDrumkitName );
 

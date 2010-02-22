@@ -35,7 +35,7 @@
 namespace Tritium
 {
     class Drumkit;
-    class Engine;
+    class EngineInterface;
     class InstrumentList;
     class LadspaFX;
     class Pattern;
@@ -46,7 +46,7 @@ namespace Tritium
 	class SerializationQueue : public WorkerThreadClient
 	{
 	public:
-	    SerializationQueue(Engine* engine);
+	    SerializationQueue(EngineInterface* engine);
 	    virtual ~SerializationQueue();
 
 	    // WorkerThreadClient interface:
@@ -56,22 +56,22 @@ namespace Tritium
 
 	    void load_file(const QString& filename,
 			   ObjectBundle& report_to,
-			   Engine *engine);
+			   EngineInterface *engine);
 	    void save_song(const QString& filename,
 			   T<Song>::shared_ptr song,
 			   SaveReport& report_t,
-			   Engine *engine,
+			   EngineInterface *engine,
 			   bool overwrite);
 	    void save_drumkit(const QString& filename,
 			      T<Drumkit>::shared_ptr dk,
 			      SaveReport& report_to,
-			      Engine *engine,
+			      EngineInterface *engine,
 			      bool overwrite);
 	    void save_pattern(const QString& filename,
 			      T<Pattern>::shared_ptr pattern,
 			      const QString& drumkit_name,
 			      SaveReport& report_to,
-			      Engine *engine,
+			      EngineInterface *engine,
 			      bool overwrite);
 
 	private:
@@ -89,7 +89,7 @@ namespace Tritium
 		    ObjectBundle* report_load_to;
 		    SaveReport* report_save_to;
 		};
-		Engine *engine;
+		EngineInterface *engine;
 		T<Song>::shared_ptr song;
 		T<Drumkit>::shared_ptr drumkit;
 		T<Pattern>::shared_ptr pattern;
@@ -101,7 +101,7 @@ namespace Tritium
 
 	    bool m_kill;
 	    queue_t m_queue;
-	    Engine *m_engine;
+	    EngineInterface *m_engine;
 
 	protected:
 	    void handle_load_file(event_data_t& ev);
@@ -180,25 +180,25 @@ namespace Tritium
 	public:
 	    virtual void load_file(const QString& filename,
 				   ObjectBundle& report_to,
-				   Engine *engine);
+				   EngineInterface *engine);
 	    virtual void save_song(const QString& filename,
 				   T<Song>::shared_ptr song,
 				   SaveReport& report_to,
-				   Engine *engine,
+				   EngineInterface *engine,
 				   bool overwrite = false);
 	    virtual void save_drumkit(const QString& filename,
 				      T<Drumkit>::shared_ptr song,
 				      SaveReport& report_to,
-				      Engine *engine,
+				      EngineInterface *engine,
 				      bool overwrite = false);
 	    virtual void save_pattern(const QString& filename,
 				      T<Pattern>::shared_ptr pattern,
 				      const QString& drumkit_name,
 				      SaveReport& report_to,
-				      Engine *engine,
+				      EngineInterface *engine,
 				      bool overwrite = false);
 
-	    SerializerImpl(Engine* engine);
+	    SerializerImpl(EngineInterface* engine);
 	    virtual ~SerializerImpl();
 
 	protected:
@@ -208,7 +208,7 @@ namespace Tritium
 	class SerializerStandalone : public SerializerImpl
 	{
 	public:
-	    SerializerStandalone(Engine* engine);
+	    SerializerStandalone(EngineInterface* engine);
 	    virtual ~SerializerStandalone();
 
 	private:

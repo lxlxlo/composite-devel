@@ -32,7 +32,7 @@ namespace Tritium
     class Drumkit;
     class Pattern;
     class ObjectBundle;
-    class Engine;
+    class EngineInterface;
 
     namespace Serialization
     {
@@ -72,11 +72,11 @@ namespace Tritium
 	     * ObjectBundle::operator()() will be called after the data
 	     * has been loaded so that it can be utilized.
 	     *
-	     * \param engine a pointer to a valid Engine instance.
+	     * \param engine a pointer to a valid EngineInterface instance.
 	     */
 	    virtual void load_file(const QString& filename,
 				   ObjectBundle& report_to,
-				   Engine *engine) = 0;
+				   EngineInterface *engine) = 0;
 
 	    /**
 	     * Saves a song/sequence to a file.
@@ -95,7 +95,7 @@ namespace Tritium
 	     * then the callback SaveReport::operator()() will be
 	     * called.
 	     *
-	     * \param engine a pointer to a valid Engine instance.
+	     * \param engine a pointer to a valid EngineInterface instance.
 	     *
 	     * \param overwrite if true, will overwrite filename if it
 	     * already exists.  If false, the save will fail if
@@ -104,7 +104,7 @@ namespace Tritium
 	    virtual void save_song(const QString& filename,
 				   T<Song>::shared_ptr song,
 				   SaveReport& report_to,
-				   Engine *engine,
+				   EngineInterface *engine,
 				   bool overwrite = false) = 0;
 
 	    /**
@@ -128,7 +128,7 @@ namespace Tritium
 	     * not) then the callback SaveReport::operator()() will be
 	     * called.
 	     *
-	     * \param engine a pointer to a valid Engine instance.
+	     * \param engine a pointer to a valid EngineInterface instance.
 	     *
 	     * \param overwrite if true, will overwrite the contents
 	     * of dirname if it already exists.  If false, the save
@@ -137,7 +137,7 @@ namespace Tritium
 	    virtual void save_drumkit(const QString& dirname,
 				      T<Drumkit>::shared_ptr drumkit,
 				      SaveReport& report_to,
-				      Engine *engine,
+				      EngineInterface *engine,
 				      bool overwrite = false) = 0;
 
 	    /**
@@ -161,7 +161,7 @@ namespace Tritium
 	     * then the callback SaveReport::operator()() will be
 	     * called.
 	     *
-	     * \param engine a pointer to a valid Engine instance.
+	     * \param engine a pointer to a valid EngineInterface instance.
 	     *
 	     * \param overwrite if true, will overwrite filename if it
 	     * already exists.  If false, the save will fail if
@@ -171,7 +171,7 @@ namespace Tritium
 				      T<Pattern>::shared_ptr pattern,
 				      const QString& drumkit_name,
 				      SaveReport& report_to,
-				      Engine *engine,
+				      EngineInterface *engine,
 				      bool overwrite = false) = 0;
 
 	    /**
@@ -182,11 +182,11 @@ namespace Tritium
 	     * Typically, you will want to use the serializer that
 	     * comes from Tritium::Engine::get_serializer() so that
 	     * the worker thread can be shared.  Sometimes you may
-	     * wish to use the serializer without the Engine, and this
+	     * wish to use the serializer without the EngineInterface, and this
 	     * function returns a serializer object that can be used
 	     * for this purpose.
 	     */
-	    static Serializer* create_standalone(Engine *engine);
+	    static Serializer* create_standalone(EngineInterface *engine);
 	};
 
 	/**

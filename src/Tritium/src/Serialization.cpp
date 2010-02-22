@@ -29,7 +29,7 @@
 #include <Tritium/InstrumentLayer.hpp>
 #include <Tritium/ADSR.hpp>
 #include <Tritium/Pattern.hpp>
-#include <Tritium/Engine.hpp>
+#include <Tritium/EngineInterface.hpp>
 #include <Tritium/Sample.hpp>
 #include <Tritium/Sampler.hpp>
 #include <Tritium/Mixer.hpp>
@@ -57,7 +57,7 @@ using std::deque;
  *********************************************************************
  */
 
-Serializer* Serializer::create_standalone(Engine* engine)
+Serializer* Serializer::create_standalone(EngineInterface* engine)
 {
     return new SerializerStandalone(engine);
 }
@@ -67,7 +67,7 @@ Serializer* Serializer::create_standalone(Engine* engine)
  *********************************************************************
  */
 
-SerializerImpl::SerializerImpl(Engine* engine) :
+SerializerImpl::SerializerImpl(EngineInterface* engine) :
     m_queue( new SerializationQueue(engine) )
 {
 }
@@ -78,7 +78,7 @@ SerializerImpl::~SerializerImpl()
 
 void SerializerImpl::load_file(const QString& filename,
                                ObjectBundle& report_to,
-                               Engine* engine)
+                               EngineInterface* engine)
 {
     m_queue->load_file(filename, report_to, engine);
 }
@@ -86,7 +86,7 @@ void SerializerImpl::load_file(const QString& filename,
 void SerializerImpl::save_song(const QString& filename,
                                T<Song>::shared_ptr song,
                                SaveReport& report_t,
-                               Engine* engine,
+                               EngineInterface* engine,
                                bool overwrite)
 {
     m_queue->save_song(filename, song, report_t, engine, overwrite);
@@ -95,7 +95,7 @@ void SerializerImpl::save_song(const QString& filename,
 void SerializerImpl::save_drumkit(const QString& dirname,
                                   T<Drumkit>::shared_ptr dk,
                                   SaveReport& report_to,
-                                  Engine* engine,
+                                  EngineInterface* engine,
                                   bool overwrite)
 {
     m_queue->save_drumkit(dirname, dk, report_to, engine, overwrite);
@@ -105,7 +105,7 @@ void SerializerImpl::save_pattern(const QString& filename,
                                   T<Pattern>::shared_ptr pattern,
 				  const QString& drumkit_name,
                                   SaveReport& report_to,
-                                  Engine* engine,
+                                  EngineInterface* engine,
                                   bool overwrite)
 {
     m_queue->save_pattern(filename, pattern, drumkit_name, report_to, engine, overwrite);
@@ -116,7 +116,7 @@ void SerializerImpl::save_pattern(const QString& filename,
  *********************************************************************
  */
 
-SerializerStandalone::SerializerStandalone(Engine* engine) :
+SerializerStandalone::SerializerStandalone(EngineInterface* engine) :
     SerializerImpl(engine)
 {
     m_thread.add_client(m_queue);
@@ -134,7 +134,7 @@ SerializerStandalone::~SerializerStandalone()
  *********************************************************************
  */
 
-SerializationQueue::SerializationQueue(Engine* engine) :
+SerializationQueue::SerializationQueue(EngineInterface* engine) :
     m_kill(false),
     m_engine(engine)
 {
@@ -157,7 +157,7 @@ void SerializationQueue::shutdown()
 
 void SerializationQueue::load_file(const QString& filename,
                                    ObjectBundle& report_to,
-                                   Engine *engine)
+                                   EngineInterface *engine)
 {
     event_data_t event;
     event.ev = LoadFile;
@@ -171,7 +171,7 @@ void SerializationQueue::load_file(const QString& filename,
 void SerializationQueue::save_song(const QString& filename,
                                    T<Song>::shared_ptr song,
                                    SaveReport& report_t,
-                                   Engine *engine,
+                                   EngineInterface *engine,
                                    bool overwrite)
 {
     event_data_t event;
@@ -187,7 +187,7 @@ void SerializationQueue::save_song(const QString& filename,
 void SerializationQueue::save_drumkit(const QString& filename,
                                       T<Drumkit>::shared_ptr dk,
                                       SaveReport& report_t,
-                                      Engine *engine,
+                                      EngineInterface *engine,
                                       bool overwrite)
 {
     event_data_t event;
@@ -204,7 +204,7 @@ void SerializationQueue::save_pattern(const QString& filename,
                                       T<Pattern>::shared_ptr pattern,
 				      const QString& drumkit_name,
                                       SaveReport& report_t,
-                                      Engine *engine,
+                                      EngineInterface *engine,
                                       bool overwrite)
 {
     event_data_t event;
@@ -272,7 +272,7 @@ void SerializationQueue::handle_load_file(SerializationQueue::event_data_t& ev)
 
 void SerializationQueue::handle_save_song(SerializationQueue::event_data_t& ev)
 {
-    Engine *engine = m_engine;
+    EngineInterface *engine = m_engine;
     Song& song = *(ev.song);
     QString filename = ev.filename;
 
