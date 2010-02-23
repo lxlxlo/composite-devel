@@ -31,11 +31,12 @@
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/Preferences.hpp>
+#include <Tritium/DataPath.hpp>
+#include <Tritium/Serialization.hpp>
 
 #include <lv2.h>
 #include <event.lv2/event.h>
 #include <event.lv2/event-helpers.h>
-#include <cstdlib>
 #include <cstring>
 
 #define PLUGIN_URI "http://gabe.is-a-geek.org/composite/plugins/sampler/1"
@@ -47,6 +48,11 @@ static LV2_Descriptor *pluginDescriptor = NULL;
 
 using namespace Composite::Plugin;
 using namespace Tritium;
+
+namespace Composite
+{
+namespace Plugin
+{
 
 void EngineLv2::connect_port(LV2_Handle instance,
 			     uint32_t port,
@@ -133,17 +139,77 @@ void EngineLv2::_activate()
     _mixer.reset( new MixerImpl(MAX_BUFFER_SIZE) );
     _sampler.reset( new Sampler(_mixer) );
     _seq.reset( new SeqScript );
+    _serializer.reset( Serialization::Serializer::create_standalone(this) );
+    _obj_bdl.reset( new Composite::Plugin::ObjectBundle );
+    load_drumkit_by_name("GMkit");
 }
 
-static float noise()
+void EngineLv2::load_drumkit_by_name(const QString& name)
 {
-    return 2.0f * drand48() - 1.0f;
+    #warning "This is an incomplete implementation"
+    QString dk_dir = DataPath::get_data_path() + "/drumkits/" + name + "/drumkit.xml";
+    load_drumkit(dk_dir);
+}
+
+void EngineLv2::load_drumkit(const QString& drumkit_xml)
+{
+    bool loading = _obj_bdl->loading();
+    if(!loading) {
+	ERRORLOG( QString("Unable to acquire loading object to load drumkit %1")
+		  .arg(drumkit_xml)
+	    );
+	return;
+    }
+
+    _serializer->load_file(drumkit_xml, *_obj_bdl, this);
+}
+
+void EngineLv2::install_drumkit_bundle()
+{
+    if(_obj_bdl->state() != ObjectBundle::Ready) {
+	return;
+    }
+
+    _sampler->clear();
+
+    size_t k;
+    T<Mixer::Channel>::shared_ptr tmp_chan;
+    while( !_obj_bdl->empty() ) {
+	switch(_obj_bdl->peek_type()) {
+	case ObjectItem::Instrument_t:
+	    _sampler->add_instrument( _obj_bdl->pop<Instrument>() );
+	    break;
+	case ObjectItem::Channel_t:
+	    k = _mixer->count();
+	    if(k>0) {
+		--k;
+		tmp_chan = _obj_bdl->pop<Mixer::Channel>();
+		_mixer->channel(k)->match_props(*tmp_chan);
+		tmp_chan.reset();
+	    }
+	    break;
+	case ObjectItem::Drumkit_t:
+	    // Intentionally ignoring
+	    _obj_bdl->pop();
+	    break;
+	default:
+	    ERRORLOG("Loading drumkit loaded an unexpected type.");
+	    _obj_bdl->pop();
+	}
+    }
+
+    _obj_bdl->reset();
 }
 
 void EngineLv2::_run(uint32_t nframes)
 {
     if( ! _out_L ) return;
     if( ! _out_R ) return;
+
+    // Check if we need to install a new drumkit.
+    if( _obj_bdl->state() == ObjectBundle::Ready ) {
+	install_drumkit_bundle();
+    }
 
     // Sanity checks
     assert(_mixer);
@@ -166,21 +232,18 @@ void EngineLv2::_run(uint32_t nframes)
     _mixer->mix_send_return(nframes);
     _mixer->mix_down(nframes, _out_L, _out_R, 0, 0);
 
-    // XXX TODO DEBUG Output white noise as a test
-    uint32_t ctr = nframes;
-    while(ctr--) {
-	_out_L[ctr] = noise();
-	_out_R[ctr] = noise();
-    }
-
     _seq->consumed(nframes);
 }
 
 void EngineLv2::_deactivate()
 {
-    _mixer.reset();
-    _sampler.reset();
+    _out_L = 0;
+    _out_R = 0;
+    _obj_bdl.reset();
+    _serializer.reset();
     _seq.reset();
+    _sampler.reset();
+    _mixer.reset();
 }
 
 void EngineLv2::process_events(uint32_t nframes)
@@ -198,6 +261,7 @@ void EngineLv2::process_events(uint32_t nframes)
 	sev.frame = ev.frames;
 	// ev.subframes ignored
 	if(0 == ev.type) {
+	    ERRORLOG("Type 0??");
 	    // Data is non-POD, and we don't support any such
 	    // data.
 	    _event_feature->lv2_event_unref(
@@ -207,7 +271,9 @@ void EngineLv2::process_events(uint32_t nframes)
 	} else {
 	    #warning "This is not a real MIDI implementation"
 	    // Just trigger a note to play
-	    if( (data[0] && 0xF0) == 0x90 ) {
+	    ERRORLOG( QString("Data = %1").arg( QString::number(data[0], 16) ) );
+	    if( (data[0] & 0xF0) == 0x90 ) {
+		ERRORLOG("Note Event");
 		sev.type = SeqEvent::NOTE_ON;
 		sev.quantize = false;
 		sev.note.set_velocity(0.85);
@@ -216,6 +282,8 @@ void EngineLv2::process_events(uint32_t nframes)
 		T<Instrument>::shared_ptr inst;
 		if(i_list->get_size() > 0) {
 		    sev.note.set_instrument( i_list->get(0) );
+		} else {
+		    ERRORLOG("No instruments");
 		}
 		if(sev.note.get_instrument()) {
 		    ERRORLOG("Scheduled note");
@@ -253,6 +321,52 @@ T<Tritium::Effects>::shared_ptr EngineLv2::get_effects()
 {
     return T<Tritium::Effects>::shared_ptr();
 }
+
+void ObjectBundle::operator()()
+{
+    QMutexLocker lk(&_mutex);
+    switch(_state) {
+    case Loading:
+	_state = Ready;
+	break;
+    case Empty:
+    case Ready:
+	break;
+    }
+}
+
+void ObjectBundle::reset()
+{
+    QMutexLocker lk(&_mutex);
+    switch(_state) {
+    case Ready:
+	_state = Empty;
+	break;
+    case Loading:
+    case Empty:
+	break;
+    }
+}
+
+bool ObjectBundle::loading()
+{
+    QMutexLocker lk(&_mutex);
+    bool rv = false;
+    switch(_state) {
+    case Empty:
+	_state = Loading;
+	rv = true;
+	break;
+    case Ready:
+    case Loading:
+	break;
+    }
+    return rv;
+}
+
+} // namespace Composite::Plugin
+
+} // namespace Composite
 
 static void plugin_init()
 {

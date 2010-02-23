@@ -26,6 +26,10 @@
 
 #include <Tritium/memory.hpp>
 #include <Tritium/EngineInterface.hpp>
+#include <Tritium/ObjectBundle.hpp>
+
+#include <QString>
+#include <QMutex>
 
 namespace Tritium
 {
@@ -33,12 +37,17 @@ namespace Tritium
     class Sampler;
     class SeqScript;
     class AudioPortImpl;
+    namespace Serialization {
+	class Serializer;
+    }
 } // namespace Tritium
 
 namespace Composite
 {
     namespace Plugin
     {
+	class ObjectBundle;
+
 	/**
 	 * \brief The main engine for the LV2 plugin version of the sampler.
 	 *
@@ -84,8 +93,13 @@ namespace Composite
 		return _sample_rate;
 	    }
 
+	    void load_drumkit_by_name(const QString& name);
+	    void load_drumkit(const QString& drumkit_xml);
+
 	protected:
 	    void process_events(uint32_t sample_count);
+
+	    void install_drumkit_bundle();
 
 	private:
 	    double _sample_rate;
@@ -97,7 +111,62 @@ namespace Composite
 	    Tritium::T<Tritium::MixerImpl>::shared_ptr _mixer;
 	    Tritium::T<Tritium::Sampler>::shared_ptr _sampler;
 	    Tritium::T<Tritium::SeqScript>::auto_ptr _seq;
+	    Tritium::T<Tritium::Serialization::Serializer>::auto_ptr _serializer;
+	    Tritium::T<ObjectBundle>::shared_ptr _obj_bdl;
 	};
+
+	class ObjectBundle : public Tritium::ObjectBundle
+	{
+	public:
+	    // State machine:
+	    // Init --> Empty
+	    //
+	    // Empty:
+	    //    loading() --> Loading
+	    //
+	    // Loading:
+	    //    operator() --> Ready
+	    //
+	    // Ready:
+	    //    reset() --> Empty
+
+	    typedef enum {
+		Empty,        //< Ready to use container
+		Loading,      //< Container is in use
+		Ready         //< Payload is ready
+	    } state_t;
+
+	    ObjectBundle() : _state(Empty) {}
+	    virtual ~ObjectBundle() {}
+
+	    void operator()();
+	    void reset();
+
+	    /**
+	     * Acquire the bundle to load an object.
+	     *
+	     * Returns true if the state is Empty, and the caller has
+	     * acquired the mutex to change the state to Loading.
+	     * Thus, the caller can proceed to use this object.
+	     *
+	     * Returns false if the caller has failed to acquire the
+	     * object.  Note that state() might actually return a
+	     * Loading state, but it means that someone else has
+	     * acquired it.
+	     *
+	     * This function may be safely called regardless of the
+	     * current state of the ObjectBundle.
+	     */
+	    bool loading();
+	    state_t state() {
+		return _state;
+	    }
+
+	private:
+	    QMutex _mutex; // state mutex
+	    state_t _state;
+	};
+
 
     } // namespace Plugin
 } // namespace Composite

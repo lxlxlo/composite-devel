@@ -9,7 +9,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 ### REQUIRED LIBRARIES                                             ###
 ######################################################################
 
-FIND_PACKAGE(Qt4 4.3.0 REQUIRED)
+FIND_PACKAGE(Qt4 4.3.0 COMPONENTS QtCore REQUIRED)
 INCLUDE(${QT_USE_FILE})
 
 ######################################################################
@@ -26,6 +26,10 @@ LIST(APPEND LV2_METADATA
   composite_sampler.ttl
   )
 
+INCLUDE(
+  ${QT_USE_FILE}
+)
+
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}
   ${CMAKE_SOURCE_DIR}/src/Tritium
   ${CMAKE_SOURCE_DIR}/src/3rd-party/lv2
@@ -39,6 +43,7 @@ ADD_LIBRARY(composite_sampler MODULE
 
 TARGET_LINK_LIBRARIES(composite_sampler
   Tritium
+  ${QT_LIBRARIES}
   )
 
 SET_TARGET_PROPERTIES(composite_sampler
