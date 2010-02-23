@@ -276,12 +276,13 @@ void EngineLv2::process_events(uint32_t nframes)
 		ERRORLOG("Note Event");
 		sev.type = SeqEvent::NOTE_ON;
 		sev.quantize = false;
-		sev.note.set_velocity(0.85);
+		sev.note.set_velocity(float(data[2]) / 127.0f);
 
+		int k = data[1] - 36;
 		T<InstrumentList>::shared_ptr i_list = _sampler->get_instrument_list();
 		T<Instrument>::shared_ptr inst;
-		if(i_list->get_size() > 0) {
-		    sev.note.set_instrument( i_list->get(0) );
+		if(k>=0 && k < i_list->get_size() > 0) {
+		    sev.note.set_instrument( i_list->get(k) );
 		} else {
 		    ERRORLOG("No instruments");
 		}
