@@ -260,11 +260,9 @@ void EngineLv2::process_events(uint32_t nframes)
 	LV2_Event& ev = *lv2_event_get(&it, &data);
 	SeqEvent sev;
 
-	ERRORLOG("Got event");
 	sev.frame = ev.frames;
 	// ev.subframes ignored
 	if(0 == ev.type) {
-	    ERRORLOG("Type 0??");
 	    // Data is non-POD, and we don't support any such
 	    // data.
 	    _event_feature->lv2_event_unref(
@@ -274,9 +272,7 @@ void EngineLv2::process_events(uint32_t nframes)
 	} else {
 	    #warning "This is not a real MIDI implementation"
 	    // Just trigger a note to play
-	    ERRORLOG( QString("Data = %1").arg( QString::number(data[0], 16) ) );
 	    if( (data[0] & 0xF0) == 0x90 ) {
-		ERRORLOG("Note Event");
 		sev.type = SeqEvent::NOTE_ON;
 		sev.quantize = false;
 		sev.note.set_velocity(float(data[2]) / 127.0f);
@@ -286,11 +282,8 @@ void EngineLv2::process_events(uint32_t nframes)
 		T<Instrument>::shared_ptr inst;
 		if(k>=0 && k < i_list->get_size()) {
 		    sev.note.set_instrument( i_list->get(k) );
-		} else {
-		    ERRORLOG("No instruments");
 		}
 		if(sev.note.get_instrument()) {
-		    ERRORLOG("Scheduled note");
 		    _seq->insert(sev);
 		}
 	    }
