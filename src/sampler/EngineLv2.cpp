@@ -82,6 +82,7 @@ void EngineLv2::cleanup(LV2_Handle instance)
     EngineLv2* i;
     i = static_cast<EngineLv2*>(instance);
     delete i;
+    delete Logger::get_instance();
 }
 
 EngineLv2::EngineLv2() :
@@ -95,6 +96,7 @@ EngineLv2::EngineLv2() :
 
 EngineLv2::~EngineLv2()
 {
+    _deactivate();
 }
 
 LV2_Handle EngineLv2::instantiate(const LV2_Descriptor * /*descriptor*/,
@@ -244,6 +246,7 @@ void EngineLv2::_deactivate()
     _seq.reset();
     _sampler.reset();
     _mixer.reset();
+    _prefs.reset();
 }
 
 void EngineLv2::process_events(uint32_t nframes)
