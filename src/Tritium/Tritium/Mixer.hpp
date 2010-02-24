@@ -42,7 +42,7 @@ namespace Tritium
 	{
 	public:
 	    Channel();
-	    Channel(size_t sends);
+	    Channel(uint32_t sends);
 	    ~Channel();
 
 	    Channel(const Channel& c);
@@ -70,10 +70,10 @@ namespace Tritium
 	    /**
 	     * Return maximum number of "send" gains.
 	     */
-	    size_t send_count() const;
+	    uint32_t send_count() const;
 
-	    float send_gain(size_t index) const;
-	    void send_gain(size_t index, float gain);
+	    float send_gain(uint32_t index) const;
+	    void send_gain(uint32_t index, float gain);
 
 	    /**
 	     * Make everything except port() match the parameter.
@@ -91,17 +91,17 @@ namespace Tritium
 	 *
 	 * Does not count send/return or FX loops.
 	 */
-	virtual size_t count() = 0;
+	virtual uint32_t count() = 0;
 
 	/**
 	 * Returns the port at index n
 	 */
-	virtual T<AudioPort>::shared_ptr port(size_t n) = 0;
+	virtual T<AudioPort>::shared_ptr port(uint32_t n) = 0;
 
 	/**
 	 * Returns the port and mixer-specific settings (gain, pan, etc.).
 	 */
-	virtual T<Channel>::shared_ptr channel(size_t n) = 0;
+	virtual T<Channel>::shared_ptr channel(uint32_t n) = 0;
 
 	/**
 	 * Convenience class if you already have a port pointer.

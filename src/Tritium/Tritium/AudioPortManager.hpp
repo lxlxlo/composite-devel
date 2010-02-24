@@ -63,7 +63,7 @@ namespace Tritium
 	    const QString& name,
 	    AudioPort::flow_t in_or_out = AudioPort::OUTPUT,
 	    AudioPort::type_t type = AudioPort::MONO,
-	    size_t size = -1
+	    uint32_t size = -1
 	    ) = 0;
 
 	/**

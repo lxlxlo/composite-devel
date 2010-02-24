@@ -43,7 +43,7 @@ namespace Tritium
 
 	MixerImpl(uint32_t max_buffer = MAX_BUFFER_SIZE,
 		  T<Effects>::shared_ptr fx_man = T<Effects>::shared_ptr(),
-		  size_t effect_ct = 0);
+		  uint32_t effect_ct = 0);
 	virtual ~MixerImpl();
 
 	// AudioPortManager interface
@@ -52,15 +52,15 @@ namespace Tritium
 	    const QString& name,
 	    AudioPort::flow_t in_or_out = AudioPort::OUTPUT,
 	    AudioPort::type_t type = AudioPort::MONO,
-	    size_t size = -1
+	    uint32_t size = -1
 	    );
 	virtual void release_port(T<AudioPort>::shared_ptr port);
 
 	// Mixer interface
 
-	virtual size_t count();
-	virtual T<AudioPort>::shared_ptr port(size_t n);
-	virtual T<Mixer::Channel>::shared_ptr channel(size_t n);
+	virtual uint32_t count();
+	virtual T<AudioPort>::shared_ptr port(uint32_t n);
+	virtual T<Mixer::Channel>::shared_ptr channel(uint32_t n);
 	virtual T<Mixer::Channel>::shared_ptr channel(const T<AudioPort>::shared_ptr port);
 
 	/**

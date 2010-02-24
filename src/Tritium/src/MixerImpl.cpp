@@ -35,7 +35,7 @@ using namespace Tritium;
 
 MixerImpl::MixerImpl(uint32_t max_buffer,
 		     T<Effects>::shared_ptr fx_man,
-		     size_t fx_count)
+		     uint32_t fx_count)
 {
     d = new MixerImplPrivate();
     d->_max_buf = max_buffer;
@@ -89,10 +89,10 @@ void MixerImpl::mix_send_return(uint32_t nframes)
 {
     if( !d->_fx ) return;
 
-    size_t count = d->_fx->getPluginList().size();
+    uint32_t count = d->_fx->getPluginList().size();
     if( count > d->_fx_count ) count = d->_fx_count;
 
-    size_t k;
+    uint32_t k;
     for(k=0 ; k<count; ++k) {
 	T<LadspaFX>::shared_ptr effect = d->_fx->getLadspaFX(k);
 	if( !effect ) continue;
@@ -187,7 +187,7 @@ void MixerImpl::mix_down(uint32_t nframes, float* left, float* right, float* pea
 	memset(right, 0, nframes * sizeof(float));
     }
 
-    size_t k, plugin_count;
+    uint32_t k, plugin_count;
     if(d->_fx) {
 	plugin_count = d->_fx->getPluginList().size();
     } else {
@@ -216,18 +216,18 @@ void MixerImpl::mix_down(uint32_t nframes, float* left, float* right, float* pea
     }
 }
 
-size_t MixerImpl::count()
+uint32_t MixerImpl::count()
 {
     return d->_in_ports.size();
 }
 
-T<AudioPort>::shared_ptr MixerImpl::port(size_t n)
+T<AudioPort>::shared_ptr MixerImpl::port(uint32_t n)
 {
     assert( n < d->_in_ports.size() );
     return d->_in_ports[n]->port();
 }
 
-T<Mixer::Channel>::shared_ptr MixerImpl::channel(size_t n)
+T<Mixer::Channel>::shared_ptr MixerImpl::channel(uint32_t n)
 {
     assert( n < d->_in_ports.size() );
     return d->_in_ports[n];
@@ -264,7 +264,7 @@ void MixerImplPrivate::delete_port(MixerImplPrivate::port_ref_t port)
 
 T<Mixer::Channel>::shared_ptr MixerImplPrivate::channel_for_port(const MixerImplPrivate::port_ref_t port)
 {
-    for(size_t k; k<_in_ports.size() ; ++k) {
+    for(uint32_t k; k<_in_ports.size() ; ++k) {
 	if( _in_ports[k]->port() == port ) return _in_ports[k];
     }
     return T<Mixer::Channel>::shared_ptr();
@@ -402,7 +402,7 @@ Mixer::Channel::Channel()
     d = new ChannelPrivate();
 }
 
-Mixer::Channel::Channel(size_t sends)
+Mixer::Channel::Channel(uint32_t sends)
 {
     d = new ChannelPrivate(sends);
 }
@@ -488,17 +488,17 @@ void Mixer::Channel::pan_R(float pan)
     d->_pan_R(pan);
 }
 
-size_t Mixer::Channel::send_count() const
+uint32_t Mixer::Channel::send_count() const
 {
     return d->_send_gain.size();
 }
 
-float Mixer::Channel::send_gain(size_t index) const
+float Mixer::Channel::send_gain(uint32_t index) const
 {
     return d->_send_gain[index];
 }
 
-void Mixer::Channel::send_gain(size_t index, float gain)
+void Mixer::Channel::send_gain(uint32_t index, float gain)
 {
     d->_send_gain[index] = gain;
 }
