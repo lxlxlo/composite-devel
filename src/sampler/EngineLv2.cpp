@@ -284,7 +284,7 @@ void EngineLv2::process_events(uint32_t nframes)
 		int k = data[1] - 36;
 		T<InstrumentList>::shared_ptr i_list = _sampler->get_instrument_list();
 		T<Instrument>::shared_ptr inst;
-		if(k>=0 && k < i_list->get_size() > 0) {
+		if(k>=0 && k < i_list->get_size()) {
 		    sev.note.set_instrument( i_list->get(k) );
 		} else {
 		    ERRORLOG("No instruments");
