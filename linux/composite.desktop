@@ -4,7 +4,7 @@ Name=Composite
 Comment=Live performance sequencer
 
 Encoding=UTF-8
-Version=0.004
+Version=0.005
 
 Type=Application
 Categories=Application;AudioVideo;Sound;Audio;Qt;
