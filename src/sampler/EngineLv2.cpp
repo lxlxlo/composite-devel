@@ -241,8 +241,8 @@ void EngineLv2::_deactivate()
 {
     _out_L = 0;
     _out_R = 0;
-    _obj_bdl.reset();
     _serializer.reset();
+    _obj_bdl.reset(); // The serializer might be working on an _obj_bdl
     _seq.reset();
     _sampler.reset();
     _mixer.reset();
