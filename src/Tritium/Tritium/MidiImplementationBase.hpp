@@ -155,14 +155,14 @@ namespace Tritium
 		degenerate = true;
 		break;
 	    }
-	    rv = handle_note_on(dest, size, midi);
+	    rv = handle_note_off(dest, size, midi);
 	    break;
 	case 0x90: // Note On
 	    if(size != 3) {
 		degenerate = true;
 		break;
 	    }
-	    rv = handle_note_off(dest, size, midi);
+	    rv = handle_note_on(dest, size, midi);
 	    break;
 	case 0xA0: // Aftertouch
 	    if(size != 3) {

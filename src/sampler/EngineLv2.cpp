@@ -33,6 +33,7 @@
 #include <Tritium/Preferences.hpp>
 #include <Tritium/DataPath.hpp>
 #include <Tritium/Serialization.hpp>
+#include <Tritium/DefaultMidiImplementation.hpp>
 
 #include <lv2.h>
 #include <event.lv2/event.h>
@@ -141,6 +142,8 @@ void EngineLv2::_activate()
     _mixer.reset( new MixerImpl(MAX_BUFFER_SIZE) );
     _sampler.reset( new Sampler(_mixer) );
     _seq.reset( new SeqScript );
+    _midi_imp.reset( new DefaultMidiImplementation );
+    _midi_imp->sampler( _sampler );
     _serializer.reset( Serialization::Serializer::create_standalone(this) );
     _obj_bdl.reset( new Composite::Plugin::ObjectBundle );
     load_drumkit_by_name("GMkit");
@@ -243,6 +246,7 @@ void EngineLv2::_deactivate()
     _out_R = 0;
     _serializer.reset();
     _obj_bdl.reset(); // The serializer might be working on an _obj_bdl
+    _midi_imp.reset();
     _seq.reset();
     _sampler.reset();
     _mixer.reset();
@@ -270,22 +274,8 @@ void EngineLv2::process_events(uint32_t nframes)
 		&ev
 		);
 	} else {
-	    #warning "This is not a real MIDI implementation"
-	    // Just trigger a note to play
-	    if( (data[0] & 0xF0) == 0x90 ) {
-		sev.type = SeqEvent::NOTE_ON;
-		sev.quantize = false;
-		sev.note.set_velocity(float(data[2]) / 127.0f);
-
-		int k = data[1] - 36;
-		T<InstrumentList>::shared_ptr i_list = _sampler->get_instrument_list();
-		T<Instrument>::shared_ptr inst;
-		if(k>=0 && k < i_list->get_size()) {
-		    sev.note.set_instrument( i_list->get(k) );
-		}
-		if(sev.note.get_instrument()) {
-		    _seq->insert(sev);
-		}
+	    if( _midi_imp->translate(sev, ev.size, data) ) {
+		_seq->insert(sev);
 	    }
 	}	
     }
