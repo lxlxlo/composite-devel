@@ -28,6 +28,7 @@ IF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
     t_TransportPosition
     t_Sample
     t_ObjectBundle
+    t_MidiImplementationBase
     )
 
   ADD_DEFINITIONS("-DBOOST_TEST_DYN_LINK")
