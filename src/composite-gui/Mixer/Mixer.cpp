@@ -361,8 +361,8 @@ void Mixer::volumeChanged(MixerLine* ref)
 void Mixer::masterVolumeChanged(MasterMixerLine* ref)
 {
 	float volume = ref->getVolume();
-	T<Song>::shared_ptr song = g_engine->getSong();
-	song->set_volume(volume);
+	T<Tritium::Mixer>::shared_ptr mixer = g_engine->get_mixer();
+	mixer->gain(volume);
 }
 
 
@@ -373,7 +373,7 @@ void Mixer::updateMixer()
 	bool bShowPeaks = pPref->showInstrumentPeaks();
 
 	Engine *pEngine = g_engine;
-	T<Song>::shared_ptr pSong = pEngine->getSong();
+	T<Tritium::Mixer>::shared_ptr t_mixer = g_engine->get_mixer();
 	T<InstrumentList>::shared_ptr pInstrList = g_engine->get_sampler()->get_instrument_list();
 
 	uint nSelectedInstr = pEngine->getSelectedInstrumentNumber();
@@ -539,7 +539,7 @@ void Mixer::updateMixer()
 
 
 	// set master fader position
-	float newVolume = pSong->get_volume();
+	float newVolume = t_mixer->gain();
 	float oldVolume = m_pMasterLine->getVolume();
 	if (oldVolume != newVolume) {
 		m_pMasterLine->setVolume(newVolume);

@@ -765,6 +765,7 @@ TEST_CASE( 040_save_song )
     SyncSaveReport ssr;
     QString save_name = QString("%1/%2").arg(temp_dir).arg("test_song.h2song");
 
+    engine->get_mixer()->gain( song->get_volume() );
     s->save_song(save_name, song, ssr, engine.get(), false);
 
     while(!ssr.done) {

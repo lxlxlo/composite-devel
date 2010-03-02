@@ -42,6 +42,7 @@ namespace Tritium
 	typedef std::deque< channel_ref_t > port_list_t;
 
 	uint32_t _max_buf;
+	float _gain; // Master volume.
 	port_list_t _in_ports;
 	QMutex _in_ports_mutex;
 	T<Effects>::shared_ptr _fx;

@@ -41,6 +41,7 @@ MixerImpl::MixerImpl(uint32_t max_buffer,
     d->_max_buf = max_buffer;
     d->_fx = fx_man;
     d->_fx_count = (fx_count < MAX_FX) ? fx_count : MAX_FX;
+    d->_gain = 1.0f;
 }
 
 MixerImpl::~MixerImpl()
@@ -150,7 +151,7 @@ void MixerImpl::mix_down(uint32_t nframes, float* left, float* right, float* pea
 	if( port->zero_flag() ) continue;
 	if( port->type() == AudioPort::MONO ) {
 	    float gL, gR, pan, gain;
-	    gain = chan.gain();
+	    gain = chan.gain() * d->_gain;
 	    pan = chan.pan();
 	    MixerImplPrivate::eval_pan(gain, pan, gL, gR);
 	    if(zero) {
@@ -165,7 +166,7 @@ void MixerImpl::mix_down(uint32_t nframes, float* left, float* right, float* pea
 	    float gL, gR, pan, gain;
 
 	    // Left
-	    gain = chan.gain();
+	    gain = chan.gain() * d->_gain;
 	    pan = chan.pan_L();
 	    MixerImplPrivate::eval_pan(gain, pan, gL, gR);
 	    if(zero) {
@@ -214,6 +215,20 @@ void MixerImpl::mix_down(uint32_t nframes, float* left, float* right, float* pea
     if(peak_right) {
 	(*peak_right) = MixerImplPrivate::clip_buffer_get_peak(right, nframes);
     }
+}
+
+void MixerImpl::gain(float gain)
+{
+    if(gain < 0.0) {
+	d->_gain = 0.0;
+    } else {
+	d->_gain = gain;
+    }
+}
+
+float MixerImpl::gain()
+{
+    return d->_gain;
 }
 
 uint32_t MixerImpl::count()

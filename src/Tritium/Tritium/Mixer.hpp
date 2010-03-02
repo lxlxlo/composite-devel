@@ -87,6 +87,16 @@ namespace Tritium
 	virtual ~Mixer() {}
 
 	/**
+	 * Set the master gain for output (master volume).
+	 */
+	virtual void gain(float gain) = 0;
+
+	/**
+	 * Get the master gain (volume) for output.  Default should always be 1.0.
+	 */
+	virtual float gain() = 0;
+
+	/**
 	 * Returns the number of audio channels being input into mixer.
 	 *
 	 * Does not count send/return or FX loops.

@@ -44,8 +44,8 @@ namespace Tritium
         QString author;         ///< author of the song
         QString license;        ///< license of the song
 
-        float volume;                                                   ///< volume of the song (0.0..1.0)
-        float metronome_volume;                                         ///< Metronome volume
+        float volume;           ///< volume of the song (0.0..1.0) [DEPRECATED]
+        float metronome_volume; ///< Metronome volume
         QString notes;
 	T<PatternList>::auto_ptr pattern_list;                        ///< Pattern list
         T<Song::pattern_group_t>::shared_ptr pattern_group_sequence;  ///< Sequence of pattern groups

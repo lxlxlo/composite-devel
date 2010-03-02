@@ -174,14 +174,18 @@ void SerializationQueue::save_song(const QString& filename,
                                    EngineInterface *engine,
                                    bool overwrite)
 {
-    event_data_t event;
-    event.ev = SaveSong;
-    event.filename = filename;
-    event.report_save_to = &report_t;
-    event.engine = engine;
-    event.song = song;
-    event.overwrite = overwrite;
-    m_queue.push_back(event);
+    if(song && engine) {
+	song->set_volume( engine->get_mixer()->gain() );
+
+	event_data_t event;
+	event.ev = SaveSong;
+	event.filename = filename;
+	event.report_save_to = &report_t;
+	event.engine = engine;
+	event.song = song;
+	event.overwrite = overwrite;
+	m_queue.push_back(event);
+    }
 }
 
 void SerializationQueue::save_drumkit(const QString& filename,
@@ -190,14 +194,16 @@ void SerializationQueue::save_drumkit(const QString& filename,
                                       EngineInterface *engine,
                                       bool overwrite)
 {
-    event_data_t event;
-    event.ev = SaveDrumkit;
-    event.filename = filename;
-    event.report_save_to = &report_t;
-    event.engine = engine;
-    event.drumkit = dk;
-    event.overwrite = overwrite;
-    m_queue.push_back(event);
+    if(dk && engine) {
+	event_data_t event;
+	event.ev = SaveDrumkit;
+	event.filename = filename;
+	event.report_save_to = &report_t;
+	event.engine = engine;
+	event.drumkit = dk;
+	event.overwrite = overwrite;
+	m_queue.push_back(event);
+    }
 }
 
 void SerializationQueue::save_pattern(const QString& filename,
@@ -207,15 +213,17 @@ void SerializationQueue::save_pattern(const QString& filename,
                                       EngineInterface *engine,
                                       bool overwrite)
 {
-    event_data_t event;
-    event.ev = SavePattern;
-    event.filename = filename;
-    event.drumkit_name = drumkit_name;
-    event.report_save_to = &report_t;
-    event.engine = engine;
-    event.pattern = pattern;
-    event.overwrite = overwrite;
-    m_queue.push_back(event);
+    if(pattern && engine) {
+	event_data_t event;
+	event.ev = SavePattern;
+	event.filename = filename;
+	event.drumkit_name = drumkit_name;
+	event.report_save_to = &report_t;
+	event.engine = engine;
+	event.pattern = pattern;
+	event.overwrite = overwrite;
+	m_queue.push_back(event);
+    }
 }
 
 int SerializationQueue::process()

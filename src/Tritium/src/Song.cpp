@@ -323,6 +323,15 @@ namespace Tritium
 	}
 
 	T<Song>::shared_ptr song;
+
+	if( bdl.error ) {
+	    ERRORLOG(QString("Unable to load file '%1': %2")
+		     .arg(filename)
+		     .arg(bdl.error_message)
+		);
+	    return song;
+	}
+
 	T<Sampler>::shared_ptr sampler = engine->get_sampler();
 	std::deque< T<Mixer::Channel>::shared_ptr > channels;
 
@@ -368,6 +377,8 @@ namespace Tritium
 
 	size_t k;
 	T<Mixer>::shared_ptr mixer = engine->get_mixer();
+	float vol = song->get_volume();
+	mixer->gain(vol);
 	for(k=0 ; k<channels.size() ; ++k) {
 	    mixer->channel(k)->match_props( *channels[k] );
 	}
@@ -394,6 +405,7 @@ namespace Tritium
 
 	serializer.reset(Serializer::create_standalone(engine));
 
+	set_volume( engine->get_mixer()->gain() );
 	serializer->save_song(
 	    filename,
 	    shared_from_this(),

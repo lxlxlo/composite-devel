@@ -57,6 +57,7 @@ TEST_BEGIN( Fixture );
 TEST_CASE( 010_defaults )
 {
     BOOST_REQUIRE( m.get() );
+    CK( m->gain() == 1.0f );
     CK( m->count() == 0 );
     m->pre_process(4096);
 
@@ -84,6 +85,11 @@ TEST_CASE( 020_simple_mix )
     mono = m->allocate_port("mono", AudioPort::OUTPUT, AudioPort::MONO);
     stereo = m->allocate_port("stereo", AudioPort::OUTPUT, AudioPort::STEREO);
 
+    float master_gain = 0.5f;
+    CK( m->gain() == 1.0f );
+    m->gain(master_gain);
+    CK( m->gain() == 0.5f );
+
     float* buf;
     size_t k, N=1024;
 
@@ -108,8 +114,8 @@ TEST_CASE( 020_simple_mix )
 
     float left[1024], right[1024];
     float Lv, Rv;
-    Lv = .1f + .2f;
-    Rv = .1f + .3f;
+    Lv = (.1f + .2f) * master_gain;
+    Rv = (.1f + .3f) * master_gain;
     m->mix_send_return(N);
     m->mix_down(N, left, right);
 

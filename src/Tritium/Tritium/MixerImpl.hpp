@@ -58,6 +58,8 @@ namespace Tritium
 
 	// Mixer interface
 
+	virtual void gain(float gain);
+	virtual float gain();
 	virtual uint32_t count();
 	virtual T<AudioPort>::shared_ptr port(uint32_t n);
 	virtual T<Mixer::Channel>::shared_ptr channel(uint32_t n);

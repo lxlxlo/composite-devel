@@ -70,8 +70,22 @@ public:
     */
     void purge_instrument( T<Instrument>::shared_ptr I, Engine* engine );
 
+    /**
+     * \deprecated Set volume for the song.
+     *
+     * This member only remains in Song for Serialization.  Otherwise,
+     * it is ignored.  It is replaced by Mixer::gain(float gain).
+     */
     void set_volume( float volume );
+
+    /**
+     * \deprecated Get volume for the song.
+     *
+     * This member only remains in Song for Serialization.  Otherwise,
+     * it is ignored.  It is replaced by Mixer::gain().
+     */
     float get_volume();
+
     void set_metronome_volume( float volume );
     float get_metronome_volume();
 

@@ -245,10 +245,6 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
 	cost_L = cost_L * fLayerGain;				// layer gain
 	cost_L = cost_L * pInstr->get_pan_l();		// instrument pan
 	cost_L = cost_L * pInstr->get_gain();		// instrument gain
-#warning "WTF is song volume???"
-	/*
-	  cost_L = cost_L * pSong->get_volume();	// song volume
-	*/
 	cost_L = cost_L * 2; // max pan is 0.5
 
 
@@ -257,10 +253,6 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
 	cost_R = cost_R * fLayerGain;				// layer gain
 	cost_R = cost_R * pInstr->get_pan_r();		// instrument pan
 	cost_R = cost_R * pInstr->get_gain();		// instrument gain
-#warning "WTF is song volume???"
-	/*
-	  cost_R = cost_R * pSong->get_volume();	// song pan
-	*/
 	cost_R = cost_R * 2; // max pan is 0.5
     }
 
