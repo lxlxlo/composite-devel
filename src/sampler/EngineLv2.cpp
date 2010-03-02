@@ -133,6 +133,9 @@ void EngineLv2::_connect_port(uint32_t port, void* data_location)
     case 2:
 	_ev_in = static_cast<LV2_Event_Buffer*>(data_location);
 	break;
+    case 3:
+	_vol_port = static_cast<float*>(data_location);
+	break;
     }
 }
 
@@ -210,6 +213,9 @@ void EngineLv2::_run(uint32_t nframes)
 {
     if( ! _out_L ) return;
     if( ! _out_R ) return;
+    if( _vol_port ) {
+	_mixer->gain( *_vol_port );
+    }
 
     // Check if we need to install a new drumkit.
     if( _obj_bdl->state() == ObjectBundle::Ready ) {

@@ -107,6 +107,7 @@ namespace Composite
 	    float *_out_L; // Port 0, extern
 	    float *_out_R; // Port 1, extern
 	    LV2_Event_Buffer *_ev_in; // Port 2, extern
+	    float *_vol_port; // Port 3, master volume
 	    const LV2_Event_Feature *_event_feature; // Host's Event callbacks.
 	    Tritium::T<Tritium::Preferences>::shared_ptr _prefs;
 	    Tritium::T<Tritium::MixerImpl>::shared_ptr _mixer;
