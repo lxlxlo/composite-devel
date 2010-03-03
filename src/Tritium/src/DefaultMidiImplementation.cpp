@@ -145,7 +145,7 @@ namespace Tritium
 	     */
 	    _volume = (_volume & fine_mask) | ((value << 7) & coarse_mask);
 	    dest.type = SeqEvent::VOL_UPDATE;
-	    dest.data = float(_volume)/16383.0f;
+	    dest.fdata = float(_volume)/16383.0f;
 	    rv = true;
 	    break;
 	case 8: // Balance (coarse)
@@ -159,7 +159,7 @@ namespace Tritium
 	     */
 	    _volume = (_volume & coarse_mask) | (value & fine_mask);
 	    dest.type = SeqEvent::VOL_UPDATE;
-	    dest.data = float(_volume)/16383.0f;
+	    dest.fdata = float(_volume)/16383.0f;
 	    rv = true;
 	    break;
 	case 120: // All Sound Off (See [1])
@@ -189,5 +189,23 @@ namespace Tritium
 
 	return rv;
     } // DefaultMidiImplementation::handle_control_change()
+
+    bool DefaultMidiImplementation::handle_program_change(
+	SeqEvent& dest,
+	uint32_t size,
+	const uint8_t *midi
+	)
+    {
+	assert(size == 2);
+	assert(0xC0 == (midi[0] & 0xF0));
+
+	bool rv = false;
+
+	dest.type = SeqEvent::PATCH_CHANGE;
+	dest.idata = midi[1];
+	rv = true;
+
+	return rv;
+    } // DefaultMidiImplementation::handle_program_change()
 
 } // namespace Tritium

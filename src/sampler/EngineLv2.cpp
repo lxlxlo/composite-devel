@@ -266,9 +266,14 @@ void EngineLv2::handle_control_events(
 {
     SeqScriptConstIterator ev;
     for( ev=beg ; ev != end ; ++ev ) {
-	if( ev->type == SeqEvent::VOL_UPDATE ) {
-	    _vol_midi = ev->data;
+	switch(ev->type) {
+	case SeqEvent::VOL_UPDATE:
+	    _vol_midi = ev->fdata;
 	    _vol_midi_updated = true;
+	    break;
+	case SeqEvent::PATCH_CHANGE:
+	    // TODO
+	    break;
 	}
     }
 }

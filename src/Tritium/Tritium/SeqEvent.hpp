@@ -38,12 +38,14 @@ namespace Tritium
 	    NOTE_ON,
 	    NOTE_OFF,
 	    ALL_OFF,
-	    VOL_UPDATE
+	    VOL_UPDATE,
+	    PATCH_CHANGE
 	} type;
 
 	Note note; // Valid for all NOTE_* events
 	bool quantize; // Valid for all NOTE_* events
-	float data; // Valid for all VOL_* events
+	float fdata; // Valid for all VOL_* events
+	uint16_t idata; // Valid for PATCH_CHANGE
 
 	SeqEvent() :
 	    frame(0),
