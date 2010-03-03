@@ -119,4 +119,58 @@ namespace Tritium
 	return rv;	    
     }
 
+    bool DefaultMidiImplementation::handle_control_change(
+	SeqEvent& dest,
+	uint32_t size,
+	const uint8_t *midi
+	)
+    {
+	assert(size == 3);
+	assert(0xB0 == (midi[0] & 0xF0));
+
+	bool rv = false;
+	const uint8_t& controller = midi[1];
+	const uint8_t& value = midi[2];
+
+	switch(controller) {
+	case 7: // Volume (coarse)
+	    /* Note: MIDI Brainwash site (jglatt) recommends using the
+	       taper: 40 * log(Volume/127) for this controller. I'm
+	       not sure if this is the "official" recommendation. */
+	    break;
+	case 8: // Balance (coarse)
+	    break;
+	case 10: // Pan position (coarse)
+	    break;
+	case 11: // Expression (coarse)
+	    break;
+	case 39: // Volume (fine)
+	    /* NOT IMPLEMENTED */
+	    break;
+	case 120: // All Sound Off (See [1])
+	    break;
+	case 121: // All Controllers Off (go to default values)
+	    break;
+	case 123: // All Notes Off (See [1])
+	    break;
+	case 124: // Omni Mode Off
+	    break;
+	case 125: // Omni Mode On
+	    break;
+	default:
+	    rv = false;
+	}
+
+	/* [1] - All Sound Off and All Notes Off are supposed to
+	 *       silence everything except notes being played by the
+	 *       local keyboard.  I'm not sure what this means for
+	 *       Composite/Tritium.  It also says that if we can't
+	 *       distinguish between notes being played by the local
+	 *       keyboard and "other" notes... then we should not
+	 *       implement this controller.
+	 */
+
+	return rv;
+    } // DefaultMidiImplementation::handle_control_change()
+
 } // namespace Tritium
