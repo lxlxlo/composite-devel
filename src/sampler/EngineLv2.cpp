@@ -276,6 +276,8 @@ void EngineLv2::handle_control_events(
 	    break;
 	}
     }
+
+    update_master_volume(); // Must be run every cycle.
 }
 
 void EngineLv2::_run(uint32_t nframes)
@@ -305,7 +307,6 @@ void EngineLv2::_run(uint32_t nframes)
 			  _seq->end_const(nframes),
 			  pos,
 			  nframes);
-    update_master_volume();
     _sampler->process(_seq->begin_const(),
 		      _seq->end_const(nframes),
 		      pos,
