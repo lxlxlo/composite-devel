@@ -91,6 +91,9 @@ EngineLv2::EngineLv2() :
     _out_L(0),
     _out_R(0),
     _ev_in(0),
+    _vol_port(0),
+    _vol_midi(1.0f),
+    _vol_midi_updated(false),
     _event_feature(0)
 {
 }
@@ -141,6 +144,8 @@ void EngineLv2::_connect_port(uint32_t port, void* data_location)
 
 void EngineLv2::_activate()
 {
+    _vol_midi = 1.0f;
+    _vol_midi_updated = false;
     _prefs.reset( new Preferences );
     _mixer.reset( new MixerImpl(MAX_BUFFER_SIZE) );
     _sampler.reset( new Sampler(_mixer) );
@@ -209,13 +214,69 @@ void EngineLv2::install_drumkit_bundle()
     _obj_bdl->reset();
 }
 
+/**
+ * Negotiate user control of the master volume.
+ *
+ * User is able to control master volume over the LV2 control port, or
+ * over MIDI.  MIDI will take precedence, and the MIDI message will
+ * overwrite whatever is in the control port.
+ */
+void EngineLv2::update_master_volume()
+{
+    bool have_port = false;
+    bool port_changed = false;
+    float vol = _mixer->gain();
+
+    if(_vol_port) {
+	have_port = true;
+	if(*_vol_port != _vol_port_cached) {
+	    port_changed = true;
+	}
+    }
+
+    /******************************
+     * PORT UPD'D| MIDI UPDATED | ACTION
+     * ----------+--------------+---------------------
+     *  false    | false        | None
+     *  true     | false        | Update with port value
+     *  false    | true         | Update with midi value, reset bool
+     *  true     | true         | Update with midi value, reset bool, 
+     *           |              |    update port with midi value
+     * ------------------------------------------------
+     */
+    if(_vol_midi_updated) {
+	vol = _vol_midi;
+	_vol_midi_updated = false;
+    } else {
+	if(port_changed) {
+	    vol = *_vol_port;
+	    _vol_port_cached = *_vol_port;
+	} else {
+	    // NOP
+	}
+    }
+    _mixer->gain(vol);
+}
+
+void EngineLv2::handle_control_events(
+    SeqScriptConstIterator beg,
+    SeqScriptConstIterator end,
+    const TransportPosition& pos,
+    uint32_t nframes)
+{
+    SeqScriptConstIterator ev;
+    for( ev=beg ; ev != end ; ++ev ) {
+	if( ev->type == SeqEvent::VOL_UPDATE ) {
+	    _vol_midi = ev->data;
+	    _vol_midi_updated = true;
+	}
+    }
+}
+
 void EngineLv2::_run(uint32_t nframes)
 {
     if( ! _out_L ) return;
     if( ! _out_R ) return;
-    if( _vol_port ) {
-	_mixer->gain( *_vol_port );
-    }
 
     // Check if we need to install a new drumkit.
     if( _obj_bdl->state() == ObjectBundle::Ready ) {
@@ -235,6 +296,11 @@ void EngineLv2::_run(uint32_t nframes)
     // the frame rate.
     pos.frame_rate = _sample_rate;
     process_events(nframes);
+    handle_control_events(_seq->begin_const(),
+			  _seq->end_const(nframes),
+			  pos,
+			  nframes);
+    update_master_volume();
     _sampler->process(_seq->begin_const(),
 		      _seq->end_const(nframes),
 		      pos,

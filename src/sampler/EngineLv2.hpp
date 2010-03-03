@@ -27,6 +27,7 @@
 #include <Tritium/memory.hpp>
 #include <Tritium/EngineInterface.hpp>
 #include <Tritium/ObjectBundle.hpp>
+#include <Tritium/SeqScriptIterator.hpp>
 
 #include <QString>
 #include <QMutex>
@@ -38,6 +39,7 @@ namespace Tritium
     class SeqScript;
     class AudioPortImpl;
     class DefaultMidiImplementation;
+    class TransportPosition;
     namespace Serialization {
 	class Serializer;
     }
@@ -100,7 +102,12 @@ namespace Composite
 	protected:
 	    void process_events(uint32_t sample_count);
 
+	    void handle_control_events( Tritium::SeqScriptConstIterator beg,
+					Tritium::SeqScriptConstIterator end,
+					const Tritium::TransportPosition& pos,
+					uint32_t nframes );
 	    void install_drumkit_bundle();
+	    void update_master_volume();
 
 	private:
 	    double _sample_rate;
@@ -108,6 +115,9 @@ namespace Composite
 	    float *_out_R; // Port 1, extern
 	    LV2_Event_Buffer *_ev_in; // Port 2, extern
 	    float *_vol_port; // Port 3, master volume
+	    float _vol_port_cached;
+	    float _vol_midi; // Master volume, updated over MIDI (MIDI takes precedence)
+	    bool _vol_midi_updated; // Received MIDI volume update on this cycle.
 	    const LV2_Event_Feature *_event_feature; // Host's Event callbacks.
 	    Tritium::T<Tritium::Preferences>::shared_ptr _prefs;
 	    Tritium::T<Tritium::MixerImpl>::shared_ptr _mixer;

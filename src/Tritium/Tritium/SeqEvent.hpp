@@ -34,9 +34,16 @@ namespace Tritium
         typedef uint32_t frame_type;
 
         frame_type frame;
-        enum { NOTE_ON, NOTE_OFF, ALL_OFF } type;
-	Note note;
-	bool quantize;
+        enum {
+	    NOTE_ON,
+	    NOTE_OFF,
+	    ALL_OFF,
+	    VOL_UPDATE
+	} type;
+
+	Note note; // Valid for all NOTE_* events
+	bool quantize; // Valid for all NOTE_* events
+	float data; // Valid for all VOL_* events
 
 	SeqEvent() :
 	    frame(0),

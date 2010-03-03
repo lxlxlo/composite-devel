@@ -62,6 +62,7 @@ namespace Tritium
 	uint8_t _note_min; //< Minimum note number
 	T<Sampler>::shared_ptr _sampler;
 	bool _ignore_note_off;
+	uint16_t _volume; //< 14-bit volume
     };
 
 } // namespace Tritium

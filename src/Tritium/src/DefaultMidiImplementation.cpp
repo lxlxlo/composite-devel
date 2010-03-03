@@ -31,7 +31,8 @@ namespace Tritium
 {
     DefaultMidiImplementation::DefaultMidiImplementation()
 	: _note_min(36),
-	  _ignore_note_off(true)
+	  _ignore_note_off(true),
+	  _volume(0x3FFF)
     {
     }
 
@@ -127,16 +128,25 @@ namespace Tritium
     {
 	assert(size == 3);
 	assert(0xB0 == (midi[0] & 0xF0));
+	const uint16_t coarse_mask = 0x3F80;
+	const uint16_t fine_mask = 0x7F;
 
 	bool rv = false;
 	const uint8_t& controller = midi[1];
 	const uint8_t& value = midi[2];
 
+	/******************************************************
+	 * IF YOU HANDLE THE EVENT, BE SURE TO SET 'rv' TO TRUE
+	 *******************************************************
+	 */
 	switch(controller) {
 	case 7: // Volume (coarse)
-	    /* Note: MIDI Brainwash site (jglatt) recommends using the
-	       taper: 40 * log(Volume/127) for this controller. I'm
-	       not sure if this is the "official" recommendation. */
+	    /* XXX TODO: Consider using an exponential taper on this.
+	     */
+	    _volume = (_volume & fine_mask) | ((value << 7) & coarse_mask);
+	    dest.type = SeqEvent::VOL_UPDATE;
+	    dest.data = float(_volume)/16383.0f;
+	    rv = true;
 	    break;
 	case 8: // Balance (coarse)
 	    break;
@@ -145,7 +155,12 @@ namespace Tritium
 	case 11: // Expression (coarse)
 	    break;
 	case 39: // Volume (fine)
-	    /* NOT IMPLEMENTED */
+	    /* XXX TODO: Consider using an exponential taper on this.
+	     */
+	    _volume = (_volume & coarse_mask) | (value & fine_mask);
+	    dest.type = SeqEvent::VOL_UPDATE;
+	    dest.data = float(_volume)/16383.0f;
+	    rv = true;
 	    break;
 	case 120: // All Sound Off (See [1])
 	    break;
@@ -169,6 +184,8 @@ namespace Tritium
 	 *       keyboard and "other" notes... then we should not
 	 *       implement this controller.
 	 */
+
+	assert( _volume == (_volume & 0x3FFF) );
 
 	return rv;
     } // DefaultMidiImplementation::handle_control_change()
