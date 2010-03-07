@@ -64,6 +64,7 @@ namespace Tritium
 	T<Sampler>::shared_ptr _sampler;
 	bool _ignore_note_off;
 	uint16_t _volume; //< 14-bit volume
+	uint8_t _bank; //< 14-bit bank (coarse is the MS part)
     };
 
 } // namespace Tritium

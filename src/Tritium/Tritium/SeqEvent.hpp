@@ -45,7 +45,11 @@ namespace Tritium
 	Note note; // Valid for all NOTE_* events
 	bool quantize; // Valid for all NOTE_* events
 	float fdata; // Valid for all VOL_* events
-	uint16_t idata; // Valid for PATCH_CHANGE
+	uint32_t idata; // Valid for PATCH_CHANGE
+
+	/* For a PATCH_CHANGE, idata's bytes will be:
+	   BANK_MSB, BANK_LSB, 0, PROGRAM_NO
+	 */
 
 	SeqEvent() :
 	    frame(0),

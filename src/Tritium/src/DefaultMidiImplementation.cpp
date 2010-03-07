@@ -32,7 +32,8 @@ namespace Tritium
     DefaultMidiImplementation::DefaultMidiImplementation()
 	: _note_min(36),
 	  _ignore_note_off(true),
-	  _volume(0x3FFF)
+	  _volume(0x3FFF),
+	  _bank(0)
     {
     }
 
@@ -140,6 +141,10 @@ namespace Tritium
 	 *******************************************************
 	 */
 	switch(controller) {
+	case 0: // Bank (coarse)
+	    _bank = (_bank & fine_mask) | ((value << 7) & coarse_mask);
+	    rv = true;
+	    break;
 	case 7: // Volume (coarse)
 	    /* XXX TODO: Consider using an exponential taper on this.
 	     */
@@ -153,6 +158,10 @@ namespace Tritium
 	case 10: // Pan position (coarse)
 	    break;
 	case 11: // Expression (coarse)
+	    break;
+	case 32: // Bank (fine)
+	    _bank = (_bank & coarse_mask) | (value & fine_mask);
+	    rv = true;
 	    break;
 	case 39: // Volume (fine)
 	    /* XXX TODO: Consider using an exponential taper on this.
@@ -202,7 +211,7 @@ namespace Tritium
 	bool rv = false;
 
 	dest.type = SeqEvent::PATCH_CHANGE;
-	dest.idata = midi[1];
+	dest.idata = ((_bank & 0x3FFF) << 16) | midi[1];
 	rv = true;
 
 	return rv;
