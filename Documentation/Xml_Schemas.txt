@@ -3,6 +3,8 @@ COMPOSITE/HYDROGEN XML SCHEMA DOCUMENTATION
 
 REVISIONS:
 
+2010-03-08 Gabriel M. Beddingfield <gabriel@teuton.org>
+	- Add pointer to new XML schemas.
 2010-01-18 Gabriel M. Beddingfield <gabriel@teuton.org>
 	- Create document with XML info
 
@@ -15,8 +17,11 @@ schema grammer (XSD, RelaxNG, etc.), however it is fairly
 self-documenting.  This document does not so much document the schema
 as it documents weird things in the schema that are not obvious.
 
-TODO: Create an XML Schema.  IIRC, Qt is expected to have an XSD
-validator in a future release (e.g. 4.6).
+A schema has been started for Tritium.  You can find Tritium's schemas
+in data/xml/.  The files are self-documented.
+
+TODO: Create an XML Schema for everything.  IIRC, Qt is expected to
+have an XSD validator in a future release (e.g. 4.6).
 
 XML DECLARATION
 ---------------
