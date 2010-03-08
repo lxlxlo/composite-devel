@@ -35,6 +35,7 @@ namespace Tritium
 
         frame_type frame;
         enum {
+	    UNDEFINED,
 	    NOTE_ON,
 	    NOTE_OFF,
 	    ALL_OFF,
@@ -53,7 +54,7 @@ namespace Tritium
 
 	SeqEvent() :
 	    frame(0),
-	    type(NOTE_ON),
+	    type(UNDEFINED),
 	    note(),
 	    quantize(false)
 	    {}

@@ -137,13 +137,14 @@ namespace Tritium
 	const uint8_t& value = midi[2];
 
 	/******************************************************
-	 * IF YOU HANDLE THE EVENT, BE SURE TO SET 'rv' TO TRUE
+	 * IF YOU HANDLE AN EVENT THE RESULTS IN A SeqEvent,
+	 * BE SURE TO SET 'rv' TO TRUE
 	 *******************************************************
 	 */
 	switch(controller) {
 	case 0: // Bank (coarse)
 	    _bank = (_bank & fine_mask) | ((value << 7) & coarse_mask);
-	    rv = true;
+	    rv = false;
 	    break;
 	case 7: // Volume (coarse)
 	    /* XXX TODO: Consider using an exponential taper on this.
@@ -161,7 +162,7 @@ namespace Tritium
 	    break;
 	case 32: // Bank (fine)
 	    _bank = (_bank & coarse_mask) | (value & fine_mask);
-	    rv = true;
+	    rv = false;
 	    break;
 	case 39: // Volume (fine)
 	    /* XXX TODO: Consider using an exponential taper on this.
@@ -211,7 +212,7 @@ namespace Tritium
 	bool rv = false;
 
 	dest.type = SeqEvent::PATCH_CHANGE;
-	dest.idata = ((_bank & 0x3FFF) << 16) | midi[1];
+	dest.idata = ((uint32_t(_bank) & 0x3FFF) << 16) | midi[1];
 	rv = true;
 
 	return rv;
