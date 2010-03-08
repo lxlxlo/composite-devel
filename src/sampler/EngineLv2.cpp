@@ -154,6 +154,9 @@ void EngineLv2::_activate()
     _midi_imp->sampler( _sampler );
     _serializer.reset( Serialization::Serializer::create_standalone(this) );
     _obj_bdl.reset( new Composite::Plugin::ObjectBundle );
+    _presets.reset( new Presets );
+    _presets->program(0, 0, 0, "GMkit");
+    _presets->program(0, 0, 1, "TR808EmulationKit");
     load_drumkit_by_name("GMkit");
 }
 
@@ -272,7 +275,14 @@ void EngineLv2::handle_control_events(
 	    _vol_midi_updated = true;
 	    break;
 	case SeqEvent::PATCH_CHANGE:
-	    // TODO
+	    {
+		uint16_t bank = (ev->idata >> 16) & 0x3FFF;
+		uint8_t prog = ev->idata & 0x7F;
+		const QString& uri = _presets->program(bank, prog);
+		if( ! uri.isEmpty() ) {
+		    load_drumkit_by_name(uri);
+		}
+	    }
 	    break;
 	}
     }
@@ -329,6 +339,7 @@ void EngineLv2::_deactivate()
     _sampler.reset();
     _mixer.reset();
     _prefs.reset();
+    _presets.reset();
 }
 
 void EngineLv2::process_events(uint32_t nframes)
