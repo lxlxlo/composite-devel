@@ -1,0 +1,91 @@
+URI'S IN TRITIUM AND COMPOSITE
+============================================================
+
+REVISIONS:
+
+2010-03-08 Gabriel M. Beddingfield <gabriel@teuton.org>
+	- Create document with URI documentation
+
+ABSTRACT
+--------
+
+In the spirit of reusing dissimilar resources, Tritium is moving
+toward using URI's to identify resources (files) that should be loaded
+and saved.  This file documents the types of URI's that are supported
+by Tritium, and also document's Tritium's internal URI scheme
+"tritium:".
+
+SUPPORTED URI SCHEMES
+----------------------
+
+The following URI schemes are understood by Tritium:
+
+    +------------+--------------------------------------------+
+    | scheme     | Description                                |
+    +------------+--------------------------------------------+
+    | file       | A URL to a file-system object.  Example:   |
+    |            | file:///home/james/foo.h2song              |
+    |            |                                            |
+    | tritium    | A URL to a resource in tritium's database. |
+    |            | Example: tritium:drumkits/GMkit            |
+    |            |                                            |
+    | (relative) | Relative URL's are understood where the    |
+    |            | context makes sense.  E.g. for a drumkit,  |
+    |            | a relative file name for a sample may      |
+    |            | be used to indicate the file is in the     |
+    |            | drumkit's directory.                       |
+    +------------+--------------------------------------------+
+
+Hydrogen files will be loaded according to their filename (.h2song,
+.h2pattern, etc).  Tritium files will be loaded according to their
+content (XML file with the tritium XML namespace).
+
+In the future, there is consideration to have a 'composite:' scheme.
+The idea is that composite: will by an alias for tritium:, but also
+have certain extensions.
+
+THE TRITIUM SCHEME
+-------------------
+
+The tritium: URI scheme allows you to specify resources in Tritium's
+"database."  At the current time, this is the same as the data
+directories (~/.composite/data, /usr/share/composite/data).  In the
+future, the means of this database may change... and the URI will
+still be able to locate the data.
+
+A formal syntax will develop over time, right now it works like this:
+
+    tritium:<component>/<name>
+
+Will be translated to:
+
+    file:///$HOME/.composite/data/<component>/<name>
+    file:///@PREFIX@/composite/data/<component>/<name>
+    file:///{any other path configured}/<component>/<name>
+
+It will search each path in a prescribed order.  The first path to
+resolve to something that is valid will be used.
+
+If you add another folder to the data directory (e.g. a folder called
+'samples'), the URI will actually resolve to your resource.  However,
+it may not work in the future.  As of this writing the following
+<component>'s are officially supported:
+
+    drumkits
+    patterns
+    playlists
+    songs
+
+Immediately after the tritium: scheme, no path separators are valid
+(for now).  Use of these is reserved for future contexts.
+
+FUTURE PLANS FOR TRITIUM SCHEME
+--------------------------------
+
+There needs to be a URI for accessing configuration information
+(e.g. ~/.composite/composite.conf, etc.).
+
+It would be nice if there was a way to specifically differentiate
+between user and system resources.  Something like
+tritium:user/drumkits/GMkit or tritium:system/drumkits/GMkit to
+specify explicitly which kit to use.
