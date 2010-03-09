@@ -38,6 +38,7 @@
 #include <Tritium/fx/Effects.hpp>
 #include <Tritium/memory.hpp>
 #include <Tritium/Preferences.hpp>
+#include <Tritium/DataPath.hpp>
 #include "version.h"
 
 #include <unistd.h> // usleep()
@@ -252,9 +253,46 @@ int SerializationQueue::process()
     return 0;
 }
 
+/**
+ * Resolves a URI to a filename and then calls handle_load_file()
+ */
 void SerializationQueue::handle_load_uri(SerializationQueue::event_data_t& ev)
 {
-    handle_load_file(ev, ev.uri);
+    QUrl uri(ev.uri);
+    QString filename;
+
+    if( uri.scheme() == "" ) {
+	filename = ev.uri;
+    } else if ( uri.scheme() == "file" ) {
+	if( ! uri.authority().isEmpty() ) {
+	    ERRORLOG(QString("URI authority '%1' unhandled, assuming to be localhost")
+		     .arg(uri.authority())
+		);
+	}
+	filename = uri.path();
+    } else if ( uri.scheme() == "tritium" ) {
+	QString user("~/.composite/data");
+	QString syst(DataPath::get_data_path());
+	QString path( uri.path() );
+
+	if(path.startsWith("drumkits/")) {
+	    path += "/drumkit.xml";
+	}
+
+	user += "/" + path;
+	syst += "/" + path;
+	QFileInfo f_user(user);
+	QFileInfo f_syst(syst);
+
+	if( f_user.exists() ) {
+	    filename = user;
+	} else if (f_syst.exists() ) {
+	    filename = syst;
+	}
+    } else {
+	ERRORLOG(QString("URI scheme '%1' not understood").arg(uri.scheme()));
+    }
+    handle_load_file(ev, filename);
 }
 
 void SerializationQueue::handle_load_file(SerializationQueue::event_data_t& ev, const QString& filename)
@@ -272,7 +310,9 @@ void SerializationQueue::handle_load_file(SerializationQueue::event_data_t& ev, 
 		ev,
 		filename,
 		true,
-		QString("File '%1' is not in a valid format").arg(filename)
+		QString("File '%1' is not in a valid format (uri=%2)")
+		.arg(filename)
+		.arg(ev.uri)
 		);
         }
     } else {
@@ -280,7 +320,9 @@ void SerializationQueue::handle_load_file(SerializationQueue::event_data_t& ev, 
 	    ev,
 	    filename,
 	    true,
-	    QString("File '%1' does not exist").arg(filename)
+	    QString("File '%1' does not exist (uri=%2)")
+	    .arg(filename)
+	    .arg(ev.uri)
 	    );
     }
 }

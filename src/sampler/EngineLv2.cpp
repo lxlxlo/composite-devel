@@ -155,34 +155,37 @@ void EngineLv2::_activate()
     _serializer.reset( Serialization::Serializer::create_standalone(this) );
     _obj_bdl.reset( new Composite::Plugin::ObjectBundle );
     _presets.reset( new Presets );
-    _presets->program(0, 0, 0, "GMkit");
-    _presets->program(0, 0, 1, "TR808EmulationKit");
-    load_drumkit_by_name("GMkit");
+    _presets->program(0, 0, 0, "tritium:drumkits/GMkit");
+    _presets->program(0, 0, 1, "tritium:drumkits/TR808EmulationKit");
+    _presets->program(0, 0, 2, "tritium:drumkits/Bogus");
+    load_drumkit("tritium:drumkits/GMkit");
 }
 
-void EngineLv2::load_drumkit_by_name(const QString& name)
-{
-    #warning "This is an incomplete implementation"
-    QString dk_dir = DataPath::get_data_path() + "/drumkits/" + name + "/drumkit.xml";
-    load_drumkit(dk_dir);
-}
-
-void EngineLv2::load_drumkit(const QString& drumkit_xml)
+void EngineLv2::load_drumkit(const QString& drumkit_uri)
 {
     bool loading = _obj_bdl->loading();
     if(!loading) {
 	ERRORLOG( QString("Unable to acquire loading object to load drumkit %1")
-		  .arg(drumkit_xml)
+		  .arg(drumkit_uri)
 	    );
 	return;
     }
 
-    _serializer->load_uri(drumkit_xml, *_obj_bdl, this);
+    _serializer->load_uri(drumkit_uri, *_obj_bdl, this);
 }
 
 void EngineLv2::install_drumkit_bundle()
 {
     if(_obj_bdl->state() != ObjectBundle::Ready) {
+	return;
+    }
+
+    if(_obj_bdl->error) {
+	ERRORLOG(_obj_bdl->error_message);
+	while( ! _obj_bdl->empty() ) {
+	    _obj_bdl->pop();
+	}
+	_obj_bdl->reset();
 	return;
     }
 
@@ -280,7 +283,7 @@ void EngineLv2::handle_control_events(
 		uint8_t prog = ev->idata & 0x7F;
 		const QString& uri = _presets->program(bank, prog);
 		if( ! uri.isEmpty() ) {
-		    load_drumkit_by_name(uri);
+		    load_drumkit(uri);
 		}
 	    }
 	    break;
