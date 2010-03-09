@@ -49,37 +49,10 @@
 
 
   <!-- ###############################################################
-       ### SIMPLE ELEMENT DEFINITIONS                              ###
-       ###############################################################
-  -->
-
-  <xs:element name='midi_number' type='midi_integer'>
-    <xs:annotation>
-      <xs:documentation xml:lang='en'>
-	This directly corresponds exactly to the Program Change number
-	that is sent in the MIDI message.
-      </xs:documentation>
-    </xs:annotation>
-  </xs:element>
-
-  <xs:element name='resource' type='xs:anyURI'>
-    <xs:annotation>
-      <xs:documentation xml:lang='en'>
-	The URL to a Composite resource file.  May be any valid file
-	that can be loaded into Composite, including a 'programs'
-	definition file.  As of this writing (version 0.005) only
-	local "file://" URL's are supported, but this element is a URL
-	for forward compatibility.
-      </xs:documentation>
-    </xs:annotation>
-  </xs:element>
-
-
-  <!-- ###############################################################
        ### TOP LEVEL ELEMENT DEFINITION                            ###
        ###############################################################
   -->
-  <xs:element name='tritium'>
+  <xs:element name='tritium' type='tritium_Type'>
     <xs:annotation>
       <xs:documentation xml:lang='en'>
 	This is the top-level element for the Tritium XML schemas.  In
@@ -87,19 +60,15 @@
 	elements.
       </xs:documentation>
     </xs:annotation>
-    <xs:complexType>
-      <xs:choice minOccurs='1' maxOccurs='unbounded'>
-	<xs:element name='programs'/>
-      </xs:choice>
-    </xs:complexType>
   </xs:element>
 
-  <!-- ###############################################################
-       ### COMPLEX ELEMENT DEFINITIONS                             ###
-       ###############################################################
-  -->
+  <xs:complexType name='tritium_Type'>
+    <xs:choice minOccurs='1' maxOccurs='unbounded'>
+      <xs:element name='programs'/>
+    </xs:choice>
+  </xs:complexType>
 
-  <xs:element name='programs'>
+  <xs:element name='programs' type='programs_Type'>
     <xs:annotation>
       <xs:documentation xml:lang='en'>
 	The programs element is simply a container for several
@@ -107,14 +76,20 @@
 	&lt;bank&gt;.
       </xs:documentation>
     </xs:annotation>
-    <xs:complexType>
-      <xs:sequence minOccurs='1' maxOccurs='unbounded'>
-	<xs:element name='bank'/>
-      </xs:sequence>
-    </xs:complexType>
   </xs:element>
 
-  <xs:element name='bank'>
+  <xs:complexType name='programs_Type'>
+    <xs:sequence minOccurs='1' maxOccurs='unbounded'>
+      <xs:element name='bank' type='bank_Type'/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- ###############################################################
+       ### DETAILED ELEMENT TYPE DEFITIONS                         ###
+       ###############################################################
+  -->
+
+  <xs:complexType name='bank_Type'>
     <xs:annotation>
       <xs:documentation xml:lang='en'>
 	This corresponds to a MIDI Bank selection (MIDI CC# 0/coarse
@@ -122,28 +97,39 @@
 	container for several &lt;program&gt; or "preset" definitions.
       </xs:documentation>
     </xs:annotation>
-    <xs:complexType>
-      <xs:sequence minOccurs='1' maxOccurs='unbounded'>
-	<xs:element name='program'/>
-      </xs:sequence>
-      <xs:attribute name='coarse' type='midi_integer' default='0'/>
-      <xs:attribute name='fine' type='midi_integer' default='0'/>
-    </xs:complexType>
-  </xs:element>
+    <xs:sequence minOccurs='1' maxOccurs='unbounded'>
+      <xs:element name='program' type='program_Type'/>
+    </xs:sequence>
+    <xs:attribute name='coarse' type='midi_integer' default='0'/>
+    <xs:attribute name='fine' type='midi_integer' default='0'/>
+  </xs:complexType>
 
-  <xs:element name='program'>
+  <xs:complexType name='program_Type'>
     <xs:annotation>
       <xs:documentation xml:lang='en'>
 	And individual program/preset that maps a PC event to a
 	resource that should be loaded.
       </xs:documentation>
     </xs:annotation>
-    <xs:complexType>
-      <xs:sequence>
-	<xs:element name='midi_number'/>
-	<xs:element name='resource'/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
+    <xs:sequence>
+      <xs:element name='midi_number' type='midi_integer'>
+	<xs:annotation>
+	  <xs:documentation xml:lang='en'>
+	    This directly corresponds exactly to the Program Change number
+	    that is sent in the MIDI message.
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:element>
+      <xs:element name='resource' type='xs:anyURI'>
+	<xs:annotation>
+	  <xs:documentation xml:lang='en'>
+	    The URL to a Composite resource file.  May be any valid file
+	    that can be loaded into Composite, including a 'programs'
+	    definition file.
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
 
 </xs:schema>
