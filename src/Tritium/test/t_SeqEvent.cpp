@@ -72,7 +72,7 @@ TEST_CASE( 001_defaults )
 {
     // Test the defaults
     CK( ev.frame == 0 );
-    CK( ev.type == SeqEvent::NOTE_ON );
+    CK( ev.type == SeqEvent::UNDEFINED );
     CK( ev.quantize == false );
 }
 
@@ -108,7 +108,7 @@ TEST_CASE( 002_copy )
 
     // Confirm xev
     CK( xev.frame == 0 );
-    CK( xev.type == SeqEvent::NOTE_ON );
+    CK( xev.type == SeqEvent::UNDEFINED );
     CK( xev.quantize == false );
 }
 
