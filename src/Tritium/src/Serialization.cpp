@@ -271,7 +271,7 @@ void SerializationQueue::handle_load_uri(SerializationQueue::event_data_t& ev)
 	}
 	filename = uri.path();
     } else if ( uri.scheme() == "tritium" ) {
-	QString user("~/.composite/data");
+	QString user = m_engine->get_preferences()->getDataDirectory();
 	QString syst(DataPath::get_data_path());
 	QString path( uri.path() );
 
