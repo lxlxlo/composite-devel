@@ -64,7 +64,7 @@
 
   <xs:complexType name='tritium_Type'>
     <xs:choice minOccurs='1' maxOccurs='unbounded'>
-      <xs:element name='programs'/>
+      <xs:element name='programs' type='programs_Type'/>
     </xs:choice>
   </xs:complexType>
 
