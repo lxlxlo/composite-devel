@@ -54,9 +54,9 @@ namespace Tritium
 	    virtual int process();
 	    virtual void shutdown();
 
-	    void load_file(const QString& filename,
-			   ObjectBundle& report_to,
-			   EngineInterface *engine);
+	    void load_uri(const QString& uri,
+			  ObjectBundle& report_to,
+			  EngineInterface *engine);
 	    void save_song(const QString& filename,
 			   T<Song>::shared_ptr song,
 			   SaveReport& report_t,
@@ -76,7 +76,7 @@ namespace Tritium
 
 	private:
 	    typedef enum {
-		LoadFile,
+		LoadUri,
 		SaveSong,
 		SaveDrumkit,
 		SavePattern
@@ -84,7 +84,7 @@ namespace Tritium
 
 	    typedef struct {
 		event_type_t ev;
-		QString filename;
+		QString uri;
 		union {
 		    ObjectBundle* report_load_to;
 		    SaveReport* report_save_to;
@@ -104,16 +104,18 @@ namespace Tritium
 	    EngineInterface *m_engine;
 
 	protected:
-	    void handle_load_file(event_data_t& ev);
-	    void handle_save_song(event_data_t& ev);
-	    void handle_save_drumkit(event_data_t& ev);
-	    void handle_save_pattern(event_data_t& ev);
-	    void handle_load_song(event_data_t& ev);
-	    void handle_load_drumkit(event_data_t& ev);
-	    void handle_load_pattern(event_data_t& ev);
+	    void handle_load_uri(event_data_t& ev);
+	    void handle_load_file(event_data_t& ev, const QString& filename);
+	    void handle_save_song(event_data_t& ev, const QString& filename);
+	    void handle_save_drumkit(event_data_t& ev, const QString& filename);
+	    void handle_save_pattern(event_data_t& ev, const QString& filename);
+	    void handle_load_song(event_data_t& ev, const QString& filename);
+	    void handle_load_drumkit(event_data_t& ev, const QString& filename);
+	    void handle_load_pattern(event_data_t& ev, const QString& filename);
 
 	    void handle_callback(
 		event_data_t& ev,
+		QString filename = QString(),
 		bool error = false,
 		QString error_message = QString()
 		);
@@ -178,9 +180,9 @@ namespace Tritium
 	class SerializerImpl : public Serializer
 	{
 	public:
-	    virtual void load_file(const QString& filename,
-				   ObjectBundle& report_to,
-				   EngineInterface *engine);
+	    virtual void load_uri(const QString& uri,
+				  ObjectBundle& report_to,
+				  EngineInterface *engine);
 	    virtual void save_song(const QString& filename,
 				   T<Song>::shared_ptr song,
 				   SaveReport& report_to,

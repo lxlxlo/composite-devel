@@ -177,7 +177,7 @@ void EngineLv2::load_drumkit(const QString& drumkit_xml)
 	return;
     }
 
-    _serializer->load_file(drumkit_xml, *_obj_bdl, this);
+    _serializer->load_uri(drumkit_xml, *_obj_bdl, this);
 }
 
 void EngineLv2::install_drumkit_bundle()

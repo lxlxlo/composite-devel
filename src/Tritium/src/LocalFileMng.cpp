@@ -153,7 +153,7 @@ namespace Tritium
 	SyncBundle bdl;
 
 	serializer.reset( Serializer::create_standalone(m_engine) );
-	serializer->load_file(filename, bdl, m_engine);
+	serializer->load_uri(filename, bdl, m_engine);
 
 	while( ! bdl.done ) {
 	    sleep(1);
@@ -593,7 +593,7 @@ namespace Tritium
 	SyncBundle bdl;
 
 	serializer.reset( Serializer::create_standalone(m_engine) );
-	serializer->load_file(drumkitInfoFile, bdl, m_engine);
+	serializer->load_uri(drumkitInfoFile, bdl, m_engine);
 
 	while( ! bdl.done ) {
 	    sleep(1);

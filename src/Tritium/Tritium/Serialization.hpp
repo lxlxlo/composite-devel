@@ -53,19 +53,22 @@ namespace Tritium
 	    virtual ~Serializer() {}
 
 	    /**
-	     * Loads the data pointed to by filename.
+	     * Loads the data pointed to by a URI
 	     *
-	     * The data is automatically detected based on the
-	     * filename (e.g. *.h2song).  At this time, the function
-	     * only supports loading drumkit.xml, .h2song, and
-	     * .h2pattern files.
+	     * Given a URI like 'file:///home/joe/songs/blue.h2song'
+	     * or 'tritium:drumkits/GMkit', load the requested
+	     * resource.  The type of data is automatically detected
+	     * based on the URI (e.g. *.h2song for a Hydrogen Song) or
+	     * the content of the target.  If there is no URI scheme
+	     * at the beginning, it is assumed to be a local path name
+	     * (relative or absolute).
 	     *
 	     * This function returns immediately.  After the data has
 	     * been loaded, report_to() will be called.
 	     *
-	     * \param filename relative or absolute path to data file.
-	     * For drumkits, this needs to be the path to the
-	     * drumkit.xml file (including 'drumkit.xml').
+	     * \param uri relative or absolute URI for a resource.  If
+	     * the serializer does not understand the URI scheme,
+	     * report_to() will return an error.
 	     *
 	     * \param report_to a function abject that carries the
 	     * payload of the load operation.  The callback
@@ -74,9 +77,9 @@ namespace Tritium
 	     *
 	     * \param engine a pointer to a valid EngineInterface instance.
 	     */
-	    virtual void load_file(const QString& filename,
-				   ObjectBundle& report_to,
-				   EngineInterface *engine) = 0;
+	    virtual void load_uri(const QString& uri,
+				  ObjectBundle& report_to,
+				  EngineInterface *engine) = 0;
 
 	    /**
 	     * Saves a song/sequence to a file.
@@ -113,9 +116,8 @@ namespace Tritium
 	     * The current drumkit data is saved to the folder dirname.
 	     *
 	     * \param dirname the path and name to the folder to be
-	     * saved.  It should \em not contain 'drumkit.xml'.  (Note
-	     * that this is different from load_file().)  It \em
-	     * should be the exact folder where the kit should be
+	     * saved.  It should \em not contain 'drumkit.xml'.  It
+	     * \em should be the exact folder where the kit should be
 	     * saved.  This typically means that the last part of the
 	     * path is the name of the drumkit.  If the folder does
 	     * not already exist, it will be created.

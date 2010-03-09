@@ -158,7 +158,7 @@ TEST_CASE( 000_load_invalid_file_name )
     const char fn[] = TEST_DATA_DIR "/really_unlikely_filename.txt";
     SyncBundle bdl;
 
-    s->load_file(fn, bdl, engine.get());
+    s->load_uri(fn, bdl, engine.get());
 
     while( ! bdl.done ) {
         sleep(1);
@@ -172,7 +172,7 @@ TEST_CASE( 010_load_song_check_song )
 {
     SyncBundle bdl;
 
-    s->load_file(song_file_name, bdl, engine.get());
+    s->load_uri(song_file_name, bdl, engine.get());
 
     while( ! bdl.done ) {
         sleep(1);
@@ -461,7 +461,7 @@ TEST_CASE( 020_load_pattern_check_pattern )
 	sampler->add_instrument(i);
     }
 
-    s->load_file(pattern_file_name, bdl, engine.get());
+    s->load_uri(pattern_file_name, bdl, engine.get());
 
     while( ! bdl.done ) {
         sleep(1);
@@ -640,7 +640,7 @@ TEST_CASE( 030_load_drumkit_check_drumkit )
 {
     SyncBundle bdl;
 
-    s->load_file(drumkit_manifest_file_name, bdl, engine.get());
+    s->load_uri(drumkit_manifest_file_name, bdl, engine.get());
 
     while( ! bdl.done ) {
         sleep(1);
@@ -781,7 +781,7 @@ TEST_CASE( 040_save_song )
     song.reset();
 
     SyncBundle bdl;
-    s->load_file(save_name, bdl, engine.get());
+    s->load_uri(save_name, bdl, engine.get());
 
     while( !bdl.done ) {
 	sleep(1);
@@ -840,7 +840,7 @@ TEST_CASE( 050_save_pattern )
 	sampler->add_instrument(i);
     }
 
-    s->load_file(pattern_file_name, bdl, engine.get());
+    s->load_uri(pattern_file_name, bdl, engine.get());
 
     while( ! bdl.done ) {
         sleep(1);
@@ -930,7 +930,7 @@ TEST_CASE( 060_save_drumkit )
 {
     SyncBundle bdl;
 
-    s->load_file(drumkit_manifest_file_name, bdl, engine.get());
+    s->load_uri(drumkit_manifest_file_name, bdl, engine.get());
 
     while( ! bdl.done ) {
         sleep(1);
@@ -1008,7 +1008,7 @@ TEST_CASE( 060_save_drumkit )
     BOOST_REQUIRE( bdl.empty() );
     bdl.done = false;
 
-    s->load_file( save_drumkit_folder_name + "/drumkit.xml",
+    s->load_uri( save_drumkit_folder_name + "/drumkit.xml",
 		  bdl,
 		  engine.get() );
 

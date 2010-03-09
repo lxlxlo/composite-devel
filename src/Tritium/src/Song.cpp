@@ -312,7 +312,7 @@ namespace Tritium
 
 	serializer.reset( Serializer::create_standalone(engine) );
 
-	serializer->load_file(
+	serializer->load_uri(
 	    filename,
 	    bdl,
 	    engine
@@ -343,7 +343,7 @@ namespace Tritium
 		if( ! song ) {
 		    song = bdl.pop<Song>();
 		} else {
-		    ERRORLOG(QString("Serializer::load_file() yielded too many "
+		    ERRORLOG(QString("Serializer::load_uri() yielded too many "
 				     "Song objects when loading '%1'")
 			     .arg(filename));
 		    bdl.pop();
