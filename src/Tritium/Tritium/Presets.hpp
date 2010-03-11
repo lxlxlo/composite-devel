@@ -21,6 +21,7 @@
 #ifndef TRITIUM_PRESETS_HPP
 #define TRITIUM_PRESETS_HPP
 
+#include <stdint.h>
 #include <map>
 #include <QString>
 
