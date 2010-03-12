@@ -359,7 +359,7 @@ namespace Tritium
 
 		    pc = midi_number.text().toUInt();
 		    uri = resource.text();
-		    presets_obj->program(coarse, fine, pc, uri);
+		    presets_obj->set_program(coarse, fine, pc, uri);
 		}
 	    }
 

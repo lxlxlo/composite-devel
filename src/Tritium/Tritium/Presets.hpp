@@ -87,12 +87,12 @@ namespace Tritium
 	    return _none;
 	}
 
-	void program(uint8_t coarse, uint8_t fine, uint8_t prog, QString uri) {
+	void set_program(uint8_t coarse, uint8_t fine, uint8_t prog, QString uri) {
 	    uint16_t bank = _8_16(coarse, fine);
-	    program(bank, prog, uri);
+	    set_program(bank, prog, uri);
 	}
 
-	void program(uint16_t bank, uint8_t prog, QString uri) {
+	void set_program(uint16_t bank, uint8_t prog, QString uri) {
 	    if(_banks.find(bank) == _banks.end()) {
 		_banks[bank] = Bank();
 	    }
