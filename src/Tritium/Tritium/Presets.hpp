@@ -24,9 +24,12 @@
 #include <stdint.h>
 #include <map>
 #include <QString>
+#include <Tritium/memory.hpp>
 
 namespace Tritium
 {
+    class Preferences;
+
     /**
      * A bank of presets (programs)
      */
@@ -98,6 +101,12 @@ namespace Tritium
 	    }
 	    _banks[bank].program(prog, uri);
 	}
+
+	void clear() {
+	    _banks.clear();
+	}
+
+	void generate_default_presets(T<Preferences>::shared_ptr prefs);
 
     private:
 	map_t _banks;

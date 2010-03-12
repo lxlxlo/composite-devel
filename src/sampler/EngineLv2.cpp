@@ -155,10 +155,8 @@ void EngineLv2::_activate()
     _serializer.reset( Serialization::Serializer::create_standalone(this) );
     _obj_bdl.reset( new Composite::Plugin::ObjectBundle );
     _presets.reset( new Presets );
-    _presets->set_program(0, 0, 0, "tritium:drumkits/GMkit");
-    _presets->set_program(0, 0, 1, "tritium:drumkits/TR808EmulationKit");
-    _presets->set_program(0, 0, 2, "tritium:drumkits/Bogus");
-    load_drumkit("tritium:drumkits/GMkit");
+    _presets->generate_default_presets(_prefs);
+    load_drumkit(_presets->program(0,0,0));
 }
 
 void EngineLv2::load_drumkit(const QString& drumkit_uri)
