@@ -32,4 +32,6 @@
 
 #define TWOPI 	6.28318530717958647692
 
+const char TRITIUM_XML[] = "http://gabe.is-a-geek.org/tritium/xml/1/";
+
 #endif // TRITIUM_GLOBALS_HPP

@@ -62,7 +62,7 @@ namespace Tritium
      */
     class Presets
     {
-	typedef std::map<uint8_t, Bank> map_t;
+	typedef std::map<uint16_t, Bank> map_t;
 
 	inline static uint16_t _8_16(uint8_t coarse, uint8_t fine) {
 	    uint16_t rv = ((coarse & 0x7F) << 7) | (fine & 0x7F);

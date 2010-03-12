@@ -33,6 +33,7 @@ namespace Tritium
     class Song;
     class Drumkit;
     class LadspaFX;
+    class Presets;
 
     /**
      * \brief Container for various classes.
@@ -46,6 +47,7 @@ namespace Tritium
 	    LadspaFX_t,
 	    Drumkit_t,
 	    Channel_t,
+	    Presets_t,
 	    _Reserved = 0xFF
 	} object_t;
 
@@ -137,6 +139,10 @@ namespace Tritium
 	}
 	void push(T<Mixer::Channel>::shared_ptr obj) {
 	    ObjectItem tmp = {ObjectItem::Channel_t, T<void>::shared_ptr(obj)};
+	    objects.push_back(tmp);
+	}
+	void push(T<Presets>::shared_ptr obj) {
+	    ObjectItem tmp = {ObjectItem::Presets_t, T<void>::shared_ptr(obj)};
 	    objects.push_back(tmp);
 	}
 	/* Helper methods (access)
