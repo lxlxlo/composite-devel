@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef TRITIUM_TRITIUMXMLREADER_HPP
-#define TRITIUM_TRITIUMXMLREADER_HPP
+#ifndef TRITIUM_TRITIUMXML_HPP
+#define TRITIUM_TRITIUMXML_HPP
 
 #include <Tritium/ObjectBundle.hpp>
 #include <Tritium/memory.hpp>
@@ -36,19 +36,22 @@ namespace Tritium
 
     namespace Serialization
     {
-	class TritiumXmlReader
+	class TritiumXml : public ObjectBundle
 	{
-	private:
-	    bool _error;
-	    QString _error_message;
-	    ObjectBundle _bdl;
+	protected:
+	    /* These two make the code a little more readable.
+	     */
+	    bool& _error;
+	    QString& _error_message;
 
 	public:
-	    TritiumXmlReader() :
-		_error(false)
+	    TritiumXml() :
+		ObjectBundle(),
+		_error(ObjectBundle::error),
+		_error_message(ObjectBundle::error_message)
 		{}
 
-	    ~TritiumXmlReader() {}
+	    ~TritiumXml() {}
 
 	    bool setContent( QDomDocument& doc );
 	    bool setContent( QIODevice *dev );
@@ -57,8 +60,8 @@ namespace Tritium
 	    void clear() {
 		_error = false;
 		_error_message = "";
-		while( ! _bdl.empty() ) {
-		    _bdl.pop();
+		while( ! empty() ) {
+		    pop();
 		}
 	    }
 
@@ -70,26 +73,9 @@ namespace Tritium
 		return _error_message;
 	    }
 
-	    bool empty() {
-		return _bdl.empty();
-	    }
-
-	    ObjectItem::object_t peek_type() {
-		return _bdl.peek_type();
-	    }
-
-	    template <typename X>
-	    typename T<X>::shared_ptr pop() {
-		return _bdl.pop<X>();
-	    }
-
-	    void pop() {
-		_bdl.pop();
-	    }
-
-	private:
-	    bool handle_load_tritium_node(QDomElement& tritium);
-	    bool handle_load_presets_node(QDomElement& presets);
+	protected:
+	    bool read_tritium_node(QDomElement& tritium);
+	    bool read_presets_node(QDomElement& presets);
 
 	    /* Validation methods are in lieu of having direct parser
 	     * support for validating schemas.
@@ -109,4 +95,4 @@ namespace Tritium
     } // namespace Serialization
 } // namespace Tritium
 
-#endif // TRITIUM_TRITIUMXMLREADER_HPP
+#endif // TRITIUM_TRITIUMXML_HPP

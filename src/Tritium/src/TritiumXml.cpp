@@ -19,7 +19,7 @@
  *
  */
 
-#include "TritiumXmlReader.hpp"
+#include "TritiumXml.hpp"
 #include <Tritium/Presets.hpp>
 #include <cassert>
 #include <QtXml>
@@ -30,7 +30,7 @@ namespace Tritium
     namespace Serialization
     {
 
-	bool TritiumXmlReader::setContent(QIODevice *dev)
+	bool TritiumXml::setContent(QIODevice *dev)
 	{
 	    _error = false;
 	    _error_message = "";
@@ -52,7 +52,7 @@ namespace Tritium
 	    return setContent(doc);
 	}
 
-	bool TritiumXmlReader::setContent(const QString& text)
+	bool TritiumXml::setContent(const QString& text)
 	{
 	    _error = false;
 	    _error_message = "";
@@ -74,7 +74,7 @@ namespace Tritium
 	    return setContent(doc);
 	}
 
-	bool TritiumXmlReader::setContent( QDomDocument& doc )
+	bool TritiumXml::setContent( QDomDocument& doc )
 	{
 	    QDomElement root = doc.documentElement();
 	    if((root.namespaceURI() != TRITIUM_XML)
@@ -86,9 +86,9 @@ namespace Tritium
 	    }
 
 	    if(root.tagName() == "tritium") {
-		return handle_load_tritium_node(root);
+		return read_tritium_node(root);
 	    } else if (root.tagName() == "presets") {
-		return handle_load_presets_node(root);
+		return read_presets_node(root);
 	    } else {
 		_error = true;
 		_error_message = QString("Invalid root document element '%1'")
@@ -117,7 +117,7 @@ namespace Tritium
 	    return true;
 	}
 
-	bool TritiumXmlReader::validate_tritium_node(QDomElement& tritium, QString *err_msg)
+	bool TritiumXml::validate_tritium_node(QDomElement& tritium, QString *err_msg)
 	{
 	    assert(tritium.tagName() == "tritium");
 
@@ -140,7 +140,7 @@ namespace Tritium
 	    return rv;
 	}
 
-	bool TritiumXmlReader::validate_presets_node(QDomElement& presets, QString *err_msg)
+	bool TritiumXml::validate_presets_node(QDomElement& presets, QString *err_msg)
 	{
 	    assert(presets.tagName() == "presets");
 
@@ -163,7 +163,7 @@ namespace Tritium
 	    return rv;
 	}
 
-	bool TritiumXmlReader::validate_bank_node(QDomElement& bank, QString *err_msg)
+	bool TritiumXml::validate_bank_node(QDomElement& bank, QString *err_msg)
 	{
 	    assert(bank.tagName() == "bank");
 
@@ -193,7 +193,7 @@ namespace Tritium
 	    return rv;
 	}
 
-	bool TritiumXmlReader::validate_program_node(QDomElement& program, QString *err_msg)
+	bool TritiumXml::validate_program_node(QDomElement& program, QString *err_msg)
 	{
 	    assert(program.tagName() == "program");
 
@@ -232,7 +232,7 @@ namespace Tritium
 	    return rv;
 	}
 
-	bool TritiumXmlReader::validate_midi_integer_type(
+	bool TritiumXml::validate_midi_integer_type(
 	    const QString& value,
 	    const QString& name,
 	    bool optional,
@@ -287,7 +287,7 @@ namespace Tritium
 	 * validated.
 	 *============================================================
 	 */
-	bool TritiumXmlReader::handle_load_tritium_node(QDomElement& tritium)
+	bool TritiumXml::read_tritium_node(QDomElement& tritium)
 	{
 	    if(tritium.tagName() != "tritium") {
 		_error = true;
@@ -309,16 +309,16 @@ namespace Tritium
 
 	    for( ; ! e.isNull() ; e = e.nextSiblingElement() ) {
 		if(e.tagName() == "presets") {
-		    tmp = handle_load_presets_node(e);
+		    tmp = read_presets_node(e);
 		    if( !tmp ) rv = false;
 		} else {
 		    // unknown node type
 		}
 	    }
-	    
+	    return rv;
 	}
 
-	bool TritiumXmlReader::handle_load_presets_node(QDomElement& presets)
+	bool TritiumXml::read_presets_node(QDomElement& presets)
 	{
 	    if(presets.tagName() != "presets") {
 		_error = true;
@@ -338,7 +338,7 @@ namespace Tritium
 
 	    QDomElement bank, program, midi_number, resource;
 	    QString uri;
-	    uint32_t bank_no, coarse, fine, pc;
+	    uint32_t coarse, fine, pc;
 	    T<Presets>::shared_ptr presets_obj(new Presets);
 
 	    if( ! presets_obj ) {
@@ -363,7 +363,7 @@ namespace Tritium
 		}
 	    }
 
-	    _bdl.push(presets_obj);
+	    push(presets_obj);
 	    return rv;
 	}
 

@@ -20,16 +20,16 @@
  */
 
 /**
- * t_TritiumXmlReader.cpp
+ * t_TritiumXml.cpp
  *
  */
 
-#include "../src/TritiumXmlReader.cpp"
+#include "../src/TritiumXml.cpp"
 #include <Tritium/ObjectBundle.hpp>
 #include <QString>
 
 // CHANGE THIS TO MATCH YOUR FILE:
-#define THIS_NAMESPACE t_TritiumXmlReader
+#define THIS_NAMESPACE t_TritiumXml
 #include "test_macros.hpp"
 #include "test_config.hpp"
 
@@ -51,7 +51,7 @@ TEST_BEGIN( Fixture );
 
 TEST_CASE( 010_defaults )
 {
-    Serialization::TritiumXmlReader reader;
+    Serialization::TritiumXml reader;
     CK(reader.empty());
 
 }
@@ -74,7 +74,7 @@ TEST_CASE( 020_file_typ_1 )
 	"</T:presets>\n"
 	);
 
-    Serialization::TritiumXmlReader reader;
+    Serialization::TritiumXml reader;
     reader.setContent(file_typ);
 
     if( reader.error() ) {
@@ -123,7 +123,7 @@ TEST_CASE( 030_file_typ_2 )
 	"</presets>\n"
 	);
 
-    Serialization::TritiumXmlReader reader;
+    Serialization::TritiumXml reader;
     reader.setContent(file_typ);
 
     if( reader.error() ) {
@@ -164,7 +164,7 @@ TEST_CASE( 040_file_inv_namespace )
 	"</T:presets>\n"
 	);
 
-    Serialization::TritiumXmlReader reader;
+    Serialization::TritiumXml reader;
     reader.setContent(file_typ);
 
     CK( reader.error() );
@@ -197,7 +197,7 @@ TEST_CASE( 050_file_inv_bank_numbers )
 	"</T:presets>\n"
 	);
 
-    Serialization::TritiumXmlReader reader;
+    Serialization::TritiumXml reader;
     reader.setContent(file_typ_coarse);
 
     CK( reader.error() );
@@ -235,7 +235,7 @@ TEST_CASE( 050_file_inv_program )
 	"</T:presets>\n"
 	);
 
-    Serialization::TritiumXmlReader reader;
+    Serialization::TritiumXml reader;
     reader.setContent(file_typ_num);
 
     CK( reader.error() );
