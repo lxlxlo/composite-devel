@@ -30,6 +30,11 @@ namespace Tritium
     namespace Serialization
     {
 
+	/*============================================================
+	 * "USER" METHODS
+	 *============================================================
+	 */
+
 	bool TritiumXml::readContent(QIODevice *dev)
 	{
 	    _error = false;
@@ -95,6 +100,76 @@ namespace Tritium
 		    .arg(root.tagName());
 	    }
 	    return false;
+	}
+
+	/**
+	 * Writes the contents of TritiumXml to the string 'str'.
+	 *
+	 * Note that this empties the TritiumXml object.
+	 */
+	bool TritiumXml::writeContent( QString& str )
+	{
+	    QXmlStreamWriter w(&str);
+	    bool rv = true;
+
+	    w.writeStartDocument();
+	    w.setAutoFormatting(true);
+	    w.writeNamespace(TRITIUM_XML, "T");
+	    rv = write_tritium_node_start(w);
+	    if(!rv) return false;
+
+	    while( !empty() ) {
+		switch( peek_type() ) {
+		case ObjectItem::Presets_t:
+		    rv = write_presets_node(w);
+		    break;
+		default:
+		    pop();
+		}
+		if(!rv) break;
+	    }
+	    if(!rv) return false;
+
+	    rv = write_tritium_node_end(w);
+	    if(!rv) return false;
+
+	    w.writeEndDocument();
+
+	    // VALIDATEION
+	    QDomDocument doc;
+	    QString e_msg;
+	    int line, col;
+	    rv = doc.setContent(str, true, &e_msg, &line, &col);
+	    if(!rv) {
+		_error = true;
+		rv = false;
+		_error_message = QString("Error creating Tritium XML document. "
+					 "This is a bug in Tritium/Composite.  "
+					 "Please report this to the developers. "
+					 "Tritium internally created an invalid "
+					 "XML file. The error reported was..."
+					 "L%1 C%2: %3")
+		    .arg(line)
+		    .arg(col)
+		    .arg(e_msg);
+		return false;
+	    }
+
+	    QDomElement tritium = doc.documentElement();
+	    rv = validate_tritium_node(tritium, &e_msg);
+	    if(!rv) {
+		_error = true;
+		rv = false;
+		_error_message = QString("Error creating Tritium XML document. "
+					 "This is a bug in Tritium/Composite. "
+					 "Please report this to the developers. "
+					 "Tritium created a well-formed XML file, "
+					 "but did not validate with the tritium "
+					 "XML schema.  The error reported was... %1")
+		    .arg(e_msg);
+	    }
+	    return rv;
+
 	}
 
 	/*============================================================
@@ -280,7 +355,7 @@ namespace Tritium
 	}
 
 	/*============================================================
-	 * HANDLER METHODS
+	 * READER METHODS
 	 *
 	 * With the exception of the top-level elements (tritium,
 	 * presets) these functions assume that the node is already
@@ -365,6 +440,66 @@ namespace Tritium
 
 	    push(presets_obj);
 	    return rv;
+	}
+
+	/*============================================================
+	 * WRITER METHODS
+	 *
+	 * You're probably wondering... "Why are we using QDomDocument
+	 * for reading, but QXmlStreamWriter for writing? Wouldn't it
+	 * be better to be consistent?"  Yes, but...
+	 *
+	 * When using XML namespaces, QDomDocument (as of Qt 4.5) will
+	 * write the file like this:
+	 *
+	 * <foo xmlns="http://foo.com">
+	 *   <bar xmlns="http://foo.com">
+	 *     <bat xmlns="http://foo.com">Content</bat>
+         *   </bar>
+         * </foo>
+	 *
+	 * It does this even if you declare a namespace prefix.  Not
+	 * only is this UGLY XML, it makes the file needlessly larger.
+	 * Meanwhile, QXmlStreamWriter will output files like this:
+	 *
+	 * <x:foo xmlns:x="http://foo.com">
+	 *   <x:bar>
+	 *     <x:bat>Content</x:bat>
+	 *   </x:bar>
+	 * </x:foo>
+	 *
+	 * While it would be nice to /not/ have the "x:" prefix...
+	 * I can live with it.  :-)
+	 *
+	 *============================================================
+	 */
+
+	bool TritiumXml::write_tritium_node_start(QXmlStreamWriter& w)
+	{
+	    w.writeStartElement(TRITIUM_XML, "tritium");
+	    return true;
+	}
+
+	bool TritiumXml::write_tritium_node_end(QXmlStreamWriter& w)
+	{
+	    w.writeEndElement();
+	    return true;
+	}
+
+	bool TritiumXml::write_presets_node(QXmlStreamWriter& w)
+	{
+	    assert( !empty() );
+	    assert( peek_type() == ObjectItem::Presets_t );
+
+	    T<Presets>::shared_ptr presets = pop<Presets>();
+
+	    w.writeStartElement(TRITIUM_XML, "presets");
+
+	    w.writeStartElement(TRITIUM_XML, "bank");
+	    w.writeEndElement(); // bank
+
+	    w.writeEndElement(); // presets
+	    return true;
 	}
 
     } // namespace Serialization

@@ -29,6 +29,7 @@ class QString;
 class QDomDocument;
 class QDomElement;
 class QDomNode;
+class QXmlStreamWriter;
 
 namespace Tritium
 {
@@ -68,7 +69,6 @@ namespace Tritium
 	    bool readContent( QDomDocument& doc );
 	    bool readContent( QIODevice *dev );
 	    bool readContent( const QString& text );
-	    bool writeContent( QIODevice *dev );
 	    bool writeContent( QString& str );
 
 	    void clear() {
@@ -88,8 +88,16 @@ namespace Tritium
 	    }
 
 	protected:
+	    /* Reading methods
+	     */
 	    bool read_tritium_node(QDomElement& tritium);
 	    bool read_presets_node(QDomElement& presets);
+
+	    /* Writing methods
+	     */
+	    bool write_tritium_node_start(QXmlStreamWriter& writer);
+	    bool write_tritium_node_end(QXmlStreamWriter& writer);
+	    bool write_presets_node(QXmlStreamWriter& writer);
 
 	    /* Validation methods are in lieu of having direct parser
 	     * support for validating schemas.

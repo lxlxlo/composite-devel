@@ -247,4 +247,50 @@ TEST_CASE( 050_file_inv_program )
     CK( reader.empty() );
 }
 
+TEST_CASE( 060_write_typ_1 )
+{
+    // This is the same as 020_file_type_1, except for:
+    // inside a <tritium>, quotes, encoding in XML declaration,
+    // and 4-space indention
+    const QString file_typ(
+	"<?xml version=\"1.0\"?>\n"
+	"<T:tritium xmlns:T=\"http://gabe.is-a-geek.org/tritium/xml/1/\">\n"
+	"    <T:presets>\n"
+	"        <T:bank coarse=\"0\" fine=\"0\">\n"
+	"            <T:program>\n"
+	"                <T:midi_number>0</T:midi_number>\n"
+	"                <T:resource>tritium:drumkits/GMkit</T:resource>\n"
+	"            </T:program>\n"
+	"            <T:program>\n"
+	"                <T:midi_number>1</T:midi_number>\n"
+	"                <T:resource>tritium:drumkits/TR808EmulationKit</T:resource>\n"
+	"            </T:program>\n"
+	"        </T:bank>\n"
+	"    </T:presets>\n"
+	"</T:tritium>\n"
+	);
+
+    Serialization::TritiumXml writer;
+    writer.readContent(file_typ);
+
+    if( writer.error() ) {
+	BOOST_ERROR(writer.error_message().toLocal8Bit().data());
+    }
+
+    BOOST_REQUIRE( ! writer.error() );
+
+    QString out;
+    bool rv;
+    rv = writer.writeContent(out);
+
+    CK( rv == true );
+    CK( file_typ == out );
+
+    if( file_typ != out ) {
+	BOOST_ERROR("Writer mismatch:");
+	BOOST_ERROR(file_typ.toLocal8Bit().data());
+	BOOST_ERROR(out.toLocal8Bit().data());
+    }
+}
+
 TEST_END()
