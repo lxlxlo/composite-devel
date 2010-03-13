@@ -36,8 +36,20 @@ namespace Tritium
 
     namespace Serialization
     {
+	/**
+	 * Class to handle reading, writing, and validation of Tritium XML files.
+	 *
+	 */
 	class TritiumXml : public ObjectBundle
 	{
+	    /* Implementation note: The read, write, and validation
+	     * portions are pretty segregated.  As such, it might have
+	     * made sense to have TritiumXml (validation only),
+	     * TritiumXmlReader (val + reading), and TritiumXmlWriter
+	     * (val + writing).  However, it makes zero difference for
+	     * storage and performance... and doesn't really improve
+	     * the API.
+	     */
 	protected:
 	    /* These two make the code a little more readable.
 	     */
@@ -53,9 +65,11 @@ namespace Tritium
 
 	    ~TritiumXml() {}
 
-	    bool setContent( QDomDocument& doc );
-	    bool setContent( QIODevice *dev );
-	    bool setContent( const QString& text );
+	    bool readContent( QDomDocument& doc );
+	    bool readContent( QIODevice *dev );
+	    bool readContent( const QString& text );
+	    bool writeContent( QIODevice *dev );
+	    bool writeContent( QString& str );
 
 	    void clear() {
 		_error = false;

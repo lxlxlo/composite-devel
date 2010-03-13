@@ -75,7 +75,7 @@ TEST_CASE( 020_file_typ_1 )
 	);
 
     Serialization::TritiumXml reader;
-    reader.setContent(file_typ);
+    reader.readContent(file_typ);
 
     if( reader.error() ) {
 	BOOST_ERROR(reader.error_message().toLocal8Bit().data());
@@ -124,7 +124,7 @@ TEST_CASE( 030_file_typ_2 )
 	);
 
     Serialization::TritiumXml reader;
-    reader.setContent(file_typ);
+    reader.readContent(file_typ);
 
     if( reader.error() ) {
 	BOOST_ERROR(reader.error_message().toLocal8Bit().data());
@@ -165,7 +165,7 @@ TEST_CASE( 040_file_inv_namespace )
 	);
 
     Serialization::TritiumXml reader;
-    reader.setContent(file_typ);
+    reader.readContent(file_typ);
 
     CK( reader.error() );
     CK( reader.empty() );
@@ -198,12 +198,12 @@ TEST_CASE( 050_file_inv_bank_numbers )
 	);
 
     Serialization::TritiumXml reader;
-    reader.setContent(file_typ_coarse);
+    reader.readContent(file_typ_coarse);
 
     CK( reader.error() );
     CK( reader.empty() );
 
-    reader.setContent(file_typ_fine);
+    reader.readContent(file_typ_fine);
 
     CK( reader.error() );
     CK( reader.empty() );
@@ -236,12 +236,12 @@ TEST_CASE( 050_file_inv_program )
 	);
 
     Serialization::TritiumXml reader;
-    reader.setContent(file_typ_num);
+    reader.readContent(file_typ_num);
 
     CK( reader.error() );
     CK( reader.empty() );
 
-    reader.setContent(file_typ_missing);
+    reader.readContent(file_typ_missing);
 
     CK( reader.error() );
     CK( reader.empty() );

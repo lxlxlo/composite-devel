@@ -30,7 +30,7 @@ namespace Tritium
     namespace Serialization
     {
 
-	bool TritiumXml::setContent(QIODevice *dev)
+	bool TritiumXml::readContent(QIODevice *dev)
 	{
 	    _error = false;
 	    _error_message = "";
@@ -49,10 +49,10 @@ namespace Tritium
 		return false;
 	    }
 
-	    return setContent(doc);
+	    return readContent(doc);
 	}
 
-	bool TritiumXml::setContent(const QString& text)
+	bool TritiumXml::readContent(const QString& text)
 	{
 	    _error = false;
 	    _error_message = "";
@@ -71,10 +71,10 @@ namespace Tritium
 		return false;
 	    }
 
-	    return setContent(doc);
+	    return readContent(doc);
 	}
 
-	bool TritiumXml::setContent( QDomDocument& doc )
+	bool TritiumXml::readContent( QDomDocument& doc )
 	{
 	    QDomElement root = doc.documentElement();
 	    if((root.namespaceURI() != TRITIUM_XML)
