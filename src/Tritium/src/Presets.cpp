@@ -24,6 +24,7 @@
 #include <Tritium/DataPath.hpp>
 #include <QStringList>
 #include <QString>
+#include <cassert>
 
 namespace Tritium
 {
@@ -35,10 +36,11 @@ namespace Tritium
     {
 	// Discovery
 	QStringList dirs;
+	QString tmp;
 
-	dirs << DataPath::get_data_path();
+	dirs << QDir(DataPath::get_data_path()).absolutePath() + "/";
 	if(prefs) {
-	    dirs << prefs->getDataDirectory();
+	    dirs << QDir(prefs->getDataDirectory()).absolutePath() + "/";
 	}
 
 	QStringList drumkits;
@@ -48,7 +50,7 @@ namespace Tritium
 	    dir.cd("drumkits");
 	    if( ! dir.exists() ) continue;
 	    QStringList subdirs;
-	    subdirs << dir.entryList(QDir::AllDirs);
+	    subdirs << dir.entryList(QDir::AllDirs, QDir::Name);
 	    for( sd=subdirs.begin() ; sd!=subdirs.end() ; ++sd ) {
 		QDir sub = dir;
 		sub.cd(*sd);
@@ -58,19 +60,41 @@ namespace Tritium
 	    }
 	}
 
+	/* The following code depends on Qt always returning '/'
+	 * for path separators.... which is indeed what they do.
+	 * Therefore this check should always pass.  But we leave
+	 * it here because it fails then our code will break.
+	 *
+	 * Docs for QDir::rootPath() say that it should return
+	 * "/" on Unix and "C:/" on Windows.
+	 *
+	 * The reason why this is important is that we are
+	 * constructing URI's with the path names.  URI's must have
+	 * '/' as the separator.
+	 */
+	assert( QDir::rootPath().endsWith("/") );
+
 	// Convert paths to tritium: URL's
 	QStringList::Iterator dk;
-	for( it=dirs.begin() ; it!=dirs.end() ; ++it ) {
-	    QString data = (*it);
-	    if( ! data.endsWith("/") ) {
-		data += "/";
-	    }
-	    for( dk=drumkits.begin() ; dk!=drumkits.end() ; ++dk ) {
+	for( dk=drumkits.begin() ; dk != drumkits.end() ; ++dk ) {
+	    for( it=dirs.begin() ; it!=dirs.end() ; ++it ) {
+		QString& data = (*it);
 		if(dk->startsWith(data)) {
 		    (*dk) = (*dk).replace(data, "tritium:");
+		    assert( (*dk).startsWith("tritium:drumkits/") );
 		}
 	    }
+	    if( ! dk->startsWith("tritium:") ) {
+		(*dk) = "file:///" + (*dk); // E.g. file:///C:/foo/bar
+		(*dk).replace("file:////", "file:///");
+	    }
 	}
+
+	// Make GMkit patch 0,0,0
+	const QString GMkit = "tritium:drumkits/GMkit";
+	assert( drumkits.contains(GMkit) );
+	drumkits.removeAll(GMkit);
+	drumkits.push_front(GMkit);
 
 	// Assignment
 	clear();
