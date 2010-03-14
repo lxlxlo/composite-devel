@@ -66,6 +66,19 @@ Will be translated to:
 It will search each path in a prescribed order.  The first path to
 resolve to something that is valid will be used.
 
+However, if <component> is 'default' then in that case:
+
+    tritium:default/<type>
+    tritium:default/<type>-<qualifier>
+
+Is translated to:
+
+    tritium:<type>/default.xml
+    tritium:<type>/default-<qualifier>.xml
+
+If default-<qualifier>.xml does not exist, default.xml will be used.
+If default.xml doesn't exist, it will be created and used.
+
 If you add another folder to the data directory (e.g. a folder called
 'samples'), the URI will actually resolve to your resource.  However,
 it may not work in the future.  As of this writing the following

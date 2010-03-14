@@ -127,7 +127,7 @@ namespace Composite
 	    Tritium::T<Tritium::Serialization::Serializer>::auto_ptr _serializer;
 	    Tritium::T<ObjectBundle>::shared_ptr _obj_bdl;
 	    Tritium::T<Tritium::DefaultMidiImplementation>::shared_ptr _midi_imp;
-	    Tritium::T<Tritium::Presets>::auto_ptr _presets;
+	    Tritium::T<Tritium::Presets>::shared_ptr _presets;
 	};
 
 	class ObjectBundle : public Tritium::ObjectBundle

@@ -32,6 +32,8 @@
 #include <vector>
 #include <deque>
 
+class QUrl;
+
 namespace Tritium
 {
     class Drumkit;
@@ -112,6 +114,7 @@ namespace Tritium
 	    void handle_load_song(event_data_t& ev, const QString& filename);
 	    void handle_load_drumkit(event_data_t& ev, const QString& filename);
 	    void handle_load_pattern(event_data_t& ev, const QString& filename);
+	    void handle_load_tritium(event_data_t& ev, const QString& filename);
 
 	    void handle_callback(
 		event_data_t& ev,
@@ -174,6 +177,9 @@ namespace Tritium
 		QDomElement& fx_node,
 		QStringList& errors
 		);
+
+	    // Miscellaneous
+	    bool ensure_default_exists(const QUrl& uri);
 
 	};
 

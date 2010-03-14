@@ -155,8 +155,29 @@ void EngineLv2::_activate()
     _serializer.reset( Serialization::Serializer::create_standalone(this) );
     _obj_bdl.reset( new Composite::Plugin::ObjectBundle );
     _presets.reset( new Presets );
-    _presets->generate_default_presets(_prefs);
-    load_drumkit(_presets->program(0,0,0));
+    if( _obj_bdl->loading() ) {
+	_serializer->load_uri("tritium:default/presets-plugin", *_obj_bdl, this);
+	while( _obj_bdl->state() != ObjectBundle::Ready ) {
+	    sleep(1);
+	}
+	install_drumkit_bundle();
+    } else {
+	ERRORLOG("Could not open default presets.  Using fallback...");
+	_presets->generate_default_presets(_prefs);
+    }
+
+    Presets::const_iterator p;
+    Bank::const_iterator b;
+    QString uri;
+    for( p = _presets->begin() ; p != _presets->end() ; ++p ) {
+	for( b = p->second.begin() ; b != p->second.end() ; ++b ) {
+	    uri = b->second;
+	    break;
+	}
+	if( ! uri.isEmpty() ) break;
+    }
+
+    load_drumkit(uri);
 }
 
 void EngineLv2::load_drumkit(const QString& drumkit_uri)
@@ -204,6 +225,9 @@ void EngineLv2::install_drumkit_bundle()
 		_mixer->channel(k)->match_props(*tmp_chan);
 		tmp_chan.reset();
 	    }
+	    break;
+	case ObjectItem::Presets_t:
+	    _presets = _obj_bdl->pop<Presets>();
 	    break;
 	case ObjectItem::Drumkit_t:
 	    // Intentionally ignoring

@@ -39,6 +39,8 @@
 #include <Tritium/memory.hpp>
 #include <Tritium/Preferences.hpp>
 #include <Tritium/DataPath.hpp>
+#include <Tritium/Presets.hpp>
+#include "TritiumXml.hpp"
 #include "version.h"
 
 #include <unistd.h> // usleep()
@@ -254,6 +256,78 @@ int SerializationQueue::process()
 }
 
 /**
+ * If the defaults required by the URI doesn't exist... make sure it does
+ *
+ */
+bool SerializationQueue::ensure_default_exists(const QUrl& uri)
+{
+    if( uri.scheme() != "tritium" ) {
+	return false;
+    }
+
+    if( ! uri.path().startsWith("default/") ) {
+	return false;
+    }
+
+    // Only presets are handled at this time.
+    if( ! uri.path().startsWith("default/presets") ) {
+	return false;
+    }
+
+    QString user = m_engine->get_preferences()->getDataDirectory();
+    QString path = uri.path().replace("default/presets", "presets/default") + ".xml";
+    QString def = "presets/default.xml";
+
+    QFileInfo f_info(user + "/" + path);
+
+    if( !f_info.exists() ) {
+	// Use default
+	f_info.setFile(user + "/" + def);
+    }
+
+    if( !f_info.exists() ) {
+	if( ! f_info.absoluteDir().exists() ) {
+	    QDir dir = f_info.absoluteDir();
+	    if( ! dir.mkpath(".") ) {
+		ERRORLOG(QString("Unable to create directory '%1'")
+			 .arg(dir.absolutePath())
+		    );
+		return false;
+	    }
+	}
+	T<Presets>::shared_ptr presets(new Presets);
+	presets->generate_default_presets(m_engine->get_preferences());
+	TritiumXml writer;
+	writer.push(presets);
+	QString data;
+	if( ! writer.writeContent(data) ) {
+	    ERRORLOG(QString("Error generating default presets: %1")
+		     .arg(writer.error())
+		);
+	    return false;
+	}
+	QFile fp(f_info.absoluteFilePath());
+	if( !fp.open(QIODevice::ReadWrite) ) {
+	    ERRORLOG(QString("Unable to open file '%1' for writing")
+		     .arg(f_info.absoluteFilePath())
+		);
+	    return false;
+	}
+	if( !fp.write(data.toUtf8()) ) {
+	    ERRORLOG(QString("Unable to write data to file '%1'")
+		     .arg(f_info.absoluteFilePath())
+		);
+	    return false;
+	}
+	fp.close();
+    }
+    if( f_info.exists() && f_info.isFile() ) {
+	return true;
+    }
+    return false;
+}
+
+/**
  * Resolves a URI to a filename and then calls handle_load_file()
  */
 void SerializationQueue::handle_load_uri(SerializationQueue::event_data_t& ev)
@@ -271,12 +345,31 @@ void SerializationQueue::handle_load_uri(SerializationQueue::event_data_t& ev)
 	}
 	filename = uri.path();
     } else if ( uri.scheme() == "tritium" ) {
+	/* XXX TODO This is really ugly.  Need a class that
+	 * handles tritium: URI mappings.  It was done like
+	 * this because it's quick and dirty.... and ugly. :-)
+	 */
 	QString user = m_engine->get_preferences()->getDataDirectory();
 	QString syst(DataPath::get_data_path());
 	QString path( uri.path() );
 
 	if(path.startsWith("drumkits/")) {
 	    path += "/drumkit.xml";
+	}
+
+	if(path.startsWith("default/")) {
+	    // Redefine path based on URI rules.
+	    if( ensure_default_exists(uri) ) {
+		// Only supporting presets at this time...
+		assert(path.startsWith("default/presets"));
+		path = path.replace("default/presets", "presets/default") + ".xml";
+		QFileInfo finf(user + "/" + path);
+		if( ! finf.exists() ) {
+		    path = "presets/default.xml";
+		}
+	    } else {
+		// not much we can do here.
+	    }
 	}
 
 	user += "/" + path;
@@ -305,6 +398,9 @@ void SerializationQueue::handle_load_file(SerializationQueue::event_data_t& ev, 
             handle_load_pattern(ev, filename);
         } else if (filename.endsWith("drumkit.xml")) {
             handle_load_drumkit(ev, filename);
+	} else if (filename.endsWith(".xml")) {
+	    #warning "XXX TODO: Was supposed to classify based on /content/, not file name"
+	    handle_load_tritium(ev, filename);
         } else {
 	    handle_callback(
 		ev,
@@ -1106,6 +1202,25 @@ void SerializationQueue::handle_load_pattern(
     #warning "TODO: Need to handle errors!!"
 
     ev.report_load_to->push(pat);
+
+    handle_callback(ev, filename);
+}
+
+void SerializationQueue::handle_load_tritium(
+    SerializationQueue::event_data_t& ev,
+    const QString& filename
+    )
+{
+    TritiumXml reader;
+    QFile file(filename);
+
+    file.open(QIODevice::ReadOnly);
+    reader.readContent( &file );
+    file.close();
+
+    ev.report_load_to->objects = reader.objects;
+    ev.report_load_to->error = reader.error();
+    ev.report_load_to->error_message = reader.error_message();
 
     handle_callback(ev, filename);
 }
