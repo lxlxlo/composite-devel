@@ -21,9 +21,9 @@ Composite is supported on the following operating systems:
   * Linux/Unix/BSD
   * Mac OS X
 
-Composite is *not* supported on Windows because there are currently no
-Windows developers on the project... and so the Windows components
-have fallen into disrepair.
+Composite is not yet supported on Windows because there are currently
+no Windows developers on the project... and so the Windows components
+have fallen into disrepair.(**)
 
 Composite is known to work well on fairly old systems like this (as of
 2009):
@@ -33,6 +33,10 @@ Composite is known to work well on fairly old systems like this (as of
   Consumer-Grade (cheap) audio card
   Keyboard and Mouse
   1x1 USB MIDI Interface (optional)
+
+(**) - However, Gabriel recently acquired a couple Windows PC's,
+       so Windows support is coming.  But it's not a priority
+       at the moment... since the LV2 plugin is the priority.
 
 2. Download
 -----------
@@ -69,7 +73,7 @@ In order to build from source, you will need the following libraries
 installed on your system, and the development header files.
 
 	REQUIRED
-	* Qt 4 Library (>=4.4.0, 4.3.x might work, 4.2.x won't)
+	* Qt 4 Library (>=4.5.0, 4.3.x might work, 4.2.x won't)
 	* Qt 4 SDK (moc, uic, etc.)
 	* GNU g++ compiler (>=4.0, 3.x might work)
 	* CMake (>= 2.6, earlier might work)
@@ -82,14 +86,14 @@ installed on your system, and the development header files.
 	  Windows: You will probably want to use libarchive.
 	* OS X: Xcode
 	* libFLAC for handling FLAC sound files.
+        * The boost libraries and the boost unit test framework.
 
 	OPTIONAL SUPPORT
 	* liblrdf for LADSPA plugins
-        * boost unit test framework (**)
 
 On a single, 800MHz processor Composite takes about 37 min. to build.
-On a dual-core 2800MHz processor with gobs of memory it takes about 2
-min. to do a parallel build.
+On a dual-core, 64-bit, 2800MHz processor with gobs of memory it takes
+about 2 min. to do a parallel build.
 
 (**) These tests check that Tritium works correctly on your machine,
      and with any changes the developers have added.
@@ -100,12 +104,19 @@ min. to do a parallel build.
 After you have all the prerequisites, building and installing will
 look like this:
 
-	$ tar xjf composite-0.004.tar.bz2
+	$ tar xjf composite-0.006.tar.bz2
         $ mkdir sandbox
 	$ cd sandbox
-	$ cmake ../composite-0.004 CMAKE_INSTALL_PREFIX=/usr/local
+	$ cmake ../composite-0.006 \
+		-DCMAKE_BUILD_TYPE=Debug \
+		-DCMAKE_INSTALL_PREFIX=/usr/local \
+		-DWANT_LRDF=ON
 	$ make
         $ sudo make install
+
+On GNU/Linux and other unix-like systems, you'll also need to run:
+
+        $ sudo ldconfig
 
 To change the directory where Composite is installed, it is done like
 this on the last step:
@@ -134,8 +145,8 @@ In order to create a .deb package for Debian or Debian-based systems
 
 To build the Composite package:
 
-	$ tar xjf composite-0.004.tar
-	$ cd composite-0.004
+	$ tar xjf composite-0.006.tar
+	$ cd composite-0.006
 	$ cd linux
 	$ fakeroot dpkg-buildpackage
 
@@ -150,7 +161,7 @@ Unfortunately, CMake doesn't have something that works exactly like
 './configure --help' that will show you all the configuration
 options.  The best way to see the standard options is to run:
 
-	$ ccmake /path/to/sources/composite-0.004
+	$ ccmake /path/to/sources/composite-0.006
 
 Which will give you a listing of the options from the CMakeLists.txt
 file.  You have the following commands (and more) available:
@@ -177,6 +188,12 @@ out-of date as things change:
 
 7. INSTALL.txt Changelog
 ------------------------
+
+2010-03-14 Gabriel M. Beddingfield <gabriel@teuton.org>
+	* Add 'ldconfig' step after install.
+	* Fix error in cmake line, and expand.
+	* Add boost as a required lib.
+	* Update all the versions to 0.006.
 
 2009-11-21 Gabriel M. Beddingfield <gabriel@teuton.org>
 	* Add Detailed build and install instructions.
