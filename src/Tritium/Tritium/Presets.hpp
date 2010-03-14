@@ -49,6 +49,15 @@ namespace Tritium
 	Bank() {}
 	~Bank() {}
 
+	Bank(const Bank& o) :
+	    _programs(o._programs)
+	    {}
+
+	Bank& operator=(const Bank& o) {
+	    _programs = o._programs;
+	    return *this;
+	}
+
 	/**
 	 * Retrieve the preset URI for a channel.
 	 */
@@ -121,6 +130,15 @@ namespace Tritium
 
 	Presets() {}
 	~Presets() {}
+
+	Presets(const Presets& o) :
+	    _banks(o._banks)
+	    {}
+
+	Presets& operator=(const Presets& o) {
+	    _banks = o._banks;
+	    return *this;
+	}
 
     protected:
 	inline static bool valid(uint8_t coarse, uint8_t fine, uint8_t prog) {
