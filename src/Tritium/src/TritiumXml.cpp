@@ -491,12 +491,28 @@ namespace Tritium
 	    assert( !empty() );
 	    assert( peek_type() == ObjectItem::Presets_t );
 
-	    T<Presets>::shared_ptr presets = pop<Presets>();
-
 	    w.writeStartElement(TRITIUM_XML, "presets");
 
-	    w.writeStartElement(TRITIUM_XML, "bank");
-	    w.writeEndElement(); // bank
+	    T<Presets>::shared_ptr presets = pop<Presets>();
+	    Presets::const_iterator p;
+	    Bank::const_iterator b;
+	    uint8_t coarse, fine, pc;
+	    for( p = presets->begin() ; p != presets->end() ; ++p ) {
+		coarse = p->first.coarse;
+		fine = p->first.fine;
+		w.writeStartElement(TRITIUM_XML, "bank");
+		w.writeAttribute("coarse", QString::number(coarse));
+		w.writeAttribute("fine", QString::number(fine));
+		for( b = p->second.begin() ; b != p->second.end() ; ++b ) {
+		    pc = b->first;
+		    const QString& uri = b->second;
+		    w.writeStartElement(TRITIUM_XML, "program");
+		    w.writeTextElement(TRITIUM_XML, "midi_number", QString::number(pc));
+		    w.writeTextElement(TRITIUM_XML, "resource", uri);
+		    w.writeEndElement(); // program
+		}
+		w.writeEndElement(); // bank
+	    }
 
 	    w.writeEndElement(); // presets
 	    return true;
