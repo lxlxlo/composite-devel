@@ -22,6 +22,7 @@ IF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
     t_SeqScriptPrivate
     t_AudioPort
     t_Mixer
+    t_Presets
     t_TritiumXml
     t_Serialization
     t_SimpleTransportMaster
