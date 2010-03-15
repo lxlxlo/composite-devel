@@ -337,7 +337,7 @@ void Preferences::loadPreferences( bool bGlobal )
 				}
 				
 			} else {
-				WARNINGLOG( "recentUsedSongs node not found" );
+				DEBUGLOG( "recentUsedSongs node not found" );
 			}
 
 			QDomNode pRecentFXNode = rootNode.firstChildElement( "recentlyUsedEffects" );
@@ -348,7 +348,7 @@ void Preferences::loadPreferences( bool bGlobal )
 					pFXElement = pFXElement.nextSiblingElement( "FX" );
 				}
 			} else {
-				WARNINGLOG( "recentlyUsedEffects node not found" );
+				DEBUGLOG( "recentlyUsedEffects node not found" );
 			}
 
 			sServerList.clear();
@@ -360,7 +360,7 @@ void Preferences::loadPreferences( bool bGlobal )
 					pServerElement = pServerElement.nextSiblingElement( "server" );
 				}
 			} else {
-				WARNINGLOG( "serverList node not found" );
+				DEBUGLOG( "serverList node not found" );
 			}
 
 			m_patternCategories.clear();
@@ -372,7 +372,7 @@ void Preferences::loadPreferences( bool bGlobal )
 					pPatternCategoriesElement = pPatternCategoriesElement.nextSiblingElement( "categories" );
 				}
 			} else {
-				WARNINGLOG( "patternCategories node not found" );
+				DEBUGLOG( "patternCategories node not found" );
 			}
 
 
@@ -382,7 +382,7 @@ void Preferences::loadPreferences( bool bGlobal )
 			/////////////// AUDIO ENGINE //////////////
 			QDomNode audioEngineNode = rootNode.firstChildElement( "audio_engine" );
 			if ( audioEngineNode.isNull() ) {
-				WARNINGLOG( "audio_engine node not found" );
+				DEBUGLOG( "audio_engine node not found" );
 				recreate = true;
 			} else {
 				m_sAudioDriver = LocalFileMng::readXmlString( audioEngineNode, "audio_driver", m_sAudioDriver );
@@ -395,7 +395,7 @@ void Preferences::loadPreferences( bool bGlobal )
 				//// JACK DRIVER ////
 				QDomNode jackDriverNode = audioEngineNode.firstChildElement( "jack_driver" );
 				if ( jackDriverNode.isNull() ) {
-					WARNINGLOG( "jack_driver node not found" );
+					DEBUGLOG( "jack_driver node not found" );
 					recreate = true;
 				} else {
 					m_sJackPortName1 = LocalFileMng::readXmlString( jackDriverNode, "jack_port_name_1", m_sJackPortName1 );
@@ -426,7 +426,7 @@ void Preferences::loadPreferences( bool bGlobal )
 				/// MIDI DRIVER ///
 				QDomNode midiDriverNode = audioEngineNode.firstChildElement( "midi_driver" );
 				if ( midiDriverNode.isNull() ) {
-					WARNINGLOG( "midi_driver node not found" );
+					DEBUGLOG( "midi_driver node not found" );
 					recreate = true;
 				} else {
 					m_sMidiDriver = LocalFileMng::readXmlString( midiDriverNode, "driverName", "JackMidi" );
@@ -442,7 +442,7 @@ void Preferences::loadPreferences( bool bGlobal )
 			/////////////// GUI //////////////
 			QDomNode guiNode = rootNode.firstChildElement( "gui" );
 			if ( guiNode.isNull() ) {
-				WARNINGLOG( "gui node not found" );
+				DEBUGLOG( "gui node not found" );
 				recreate = true;
 			} else {
 				// QT Style
@@ -522,7 +522,7 @@ void Preferences::loadPreferences( bool bGlobal )
 				if ( !pUIStyle.isNull() ) {
 					readUIStyle( pUIStyle );
 				} else {
-					WARNINGLOG( "UI_Style node not found" );
+					DEBUGLOG( "UI_Style node not found" );
 					recreate = true;
 				}
 			}
@@ -530,7 +530,7 @@ void Preferences::loadPreferences( bool bGlobal )
 			/////////////// FILES //////////////
 			QDomNode filesNode = rootNode.firstChildElement( "files" );
 			if ( filesNode.isNull() ) {
-				WARNINGLOG( "files node not found" );
+				DEBUGLOG( "files node not found" );
 				recreate = true;
 			} else {
 				// last used song
@@ -581,14 +581,14 @@ void Preferences::loadPreferences( bool bGlobal )
 
 				}
 			} else {
-				WARNINGLOG( "midiMap node not found" );
+				DEBUGLOG( "midiMap node not found" );
 			}
 			
 			
 
 		} // rootNode
 		else {
-			WARNINGLOG( "hydrogen_preferences node not found" );
+			DEBUGLOG( "hydrogen_preferences node not found" );
 			recreate = true;
 		}
 	} else {
@@ -1013,7 +1013,7 @@ WindowProperties Preferences::readWindowProperties( const QDomNode& parent, cons
 
 	QDomNode windowPropNode  = parent.firstChildElement( windowName );
 	if ( windowPropNode.isNull() ) {
-		WARNINGLOG( "Error reading configuration file: " + windowName + " node not found" );
+		DEBUGLOG( "Error reading configuration file: " + windowName + " node not found" );
 	} else {
 		prop.visible = LocalFileMng::readXmlBool( windowPropNode, "visible", true );
 		prop.x = LocalFileMng::readXmlInt( windowPropNode, "x", prop.x );
@@ -1094,7 +1094,7 @@ void Preferences::readUIStyle( const QDomNode& parent )
 		m_pDefaultUIStyle->m_songEditor_textColor = H2RGBColor( LocalFileMng::readXmlString( pSongEditorNode, "textColor", m_pDefaultUIStyle->m_songEditor_textColor.toStringFmt() ) );
 		m_pDefaultUIStyle->m_songEditor_pattern1Color = H2RGBColor( LocalFileMng::readXmlString( pSongEditorNode, "pattern1Color", m_pDefaultUIStyle->m_songEditor_pattern1Color.toStringFmt() ) );
 	} else {
-		WARNINGLOG( "songEditor node not found" );
+		DEBUGLOG( "songEditor node not found" );
 	}
 
 	// PATTERN EDITOR
@@ -1112,7 +1112,7 @@ void Preferences::readUIStyle( const QDomNode& parent )
 		m_pDefaultUIStyle->m_patternEditor_line4Color = H2RGBColor( LocalFileMng::readXmlString( pPatternEditorNode, "line4Color", m_pDefaultUIStyle->m_patternEditor_line4Color.toStringFmt() ) );
 		m_pDefaultUIStyle->m_patternEditor_line5Color = H2RGBColor( LocalFileMng::readXmlString( pPatternEditorNode, "line5Color", m_pDefaultUIStyle->m_patternEditor_line5Color.toStringFmt() ) );
 	} else {
-		WARNINGLOG( "patternEditor node not found" );
+		DEBUGLOG( "patternEditor node not found" );
 	}
 }
 

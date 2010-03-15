@@ -228,7 +228,7 @@ namespace Tritium
             sPatternXmlFilename = sPatternDir + "/" + QString( patternname + QString( ".h2pattern" ));
             break;
         default:
-            WARNINGLOG( "Pattern Save unknown status");
+            DEBUGLOG( "Pattern Save unknown status");
 	    sPatternXmlFilename = patternname;
             break;
         }
@@ -779,13 +779,13 @@ namespace Tritium
                 return element.text();
             } else {
                 if ( !bCanBeEmpty ) {
-                    WARNINGLOG( "Using default value in " + nodeName );
+                    DEBUGLOG( "Using default value in " + nodeName );
                 }
                 return defaultValue;
             }
         } else {
             if(  bShouldExists ){
-                WARNINGLOG( "'" + nodeName + "' node not found" );
+                DEBUGLOG( "'" + nodeName + "' node not found" );
 
             }
             return defaultValue;
@@ -802,13 +802,13 @@ namespace Tritium
                 return c_locale.toFloat(element.text());
             } else {
                 if ( !bCanBeEmpty ) {
-                    WARNINGLOG( "Using default value in " + nodeName );
+                    DEBUGLOG( "Using default value in " + nodeName );
                 }
                 return defaultValue;
             }
         } else {
             if(  bShouldExists ){
-                WARNINGLOG( "'" + nodeName + "' node not found" );
+                DEBUGLOG( "'" + nodeName + "' node not found" );
             }
             return defaultValue;
         }
@@ -824,13 +824,13 @@ namespace Tritium
                 return c_locale.toInt( element.text() );
             } else {
                 if ( !bCanBeEmpty ) {
-                    WARNINGLOG( "Using default value in " + nodeName );
+                    DEBUGLOG( "Using default value in " + nodeName );
                 }
                 return defaultValue;
             }
         } else {
             if(  bShouldExists ){
-                WARNINGLOG( "'" + nodeName + "' node not found" );
+                DEBUGLOG( "'" + nodeName + "' node not found" );
             }
             return defaultValue;
         }
@@ -848,12 +848,12 @@ namespace Tritium
                     return false;
                 }
             } else {
-                WARNINGLOG( "Using default value in " + nodeName );
+                DEBUGLOG( "Using default value in " + nodeName );
                 return defaultValue;
             }
         } else {
             if(  bShouldExists ){
-                WARNINGLOG( "'" + nodeName + "' node not found" );
+                DEBUGLOG( "'" + nodeName + "' node not found" );
             }
             return defaultValue;
         }

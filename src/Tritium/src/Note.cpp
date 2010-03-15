@@ -113,7 +113,7 @@ void Note::set_instrument( T<Instrument>::shared_ptr instrument )
 		else {
 			DEBUGLOG( "copio l'adsr dallo strumento" );
 			if ( m_pADSR ) {
-				WARNINGLOG( "Replacing an existing ADSR" );
+				DEBUGLOG( "Replacing an existing ADSR" );
 				delete m_pADSR;
 				m_pADSR = NULL;
 			}

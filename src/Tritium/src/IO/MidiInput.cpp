@@ -119,7 +119,7 @@ void MidiInput::handleMidiMessage( const MidiMessage& msg )
 		break;
 
 	case MidiMessage::QUARTER_FRAME:
-		WARNINGLOG( "QUARTER_FRAME event not handled yet" );
+		DEBUGLOG( "QUARTER_FRAME event not handled yet" );
 		break;
 
 	case MidiMessage::UNKNOWN:
@@ -341,7 +341,7 @@ if ( msg.m_sysexData.size() == 6 ) {
 				break;
 
 			default:
-				WARNINGLOG( "Unknown MMC Command" );
+				DEBUGLOG( "Unknown MMC Command" );
 //					midiDump( buf, nBytes );
 			}
 		}
@@ -363,7 +363,7 @@ if ( msg.m_sysexData.size() == 6 ) {
 			QString hx = QString::number((unsigned)msg.m_sysexData[i], 16);
 			sDump += QString("%1 ").arg( hx, 2, '0');
 		}
-		WARNINGLOG( QString( "Unknown SysEx message: (%1) [%2]" ).arg( msg.m_sysexData.size() ).arg( sDump ) );
+		DEBUGLOG( QString( "Unknown SysEx message: (%1) [%2]" ).arg( msg.m_sysexData.size() ).arg( sDump ) );
 	}
 }
 

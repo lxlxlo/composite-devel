@@ -301,7 +301,7 @@ void JackOutput::makeTrackOutputs( T<Song>::shared_ptr song )
 	int nInstruments = ( int )instruments->get_size();
 
 	// create dedicated channel output ports
-	WARNINGLOG( QString( "Creating / renaming %1 ports" ).arg( nInstruments ) );
+	DEBUGLOG( QString( "Creating / renaming %1 ports" ).arg( nInstruments ) );
 
 	for ( int n = nInstruments - 1; n >= 0; n-- ) {
 		instr = instruments->get( n );

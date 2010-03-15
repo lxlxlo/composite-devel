@@ -216,10 +216,10 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
 	}
     }
     if ( !pSample ) {
-	QString dummy = QString( "NULL sample for instrument %1. Note velocity: %2" )
-	    .arg( pInstr->get_name() )
-	    .arg( note.get_velocity() );
-	WARNINGLOG( dummy );
+	WARNINGLOG(QString( "NULL sample for instrument %1. Note velocity: %2" )
+		   .arg( pInstr->get_name() )
+		   .arg( note.get_velocity() )
+	    );
 	return 1;
     }
 

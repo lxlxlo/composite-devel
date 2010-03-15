@@ -513,7 +513,7 @@ namespace Tritium
 
     void EnginePrivate::audioEngine_setSong( T<Song>::shared_ptr newSong )
     {
-        WARNINGLOG( QString( "Set song: %1" ).arg( newSong->get_name() ) );
+        DEBUGLOG( QString( "Set song: %1" ).arg( newSong->get_name() ) );
 
         while( m_pSong != 0 ) {
             audioEngine_removeSong();

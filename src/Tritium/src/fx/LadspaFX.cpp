@@ -273,10 +273,10 @@ T<LadspaFX>::shared_ptr LadspaFX::load( const QString& sLibraryPath, const QStri
 				fMax = 1.0;
 			}
 			if ( LADSPA_IS_HINT_SAMPLE_RATE( rangeHints.HintDescriptor ) ) {
-				WARNINGLOG( "samplerate hint not implemented yet" );
+				DEBUGLOG( "samplerate hint not implemented yet" );
 			}
 			if ( LADSPA_IS_HINT_LOGARITHMIC( rangeHints.HintDescriptor ) ) {
-				WARNINGLOG( "logarithmic hint not implemented yet" );
+				DEBUGLOG( "logarithmic hint not implemented yet" );
 			}
 			if ( LADSPA_IS_HINT_INTEGER( rangeHints.HintDescriptor ) ) {
 				isInteger = true;

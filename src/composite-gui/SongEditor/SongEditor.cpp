@@ -564,7 +564,7 @@ void SongEditor::drawSequence()
 				}
 			}
 			if (position == -1) {
-				WARNINGLOG( QString("[drawSequence] position == -1, group = %1").arg( i ) );
+				DEBUGLOG( QString("[drawSequence] position == -1, group = %1").arg( i ) );
 			}
 			drawPattern( i, position );
 		}
