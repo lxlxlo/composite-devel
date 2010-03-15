@@ -20,7 +20,7 @@
 -->
 <xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'
 	   targetNamespace='http://gabe.is-a-geek.org/tritium/xml/1/'
-	   xmlns='http://gabe.is-a-geek.org/tritium/xml/1/'
+	   xmlns:T='http://gabe.is-a-geek.org/tritium/xml/1/'
 	   elementFormDefault='qualified' >
 
   <!-- IN-PROCESS VERSION 1 OF SCHEMA, THIS SCHEMA IS NOT FINALIZED  -->
@@ -28,10 +28,30 @@
   <xs:annotation>
     <xs:documentation xml:lang='en'>
       This schema is intended to define all of the XML components used
-      by the Tritium.  The elements that are expected to be "top-level
-      elements" are &lt;tritium&gt; and any of its direct children.
-      Note that file formats that are expressly Hydrogen's are not
-      included here.
+      by Tritium.  The top-most element is &lt;tritium&gt;, which is a
+      container for miscellaneous XML data (not just Tritium XML
+      data).  It is intended to contain elements like &lt;presets&gt;
+      (which may also be top-level elements).
+    </xs:documentation>
+  </xs:annotation>
+
+  <xs:annotation>
+    <xs:documentation xml:lang='en'>
+      The lax structure is mostly done for future-compatability.  The
+      namespace above will be used until a non-backwards-compatable
+      change is made.  For example, when first published the only
+      elements was &lt;presets&gt;.  Because &lt;tritium&gt; has a lax
+      structure, it's possible to later add a &lt;sample&gt; or
+      &lt;song&gt;.  Those files will be able to be opened without
+      issue with an older version of Composite.  (Of course, the new
+      content will fail to load... but the old content will work
+      fine.)
+    </xs:documentation>
+  </xs:annotation>
+
+  <xs:annotation>
+    <xs:documentation xml:lang='en'>
+      Note that Hydrogen's XML schemas are not a part of this schema.
     </xs:documentation>
   </xs:annotation>
 
@@ -40,6 +60,21 @@
        ###############################################################
   -->
 
+  <xs:attributeGroup name='common_attributes'>
+    <xs:attribute name='id' type='xs:ID' use='optional' />
+    <xs:anyAttribute/>
+  </xs:attributeGroup>
+
+  <xs:complexType name='common_Type'>
+    <xs:annotation>
+      <xs:documentation xml:lang='en'>
+	This is the base type that holds common attributes for all
+	elements in this schema.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:attributeGroup ref='T:common_attributes' />
+  </xs:complexType>
+
   <xs:simpleType name='midi_integer'>
     <xs:restriction base='xs:integer'>
       <xs:minInclusive value='0'/>
@@ -47,28 +82,42 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:complexType name='meta_Type' mixed='true'>
+    <xs:annotation>
+      <xs:documentation xml:lang='en'>
+	This is a placeholder for a future metadata type.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:choice minOccurs='0' maxOccurs='unbounded'>
+      <xs:any processContents='lax'/>
+    </xs:choice>
+    <xs:attributeGroup ref='T:common_attributes' />
+  </xs:complexType>
 
   <!-- ###############################################################
        ### TOP LEVEL ELEMENT DEFINITION                            ###
        ###############################################################
   -->
-  <xs:element name='tritium' type='tritium_Type'>
+
+  <xs:element name='tritium' type='T:tritium_Type'>
     <xs:annotation>
       <xs:documentation xml:lang='en'>
-	This is the top-level element for the Tritium XML schemas.  In
-	addition, any of its children may be used as top-level
-	elements.
+	This is the top-level element for the Tritium XML schemas.  It
+	is able to hold any kind of content... however it is intended
+	to be a container for Tritium-specific content.
       </xs:documentation>
     </xs:annotation>
   </xs:element>
 
-  <xs:complexType name='tritium_Type'>
-    <xs:choice minOccurs='1' maxOccurs='unbounded'>
-      <xs:element name='presets' type='presets_Type'/>
-    </xs:choice>
+  <xs:complexType name='tritium_Type' mixed='false'>
+    <xs:sequence minOccurs='0' maxOccurs='1'>
+      <xs:element name='meta' type='T:meta_Type' minOccurs='0' maxOccurs='1'/>
+      <xs:any processContents='lax' minOccurs='0' maxOccurs='unbounded' />
+    </xs:sequence>
+    <xs:attributeGroup ref='T:common_attributes' />
   </xs:complexType>
 
-  <xs:element name='presets' type='presets_Type'>
+  <xs:element name='presets' type='T:presets_Type'>
     <xs:annotation>
       <xs:documentation xml:lang='en'>
 	The presets element is simply a container for several
@@ -79,10 +128,28 @@
   </xs:element>
 
   <xs:complexType name='presets_Type'>
-    <xs:sequence minOccurs='1' maxOccurs='unbounded'>
-      <xs:element name='bank' type='bank_Type'/>
-    </xs:sequence>
+    <xs:complexContent>
+      <xs:restriction base='T:common_Type'>
+	<xs:sequence minOccurs='0' maxOccurs='1'>
+	  <xs:element ref='T:meta' minOccurs='0' maxOccurs='1'/>
+	  <xs:element name='bank' type='T:bank_Type'
+		      minOccurs='0' maxOccurs='unbounded'/>
+	</xs:sequence>
+      </xs:restriction>
+    </xs:complexContent>
   </xs:complexType>
+
+  <xs:element name='meta' type='T:meta_Type'>
+    <xs:annotation>
+      <xs:documentation xml:lang='en'>
+	Thie is a placeholder for a future metadata element.
+	Processors should ignore its contents until it is defined.
+	Documents should /not/ contain a meta element until it is
+	established.  However, having it in the schema documents the
+	future intention for where it will appear.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
 
   <!-- ###############################################################
        ### DETAILED ELEMENT TYPE DEFITIONS                         ###
@@ -97,11 +164,14 @@
 	container for several &lt;program&gt; or "preset" definitions.
       </xs:documentation>
     </xs:annotation>
-    <xs:sequence minOccurs='1' maxOccurs='unbounded'>
-      <xs:element name='program' type='program_Type'/>
+    <xs:sequence minOccurs='0' maxOccurs='1'>
+      <xs:element ref='T:meta' minOccurs='0' maxOccurs='1' />
+      <xs:element name='program' type='T:program_Type'
+		  minOccurs='0' maxOccurs='unbounded' />
     </xs:sequence>
-    <xs:attribute name='coarse' type='midi_integer' default='0'/>
-    <xs:attribute name='fine' type='midi_integer' default='0'/>
+    <xs:attribute name='coarse' type='T:midi_integer' default='0'/>
+    <xs:attribute name='fine' type='T:midi_integer' default='0'/>
+    <xs:attributeGroup ref='T:common_attributes'/>
   </xs:complexType>
 
   <xs:complexType name='program_Type'>
@@ -112,15 +182,22 @@
       </xs:documentation>
     </xs:annotation>
     <xs:sequence>
-      <xs:element name='midi_number' type='midi_integer'>
+      <xs:element name='midi_number'>
 	<xs:annotation>
 	  <xs:documentation xml:lang='en'>
 	    This directly corresponds exactly to the Program Change number
 	    that is sent in the MIDI message.
 	  </xs:documentation>
 	</xs:annotation>
+	<xs:complexType>
+	  <xs:simpleContent>
+	    <xs:extension base='T:midi_integer'>
+	      <xs:attributeGroup ref='T:common_attributes'/>
+	    </xs:extension>
+	  </xs:simpleContent>
+	</xs:complexType>
       </xs:element>
-      <xs:element name='resource' type='xs:anyURI'>
+      <xs:element name='resource'>
 	<xs:annotation>
 	  <xs:documentation xml:lang='en'>
 	    The URL to a Composite resource file.  May be any valid file
@@ -128,8 +205,17 @@
 	    definition file.
 	  </xs:documentation>
 	</xs:annotation>
+	<xs:complexType>
+	  <xs:simpleContent>
+	    <xs:extension base='xs:anyURI'>
+	      <xs:attributeGroup ref='T:common_attributes'/>
+	    </xs:extension>
+	  </xs:simpleContent>
+	</xs:complexType>
       </xs:element>
+      <xs:any minOccurs='0' maxOccurs='unbounded'/>
     </xs:sequence>
+    <xs:attributeGroup ref='T:common_attributes'/>
   </xs:complexType>
 
 </xs:schema>
