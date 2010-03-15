@@ -50,7 +50,7 @@ static WorkerThread *worker_thread = 0;
  */
 
 LoggerPrivate::LoggerPrivate(Logger* parent, bool use_file) :
-    m_log_level(Logger::Error),
+    m_log_level(Logger::Error | Logger::Warning | Logger::Info),
     m_use_file(use_file),
     m_kill(false),
     m_logger(parent),
@@ -208,11 +208,19 @@ void LoggerPrivate::log( unsigned level,
 	break;
     }
 
-    QString tmp = QString("%1%2%3\t%4 \033[0m\n")
-	.arg(color[i])
-	.arg(prefix[i])
-	.arg(funcname)
-	.arg(msg);
+    QString tmp;
+    if(level != Logger::Info) {
+	tmp = QString("%1%2%3\t%4 \033[0m\n")
+	    .arg(color[i])
+	    .arg(prefix[i])
+	    .arg(funcname)
+	    .arg(msg);
+    } else {
+	// The INFOLOG should be a very simple, user
+	// feedback message.  It should /not/ have
+	// function names or line numbers.
+	tmp = msg;
+    }
 
     QMutexLocker mx(&m_mutex);
     m_msg_queue.push_back( tmp );

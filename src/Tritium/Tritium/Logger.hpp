@@ -61,7 +61,7 @@ public:
 	None = 0,
 	Error = 1,
 	Warning = 2,
-	Info = 4,
+	Info = 4, /* Typ. user  info... no PRETTY_FUNCTION */
 	Debug = 8,
 	AELockTracing = 0x10
     } log_level_t;
@@ -107,6 +107,7 @@ private:
 	}								\
     }
 
+#define DEBUGLOG(x) __LOG_WRAPPER( Tritium::Logger::Debug, __PRETTY_FUNCTION__, (x) );
 #define INFOLOG(x) __LOG_WRAPPER( Tritium::Logger::Info, __PRETTY_FUNCTION__, (x) );
 #define WARNINGLOG(x) __LOG_WRAPPER( Tritium::Logger::Warning, __PRETTY_FUNCTION__, (x) );
 #define ERRORLOG(x) __LOG_WRAPPER( Tritium::Logger::Error, __PRETTY_FUNCTION__, (x) );
