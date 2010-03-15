@@ -164,7 +164,7 @@ namespace Tritium
 
     void EnginePrivate::audioEngine_init()
     {
-        INFOLOG( "*** Engine audio engine init ***" );
+        DEBUGLOG( "*** Engine audio engine init ***" );
 
         // check current state
         if ( m_audioEngineState != Engine::StateUninitialized ) {
@@ -225,7 +225,7 @@ namespace Tritium
         m_engine->get_sampler()->panic();
 
         m_engine->lock( RIGHT_HERE );
-        INFOLOG( "*** Engine audio engine shutdown ***" );
+        DEBUGLOG( "*** Engine audio engine shutdown ***" );
 
         audioEngine_clearNoteQueue();
 
@@ -259,7 +259,7 @@ namespace Tritium
             m_engine->lock( RIGHT_HERE );
         }
 
-        INFOLOG( "[EnginePrivate::audioEngine_start]" );
+        DEBUGLOG( "[EnginePrivate::audioEngine_start]" );
 
         // check current state
         if ( m_audioEngineState != Engine::StateReady ) {
@@ -298,7 +298,7 @@ namespace Tritium
         if ( bLockEngine ) {
             m_engine->lock( RIGHT_HERE );
         }
-        INFOLOG( "[EnginePrivate::audioEngine_stop]" );
+        DEBUGLOG( "[EnginePrivate::audioEngine_stop]" );
 
         // check current state
         if ( m_audioEngineState != Engine::StateReady ) {
@@ -461,10 +461,10 @@ namespace Tritium
 
     void EnginePrivate::audioEngine_setupLadspaFX( unsigned nBufferSize )
     {
-        //INFOLOG( "buffersize=" + to_string(nBufferSize) );
+        //DEBUGLOG( "buffersize=" + to_string(nBufferSize) );
 
         if ( m_pSong == NULL ) {
-            //INFOLOG( "m_pSong=NULL" );
+            //DEBUGLOG( "m_pSong=NULL" );
             return;
         }
         if ( nBufferSize == 0 ) {
@@ -568,7 +568,7 @@ namespace Tritium
 
         // check current state
         if ( m_audioEngineState != Engine::StateReady ) {
-            INFOLOG( "Error the audio engine is not in READY state" );
+            DEBUGLOG( "Error the audio engine is not in READY state" );
             m_engine->unlock();
             return;
         }
@@ -603,7 +603,7 @@ namespace Tritium
 
     T<AudioOutput>::shared_ptr EnginePrivate::createDriver( const QString& sDriver )
     {
-        INFOLOG( QString( "Driver: '%1'" ).arg( sDriver ) );
+        DEBUGLOG( QString( "Driver: '%1'" ).arg( sDriver ) );
         T<Preferences>::shared_ptr pPref = m_engine->get_preferences();
 	T<AudioOutput>::shared_ptr pDriver;
 
@@ -650,7 +650,7 @@ namespace Tritium
         m_engine->lock( RIGHT_HERE );
         QMutexLocker mx(&mutex_OutputPointer);
 
-        INFOLOG( "[EnginePrivate::audioEngine_startAudioDrivers]" );
+        DEBUGLOG( "[EnginePrivate::audioEngine_startAudioDrivers]" );
 
         // check current state
         if ( m_audioEngineState != Engine::StateInitialized ) {
@@ -770,7 +770,7 @@ namespace Tritium
 /// Stop all audio drivers
     void EnginePrivate::audioEngine_stopAudioDrivers()
     {
-        INFOLOG( "[EnginePrivate::audioEngine_stopAudioDrivers]" );
+        DEBUGLOG( "[EnginePrivate::audioEngine_stopAudioDrivers]" );
 
         m_engine->get_transport()->stop();
 
@@ -835,7 +835,7 @@ namespace Tritium
         assert(prefs);
         d = new EnginePrivate(this, prefs);
 
-        INFOLOG( "[Engine]" );
+        DEBUGLOG( "[Engine]" );
 
         d->m_event_queue.reset( new EventQueue );
         d->m_action_manager.reset( new ActionManager(this) );
@@ -857,7 +857,7 @@ namespace Tritium
 
     Engine::~Engine()
     {
-        INFOLOG( "[~Engine]" );
+        DEBUGLOG( "[~Engine]" );
         d->m_pTransport->stop();
         removeSong();
         delete d;
@@ -1213,7 +1213,7 @@ namespace Tritium
             d->m_audioEngineState = Engine::StatePrepared;
         }
 
-        INFOLOG( drumkitInfo->getName() );
+        DEBUGLOG( drumkitInfo->getName() );
         d->m_currentDrumkit = drumkitInfo->getName();
         LocalFileMng fileMng(this);
         QString sDrumkitPath = fileMng.getDrumkitDirectory( drumkitInfo->getName() );
@@ -1267,7 +1267,7 @@ namespace Tritium
 
             T<Instrument>::shared_ptr pNewInstr = pDrumkitInstrList->get( nInstr );
             assert( pNewInstr );
-            INFOLOG( QString( "Loading instrument (%1 of %2) [%3]" )
+            DEBUGLOG( QString( "Loading instrument (%1 of %2) [%3]" )
                      .arg( nInstr )
                      .arg( pDrumkitInstrList->get_size() )
                      .arg( pNewInstr->get_name() ) );
@@ -1339,7 +1339,7 @@ namespace Tritium
             }
             unlock();
             get_event_queue()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
-            INFOLOG("clear last instrument to empty instrument 1 instead delete the last instrument");
+            DEBUGLOG("clear last instrument to empty instrument 1 instead delete the last instrument");
             return;
         }
 
@@ -1662,7 +1662,7 @@ namespace Tritium
                 && __instrument_death_row.front()->is_queued() == 0 ) {
             pInstr = __instrument_death_row.front();
             __instrument_death_row.pop_front();
-            INFOLOG( QString( "Deleting unused instrument (%1). "
+            DEBUGLOG( QString( "Deleting unused instrument (%1). "
                               "%2 unused remain." )
                      . arg( pInstr->get_name() )
                      . arg( __instrument_death_row.size() ) );
@@ -1671,7 +1671,7 @@ namespace Tritium
         }
         if ( __instrument_death_row.size() ) {
             pInstr = __instrument_death_row.front();
-            INFOLOG( QString( "Instrument %1 still has %2 active notes. "
+            DEBUGLOG( QString( "Instrument %1 still has %2 active notes. "
                               "Delaying 'delete instrument' operation." )
                      . arg( pInstr->get_name() )
                      . arg( pInstr->is_queued() ) );

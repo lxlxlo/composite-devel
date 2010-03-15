@@ -52,7 +52,7 @@ Preferences::Preferences()
 		: demoPath( QString( DataPath::get_data_path() ) + "/demo_songs/" )
 		, m_sLastNews( "" )
 {
-	INFOLOG( "INIT" );
+	DEBUGLOG( "INIT" );
 	
 	//Default jack track-outputs are post fader
 	m_nJackTrackOutputMode = POST_FADER;
@@ -68,7 +68,7 @@ Preferences::Preferences()
 
 	char * ladpath = getenv( "LADSPA_PATH" );	// read the Environment variable LADSPA_PATH
 	if ( ladpath ) {
-		INFOLOG( "Found LADSPA_PATH enviroment variable" );
+		DEBUGLOG( "Found LADSPA_PATH enviroment variable" );
 		QString sLadspaPath = QString::fromLocal8Bit(ladpath);
 		int pos;
 		while ( ( pos = sLadspaPath.indexOf( ":" ) ) != -1 ) {
@@ -228,7 +228,7 @@ Preferences::~Preferences()
 	savePreferences();
 
 	delete m_midi_map;
-	INFOLOG( "DESTROY" );
+	DEBUGLOG( "DESTROY" );
 	delete m_pDefaultUIStyle;
 }
 
@@ -251,12 +251,12 @@ void Preferences::loadPreferences( bool bGlobal )
 	if ( bGlobal ) {
 		sPreferencesDirectory = DataPath::get_data_path();
 		sPreferencesFilename = sPreferencesDirectory + "/composite.default.conf";
-		INFOLOG( "Loading preferences file (GLOBAL) [" + sPreferencesFilename + "]" );
+		DEBUGLOG( "Loading preferences file (GLOBAL) [" + sPreferencesFilename + "]" );
 	} else {
 		sPreferencesFilename = m_sPreferencesFilename;
 		sPreferencesDirectory = m_sPreferencesDirectory;
 		sDataDirectory = QDir::homePath().append( "/.composite/data" );
-		INFOLOG( "Loading preferences file (USER) [" + sPreferencesFilename + "]" );
+		DEBUGLOG( "Loading preferences file (USER) [" + sPreferencesFilename + "]" );
 
 
 	}
@@ -287,7 +287,7 @@ void Preferences::loadPreferences( bool bGlobal )
 	QString sSongDir;
 	QString sPatternDir;
 
-	INFOLOG( "Creating soundLibrary directories in " + sDir );
+	DEBUGLOG( "Creating soundLibrary directories in " + sDir );
 	
 	sDrumkitDir = sDir + "/drumkits";
 	sSongDir = sDir + "/songs";
@@ -619,7 +619,7 @@ void Preferences::savePreferences()
 	//string prefDir = QDir::homePath().append("/.composite").toLocal8Bit().constData();
 	QString filename = m_sPreferencesFilename;
 
-	INFOLOG( "Saving preferences file: " + filename );
+	DEBUGLOG( "Saving preferences file: " + filename );
 
 	QDomDocument doc;
 	QDomProcessingInstruction header = doc.createProcessingInstruction( "xml", "version=\"1.0\" encoding=\"UTF-8\"");
@@ -928,7 +928,7 @@ void Preferences::savePreferences()
 void Preferences::createPreferencesDirectory()
 {
 	QString prefDir = m_sPreferencesDirectory;
-	INFOLOG( "Creating preference file directory in " + prefDir );
+	DEBUGLOG( "Creating preference file directory in " + prefDir );
 
 	QDir dir;
 	dir.mkdir( prefDir );
@@ -942,7 +942,7 @@ void Preferences::createPreferencesDirectory()
 void Preferences::createDataDirectory()
 {
 	QString sDir = m_sDataDirectory;
-	INFOLOG( "Creating data directory in " + sDir );
+	DEBUGLOG( "Creating data directory in " + sDir );
 
 	QDir dir;
 	dir.mkdir( sDir );
@@ -957,7 +957,7 @@ void Preferences::createSoundLibraryDirectories()
 	QString sPatternDir;
 	QString sPlaylistDir;
 
-	INFOLOG( "Creating soundLibrary directories in " + sDir );
+	DEBUGLOG( "Creating soundLibrary directories in " + sDir );
 	
 	sDrumkitDir = sDir + "/drumkits";
 	sSongDir = sDir + "/songs";

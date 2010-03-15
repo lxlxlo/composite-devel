@@ -42,7 +42,7 @@ Playlist::Playlist(Engine* parent) :
 	m_listener(0)
 {
 	assert(parent);
-	//INFOLOG( "[Playlist]" );
+	//DEBUGLOG( "[Playlist]" );
 	__playlistName = "";
 
 }
@@ -91,7 +91,7 @@ void Playlist::setNextSongPlaylist()
 {
 	
 	int index = getSelectedSongNr();
-	//INFOLOG( "index" + to_string( index ) );
+	//DEBUGLOG( "index" + to_string( index ) );
 	if (index == -1 ){
 		if ( getActiveSongNumber() != -1){
 			index = getActiveSongNumber();

@@ -42,14 +42,14 @@ MidiInput::MidiInput( Engine* parent, const QString class_name ) :
 	m_bActive( false )
 {
 	assert(parent);
-	//INFOLOG( "INIT" );
+	//DEBUGLOG( "INIT" );
 	
 }
 
 
 MidiInput::~MidiInput()
 {
-	//INFOLOG( "DESTROY" );
+	//DEBUGLOG( "DESTROY" );
 }
 
 void MidiInput::handleMidiMessage( const MidiMessage& msg )
@@ -79,12 +79,12 @@ void MidiInput::handleMidiMessage( const MidiMessage& msg )
 		break;
 
 	case MidiMessage::CONTROL_CHANGE:
-		INFOLOG( QString( "[handleMidiMessage] CONTROL_CHANGE Parameter: %1, Value: %2").arg( msg.m_nData1 ).arg( msg.m_nData2 ) );
+		DEBUGLOG( QString( "[handleMidiMessage] CONTROL_CHANGE Parameter: %1, Value: %2").arg( msg.m_nData1 ).arg( msg.m_nData2 ) );
 		handleControlChangeMessage( msg );
 		break;
 
 	case MidiMessage::PROGRAM_CHANGE:
-		INFOLOG( QString( "[handleMidiMessage] PROGRAM_CHANGE event, seting next pattern to %1" ).arg( msg.m_nData1 ) );
+		DEBUGLOG( QString( "[handleMidiMessage] PROGRAM_CHANGE event, seting next pattern to %1" ).arg( msg.m_nData1 ) );
 		m_engine->sequencer_setNextPattern(msg.m_nData1, false, false);
 		break;
 
@@ -101,7 +101,7 @@ void MidiInput::handleMidiMessage( const MidiMessage& msg )
 		break;
 
 	case MidiMessage::START:
-		INFOLOG( "START event" );
+		DEBUGLOG( "START event" );
 		m_engine->get_transport()->start();
 		break;
 
@@ -110,7 +110,7 @@ void MidiInput::handleMidiMessage( const MidiMessage& msg )
 		break;
 
 	case MidiMessage::STOP:
-		INFOLOG( "STOP event" );
+		DEBUGLOG( "STOP event" );
 		m_engine->get_transport()->stop();
 		break;
 
@@ -133,7 +133,7 @@ void MidiInput::handleMidiMessage( const MidiMessage& msg )
 
 void MidiInput::handleControlChangeMessage( const MidiMessage& msg )
 {
-	//INFOLOG( QString( "[handleMidiMessage] CONTROL_CHANGE Parameter: %1, Value: %2" ).arg( msg.m_nData1 ).arg( msg.m_nData2 ) );
+	//DEBUGLOG( QString( "[handleMidiMessage] CONTROL_CHANGE Parameter: %1, Value: %2" ).arg( msg.m_nData1 ).arg( msg.m_nData2 ) );
 	
 	T<ActionManager>::shared_ptr aH = m_engine->get_action_manager();
 	MidiMap * mM = m_engine->get_preferences()->get_midi_map();
@@ -152,7 +152,7 @@ void MidiInput::handleControlChangeMessage( const MidiMessage& msg )
 
 void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
 {
-	INFOLOG( "handleNoteOnMessage" );
+	DEBUGLOG( "handleNoteOnMessage" );
 
 
 	int nMidiChannelFilter = m_engine->get_preferences()->m_nMidiChannelFilter;
@@ -192,7 +192,7 @@ void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
 	if ( bIsChannelValid ) {
 		if ( bPatternSelect ) {
 			int patternNumber = nNote - 36;
-			INFOLOG( QString( "next pattern = %1" ).arg( patternNumber ) );
+			DEBUGLOG( QString( "next pattern = %1" ).arg( patternNumber ) );
 
 			m_engine->sequencer_setNextPattern( patternNumber, false, false );
 		} else {
@@ -216,7 +216,7 @@ void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
 
 void MidiInput::handleNoteOffMessage( const MidiMessage& msg )
 {
-	INFOLOG( "handleNoteOffMessage" );
+	DEBUGLOG( "handleNoteOffMessage" );
 	if ( m_engine->get_preferences()->m_bMidiNoteOffIgnore ) {
 		return;
 	}
@@ -354,7 +354,7 @@ if ( msg.m_sysexData.size() == 6 ) {
 		int sc = msg.m_sysexData[9];
 		int fr = msg.m_sysexData[10];
 		int ff = msg.m_sysexData[11];
-		INFOLOG( QString("[handleSysexMessage] GOTO %1:%2:%3:%4:%5")
+		DEBUGLOG( QString("[handleSysexMessage] GOTO %1:%2:%3:%4:%5")
 			 .arg(hr).arg(mn).arg(sc).arg(fr).arg(ff) );
 	} else {
 		// sysex dump

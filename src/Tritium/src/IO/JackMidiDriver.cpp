@@ -90,12 +90,12 @@ JackMidiDriver::JackMidiDriver(T<JackClient>::shared_ptr parent, Engine* e_paren
 	  m_port(0)
 {
 	assert(e_parent);
-	INFOLOG( "CREATE" );
+	DEBUGLOG( "CREATE" );
 }
 
 JackMidiDriver::~JackMidiDriver()
 {
-	INFOLOG( "DESTROY" );
+	DEBUGLOG( "DESTROY" );
 	close();
 }
 

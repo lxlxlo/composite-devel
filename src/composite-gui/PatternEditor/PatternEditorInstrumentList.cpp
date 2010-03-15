@@ -391,7 +391,7 @@ PatternEditorInstrumentList::PatternEditorInstrumentList( QWidget *parent, Patte
 {
 	//setAttribute(Qt::WA_NoBackground);
 
-	//INFOLOG("INIT");
+	//DEBUGLOG("INIT");
 	m_pPattern = NULL;
  	m_pPatternEditorPanel = pPatternEditorPanel;
 
@@ -422,7 +422,7 @@ PatternEditorInstrumentList::PatternEditorInstrumentList( QWidget *parent, Patte
 
 PatternEditorInstrumentList::~PatternEditorInstrumentList()
 {
-	//INFOLOG( "DESTROY" );
+	//DEBUGLOG( "DESTROY" );
 	m_pUpdateTimer->stop();
 }
 
@@ -486,7 +486,7 @@ void PatternEditorInstrumentList::moveInstrumentLine( int nSourceInstrument , in
 ///
 void PatternEditorInstrumentList::updateInstrumentLines()
 {
-	//INFOLOG( "Update lines" );
+	//DEBUGLOG( "Update lines" );
 
 	Engine *pEngine = g_engine;
 	T<Song>::shared_ptr pSong = pEngine->getSong();
@@ -540,7 +540,7 @@ void PatternEditorInstrumentList::updateInstrumentLines()
 
 void PatternEditorInstrumentList::dragEnterEvent(QDragEnterEvent *event)
 {
-	INFOLOG( "[dragEnterEvent]" );
+	DEBUGLOG( "[dragEnterEvent]" );
 	if ( event->mimeData()->hasFormat("text/plain") ) {
 		T<InstrumentList>::shared_ptr instrument_list = g_engine->get_sampler()->get_instrument_list();
 		int nInstruments = instrument_list->get_size();

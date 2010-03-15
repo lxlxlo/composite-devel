@@ -48,7 +48,7 @@ SoundLibraryImportDialog::SoundLibraryImportDialog( QWidget* pParent )
  : QDialog( pParent )
 {
 	setupUi( this );
-	INFOLOG( "INIT" );
+	DEBUGLOG( "INIT" );
 	setWindowTitle( trUtf8( "Sound Library import" ) );
 	setFixedSize( width(), height() );
 
@@ -78,7 +78,7 @@ SoundLibraryImportDialog::SoundLibraryImportDialog( QWidget* pParent )
 
 SoundLibraryImportDialog::~SoundLibraryImportDialog()
 {
-	INFOLOG( "DESTROY" );
+	DEBUGLOG( "DESTROY" );
 
 }
 

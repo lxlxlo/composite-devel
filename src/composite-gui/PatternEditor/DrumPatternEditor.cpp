@@ -606,7 +606,7 @@ void DrumPatternEditor::__create_background( QPainter& p)
 
 void DrumPatternEditor::paintEvent( QPaintEvent* /*ev*/ )
 {
-	//INFOLOG( "paint" );
+	//DEBUGLOG( "paint" );
 	//QWidget::paintEvent(ev);
 	
 	QPainter painter( this );

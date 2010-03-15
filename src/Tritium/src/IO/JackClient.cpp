@@ -46,7 +46,7 @@ JackClient::JackClient(Engine* parent, bool init_jack) :
     m_audio_process_arg(0),
     m_nonaudio_process(0)
 {
-	INFOLOG( "INIT" );
+	DEBUGLOG( "INIT" );
 	assert(parent);
 	if(init_jack)
 	    open();
@@ -64,7 +64,7 @@ JackClient::JackClient(Engine* parent, bool init_jack) :
 
 #define CLIENT_SUCCESS(msg) {				\
 		assert(m_client);			\
-		INFOLOG(msg);				\
+		DEBUGLOG(msg);				\
 		tries = 0;				\
 	}
 
@@ -139,7 +139,7 @@ void JackClient::open(void)
 
 JackClient::~JackClient()
 {
-	INFOLOG( "DESTROY" );
+	DEBUGLOG( "DESTROY" );
 	close();
 }
 
@@ -205,7 +205,7 @@ int JackClient::setAudioProcessCallback(JackProcessCallback process, void* arg)
 	deactivate();
 	int rv = jack_set_process_callback(m_client, process, arg);
 	if (!rv) {
-		INFOLOG("JACK Callback changed.");
+		DEBUGLOG("JACK Callback changed.");
 		m_audio_process = process;
 		m_audio_process_arg = arg;
 	}
@@ -217,12 +217,12 @@ int JackClient::setNonAudioProcessCallback(JackProcessCallback process)
 	deactivate();
 	int rv = 0;
 	if (!m_audio_process) {
-		INFOLOG("No current audio process callback... setting the non-audio one.");
+		DEBUGLOG("No current audio process callback... setting the non-audio one.");
 		assert(m_audio_process_arg);
 		rv = jack_set_process_callback(m_client, process, m_audio_process_arg);
 	}
 	if (!rv) {
-		INFOLOG("Non-audio process callback changed.");
+		DEBUGLOG("Non-audio process callback changed.");
 		m_nonaudio_process = process;
 	} else {
 		ERRORLOG("Could not set the non-audio process callback.");
@@ -239,7 +239,7 @@ int JackClient::clearAudioProcessCallback(void)
 	deactivate();
 	// make sure the process cycle is over before killing anything
 	if (m_nonaudio_process) {
-		INFOLOG("Switching to non-audio process");
+		DEBUGLOG("Switching to non-audio process");
 		rv = jack_set_process_callback(m_client, m_nonaudio_process, 0);
 	}
 	if (m_nonaudio_process && rv) {
@@ -269,21 +269,21 @@ int JackClient::clearNonAudioProcessCallback(void)
 void JackClient::subscribe(void* child_obj)
 {
 	m_children.insert(child_obj);
-	INFOLOG(QString("JackClient subscribers: %1").arg(m_children.size()));
+	DEBUGLOG(QString("JackClient subscribers: %1").arg(m_children.size()));
 }
 
 void JackClient::unsubscribe(void* child_obj)
 {
-	INFOLOG(QString("JackClient subscribers (before): %1").arg(m_children.size()));
+	DEBUGLOG(QString("JackClient subscribers (before): %1").arg(m_children.size()));
 	if (m_children.size() == 0)
 		return;
 	std::set<void*>::iterator pos = m_children.find(child_obj);
 	if (pos != m_children.end()) {
 		m_children.erase(pos);
 	}
-	INFOLOG(QString("JackClient subscribers (after): %1").arg(m_children.size()));
+	DEBUGLOG(QString("JackClient subscribers (after): %1").arg(m_children.size()));
 	if (m_children.size() == 0) {
-		INFOLOG("JackClient is closing.");
+		DEBUGLOG("JackClient is closing.");
 		close();
 	}
 }

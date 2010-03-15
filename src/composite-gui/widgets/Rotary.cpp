@@ -120,9 +120,9 @@ void Rotary::paintEvent( QPaintEvent* /*ev*/ )
 		nFrame = (int)( 63.0 * ( fValue / fRange ) );
 	}
 
-//	INFOLOG( "\nrange: " + toString( fRange ) );
-//	INFOLOG( "norm value: " + toString( fValue ) );
-//	INFOLOG( "frame: " + toString( nFrame ) );
+//	DEBUGLOG( "\nrange: " + toString( fRange ) );
+//	DEBUGLOG( "norm value: " + toString( fValue ) );
+//	DEBUGLOG( "frame: " + toString( nFrame ) );
 
 	if ( m_type == TYPE_NORMAL ) {
 

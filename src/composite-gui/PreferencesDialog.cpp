@@ -159,7 +159,7 @@ PreferencesDialog::PreferencesDialog(QWidget* parent)
 	uint i = 0;
 	for ( QStringList::Iterator it = list.begin(); it != list.end(); it++) {
 		styleComboBox->addItem( *it );
-		//INFOLOG( "QT Stile: " + *it   );
+		//DEBUGLOG( "QT Stile: " + *it   );
 		//string sStyle = (*it).latin1();
 		QString sStyle = (*it);
 		if (sStyle == pPref->getQTStyle() ) {
@@ -213,7 +213,7 @@ PreferencesDialog::PreferencesDialog(QWidget* parent)
 
 PreferencesDialog::~PreferencesDialog()
 {	
-	INFOLOG("~PREFERENCES_DIALOG");	
+	DEBUGLOG("~PREFERENCES_DIALOG");	
 }
 
 

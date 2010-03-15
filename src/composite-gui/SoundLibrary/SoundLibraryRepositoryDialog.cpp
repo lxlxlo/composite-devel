@@ -35,7 +35,7 @@ SoundLibraryRepositoryDialog::SoundLibraryRepositoryDialog( QWidget* pParent )
  : QDialog( pParent )
 {
 	setupUi( this );
-	INFOLOG( "INIT" );
+	DEBUGLOG( "INIT" );
 	setWindowTitle( trUtf8( "Edit repository settings" ) );
 	setFixedSize( width(), height() );
 
@@ -107,6 +107,6 @@ void SoundLibraryRepositoryDialog::on_DeleteBtn_clicked()
 
 SoundLibraryRepositoryDialog::~SoundLibraryRepositoryDialog()
 {
-	INFOLOG( "DESTROY" );
+	DEBUGLOG( "DESTROY" );
 
 }

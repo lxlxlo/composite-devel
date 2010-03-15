@@ -48,7 +48,7 @@ MidiSenseWidget::MidiSenseWidget(QWidget* pParent) : QDialog( pParent )
 };
 
 MidiSenseWidget::~MidiSenseWidget(){
-	INFOLOG("DESTROY");
+	DEBUGLOG("DESTROY");
 	m_pUpdateTimer->stop();
 }
 

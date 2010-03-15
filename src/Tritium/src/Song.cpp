@@ -79,7 +79,7 @@ namespace Tritium
 	, swing_factor( 0.0 )
 	, song_mode( Song::PATTERN_MODE )
     {
-	INFOLOG( QString( "INIT '%1'" ).arg( name ) );
+	DEBUGLOG( QString( "INIT '%1'" ).arg( name ) );
 	pat_mode.reset( new PatternModeManager );
 	pattern_list.reset( new PatternList );
 	pattern_group_sequence.reset( new Song::pattern_group_t );
@@ -95,7 +95,7 @@ namespace Tritium
 	    }
 	}
 
-	INFOLOG( QString( "DESTROY '%1'" ).arg( name ) );
+	DEBUGLOG( QString( "DESTROY '%1'" ).arg( name ) );
     }
 
     /*****************************************************************

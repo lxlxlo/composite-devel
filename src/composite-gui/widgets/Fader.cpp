@@ -140,7 +140,7 @@ void Fader::setValue( float fVal )
 	}
 
 	if ( m_fValue != fVal ) {
-		//INFOLOG( "new value: " + toString( fVal ) );
+		//DEBUGLOG( "new value: " + toString( fVal ) );
 		m_fValue = fVal;
 		update();
 	}

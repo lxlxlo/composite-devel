@@ -940,7 +940,7 @@ void MainForm::updateRecentUsedSongList()
 
 void MainForm::action_file_open_recent(QAction *pAction)
 {
-//	INFOLOG( pAction->text() );
+//	DEBUGLOG( pAction->text() );
 	openSongFile( pAction->text() );
 }
 
@@ -1208,7 +1208,7 @@ bool MainForm::eventFilter( QObject * /*o*/, QEvent *e )
 		// virtual keyboard handling
 		map<int,int>::iterator found = keycodeInstrumentMap.find ( k->key() );
 		if (found != keycodeInstrumentMap.end()) {
-//			INFOLOG( "[eventFilter] virtual keyboard event" );
+//			DEBUGLOG( "[eventFilter] virtual keyboard event" );
 			// insert note at the current column in time
 			// if event recording enabled
 			int row = (*found).second;
@@ -1338,7 +1338,7 @@ QString MainForm::getAutoSaveFilename()
 
 void MainForm::onAutoSaveTimer()
 {
-	//INFOLOG( "[onAutoSaveTimer]" );
+	//DEBUGLOG( "[onAutoSaveTimer]" );
 	T<Song>::shared_ptr pSong = g_engine->getSong();
 	assert( pSong );
 	QString sOldFilename = pSong->get_filename();

@@ -44,7 +44,7 @@ SoundLibraryExportDialog::SoundLibraryExportDialog( QWidget* pParent )
  : QDialog( pParent )
 {
 	setupUi( this );
-	INFOLOG( "INIT" );
+	DEBUGLOG( "INIT" );
 	setWindowTitle( trUtf8( "Export Sound Library" ) );
 	setFixedSize( width(), height() );
 	updateDrumkitList();
@@ -55,7 +55,7 @@ SoundLibraryExportDialog::SoundLibraryExportDialog( QWidget* pParent )
 
 SoundLibraryExportDialog::~SoundLibraryExportDialog()
 {
-	INFOLOG( "DESTROY" );
+	DEBUGLOG( "DESTROY" );
 	drumkitInfoList.clear();
 }
 
@@ -73,7 +73,7 @@ void SoundLibraryExportDialog::on_exportBtn_clicked()
 	QString saveDir = drumkitPathTxt->text();
 	QString cmd = QString( "cd " ) + drumkitDir + "; tar czf \"" + saveDir + "/" + drumkitName + ".h2drumkit\" \"" + drumkitName + "\"";
 
-	INFOLOG( "cmd: " + cmd );
+	DEBUGLOG( "cmd: " + cmd );
 	system( cmd.toLocal8Bit() );
 
 	QApplication::restoreOverrideCursor();
@@ -111,12 +111,12 @@ void SoundLibraryExportDialog::on_browseBtn_clicked()
 		drumkitPathTxt->setText( filename );
 		lastUsedDir = fd->directory().absolutePath();
 	}
-	INFOLOG( "Filename: " + filename );
+	DEBUGLOG( "Filename: " + filename );
 }
 
 void SoundLibraryExportDialog::updateDrumkitList()
 {
-	INFOLOG( "[updateDrumkitList]" );
+	DEBUGLOG( "[updateDrumkitList]" );
 
 	drumkitList->clear();
 	drumkitInfoList.clear();

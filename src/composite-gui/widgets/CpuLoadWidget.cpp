@@ -153,7 +153,7 @@ void CpuLoadWidget::updateCpuLoadWidget()
 
 void CpuLoadWidget::XRunEvent()
 {
-	INFOLOG( "[xRunEvent]" );
+	DEBUGLOG( "[xRunEvent]" );
 	m_nXRunValue = 100;
 	update();
 }

@@ -204,8 +204,8 @@ int main(int argc, char *argv[])
 		// See below for Tritium::Engine.
 
 
-		INFOLOG( QString("Using QT version ") + QString( qVersion() ) );
-		INFOLOG( "Using data path: " + Tritium::DataPath::get_data_path() );
+		DEBUGLOG( QString("Using QT version ") + QString( qVersion() ) );
+		DEBUGLOG( "Using data path: " + Tritium::DataPath::get_data_path() );
 
 		if (sSelectedDriver == "auto") {
 			pPref->m_sAudioDriver = "Auto";
@@ -226,7 +226,7 @@ int main(int argc, char *argv[])
 				QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
 				pQApp->installTranslator( &qttor );
                         else
-				INFOLOG( QString("Warning: No Qt translation for locale %1 found.").arg(QLocale::system().name()));
+				DEBUGLOG( QString("Warning: No Qt translation for locale %1 found.").arg(QLocale::system().name()));
 
 
 			QString sTranslationPath = "data/i18n";
@@ -234,21 +234,21 @@ int main(int argc, char *argv[])
 
 			bool bTransOk = tor.load( total, "." );
 			if ( bTransOk ) {
-				INFOLOG( QString( "Using locale: %1/%2" ).arg( sTranslationPath ).arg( sTranslationFile ) );
+				DEBUGLOG( QString( "Using locale: %1/%2" ).arg( sTranslationPath ).arg( sTranslationFile ) );
 			}
 			else {
 				sTranslationPath = Tritium::DataPath::get_data_path() + "/i18n";
 				total = sTranslationPath + "/" + sTranslationFile + ".qm";
 				bTransOk = tor.load( total, "." );
 				if (bTransOk) {
-					INFOLOG( "Using locale: " + sTranslationPath + "/" + sTranslationFile );
+					DEBUGLOG( "Using locale: " + sTranslationPath + "/" + sTranslationFile );
 				}
 				else {
-					INFOLOG( "Warning: no locale found: " + sTranslationPath + "/" + sTranslationFile );
+					DEBUGLOG( "Warning: no locale found: " + sTranslationPath + "/" + sTranslationFile );
 				}
 			}
 			if (tor.isEmpty()) {
-				INFOLOG( "Warning: error loading locale: " +  total );
+				DEBUGLOG( "Warning: error loading locale: " +  total );
 			}
 		}
 		pQApp->installTranslator( &tor );
@@ -282,7 +282,7 @@ int main(int argc, char *argv[])
 		delete pQApp;
 		// delete Tritium::g_engine; // Deleted by ~CompositeApp (via pMainForm)
 
-		INFOLOG( "Quitting..." );
+		DEBUGLOG( "Quitting..." );
 		cout << "\nBye..." << endl;
 		pPref.reset(); // Preferences require the Logger.
 		delete Tritium::Logger::get_instance();
@@ -310,7 +310,7 @@ void showInfo()
 	cout << "\nComposite " + get_version() + " [" + __DATE__ + "]  [http://gabe.is-a-geek.org/composite/]" << endl;
 	cout << "Copyright 2002-2008 Alessandro Cominu" << endl;
 	cout << "Copyright 2009 Gabriel Beddingfield" << endl;
-//	INFOLOG( "Compiled modules: " + QString(COMPILED_FEATURES) << endl;
+//	DEBUGLOG( "Compiled modules: " + QString(COMPILED_FEATURES) << endl;
 
 	cout << "\nComposite comes with ABSOLUTELY NO WARRANTY" << endl;
 	cout << "This is free software, and you are welcome to redistribute it" << endl;

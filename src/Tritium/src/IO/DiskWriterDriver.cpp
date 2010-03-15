@@ -50,7 +50,7 @@ DiskWriterDriverThread * diskWriterDriverThread;
 
 void DiskWriterDriverThread::run()
 {
-	INFOLOG( "DiskWriterDriver thread start" );
+	DEBUGLOG( "DiskWriterDriver thread start" );
 	Engine* engine = pDriver->get_engine();
         T<Transport>::shared_ptr xport = engine->get_transport();
         TransportPosition xpos;
@@ -117,7 +117,7 @@ void DiskWriterDriverThread::run()
 
 			float fPercent = ( float ) nCurrentPatternPos / ( float )nPatterns * 100.0;
 			engine->get_event_queue()->push_event( EVENT_PROGRESS, ( int )fPercent );
-			INFOLOG( QString( "DiskWriterDriver: %1%, transport frames:%2" ).arg( fPercent ).arg( xpos.frame ) );
+			DEBUGLOG( QString( "DiskWriterDriver: %1%, transport frames:%2" ).arg( fPercent ).arg( xpos.frame ) );
 		}
 	}
 	engine->get_event_queue()->push_event( EVENT_PROGRESS, 100 );
@@ -127,7 +127,7 @@ void DiskWriterDriverThread::run()
 
 	sf_close( m_file );
 
-	INFOLOG( "DiskWriterDriver thread end" );
+	DEBUGLOG( "DiskWriterDriver thread end" );
 
 }
 
@@ -146,7 +146,7 @@ DiskWriterDriver::DiskWriterDriver(
 		, m_processCallback( processCallback )
 		, m_processCallback_arg( arg )
 {
-	INFOLOG( "INIT" );
+	DEBUGLOG( "INIT" );
 	assert(parent);
 }
 
@@ -154,14 +154,14 @@ DiskWriterDriver::DiskWriterDriver(
 
 DiskWriterDriver::~DiskWriterDriver()
 {
-	INFOLOG( "DESTROY" );
+	DEBUGLOG( "DESTROY" );
 }
 
 
 
 int DiskWriterDriver::init( unsigned nBufferSize )
 {
-	INFOLOG( QString( "Init, %1 samples" ).arg( nBufferSize ) );
+	DEBUGLOG( QString( "Init, %1 samples" ).arg( nBufferSize ) );
 
 	m_nBufferSize = nBufferSize;
 	m_pOut_L = new float[nBufferSize];
@@ -178,7 +178,7 @@ int DiskWriterDriver::init( unsigned nBufferSize )
 ///
 int DiskWriterDriver::connect()
 {
-	INFOLOG( "[connect]" );
+	DEBUGLOG( "[connect]" );
 
 	diskWriterDriverThread = new DiskWriterDriverThread(this);
 	diskWriterDriverThread->start();
@@ -191,7 +191,7 @@ int DiskWriterDriver::connect()
 /// disconnect
 void DiskWriterDriver::disconnect()
 {
-	INFOLOG( "[disconnect]" );
+	DEBUGLOG( "[disconnect]" );
 
 	diskWriterDriverThread->shutdown();
 	diskWriterDriverThread->wait();

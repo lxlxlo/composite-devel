@@ -943,7 +943,7 @@ void PlayerControl::metronomeButtonClicked(Button* ref)
 
 void PlayerControl::showButtonClicked( Button* pRef )
 {
-	//INFOLOG( "[showButtonClicked]" );
+	//DEBUGLOG( "[showButtonClicked]" );
 	CompositeApp *pH2App = CompositeApp::get_instance();
 
 	if ( pRef == m_pShowMixerBtn ) {
@@ -1021,7 +1021,7 @@ MetronomeWidget::MetronomeWidget(QWidget *pParent)
  , m_nValue( 0 )
  , m_state( METRO_OFF )
 {
-//	INFOLOG( "INIT" );
+//	DEBUGLOG( "INIT" );
 	CompositeApp::get_instance()->addEventListener( this );
 
 	m_metro_off.load( Skin::getImagePath() + "/playerControlPanel/metronome_off.png" );
@@ -1036,7 +1036,7 @@ MetronomeWidget::MetronomeWidget(QWidget *pParent)
 
 MetronomeWidget::~MetronomeWidget()
 {
-//	INFOLOG( "DESTROY" );
+//	DEBUGLOG( "DESTROY" );
 }
 
 

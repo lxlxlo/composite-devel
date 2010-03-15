@@ -37,7 +37,7 @@ LadspaFXSelector::LadspaFXSelector(int nLadspaFX)
  : QDialog( NULL )
  , m_pCurrentItem( NULL )
 {
-	//INFOLOG( "INIT" );
+	//DEBUGLOG( "INIT" );
 
 	setupUi( this );
 
@@ -86,7 +86,7 @@ LadspaFXSelector::LadspaFXSelector(int nLadspaFX)
 
 LadspaFXSelector::~LadspaFXSelector()
 {
-	//INFOLOG( "DESTROY" );
+	//DEBUGLOG( "DESTROY" );
 }
 
 
@@ -169,7 +169,7 @@ QString LadspaFXSelector::getSelectedFX()
 void LadspaFXSelector::pluginSelected()
 {
 #ifdef LADSPA_SUPPORT
-	//INFOLOG( "[pluginSelected]" );
+	//DEBUGLOG( "[pluginSelected]" );
 	//
         
 	if ( m_pPluginsListBox->selectedItems().isEmpty() ) return;
@@ -216,7 +216,7 @@ void LadspaFXSelector::on_m_pGroupsListView_currentItemChanged(
     )
 {
 #ifdef LADSPA_SUPPORT
-	//INFOLOG( "new selection: " + currentItem->text(0).toLocal8Bit().constData() );
+	//DEBUGLOG( "new selection: " + currentItem->text(0).toLocal8Bit().constData() );
 
 	m_pOkBtn->setEnabled(false);
 	m_nameLbl->setText( QString("") );
@@ -249,7 +249,7 @@ void LadspaFXSelector::on_m_pGroupsListView_currentItemChanged(
 	
 	int selectedIndex = -1;
 	for (int i = 0; i < (int)pluginList.size(); i++) {
-		//INFOLOG( "adding plugin: " + pluginList[ i ]->m_sName );
+		//DEBUGLOG( "adding plugin: " + pluginList[ i ]->m_sName );
 		m_pPluginsListBox->addItem( pluginList[ i ]->m_sName );
 		if ( pluginList[ i ]->m_sName == m_sSelectedPluginName ) {
 			selectedIndex = i;
@@ -264,11 +264,11 @@ void LadspaFXSelector::on_m_pGroupsListView_currentItemChanged(
 #ifdef LADSPA_SUPPORT
 std::vector<Tritium::LadspaFXInfo*> LadspaFXSelector::findPluginsInGroup( const QString& sSelectedGroup, Tritium::LadspaFXGroup *pGroup )
 {
-	//INFOLOG( "group: " + sSelectedGroup );
+	//DEBUGLOG( "group: " + sSelectedGroup );
 	vector<Tritium::LadspaFXInfo*> list;
 
 	if ( pGroup->getName() == sSelectedGroup ) {
-		//INFOLOG( "found..." );
+		//DEBUGLOG( "found..." );
 		for ( uint i = 0; i < pGroup->getLadspaInfo().size(); ++i ) {
 			Tritium::LadspaFXInfo *pInfo = ( pGroup->getLadspaInfo() )[i];
 			list.push_back( pInfo );
@@ -276,7 +276,7 @@ std::vector<Tritium::LadspaFXInfo*> LadspaFXSelector::findPluginsInGroup( const 
 		return list;
 	}
 	else {
-		//INFOLOG( "not found...searching in the child groups" );
+		//DEBUGLOG( "not found...searching in the child groups" );
 		for ( uint i = 0; i < pGroup->getChildList().size(); ++i ) {
 			Tritium::LadspaFXGroup *pNewGroup = ( pGroup->getChildList() )[ i ];
 			list = findPluginsInGroup( sSelectedGroup, pNewGroup );

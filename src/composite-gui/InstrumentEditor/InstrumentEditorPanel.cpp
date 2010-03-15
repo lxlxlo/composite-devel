@@ -43,7 +43,7 @@ InstrumentEditorPanel* InstrumentEditorPanel::get_instance()
 
 InstrumentEditorPanel::InstrumentEditorPanel( QWidget * /*pParent*/ )
 {
-	INFOLOG( "INIT" );
+	DEBUGLOG( "INIT" );
 
 	m_pInstance = this;
 	m_pInstrumentEditor = new InstrumentEditor( 0 );
@@ -62,7 +62,7 @@ InstrumentEditorPanel::InstrumentEditorPanel( QWidget * /*pParent*/ )
 
 InstrumentEditorPanel::~InstrumentEditorPanel()
 {
-	INFOLOG( "DESTROY" );
+	DEBUGLOG( "DESTROY" );
 }
 
 

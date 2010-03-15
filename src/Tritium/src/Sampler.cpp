@@ -113,7 +113,7 @@ void SamplerPrivate::handle_note_off(const SeqEvent& ev)
 
 Sampler::Sampler(T<AudioPortManager>::shared_ptr apm)
 {
-    INFOLOG( "INIT" );
+    DEBUGLOG( "INIT" );
 
     d = new SamplerPrivate(this, apm);
 
@@ -265,7 +265,7 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
     fTotalPitch += note.get_pitch();
     fTotalPitch += fLayerPitch;
 
-    //INFOLOG( "total pitch: " + to_string( fTotalPitch ) );
+    //DEBUGLOG( "total pitch: " + to_string( fTotalPitch ) );
 
     if ( fTotalPitch == 0.0
 	 && pSample->get_sample_rate() == frame_rate ) {
@@ -412,7 +412,7 @@ int SamplerPrivate::render_note_resample(
     float fNotePitch = note.get_pitch() + fLayerPitch;
     fNotePitch += note.m_noteKey.m_nOctave * 12 + note.m_noteKey.m_key;
 
-    //INFOLOG( "pitch: " + to_string( fNotePitch ) );
+    //DEBUGLOG( "pitch: " + to_string( fNotePitch ) );
 
     // 2^(1/12) is a musical half-step in pitch.  If A=440, A#=440 * 2^1/12
     float fStep = pow( 1.0594630943593, ( double )fNotePitch );  // i.e. pow( 2, fNotePitch/12.0 )

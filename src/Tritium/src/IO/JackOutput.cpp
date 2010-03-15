@@ -46,7 +46,7 @@ jack_nframes_t jack_server_bufferSize = 0;
 int jackDriverSampleRate( jack_nframes_t nframes, void * /*arg*/ )
 {
 	QString msg = QString("Jack SampleRate changed: the sample rate is now %1/sec").arg( QString::number( (int) nframes ) );
-	INFOLOG( msg );
+	DEBUGLOG( msg );
 	jack_server_sampleRate = nframes;
 	return 0;
 }
@@ -75,7 +75,7 @@ JackOutput::JackOutput( Engine* e_parent, T<JackClient>::shared_ptr parent, Jack
     : AudioOutput(e_parent),
       m_jack_client(parent)
 {
-	INFOLOG( "INIT" );
+	DEBUGLOG( "INIT" );
 	__track_out_enabled = m_engine->get_preferences()->m_bJackTrackOuts;	// allow per-track output
 
 	this->processCallback = processCallback;
@@ -91,7 +91,7 @@ JackOutput::JackOutput( Engine* e_parent, T<JackClient>::shared_ptr parent, Jack
 
 JackOutput::~JackOutput()
 {
-	INFOLOG( "DESTROY" );
+	DEBUGLOG( "DESTROY" );
 	disconnect();
 }
 
@@ -104,7 +104,7 @@ JackOutput::~JackOutput()
 // return 4: output port = NULL
 int JackOutput::connect()
 {
-	INFOLOG( "connect" );
+	DEBUGLOG( "connect" );
 	jack_client_t* client = m_jack_client->ref();
 
 	m_jack_client->subscribe((void*)this);
@@ -127,7 +127,7 @@ int JackOutput::connect()
 			return 0;
 		}
 
-		INFOLOG( "Could not connect so saved out-ports. Connecting to first pair of in-ports" );
+		DEBUGLOG( "Could not connect so saved out-ports. Connecting to first pair of in-ports" );
 		const char ** portnames = jack_get_ports ( client, NULL, NULL, JackPortIsInput );
 		if ( !portnames || !portnames[0] || !portnames[1] ) {
 			ERRORLOG( "Could't locate two Jack input port" );
@@ -151,7 +151,7 @@ int JackOutput::connect()
 
 void JackOutput::disconnect()
 {
-	INFOLOG( "disconnect" );
+	DEBUGLOG( "disconnect" );
 	jack_client_t* client;
 	client = m_jack_client->ref();
 
@@ -177,7 +177,7 @@ void JackOutput::disconnect()
 
 void JackOutput::deactivate()
 {
-	INFOLOG( "[deactivate]" );
+	DEBUGLOG( "[deactivate]" );
 	m_jack_client->clearAudioProcessCallback();
 	memset( track_output_ports_L, 0, sizeof(track_output_ports_L) );
 	memset( track_output_ports_R, 0, sizeof(track_output_ports_R) );
@@ -368,7 +368,7 @@ void JackOutput::setPortName( int nPort, bool bLeftChannel, const QString& sName
 
 int JackOutput::getNumTracks()
 {
-//	INFOLOG( "get num tracks()" );
+//	DEBUGLOG( "get num tracks()" );
 	return track_port_count;
 }
 

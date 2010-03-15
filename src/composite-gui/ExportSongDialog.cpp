@@ -135,7 +135,7 @@ void ExportSongDialog::progressEvent( int nValue )
 {
         m_pProgressBar->setValue( nValue );
 	if ( nValue == 100 ) {
-	  	//INFOLOG("SONO A 100");
+	  	//DEBUGLOG("SONO A 100");
 		
 		g_engine->stopExportSong();
 		m_bExporting = false;

@@ -44,7 +44,7 @@ LayerPreview::LayerPreview( QWidget* pParent )
 {
 	setAttribute(Qt::WA_NoBackground);
 
-	//INFOLOG( "INIT" );
+	//DEBUGLOG( "INIT" );
 
 	setMouseTracking( true );
 
@@ -64,7 +64,7 @@ LayerPreview::LayerPreview( QWidget* pParent )
 
 LayerPreview::~ LayerPreview()
 {
-	//INFOLOG( "DESTROY" );
+	//DEBUGLOG( "DESTROY" );
 }
 
 

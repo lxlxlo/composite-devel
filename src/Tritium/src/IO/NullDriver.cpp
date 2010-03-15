@@ -47,14 +47,14 @@ int NullDriver::init( unsigned /*nBufferSize*/ )
 
 int NullDriver::connect()
 {
-	INFOLOG( "connect" );
+	DEBUGLOG( "connect" );
 	return 0;
 }
 
 
 void NullDriver::disconnect()
 {
-	INFOLOG( "disconnect" );
+	DEBUGLOG( "disconnect" );
 }
 
 
@@ -73,14 +73,14 @@ unsigned NullDriver::getSampleRate()
 
 float* NullDriver::getOut_L()
 {
-	INFOLOG( "not implemented yet" );
+	DEBUGLOG( "not implemented yet" );
 	return NULL;
 }
 
 
 float* NullDriver::getOut_R()
 {
-	INFOLOG( "not implemented yet" );
+	DEBUGLOG( "not implemented yet" );
 	return NULL;
 }
 

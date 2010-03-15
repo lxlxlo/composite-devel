@@ -33,7 +33,7 @@ namespace Tritium
 
 Pattern::Pattern( const QString& name, const QString& category, unsigned length )
 {
-//	INFOLOG( "INIT: " + m_sName );
+//	DEBUGLOG( "INIT: " + m_sName );
 	set_name( name );
 	set_category( category );
 	set_length( length );
@@ -43,7 +43,7 @@ Pattern::Pattern( const QString& name, const QString& category, unsigned length 
 
 Pattern::~Pattern()
 {
-//	INFOLOG( "DESTROY: " + m_sName );
+//	DEBUGLOG( "DESTROY: " + m_sName );
 
 	// delete all Notes
 	Pattern::note_map_t::iterator pos;
@@ -131,10 +131,10 @@ T<Pattern>::shared_ptr Pattern::copy()
 
 void Pattern::debug_dump()
 {
-	INFOLOG( "Pattern dump" );
-	INFOLOG( "Pattern name: " + __name );
-	INFOLOG( "Pattern category: " + __category );
-	INFOLOG( QString("Pattern length: %1").arg( get_length() ) );
+	DEBUGLOG( "Pattern dump" );
+	DEBUGLOG( "Pattern name: " + __name );
+	DEBUGLOG( "Pattern category: " + __category );
+	DEBUGLOG( QString("Pattern length: %1").arg( get_length() ) );
 }
 
 

@@ -39,7 +39,7 @@ PianoRollEditor::PianoRollEditor( QWidget *pParent )
  : QWidget( pParent )
  , m_pPattern( NULL )
 {
-	INFOLOG( "INIT" );
+	DEBUGLOG( "INIT" );
 
 	m_nRowHeight = 10;
 	m_nOctaves = 8;
@@ -66,7 +66,7 @@ PianoRollEditor::PianoRollEditor( QWidget *pParent )
 
 PianoRollEditor::~PianoRollEditor()
 {
-	INFOLOG( "DESTROY" );
+	DEBUGLOG( "DESTROY" );
 }
 
 
@@ -89,7 +89,7 @@ void PianoRollEditor::paintEvent(QPaintEvent *ev)
 
 void PianoRollEditor::createBackground()
 {
-	INFOLOG( "(re)creating the background" );
+	DEBUGLOG( "(re)creating the background" );
 
 	QColor backgroundColor( 0, 0, 0 );
 	m_pBackground->fill( backgroundColor );
@@ -128,7 +128,7 @@ void PianoRollEditor::createBackground()
 
 void PianoRollEditor::selectedPatternChangedEvent()
 {
-	INFOLOG( "updating m_pPattern pointer" );
+	DEBUGLOG( "updating m_pPattern pointer" );
 
 	Engine *pEngine = g_engine;
 	PatternList *pPatternList = pEngine->getSong()->get_pattern_list();
@@ -150,7 +150,7 @@ void PianoRollEditor::drawPattern()
 	}
 
 
-	INFOLOG( "draw pattern" );
+	DEBUGLOG( "draw pattern" );
 
 	QPainter p( m_pTemp );
 	// copy the background image
@@ -211,14 +211,14 @@ void PianoRollEditor::drawNote( Note *pNote, QPainter *pPainter )
 
 void PianoRollEditor::mousePressEvent(QMouseEvent*)
 {
-	INFOLOG("Mouse press event");
+	DEBUGLOG("Mouse press event");
 }
 
 
 
 void PianoRollEditor::mouseReleaseEvent(QMouseEvent*)
 {
-	INFOLOG("Mouse release event" );
+	DEBUGLOG("Mouse release event" );
 }
 
 */

@@ -34,20 +34,20 @@ FakeDriver::FakeDriver( Engine* parent, audioProcessCallback processCallback, vo
 		, m_pOut_L( NULL )
 		, m_pOut_R( NULL )
 {
-	INFOLOG( "INIT" );
+	DEBUGLOG( "INIT" );
 	assert(parent);
 }
 
 
 FakeDriver::~FakeDriver()
 {
-	INFOLOG( "DESTROY" );
+	DEBUGLOG( "DESTROY" );
 }
 
 
 int FakeDriver::init( unsigned nBufferSize )
 {
-	INFOLOG( QString( "Init, %1 samples" ).arg( nBufferSize ) );
+	DEBUGLOG( QString( "Init, %1 samples" ).arg( nBufferSize ) );
 
 	m_nBufferSize = nBufferSize;
 	m_pOut_L = new float[nBufferSize];
@@ -59,7 +59,7 @@ int FakeDriver::init( unsigned nBufferSize )
 
 int FakeDriver::connect()
 {
-	INFOLOG( "connect" );
+	DEBUGLOG( "connect" );
 
         m_engine->get_transport()->locate(0);
         m_engine->get_transport()->start();
@@ -70,7 +70,7 @@ int FakeDriver::connect()
 
 void FakeDriver::disconnect()
 {
-	INFOLOG( "disconnect" );
+	DEBUGLOG( "disconnect" );
 
 	delete[] m_pOut_L;
 	m_pOut_L = NULL;

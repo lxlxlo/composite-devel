@@ -45,7 +45,7 @@ AudioFileBrowser::AudioFileBrowser ( QWidget* pParent )
 		: QDialog ( pParent )
 {
 	setupUi ( this );
-	INFOLOG ( "INIT" );
+	DEBUGLOG ( "INIT" );
 	setWindowTitle ( trUtf8 ( "Audio File Browser" ) );
 	setFixedSize ( width(), height() );
 	installEventFilter( this );
@@ -103,7 +103,7 @@ AudioFileBrowser::~AudioFileBrowser()
 {
 	T<Sample>::shared_ptr pNewSample = Sample::load( sEmptySampleFilename );
 	g_engine->get_sampler()->preview_sample( pNewSample, 100 );
-	INFOLOG ( "DESTROY" );
+	DEBUGLOG ( "DESTROY" );
 }
 
 

@@ -111,7 +111,7 @@ void Note::set_instrument( T<Instrument>::shared_ptr instrument )
 			ERRORLOG( "NULL ADSR? Instrument: " + pInstrument->m_sName );
 		}
 		else {
-			INFOLOG( "copio l'adsr dallo strumento" );
+			DEBUGLOG( "copio l'adsr dallo strumento" );
 			if ( m_pADSR ) {
 				WARNINGLOG( "Replacing an existing ADSR" );
 				delete m_pADSR;
@@ -126,7 +126,7 @@ void Note::set_instrument( T<Instrument>::shared_ptr instrument )
 
 void Note::dumpInfo() const
 {
-    INFOLOG( QString("humanize offset%2\t instr: %3\t key: %4\t pitch: %5")
+    DEBUGLOG( QString("humanize offset%2\t instr: %3\t key: %4\t pitch: %5")
 	      .arg( m_nHumanizeDelay )
 	      .arg( __instrument->get_name() )
 	      .arg( keyToString( m_noteKey ) )
@@ -144,9 +144,9 @@ NoteKey Note::stringToKey( const QString& str )
 	QString sOct = str.mid( str.length() - 1, str.length() );
 	int nOctave = sOct.toInt();
 
-//	INFOLOG( "skey: " + sKey );
-//	INFOLOG( "sOct: " + sOct );
-//	INFOLOG( "nOctave: " + to_string( nOctave ) );
+//	DEBUGLOG( "skey: " + sKey );
+//	DEBUGLOG( "sOct: " + sOct );
+//	DEBUGLOG( "nOctave: " + to_string( nOctave ) );
 
 	if ( sKey == "C" ) {
 		key.m_key = NoteKey::C;

@@ -48,7 +48,7 @@ ADSR::ADSR(
 		, __ticks( 0.0 )
 		, __value( 0.0 )
 {
-	//INFOLOG( "INIT" );
+	//DEBUGLOG( "INIT" );
 }
 
 
@@ -62,14 +62,14 @@ ADSR::ADSR( const ADSR& orig )
 		, __ticks( orig.__ticks )
 		, __value( orig.__value )
 {
-	//INFOLOG( "INIT - copy ctr" );
+	//DEBUGLOG( "INIT - copy ctr" );
 }
 
 
 
 ADSR::~ADSR()
 {
-	//INFOLOG( "DESTROY" );
+	//DEBUGLOG( "DESTROY" );
 }
 
 

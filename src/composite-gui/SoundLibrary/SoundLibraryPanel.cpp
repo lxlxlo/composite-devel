@@ -76,7 +76,7 @@ SoundLibraryPanel::SoundLibraryPanel( QWidget *pParent )
  , __pattern_item( NULL )
  , __pattern_item_list( NULL )
 {
-	//INFOLOG( "INIT" );
+	//DEBUGLOG( "INIT" );
 	__drumkit_menu = new QMenu( this );
 	__drumkit_menu->addAction( trUtf8( "Load" ), this, SLOT( on_drumkitLoadAction() ) );
 	__drumkit_menu->addAction( trUtf8( "Export" ), this, SLOT( on_drumkitExportAction() ) );
@@ -322,7 +322,7 @@ void SoundLibraryPanel::on_DrumkitList_itemActivated(
 
 		QString sInstrName = selectedName.remove( 0, selectedName.indexOf( "] " ) + 2 );
 		QString sDrumkitName = item->parent()->text(0);
-		INFOLOG( QString(sDrumkitName) + ", instr:" + sInstrName );
+		DEBUGLOG( QString(sDrumkitName) + ", instr:" + sInstrName );
 
 		T<Instrument>::shared_ptr pInstrument = Instrument::load_instrument( g_engine, sDrumkitName, sInstrName );
 		pInstrument->set_muted( false );
@@ -405,11 +405,11 @@ void SoundLibraryPanel::on_DrumkitList_mouseMove( QMouseEvent *event)
 		( __sound_library_tree->currentItem()->parent() == __user_drumkits_item )
 	) {
  		// drumkit selection
-		//INFOLOG( "ho selezionato un drumkit (system)" );
+		//DEBUGLOG( "ho selezionato un drumkit (system)" );
 		return;
 	}
 	else {
-		//INFOLOG( "ho selezionato uno strumento" );
+		//DEBUGLOG( "ho selezionato uno strumento" );
 		// instrument selection
 		if ( __sound_library_tree->currentItem() == NULL )
 		{

@@ -45,7 +45,7 @@ Sample::Sample(
 	, __filename( filename )
 	, __n_frames( frames )
 {
-		//INFOLOG("INIT " + m_sFilename + ". nFrames: " + toString( nFrames ) );
+		//DEBUGLOG("INIT " + m_sFilename + ". nFrames: " + toString( nFrames ) );
 }
 
 
@@ -54,7 +54,7 @@ Sample::~Sample()
 {
 	delete[] __data_l;
 	delete[] __data_r;
-	//INFOLOG( "DESTROY " + m_sFilename);
+	//DEBUGLOG( "DESTROY " + m_sFilename);
 }
 
 

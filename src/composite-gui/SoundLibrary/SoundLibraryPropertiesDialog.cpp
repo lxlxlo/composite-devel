@@ -41,7 +41,7 @@ SoundLibraryPropertiesDialog::SoundLibraryPropertiesDialog( QWidget* pParent, T<
  : QDialog( pParent )
 {
 	setupUi( this );
-	INFOLOG( "INIT" );
+	DEBUGLOG( "INIT" );
 	setWindowTitle( trUtf8( "SoundLibrary Properties" ) );	
 	setFixedSize( width(), height() );
 	predrumkit = preDrumKit;
@@ -63,7 +63,7 @@ SoundLibraryPropertiesDialog::SoundLibraryPropertiesDialog( QWidget* pParent, T<
 
 SoundLibraryPropertiesDialog::~SoundLibraryPropertiesDialog()
 {
-	INFOLOG( "DESTROY" );
+	DEBUGLOG( "DESTROY" );
 
 }
 

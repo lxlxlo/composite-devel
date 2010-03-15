@@ -110,15 +110,15 @@ std::vector<QString> Drumkit::getSystemDrumkitList(EngineInterface* eng)
 
 void Drumkit::dump()
 {
-	INFOLOG( "Drumkit dump" );
-	INFOLOG( "\t|- Name = " + m_sName );
-	INFOLOG( "\t|- Author = " + m_sAuthor );
-	INFOLOG( "\t|- Info = " + m_sInfo );
+	DEBUGLOG( "Drumkit dump" );
+	DEBUGLOG( "\t|- Name = " + m_sName );
+	DEBUGLOG( "\t|- Author = " + m_sAuthor );
+	DEBUGLOG( "\t|- Info = " + m_sInfo );
 
-	INFOLOG( "\t|- Instrument list" );
+	DEBUGLOG( "\t|- Instrument list" );
 	for ( unsigned nInstrument = 0; nInstrument < m_pInstrumentList->get_size(); ++nInstrument ) {
 		T<Instrument>::shared_ptr pInstr = m_pInstrumentList->get( nInstrument );
-		INFOLOG( QString("\t\t|- (%1 of %2) Name = %3")
+		DEBUGLOG( QString("\t\t|- (%1 of %2) Name = %3")
 			 .arg( nInstrument )
 			 .arg( m_pInstrumentList->get_size() )
 			 .arg( pInstr->get_name() )
@@ -128,12 +128,12 @@ void Drumkit::dump()
 			if ( pLayer ) {
 				T<Sample>::shared_ptr pSample = pLayer->get_sample();
 				if ( pSample ) {
-					INFOLOG( "\t\t   |- " + pSample->get_filename() );
+					DEBUGLOG( "\t\t   |- " + pSample->get_filename() );
 				} else {
-					INFOLOG( "\t\t   |- NULL sample" );
+					DEBUGLOG( "\t\t   |- NULL sample" );
 				}
 			} else {
-				INFOLOG( "\t\t   |- NULL Layer" );
+				DEBUGLOG( "\t\t   |- NULL Layer" );
 			}
 
 		}
@@ -144,7 +144,7 @@ void Drumkit::dump()
 #ifdef LIBARCHIVE_SUPPORT
 void Drumkit::install( EngineInterface* engine, const QString& filename )
 {
-	INFOLOG( "[Drumkit::install] drumkit = " + filename );
+	DEBUGLOG( "[Drumkit::install] drumkit = " + filename );
 	QString dataDir = engine->get_preferences()->getDataDirectory() + "drumkits/";
 
 	int r;
@@ -192,7 +192,7 @@ void Drumkit::install( EngineInterface* engine, const QString& filename )
 #ifndef WIN32
 void Drumkit::install( EngineInterface* engine, const QString& filename )
 {
-        INFOLOG( "[Drumkit::install] drumkit = " + filename );
+        DEBUGLOG( "[Drumkit::install] drumkit = " + filename );
         QString dataDir = engine->get_preferences()->getDataDirectory() + "drumkits/";
 
         // GUNZIP !!!
@@ -239,7 +239,7 @@ void Drumkit::install( EngineInterface* engine, const QString& filename )
 
 void Drumkit::save( EngineInterface* engine, const QString& sName, const QString& sAuthor, const QString& sInfo, const QString& sLicense )
 {
-	INFOLOG( "Saving drumkit" );
+	DEBUGLOG( "Saving drumkit" );
 
 	T<Drumkit>::shared_ptr pDrumkitInfo( new Drumkit );
 	pDrumkitInfo->setName( sName );
@@ -317,12 +317,12 @@ void Drumkit::save( EngineInterface* engine, const QString& sName, const QString
 
 void Drumkit::removeDrumkit( EngineInterface* engine, const QString& sDrumkitName )
 {
-	INFOLOG( "Removing drumkit: " + sDrumkitName );
+	DEBUGLOG( "Removing drumkit: " + sDrumkitName );
 
 	QString dataDir = engine->get_preferences()->getDataDirectory() + "drumkits/";
 	dataDir += sDrumkitName;
 	QString cmd = QString( "rm -rf \"" ) + dataDir + "\"";
-	INFOLOG( cmd );
+	DEBUGLOG( cmd );
 	if ( system( cmd.toLocal8Bit() ) != 0 ) {
 		ERRORLOG( "Error executing '" + cmd + "'" );
 		throw H2Exception( QString( "Error executing '%1'" ).arg( cmd ) );

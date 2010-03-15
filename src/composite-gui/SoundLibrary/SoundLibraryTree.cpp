@@ -36,7 +36,7 @@ SoundLibraryTree::SoundLibraryTree( QWidget *pParent )
 
 void SoundLibraryTree::mousePressEvent(QMouseEvent *event)
 {
-//	INFOLOG( "[mousePressEvent]" );
+//	DEBUGLOG( "[mousePressEvent]" );
 	QTreeWidget::mousePressEvent( event );
 
 	if ( event->button() == Qt::RightButton ) {

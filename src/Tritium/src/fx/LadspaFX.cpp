@@ -132,7 +132,7 @@ LadspaFX::LadspaFX( const QString& sLibraryPath, const QString& sPluginLabel )
 		, m_nIAPorts( 0 )
 		, m_nOAPorts( 0 )
 {
-	INFOLOG( QString( "INIT - %1 - %2" ).arg( sLibraryPath ).arg( sPluginLabel ) );
+	DEBUGLOG( QString( "INIT - %1 - %2" ).arg( sLibraryPath ).arg( sPluginLabel ) );
 
 
 	m_pBuffer_L = new float[MAX_BUFFER_SIZE];
@@ -152,13 +152,13 @@ LadspaFX::LadspaFX( const QString& sLibraryPath, const QString& sPluginLabel )
 LadspaFX::~LadspaFX()
 {
 	// dealloca il plugin
-	INFOLOG( QString( "DESTROY - %1 - %2" ).arg( m_sLibraryPath ).arg( m_sLabel ) );
+	DEBUGLOG( QString( "DESTROY - %1 - %2" ).arg( m_sLibraryPath ).arg( m_sLabel ) );
 
 	if ( m_d ) {
 		/*
 		if ( m_d->deactivate ) {
 			if ( m_handle ) {
-				INFOLOG( "deactivate" );
+				DEBUGLOG( "deactivate" );
 				m_d->deactivate( m_handle );
 			}
 		}*/
@@ -166,7 +166,7 @@ LadspaFX::~LadspaFX()
 
 		if ( m_d->cleanup ) {
 			if ( m_handle ) {
-				INFOLOG( "Cleanup" );
+				DEBUGLOG( "Cleanup" );
 				m_d->cleanup( m_handle );
 			}
 		}
@@ -192,7 +192,7 @@ T<LadspaFX>::shared_ptr LadspaFX::load( const QString& sLibraryPath, const QStri
 {
 	T<LadspaFX>::shared_ptr pFX( new LadspaFX( sLibraryPath, sPluginLabel ) );
 
-	INFOLOG( "INIT - " + sLibraryPath + " - " + sPluginLabel );
+	DEBUGLOG( "INIT - " + sLibraryPath + " - " + sPluginLabel );
 
 	pFX->m_pLibrary = new QLibrary( sLibraryPath );
 	LADSPA_Descriptor_Function desc_func = ( LADSPA_Descriptor_Function )pFX->m_pLibrary->resolve( "ladspa_descriptor" );
@@ -321,7 +321,7 @@ T<LadspaFX>::shared_ptr LadspaFX::load( const QString& sLibraryPath, const QStri
 			pControl->isToggle = isToggle;
 			pControl->m_bIsInteger = isInteger;
 
-			INFOLOG( QString( "Input control port\t[%1]\tmin=%2,\tmax=%3,\tcontrolValue=%4" ).arg( sName ).arg( fMin ).arg( fMax ).arg( pControl->fControlValue ) );
+			DEBUGLOG( QString( "Input control port\t[%1]\tmin=%2,\tmax=%3,\tcontrolValue=%4" ).arg( sName ).arg( fMin ).arg( fMax ).arg( pControl->fControlValue ) );
 
 			pFX->inputControlPorts.push_back( pControl );
 			pFX->m_d->connect_port( pFX->m_handle, nPort, &( pControl->fControlValue ) );
@@ -371,7 +371,7 @@ T<LadspaFX>::shared_ptr LadspaFX::load( const QString& sLibraryPath, const QStri
 
 void LadspaFX::connectAudioPorts( float* pIn_L, float* pIn_R, float* pOut_L, float* pOut_R )
 {
-	INFOLOG( "[connectAudioPorts]" );
+	DEBUGLOG( "[connectAudioPorts]" );
 
 	unsigned nAIConn = 0;
 	unsigned nAOConn = 0;
@@ -419,7 +419,7 @@ void LadspaFX::processFX( unsigned nFrames )
 void LadspaFX::activate()
 {
 	if ( m_d->activate ) {
-		INFOLOG( "activate " + getPluginName() );
+		DEBUGLOG( "activate " + getPluginName() );
 		m_bActivated = true;
 		m_d->activate( m_handle );
 	}
@@ -429,7 +429,7 @@ void LadspaFX::activate()
 void LadspaFX::deactivate()
 {
 	if ( m_d->deactivate && m_bActivated ) {
-		INFOLOG( "deactivate " + getPluginName() );
+		DEBUGLOG( "deactivate " + getPluginName() );
 		m_bActivated = false;
 		m_d->deactivate( m_handle );
 	}

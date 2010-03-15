@@ -38,7 +38,7 @@ using namespace Tritium;
 FileBrowser::FileBrowser( QWidget* pParent )
  : QWidget( pParent )
 {
-	INFOLOG( "[FileBrowser]" );
+	DEBUGLOG( "[FileBrowser]" );
 
 	m_pDirectoryLabel = new QLabel( NULL );
 	m_pUpBtn = new QPushButton( "..", NULL );
@@ -92,14 +92,14 @@ FileBrowser::FileBrowser( QWidget* pParent )
 
 FileBrowser::~FileBrowser()
 {
-	INFOLOG( "[~FileBrowser]" );
+	DEBUGLOG( "[~FileBrowser]" );
 }
 
 
 
 void FileBrowser::loadDirectoryTree( const QString& sBasedir )
 {
-	INFOLOG( "[loadDirectoryTree]" );
+	DEBUGLOG( "[loadDirectoryTree]" );
 	m_pDirList->clear();
 	m_pFileList->clear();
 
@@ -207,7 +207,7 @@ void FileBrowser::on_fileList_ItemChanged(
     QListWidgetItem * /*previous*/
     )
 {
-	INFOLOG( "[on_fileList_ItemChanged]" );
+	DEBUGLOG( "[on_fileList_ItemChanged]" );
 	if ( current ) {
 		QString sFileName = current->text();
 		QFileInfoList list = m_directory.entryInfoList();
@@ -233,7 +233,7 @@ void FileBrowser::on_fileList_ItemActivated( QListWidgetItem* item )
 	for (int i = 0; i < list.size(); ++i) {
 		QFileInfo fileInfo = list.at(i);
 		if ( fileInfo.fileName() == item->text() ) {
-			INFOLOG( "[on_fileList_ItemActivated] " + fileInfo.absoluteFilePath() );
+			DEBUGLOG( "[on_fileList_ItemActivated] " + fileInfo.absoluteFilePath() );
 			if ( !fileInfo.isDir() ) {
 
 				// FIXME: evitare di caricare il sample, visualizzare solo le info del file
@@ -251,7 +251,7 @@ void FileBrowser::on_fileList_ItemActivated( QListWidgetItem* item )
 
 void FileBrowser::on_dirList_ItemActivated( QListWidgetItem* pItem )
 {
-	INFOLOG( "[on_dirList_ItemActivated]" );
+	DEBUGLOG( "[on_dirList_ItemActivated]" );
 
 	if ( !pItem ) {
 		return;
@@ -276,7 +276,7 @@ void FileBrowser::on_dirList_ItemActivated( QListWidgetItem* pItem )
 
 void FileBrowser::on_upBtnClicked()
 {
-	INFOLOG( "[on_upBtnClicked]" );
+	DEBUGLOG( "[on_upBtnClicked]" );
 	m_directory.cdUp();
 	loadDirectoryTree( m_directory.absolutePath() );
 }
@@ -284,5 +284,5 @@ void FileBrowser::on_upBtnClicked()
 
 void FileBrowser::on_playBtnClicked()
 {
-	INFOLOG( "[on_playBtnClicked]" );
+	DEBUGLOG( "[on_playBtnClicked]" );
 }

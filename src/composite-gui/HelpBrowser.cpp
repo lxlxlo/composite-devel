@@ -33,9 +33,9 @@ SimpleHTMLBrowser::SimpleHTMLBrowser( QWidget *pParent, const QString& sDataPath
  , m_sDataPath( sDataPath )
  , m_sFilename( sFilename )
 {
-//	INFOLOG( "INIT" );
-//	INFOLOG( "Data path:" + m_sDataPath );
-//	INFOLOG( "Filename:" + m_sFilename );
+//	DEBUGLOG( "INIT" );
+//	DEBUGLOG( "Data path:" + m_sDataPath );
+//	DEBUGLOG( "Filename:" + m_sFilename );
 	setWindowIcon( QPixmap( Skin::getImagePath() + "/icon16.png" ) );
 
 	if (m_type == MANUAL ) {
@@ -95,7 +95,7 @@ SimpleHTMLBrowser::SimpleHTMLBrowser( QWidget *pParent, const QString& sDataPath
 
 SimpleHTMLBrowser::~SimpleHTMLBrowser()
 {
-//	INFOLOG( "DESTROY" );
+//	DEBUGLOG( "DESTROY" );
 }
 
 
@@ -146,7 +146,7 @@ void SimpleHTMLBrowser::closeWindow()
 
 void SimpleHTMLBrowser::docIndex()
 {
-	INFOLOG( "[docIndex]" );
+	DEBUGLOG( "[docIndex]" );
 
 	QFile file( m_sFilename ); // Read the text from a file
 	if ( file.open( QIODevice::ReadOnly ) ) {

@@ -207,7 +207,7 @@ namespace Tritium
 	QString data_directory = m_engine->get_preferences()->getDataDirectory();
 
 	QString sPatternDir = data_directory + "patterns/" + drumkit_name;
-        INFOLOG( "[savePattern]" + sPatternDir );
+        DEBUGLOG( "[savePattern]" + sPatternDir );
 
         // check if the directory exists
         QDir dir( sPatternDir );
@@ -275,7 +275,7 @@ namespace Tritium
     {
         // TODO: use QT copy functions
 
-        INFOLOG( sOrigFilename + " --> " + sDestFilename );
+        DEBUGLOG( sOrigFilename + " --> " + sDestFilename );
 
         if ( sOrigFilename == sDestFilename ) {
             return;
@@ -447,7 +447,7 @@ namespace Tritium
         QDir dir( m_engine->get_preferences()->getDataDirectory() + "/patterns/" + sDrumkit );
 
         if ( !dir.exists() ) {
-            INFOLOG( QString( "No patterns for drumkit '%1'." ).arg( sDrumkit ) );
+            DEBUGLOG( QString( "No patterns for drumkit '%1'." ).arg( sDrumkit ) );
         } else {
             dir.setFilter( QDir::Dirs );
             QFileInfoList fileList = dir.entryInfoList();
@@ -643,7 +643,7 @@ namespace Tritium
 
     int LocalFileMng::saveDrumkit( T<Drumkit>::shared_ptr drumkit )
     {
-        INFOLOG( "[saveDrumkit]" );
+        DEBUGLOG( "[saveDrumkit]" );
 
 	T<Serializer>::auto_ptr serializer;
 	SyncSaveReport save_report;
@@ -987,7 +987,7 @@ namespace Tritium
                 .arg( enc )
                 .toLocal8Bit();
 
-            //INFOLOG( QString("Using '%1' encoding for TinyXML file").arg(enc) );
+            //DEBUGLOG( QString("Using '%1' encoding for TinyXML file").arg(enc) );
 
             while( !file.atEnd() ) {
                 line = file.readLine();

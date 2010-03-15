@@ -37,7 +37,7 @@ WaveDisplay::WaveDisplay(QWidget* pParent)
 {
 	setAttribute(Qt::WA_NoBackground);
 
-	//INFOLOG( "INIT" );
+	//DEBUGLOG( "INIT" );
 	int w = 277;
 	int h = 58;
 	resize( w, h );
@@ -56,7 +56,7 @@ WaveDisplay::WaveDisplay(QWidget* pParent)
 
 WaveDisplay::~WaveDisplay()
 {
-	//INFOLOG( "DESTROY" );
+	//DEBUGLOG( "DESTROY" );
 
 	delete[] m_pPeakData;
 }
@@ -93,7 +93,7 @@ void WaveDisplay::updateDisplay( Tritium::InstrumentLayer *pLayer )
 		int nPos = sName.lastIndexOf( "/" );
 		m_sSampleName = sName.mid( nPos + 1, sName.length() );
 
-//		INFOLOG( "[updateDisplay] sample: " + m_sSampleName  );
+//		DEBUGLOG( "[updateDisplay] sample: " + m_sSampleName  );
 
 		int nSampleLength = pLayer->get_sample()->get_n_frames();
 		float nScaleFactor = nSampleLength / width();

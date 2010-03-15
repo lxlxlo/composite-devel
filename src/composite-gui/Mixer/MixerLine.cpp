@@ -52,7 +52,7 @@ using namespace Tritium;
 MixerLine::MixerLine(QWidget* parent)
  : PixmapWidget( parent, "MixerLine" )
 {
-//	INFOLOG( "INIT" );
+//	DEBUGLOG( "INIT" );
 
 	m_nWidth = MIXERLINE_WIDTH;
 	m_nHeight = MIXERLINE_HEIGHT;
@@ -175,7 +175,7 @@ MixerLine::MixerLine(QWidget* parent)
 
 MixerLine::~MixerLine()
 {
-//	INFOLOG( "DESTROY" );
+//	DEBUGLOG( "DESTROY" );
 	//delete m_pFader;
 }
 

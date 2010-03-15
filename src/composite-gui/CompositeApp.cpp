@@ -146,7 +146,7 @@ CompositeApp::CompositeApp( MainForm *pMainForm, T<Song>::shared_ptr pFirstSong 
 
 CompositeApp::~CompositeApp()
 {
-	INFOLOG( "[~CompositeApp]" );
+	DEBUGLOG( "[~CompositeApp]" );
 	m_pEventQueueTimer->stop();
 
 	delete m_pHelpBrowser;
@@ -384,9 +384,9 @@ void CompositeApp::showInfoSplash()
 		if ( nID > nNewsID ) {
 			sFilename = sFile;
 		}
-//		INFOLOG( "news: " + sFilename + " id: " + sNewsID );
+//		DEBUGLOG( "news: " + sFilename + " id: " + sNewsID );
 	}
-	INFOLOG( "[showInfoSplash] Selected news: " + sFilename );
+	DEBUGLOG( "[showInfoSplash] Selected news: " + sFilename );
 
 	QString sLastRead = g_engine->get_preferences()->getLastNews();
 	if ( sLastRead != sFilename && !sFilename.isEmpty() ) {

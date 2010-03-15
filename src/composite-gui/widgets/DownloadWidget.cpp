@@ -35,10 +35,10 @@ Download::Download( QWidget* pParent, const QString& download_url, const QString
 		, __local_file( local_file )
 {
 	if ( !__local_file.isEmpty() ) {
-		INFOLOG( QString( "Downloading '%1' in '%2'" ).arg( __remote_url ).arg( __local_file ) );
+		DEBUGLOG( QString( "Downloading '%1' in '%2'" ).arg( __remote_url ).arg( __local_file ) );
 
 	} else {
-		INFOLOG( QString( "Downloading '%1'" ).arg( __remote_url ) );
+		DEBUGLOG( QString( "Downloading '%1'" ).arg( __remote_url ) );
 	}
 
 	QUrl url( __remote_url );
@@ -82,7 +82,7 @@ void Download::__fetch_done( bool bError )
 		return;
 	}
 
-	INFOLOG( "Download completed. " );
+	DEBUGLOG( "Download completed. " );
 
 	if ( __local_file.isEmpty() ) {
 		// store the text received only when not using the file.
@@ -126,10 +126,10 @@ void Download::__http_request_finished( int requestId, bool error )
 
 void Download::__header_received( const QHttpResponseHeader& res )
 {
-	//INFOLOG( "Header received: " + to_string( res.statusCode() ) );
+	//DEBUGLOG( "Header received: " + to_string( res.statusCode() ) );
 	if ( ( res.statusCode() == 301 ) || ( res.statusCode() == 302 ) || ( res.statusCode() == 307 ) ) {
 		__redirect_url = res.value( "location" );
-		INFOLOG( "Received redirect to: " + __redirect_url );
+		DEBUGLOG( "Received redirect to: " + __redirect_url );
 		//__http_client.abort();
 	}
 }

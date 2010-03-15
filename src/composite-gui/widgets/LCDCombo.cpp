@@ -33,7 +33,7 @@ const QString LCDCombo::SEPARATOR("--sep--");
 LCDCombo::LCDCombo(QWidget *pParent, int digits)
  : QWidget(pParent)
 {
-	INFOLOG( "INIT" );
+	DEBUGLOG( "INIT" );
 
 	QStringList items;
 	display = new LCDDisplay( this, LCDDigit::SMALL_BLUE, digits, false);
@@ -98,7 +98,7 @@ int LCDCombo::length()
 
 void LCDCombo::update()
 {
-	//INFOLOG ( "update: "+toString(items.size()) );
+	//DEBUGLOG ( "update: "+toString(items.size()) );
 	pop->clear();
 
 	for( int i = 0; i < items.size(); i++ ) {
@@ -122,7 +122,7 @@ int LCDCombo::count()
 
 bool LCDCombo::addItem( const QString &text )
 {
-	//INFOLOG( "add item" );
+	//DEBUGLOG( "add item" );
 
 	if ( text.size() <= size ){
 		items.append( text );
@@ -173,7 +173,7 @@ void LCDCombo::set_text( const QString &text)
 	if (display->getText() == text) {
 		return;
 	}
-	//INFOLOG( text );
+	//DEBUGLOG( text );
 	display->setText( text );
 	for ( int i = 0; i < items.size(); i++ ) {
 		if ( items.at(i) == text )
@@ -189,7 +189,7 @@ void LCDCombo::set_text( const QString &text, bool emit_on_change)
 	if (display->getText() == text) {
 		return;
 	}
-	//INFOLOG( text );
+	//DEBUGLOG( text );
 	display->setText( text );
 	for ( int i = 0; i < items.size(); i++ ) {
 		if ( items.at(i) == text )

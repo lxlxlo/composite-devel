@@ -37,7 +37,7 @@ SplashScreen::SplashScreen()
 // : QWidget( NULL, Qt::SplashScreen )
  : QSplashScreen( NULL )
 {
-	//INFOLOG( "SplashScreen" );
+	//DEBUGLOG( "SplashScreen" );
 
 	//resize(width, height);
 	setFixedSize(width, height);
@@ -74,7 +74,7 @@ SplashScreen::SplashScreen()
 
 SplashScreen::~SplashScreen()
 {
-	//INFOLOG( "~SplashScreen" );
+	//DEBUGLOG( "~SplashScreen" );
 	delete m_pBackground;
 }
 

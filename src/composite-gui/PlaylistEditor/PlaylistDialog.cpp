@@ -56,7 +56,7 @@ PlaylistDialog::PlaylistDialog ( QWidget* pParent )
 {
 
 	setupUi ( this );
-	INFOLOG ( "INIT" );
+	DEBUGLOG ( "INIT" );
 	setWindowTitle ( trUtf8 ( "Play List Browser" ) + QString(" - ") + QString( g_engine->get_playlist().__playlistName  ) );
 	setFixedSize ( width(), height() );
 	installEventFilter(this);
@@ -265,7 +265,7 @@ PlaylistDialog::PlaylistDialog ( QWidget* pParent )
 
 PlaylistDialog::~PlaylistDialog()
 {
-	INFOLOG ( "DESTROY" );
+	DEBUGLOG ( "DESTROY" );
 }
 
 

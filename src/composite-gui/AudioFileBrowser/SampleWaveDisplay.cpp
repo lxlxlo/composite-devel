@@ -36,7 +36,7 @@ SampleWaveDisplay::SampleWaveDisplay(QWidget* pParent)
 {
 	setAttribute(Qt::WA_NoBackground);
 
-	//INFOLOG( "INIT" );
+	//DEBUGLOG( "INIT" );
 	int w = 445;
 	int h = 85;
 	resize( w, h );
@@ -55,7 +55,7 @@ SampleWaveDisplay::SampleWaveDisplay(QWidget* pParent)
 
 SampleWaveDisplay::~SampleWaveDisplay()
 {
-	//INFOLOG( "DESTROY" );
+	//DEBUGLOG( "DESTROY" );
 
 	delete[] m_pPeakData;
 }
@@ -101,7 +101,7 @@ void SampleWaveDisplay::updateDisplay( QString filename )
 			m_sSampleName = sName.mid( nPos + 1, sName.length() );
 		}
 
-//		INFOLOG( "[updateDisplay] sample: " + m_sSampleName  );
+//		DEBUGLOG( "[updateDisplay] sample: " + m_sSampleName  );
 
 		int nSampleLength = pNewSample->get_n_frames();
 		float nScaleFactor = nSampleLength / width();

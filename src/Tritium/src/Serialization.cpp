@@ -428,7 +428,7 @@ void SerializationQueue::handle_save_song(SerializationQueue::event_data_t& ev, 
     EngineInterface *engine = m_engine;
     Song& song = *(ev.song);
 
-    INFOLOG( "Saving song " + filename );
+    DEBUGLOG( "Saving song " + filename );
     int rv = 0; // return value
 
     // FIXME: has the file write-permssion?
@@ -748,7 +748,7 @@ void SerializationQueue::handle_save_drumkit(SerializationQueue::event_data_t& e
 		*/
 
 		if( sOrigFilename.startsWith( sDrumkitDir ) ){
-		    INFOLOG("sample is already in drumkit dir");
+		    DEBUGLOG("sample is already in drumkit dir");
 		    tempVector[ nLayer ] = sDestFilename.remove( sDrumkitDir + "/" );
 		} else {
 		    int nPos = sDestFilename.lastIndexOf( '/' );

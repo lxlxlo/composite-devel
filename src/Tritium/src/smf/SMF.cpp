@@ -38,14 +38,14 @@ SMFHeader::SMFHeader( int nFormat, int nTracks, int nTPQN )
 		, m_nTracks( nTracks )
 		, m_nTPQN( nTPQN )
 {
-	INFOLOG( "INIT" );
+	DEBUGLOG( "INIT" );
 }
 
 
 
 SMFHeader::~SMFHeader()
 {
-	INFOLOG( "DESTROY" );
+	DEBUGLOG( "DESTROY" );
 }
 
 
@@ -71,7 +71,7 @@ vector<char> SMFHeader::getBuffer()
 
 SMFTrack::SMFTrack( const QString& sTrackName )
 {
-	INFOLOG( "INIT" );
+	DEBUGLOG( "INIT" );
 
 	addEvent( new SMFTrackNameMetaEvent( sTrackName, 0 ) );
 }
@@ -80,7 +80,7 @@ SMFTrack::SMFTrack( const QString& sTrackName )
 
 SMFTrack::~SMFTrack()
 {
-	INFOLOG( "DESTROY" );
+	DEBUGLOG( "DESTROY" );
 
 	for ( unsigned i = 0; i < m_eventList.size(); i++ ) {
 		delete m_eventList[ i ];
@@ -144,7 +144,7 @@ void SMFTrack::addEvent( SMFEvent *pEvent )
 
 SMF::SMF()
 {
-	INFOLOG( "INIT" );
+	DEBUGLOG( "INIT" );
 
 	m_pHeader = new SMFHeader( 1, -1, 192 );
 }
@@ -153,7 +153,7 @@ SMF::SMF()
 
 SMF::~SMF()
 {
-	INFOLOG( "DESTROY" );
+	DEBUGLOG( "DESTROY" );
 
 	delete m_pHeader;
 
@@ -204,21 +204,21 @@ vector<char> SMF::getBuffer()
 SMFWriter::SMFWriter()
 		: m_file( NULL )
 {
-	INFOLOG( "INIT" );
+	DEBUGLOG( "INIT" );
 }
 
 
 
 SMFWriter::~SMFWriter()
 {
-	INFOLOG( "DESTROY" );
+	DEBUGLOG( "DESTROY" );
 }
 
 
 
 void SMFWriter::save( const QString& sFilename, T<Song>::shared_ptr pSong, T<InstrumentList>::shared_ptr iList )
 {
-	INFOLOG( "save" );
+	DEBUGLOG( "save" );
 	const int DRUM_CHANNEL = 9;
 
 	vector<SMFEvent*> eventList;

@@ -32,7 +32,7 @@
 InstrumentRack::InstrumentRack( QWidget *pParent )
  : QWidget( pParent )
 {
-	INFOLOG( "INIT" );
+	DEBUGLOG( "INIT" );
 
 	resize( 290, 450 );
 	setMinimumSize( width(), height() );
@@ -101,7 +101,7 @@ InstrumentRack::InstrumentRack( QWidget *pParent )
 
 InstrumentRack::~InstrumentRack()
 {
-	INFOLOG( "DESTROY" );
+	DEBUGLOG( "DESTROY" );
 }
 
 

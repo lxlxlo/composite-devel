@@ -52,10 +52,10 @@ Effects::Effects(Engine* parent) :
 
 Effects::~Effects()
 {
-	//INFOLOG( "DESTROY" );
+	//DEBUGLOG( "DESTROY" );
 	if ( m_pRootGroup != NULL ) delete m_pRootGroup;
 	
-	//INFOLOG( "destroying " + to_string( m_pluginList.size() ) + " LADSPA plugins" );
+	//DEBUGLOG( "destroying " + to_string( m_pluginList.size() ) + " LADSPA plugins" );
 	for ( unsigned i = 0; i < m_pluginList.size(); i++ ) {
 		delete m_pluginList[i];
 	}
@@ -75,7 +75,7 @@ T<LadspaFX>::shared_ptr Effects::getLadspaFX( int nFX )
 void  Effects::setLadspaFX( T<LadspaFX>::shared_ptr pFX, int nFX )
 {
 	assert( nFX < MAX_FX );
-	//INFOLOG( "[setLadspaFX] FX: " + pFX->getPluginLabel() + ", " + to_string( nFX ) );
+	//DEBUGLOG( "[setLadspaFX] FX: " + pFX->getPluginLabel() + ", " + to_string( nFX ) );
 
 	m_engine->lock( RIGHT_HERE );
 
@@ -101,14 +101,14 @@ std::vector<LadspaFXInfo*> Effects::getPluginList()
 	}
 
 	vector<QString> ladspaPathVect = m_engine->get_preferences()->getLadspaPath();
-	INFOLOG( QString( "PATHS: %1" ).arg( ladspaPathVect.size() ) );
+	DEBUGLOG( QString( "PATHS: %1" ).arg( ladspaPathVect.size() ) );
 	for ( vector<QString>::iterator i = ladspaPathVect.begin(); i != ladspaPathVect.end(); i++ ) {
 		QString sPluginDir = *i;
-		INFOLOG( "*** [getPluginList] reading directory: " + sPluginDir );
+		DEBUGLOG( "*** [getPluginList] reading directory: " + sPluginDir );
 
 		QDir dir( sPluginDir );
 		if ( !dir.exists() ) {
-			INFOLOG( "Directory " + sPluginDir + " not found" );
+			DEBUGLOG( "Directory " + sPluginDir + " not found" );
 			continue;
 		}
 
@@ -153,7 +153,7 @@ std::vector<LadspaFXInfo*> Effects::getPluginList()
 					pFX->m_sMaker = QString::fromLocal8Bit(d->Maker);
 					pFX->m_sCopyright = QString::fromLocal8Bit(d->Copyright);
 
-					//INFOLOG( "Loading: " + pFX->m_sLabel );
+					//DEBUGLOG( "Loading: " + pFX->m_sLabel );
 
 					for ( unsigned j = 0; j < d->PortCount; j++ ) {
 						LADSPA_PortDescriptor pd = d->PortDescriptors[j];
@@ -186,7 +186,7 @@ std::vector<LadspaFXInfo*> Effects::getPluginList()
 		}
 	}
 
-	INFOLOG( QString( "Loaded %1 LADSPA plugins" ).arg( m_pluginList.size() ) );
+	DEBUGLOG( QString( "Loaded %1 LADSPA plugins" ).arg( m_pluginList.size() ) );
 	std::sort( m_pluginList.begin(), m_pluginList.end(), LadspaFXInfo::alphabeticOrder );
 	return m_pluginList;
 }
@@ -195,7 +195,7 @@ std::vector<LadspaFXInfo*> Effects::getPluginList()
 
 LadspaFXGroup* Effects::getLadspaFXGroup()
 {
-	INFOLOG( "[getLadspaFXGroup]" );
+	DEBUGLOG( "[getLadspaFXGroup]" );
 
 //	LadspaFX::getPluginList();	// load the list
 

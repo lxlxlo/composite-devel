@@ -43,7 +43,7 @@ using namespace Tritium;
 LadspaFXProperties::LadspaFXProperties(QWidget* parent, uint nLadspaFX)
  : QWidget( parent )
 {
-//	INFOLOG( "INIT" );
+//	DEBUGLOG( "INIT" );
 
 	m_nLadspaFX = nLadspaFX;
 
@@ -106,7 +106,7 @@ LadspaFXProperties::LadspaFXProperties(QWidget* parent, uint nLadspaFX)
 
 LadspaFXProperties::~LadspaFXProperties()
 {
-//	INFOLOG( "DESTROY" );
+//	DEBUGLOG( "DESTROY" );
 }
 
 
@@ -164,7 +164,7 @@ void LadspaFXProperties::faderChanged( Fader * ref )
 void LadspaFXProperties::updateControls()
 {
 #ifdef LADSPA_SUPPORT
-	INFOLOG( "*** [updateControls] ***" );
+	DEBUGLOG( "*** [updateControls] ***" );
 	m_pTimer->stop();
 
 	T<LadspaFX>::shared_ptr pFX = g_engine->get_effects()->getLadspaFX( m_nLadspaFX );
@@ -323,7 +323,7 @@ void LadspaFXProperties::updateControls()
 		}
 	}
 	else {
-		INFOLOG( "NULL PLUGIN" );
+		DEBUGLOG( "NULL PLUGIN" );
 		setWindowTitle( trUtf8( "LADSPA FX %1 Properties" ).arg( m_nLadspaFX) );
 		m_pNameLbl->setText( trUtf8("No plugin") );
 		m_pActivateBtn->setEnabled(false);
@@ -365,7 +365,7 @@ void LadspaFXProperties::selectFXBtnClicked()
 			updateControls();
 		}
 		else {	// no plugin selected
-			INFOLOG( "no plugin selected" );
+			DEBUGLOG( "no plugin selected" );
 		}
 	}
 #endif
@@ -377,7 +377,7 @@ void LadspaFXProperties::updateOutputControls()
 {
 #ifdef LADSPA_SUPPORT
 
-//	INFOLOG( "[updateOutputControls]" );
+//	DEBUGLOG( "[updateOutputControls]" );
 //	Song *pSong = (g_engine )->getSong();
 	T<LadspaFX>::shared_ptr pFX = g_engine->get_effects()->getLadspaFX(m_nLadspaFX);
 

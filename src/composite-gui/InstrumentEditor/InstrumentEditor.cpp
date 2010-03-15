@@ -332,7 +332,7 @@ InstrumentEditor::InstrumentEditor( QWidget* pParent )
 
 InstrumentEditor::~InstrumentEditor()
 {
-	//INFOLOG( "DESTROY" );
+	//DEBUGLOG( "DESTROY" );
 }
 
 
@@ -354,7 +354,7 @@ void InstrumentEditor::selectedInstrumentChangedEvent()
 		}
 		else {
 			m_pInstrument = pInstrList->get( nInstr );
-			//INFOLOG( "new instr: " + m_pInstrument->m_sName );
+			//DEBUGLOG( "new instr: " + m_pInstrument->m_sName );
 		}
 	}
 	else {
@@ -484,7 +484,7 @@ void InstrumentEditor::rotaryChanged(Rotary *ref)
 				int nCoarse = (int)m_pLayerPitchCoarseRotary->getValue();
 				float fFine = m_pLayerPitchFineRotary->getValue() / 100.0;
 				pLayer->set_pitch( nCoarse + fFine );
-				INFOLOG( QString("pitch: %1").arg( pLayer->get_pitch() ) );
+				DEBUGLOG( QString("pitch: %1").arg( pLayer->get_pitch() ) );
 			}
 		}
 		else if ( ref == m_pLayerPitchFineRotary ) {
@@ -494,7 +494,7 @@ void InstrumentEditor::rotaryChanged(Rotary *ref)
 				int nCoarse = (int)m_pLayerPitchCoarseRotary->getValue();
 				float fFine = m_pLayerPitchFineRotary->getValue() / 100.0;
 				pLayer->set_pitch( nCoarse + fFine );
-				INFOLOG( QString("pitch: %1").arg( pLayer->get_pitch()) );
+				DEBUGLOG( QString("pitch: %1").arg( pLayer->get_pitch()) );
 			}
 
 		}
@@ -720,7 +720,7 @@ void InstrumentEditor::selectLayer( int nLayer )
 		//int nCoarsePitch = pLayer->m_fPitch / 24 + 0.5;
 		int nCoarsePitch = (int) ::round(pLayer->get_pitch());
 		float fFinePitch = pLayer->get_pitch() - nCoarsePitch;
-		//INFOLOG( "fine pitch: " + to_string( fFinePitch ) );
+		//DEBUGLOG( "fine pitch: " + to_string( fFinePitch ) );
 		m_pLayerPitchCoarseRotary->setValue( nCoarsePitch );
 		m_pLayerPitchFineRotary->setValue( fFinePitch * 100 );
 

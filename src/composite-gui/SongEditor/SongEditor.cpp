@@ -138,7 +138,7 @@ void SongEditor::mousePressEvent( QMouseEvent *ev )
 	int nColumn = ( (int)ev->x() - 10 ) / (int)m_nGridWidth;
 
 	if ( ev->modifiers() == Qt::ControlModifier ) {
-		INFOLOG( "[mousePressEvent] CTRL pressed!" );
+		DEBUGLOG( "[mousePressEvent] CTRL pressed!" );
 		m_bIsCtrlPressed = true;
 	}
 	else {
@@ -168,7 +168,7 @@ void SongEditor::mousePressEvent( QMouseEvent *ev )
 
 		if ( bOverExistingPattern ) {
 			// MOVE PATTERNS
-//			INFOLOG( "[mousePressEvent] Move patterns" );
+//			DEBUGLOG( "[mousePressEvent] Move patterns" );
 			m_bIsMoving = true;
 			m_bShowLasso = false;
 			m_movingCells = m_selectedCells;
@@ -177,7 +177,7 @@ void SongEditor::mousePressEvent( QMouseEvent *ev )
 			m_clickPoint.setY( nRow );
 		}
 		else {
-//			INFOLOG( "[mousePressEvent] Select patterns" );
+//			DEBUGLOG( "[mousePressEvent] Select patterns" );
 			// select patterns
 			m_bShowLasso = true;
 			m_lasso.setCoords( ev->x(), ev->y(), ev->x(), ev->y() );
@@ -203,7 +203,7 @@ void SongEditor::mousePressEvent( QMouseEvent *ev )
 
 			if ( bFound ) {
 				// DELETE PATTERN
-//				INFOLOG( "[mousePressEvent] delete pattern" );
+//				DEBUGLOG( "[mousePressEvent] delete pattern" );
 				pColumn->del( nColumnIndex );
 
 				// elimino le colonne vuote
@@ -221,7 +221,7 @@ void SongEditor::mousePressEvent( QMouseEvent *ev )
 			else {
 				if ( nColumn < (int)pColumns->size() ) {
 					// ADD PATTERN
-//					INFOLOG( "[mousePressEvent] add pattern" );
+//					DEBUGLOG( "[mousePressEvent] add pattern" );
 					m_selectedCells.clear();
 					pColumn->add( pPattern );
 				}
@@ -231,7 +231,7 @@ void SongEditor::mousePressEvent( QMouseEvent *ev )
 			// ADD PATTERN (with spaces..)
 			m_selectedCells.clear();
 			int nSpaces = nColumn - pColumns->size();
-//			INFOLOG( "[mousePressEvent] add pattern (with " + to_string( nSpaces ) + " spaces)" );
+//			DEBUGLOG( "[mousePressEvent] add pattern (with " + to_string( nSpaces ) + " spaces)" );
 
 			T<PatternList>::shared_ptr pColumn( new PatternList() );
 			pColumns->push_back( pColumn );
@@ -267,8 +267,8 @@ void SongEditor::mouseMoveEvent(QMouseEvent *ev)
 		int nRowDiff = nRow  - m_clickPoint.y();
 		int nColumnDiff = nColumn - m_clickPoint.x();
 
-//		INFOLOG( "[mouseMoveEvent] row diff: "+ to_string( nRowDiff ) );
-//		INFOLOG( "[mouseMoveEvent] col diff: "+ to_string( nColumnDiff ) );
+//		DEBUGLOG( "[mouseMoveEvent] row diff: "+ to_string( nRowDiff ) );
+//		DEBUGLOG( "[mouseMoveEvent] col diff: "+ to_string( nColumnDiff ) );
 
 		for ( int i = 0; i < (int)m_movingCells.size(); i++ ) {
 			QPoint cell = m_movingCells[ i ];
@@ -424,7 +424,7 @@ void SongEditor::mouseReleaseEvent( QMouseEvent * /*ev*/ )
 
 void SongEditor::paintEvent( QPaintEvent *ev )
 {
-/*	INFOLOG(
+/*	DEBUGLOG(
 			"[paintEvent] x: " + to_string( ev->rect().x() ) +
 			" y: " + to_string( ev->rect().y() ) +
 			" w: " + to_string( ev->rect().width() ) +
@@ -1067,7 +1067,7 @@ void SongEditorPatternList::patternPopup_delete()
 	PatternList *pSongPatternList = song->get_pattern_list();
 
 	T<Pattern>::shared_ptr pattern = pSongPatternList->get( pEngine->getSelectedPatternNumber() );
-	INFOLOG( QString("[patternPopup_delete] Delete pattern: %1 @%2").arg(pattern->get_name()).arg( (long)pattern.get() ) );
+	DEBUGLOG( QString("[patternPopup_delete] Delete pattern: %1 @%2").arg(pattern->get_name()).arg( (long)pattern.get() ) );
 	pSongPatternList->del(pattern);
 
 	T<Song::pattern_group_t>::shared_ptr patternGroupVect = song->get_pattern_group_vector();

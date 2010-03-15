@@ -70,7 +70,7 @@ void SMFBuffer::writeVarLen( long value )
 	long buffer;
 	buffer = value & 0x7f;
 	while ( ( value >>= 7 ) > 0 ) {
-		INFOLOG( "." );
+		DEBUGLOG( "." );
 		buffer <<= 8;
 		buffer |= 0x80;
 		buffer += ( value & 0x7f );

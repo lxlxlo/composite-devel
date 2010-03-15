@@ -30,7 +30,7 @@ SoundLibrarySaveDialog::SoundLibrarySaveDialog( QWidget* pParent )
  : QDialog( pParent )
 {
 	setupUi( this );
-	INFOLOG( "INIT" );
+	DEBUGLOG( "INIT" );
 	setWindowTitle( trUtf8( "Save Sound Library" ) );
 	setFixedSize( width(), height() );
 }
@@ -40,7 +40,7 @@ SoundLibrarySaveDialog::SoundLibrarySaveDialog( QWidget* pParent )
 
 SoundLibrarySaveDialog::~SoundLibrarySaveDialog()
 {
-	INFOLOG( "DESTROY" );
+	DEBUGLOG( "DESTROY" );
 
 }
 
@@ -48,7 +48,7 @@ SoundLibrarySaveDialog::~SoundLibrarySaveDialog()
 
 void SoundLibrarySaveDialog::on_saveBtn_clicked()
 {
-	INFOLOG( "!!!" );
+	DEBUGLOG( "!!!" );
 
 	if( nameTxt->text().isEmpty() ){
 			QMessageBox::information( this, "Composite", trUtf8 ( "Please supply at least a valid name"));

@@ -528,7 +528,7 @@ PatternEditorPanel::~PatternEditorPanel()
 
 void PatternEditorPanel::syncToExternalHorizontalScrollbar(int)
 {
-	//INFOLOG( "[syncToExternalHorizontalScrollbar]" );
+	//DEBUGLOG( "[syncToExternalHorizontalScrollbar]" );
 
 	// drum Editor
 	m_pEditorScrollView->horizontalScrollBar()->setValue( m_pPatternEditorHScrollBar->value() );
@@ -558,7 +558,7 @@ void PatternEditorPanel::syncToExternalHorizontalScrollbar(int)
 
 void PatternEditorPanel::on_patternEditorScroll(int nValue)
 {
-	//INFOLOG( "[on_patternEditorScroll] " + QString::number(nValue)  );
+	//DEBUGLOG( "[on_patternEditorScroll] " + QString::number(nValue)  );
 	m_pPatternEditorVScrollBar->setValue( nValue );	
 	resizeEvent(NULL);
 }
@@ -584,7 +584,7 @@ void PatternEditorPanel::gridResolutionChanged( QString str )
 		nResolution = str.toInt();
 	}
 
-	//INFOLOG( to_string( nResolution ) );
+	//DEBUGLOG( to_string( nResolution ) );
 	m_pDrumPatternEditor->setResolution( nResolution, bUseTriplets );
 
 	g_engine->get_preferences()->setPatternEditorGridResolution( nResolution );
@@ -734,7 +734,7 @@ void PatternEditorPanel::showEvent ( QShowEvent * /*ev*/ )
 /// richiamato dall'uso dello scroll del mouse
 void PatternEditorPanel::contentsMoving(int /*dummy*/)
 {
-	//INFOLOG( "contentsMoving" );
+	//DEBUGLOG( "contentsMoving" );
 	syncToExternalHorizontalScrollbar(0);
 }
 
@@ -819,7 +819,7 @@ void PatternEditorPanel::zoomOutBtnClicked(Button * /*ref*/)
 
 void PatternEditorPanel::patternSizeChanged( QString str )
 {
-	INFOLOG( "pattern size changed" );
+	DEBUGLOG( "pattern size changed" );
 
 	uint nEighth = MAX_NOTES / 8;
 	int nSelected = str.toInt();
