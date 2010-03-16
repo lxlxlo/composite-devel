@@ -62,8 +62,7 @@ public:
 	Error = 1,
 	Warning = 2,
 	Info = 4, /* Typ. user  info... no PRETTY_FUNCTION */
-	Debug = 8,
-	AELockTracing = 0x10
+	Debug = 8
     } log_level_t;
 
     static void create_instance();
@@ -78,6 +77,8 @@ public:
 
     void log( unsigned lev,
 	      const char* funcname,
+	      const char* file,
+	      unsigned line,
 	      const QString& msg );
 
 private:
@@ -97,19 +98,21 @@ private:
  * function call.  This is good, because it avoids QString
  * constructors for temporaries.
  */
-#define __LOG_WRAPPER(lev, funct, msg) {				\
+#define __LOG_WRAPPER(lev, funct, file, line, msg) {			\
 	if( Tritium::Logger::get_log_level() & (lev) ){			\
 	    Tritium::Logger::get_instance()->log(			\
 		(lev),							\
 		(funct),						\
+		(file),							\
+		(line),							\
 		(msg)							\
 		);							\
 	}								\
     }
 
-#define DEBUGLOG(x) __LOG_WRAPPER( Tritium::Logger::Debug, __PRETTY_FUNCTION__, (x) );
-#define INFOLOG(x) __LOG_WRAPPER( Tritium::Logger::Info, __PRETTY_FUNCTION__, (x) );
-#define WARNINGLOG(x) __LOG_WRAPPER( Tritium::Logger::Warning, __PRETTY_FUNCTION__, (x) );
-#define ERRORLOG(x) __LOG_WRAPPER( Tritium::Logger::Error, __PRETTY_FUNCTION__, (x) );
+#define DEBUGLOG(x) __LOG_WRAPPER( Tritium::Logger::Debug, __FUNCTION__, __FILE__, __LINE__, (x) );
+#define INFOLOG(x) __LOG_WRAPPER( Tritium::Logger::Info, __FUNCTION__, __FILE__, __LINE__, (x) );
+#define WARNINGLOG(x) __LOG_WRAPPER( Tritium::Logger::Warning, __FUNCTION__, __FILE__, __LINE__, (x) );
+#define ERRORLOG(x) __LOG_WRAPPER( Tritium::Logger::Error, __FUNCTION__, __FILE__, __LINE__, (x) );
 
 #endif // TRITIUM_OBJECT_HPP

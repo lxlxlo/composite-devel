@@ -110,9 +110,9 @@ int LoggerPrivate::process()
     QString tmpString;
     for( it = last = queue.begin() ; (it != queue.end()) && (!m_kill) ; ++it ) {
 	last = it;
-	printf( it->toLocal8Bit() );
+	printf( "%s", it->toLocal8Bit().data() );
 	if( m_logfile ) {
-	    fprintf( m_logfile, it->toLocal8Bit() );
+	    fprintf( m_logfile, "%s", it->toLocal8Bit().data() );
 	}
     }
     if(m_kill)
@@ -174,6 +174,8 @@ void LoggerPrivate::set_logging_level(const char* level)
 
 void LoggerPrivate::log( unsigned level,
 			 const char* funcname,
+			 const char* file,
+			 unsigned line,
 			 const QString& msg )
 {
     if( level == Logger::None ) return;
@@ -210,11 +212,12 @@ void LoggerPrivate::log( unsigned level,
 
     QString tmp;
     if(level != Logger::Info) {
-	tmp = QString("%1%2%3\t%4 \033[0m\n")
+	tmp = QString("%1%2%3 [%4() @%5]\033[0m\n")
 	    .arg(color[i])
 	    .arg(prefix[i])
+	    .arg(msg)
 	    .arg(funcname)
-	    .arg(msg);
+	    .arg(line);
     } else {
 	// The INFOLOG should be a very simple, user
 	// feedback message.  It should /not/ have
@@ -269,9 +272,11 @@ Logger::~Logger()
 
 void Logger::log( unsigned level,
 		  const char* funcname,
+		  const char* file,
+		  unsigned line,
 		  const QString& msg )
 {
-    get_instance()->d->log(level, funcname, msg);
+    get_instance()->d->log(level, funcname, file, line, msg);
 }
 
 void Logger::set_log_level(unsigned lev)

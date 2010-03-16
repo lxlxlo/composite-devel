@@ -131,12 +131,6 @@ namespace Tritium
          * include the return value of std::string::c_str(), or
          * QString::toLocal8Bit().data().
          *
-         * Tracing the locks:  Enable the Logger::AELockTracing
-         * logging level.  When you do, there will be a performance
-         * penalty because the strings will be converted to a
-         * QString.  At the moment, you'll have to do that with
-         * your debugger.
-         *
          * Notes: The order of the parameters match GCC's
          * implementation of the assert() macros.
          */

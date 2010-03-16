@@ -46,6 +46,8 @@ namespace Tritium
 	unsigned get_log_level() { return m_log_level; }
 	void log( unsigned level,
 		  const char* funcname,
+		  const char* file,
+		  unsigned line,
 		  const QString& msg );
 
     private:
