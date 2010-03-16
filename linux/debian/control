@@ -2,7 +2,7 @@ Source: composite
 Section: Multimedia
 Priority: optional
 Maintainer: Gabriel Beddingfield <gabriel@teuton.org>
-Build-Depends: debhelper (>= 4.0.0), libsndfile1-dev, libjack-dev, libasound-dev, libflac++-dev, libtar-dev, libqt4-dev, liblrdf-dev, scons
+Build-Depends: debhelper (>= 4.0.0), libsndfile1-dev, libjack-dev, libflac++-dev, libtar-dev, libqt4-dev, libboost-dev, libboost-test-dev, liblrdf-dev, cmake
 Standards-Version: 3.6.2
 
 Package: composite
@@ -11,6 +11,9 @@ Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Live performance sequencer
  Composite is a program for live-performance sequencing, sampling,
  and looping.  See http://gabe.is-a-geek.org/composite/ for details.
+ .
+ This package contains the Composite Sampler Plugin (LV2) and the
+ main GUI (composite-gui).
  .
  Warning: this package contains the development version (potentially
  unstable) released for testing purpose only.

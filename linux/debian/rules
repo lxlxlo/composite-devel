@@ -36,6 +36,7 @@ configure-stamp:
 		cmake \
 		-DCMAKE_INSTALL_PREFIX=/usr/ \
 		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DWANT_LRDF=ON \
 		../..
 	touch $@
 
