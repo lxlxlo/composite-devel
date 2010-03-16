@@ -222,7 +222,7 @@ void LoggerPrivate::log( unsigned level,
 	// The INFOLOG should be a very simple, user
 	// feedback message.  It should /not/ have
 	// function names or line numbers.
-	tmp = msg;
+	tmp = msg + "\n";
     }
 
     QMutexLocker mx(&m_mutex);

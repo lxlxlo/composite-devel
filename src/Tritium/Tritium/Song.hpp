@@ -23,7 +23,6 @@
 #define TRITIUM_SONG_HPP
 
 #include <QString>
-#include <QDomNode>
 #include <deque>
 #include <map>
 #include <stdint.h>

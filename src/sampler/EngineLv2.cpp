@@ -34,6 +34,8 @@
 #include <Tritium/DataPath.hpp>
 #include <Tritium/Serialization.hpp>
 #include <Tritium/DefaultMidiImplementation.hpp>
+#include <Tritium/SoundLibrary.hpp>
+#include <Tritium/Song.hpp>
 
 #include <lv2.h>
 #include <event.lv2/event.h>
@@ -121,6 +123,7 @@ LV2_Handle EngineLv2::instantiate(const LV2_Descriptor * /*descriptor*/,
 	}
 	return ((LV2_Handle) inst.release());
     }
+    Logger::set_logging_level("Info");
     return 0;
 }
 
@@ -230,11 +233,23 @@ void EngineLv2::install_drumkit_bundle()
 	    _presets = _obj_bdl->pop<Presets>();
 	    break;
 	case ObjectItem::Drumkit_t:
-	    // Intentionally ignoring
-	    _obj_bdl->pop();
+	    if(true) {
+		T<Drumkit>::shared_ptr dk = _obj_bdl->pop<Drumkit>();
+		INFOLOG( QString("Loading drumkit '%1'")
+			 .arg(dk->getName())
+		    );
+	    }
+	    break;
+	case ObjectItem::Song_t:
+	    if(true) {
+		T<Song>::shared_ptr song = _obj_bdl->pop<Song>();
+		INFOLOG( QString("Loading drumkit from song '%1'")
+			 .arg(song->get_name())
+		    );
+	    }
 	    break;
 	default:
-	    ERRORLOG("Loading drumkit loaded an unexpected type.");
+	    DEBUGLOG("Loading drumkit loaded an unexpected type.");
 	    _obj_bdl->pop();
 	}
     }
