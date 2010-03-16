@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?> <!-- -*- mode:nxml; indent-tabs-mode:nil; fill-column:80; -*- -->
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.0//EN"
+                          "http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd">
+<refentry id="man.1.composite_sampler" lang="en">
+
+  <refentryinfo>
+    <productname>Composite</productname>
+    <author>
+      <firstname>Gabriel</firstname>
+      <othername>M.</othername>
+      <surname>Beddingfield</surname>
+      <authorblurb>
+	<para>&lt;gabriel@teuton.org&gt;</para>
+      </authorblurb>
+    </author>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle>composite_sampler</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class='manual'>Audio Plugins</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname>composite_sampler</refname>
+    <refpurpose>audio sampler/synth plugin (LV2)</refpurpose>
+  </refnamediv>
+
+  <refsect1>
+    <title>Description</title>
+
+    <para>The Composite sampler is an audio plugin (LV2) that provides
+    a simple sampling engine.  It is identified by the URI
+    'http://gabe.is-a-geek.org/composite/plugins/sampler/1'</para>
+  </refsect1>
+
+  <refsect1>
+    <title>See Also</title>
+
+    <para>composite_midi(7), lv2_jack_host(1)</para>
+  </refsect1>
+</refentry>

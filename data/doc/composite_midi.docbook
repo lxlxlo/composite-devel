@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?> <!-- -*- mode:nxml; indent-tabs-mode:nil; fill-column:80; -*- -->
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.0//EN"
+                          "http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd">
+<refentry id="man.7.composite_midi" lang="en">
+
+  <refentryinfo>
+    <productname>Composite</productname>
+    <author>
+      <firstname>Gabriel</firstname>
+      <othername>M.</othername>
+      <surname>Beddingfield</surname>
+      <authorblurb>
+	<para>&lt;gabriel@teuton.org&gt;</para>
+      </authorblurb>
+    </author>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle>composite_midi</refentrytitle>
+    <manvolnum>7</manvolnum>
+    <refmiscinfo class='manual'>Reference</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname>composite_midi</refname>
+    <refpurpose>Default MIDI Implementation for Composite</refpurpose>
+  </refnamediv>
+
+  <refsect1>
+    <title>DESCRIPTION</title>
+
+    <para>The default MIDI implementation for Composite is a fixed MIDI
+    implementation.  Future versions of Composite will allow you to redefine the
+    MIDI implementation, but a default MIDI Implementation will always be
+    provided.</para>
+
+    <para>This description of the MIDI implementation <emphasis role='bold'>only
+    covers the sampler plugin</emphasis>.  At this time it does not apply to the
+    composite-gui.</para>
+  </refsect1>
+
+  <refsect1>
+    <title>SYNOPSIS</title>
+
+    <table>
+      <title>Midi Implementation</title>
+      <tgroup cols='4' align='center' colsep='1' rowsep='1'>
+        <colspec colname='c0'/>
+        <colspec colname='c1'/>
+        <colspec colname='c2'/>
+        <colspec colname='c3'/>
+        <thead>
+          <row>
+            <entry>Function</entry>
+            <entry>Transmitted</entry>
+            <entry>Recognized</entry>
+            <entry>Remarks</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>Basic Channel</entry>
+            <entry>NO</entry>
+            <entry>1-16</entry>
+            <entry>Always listens in OMNI mode, will change in future.</entry>
+          </row>
+          <row>
+            <entry>Mode</entry>
+            <entry>NO</entry>
+            <entry>NO</entry>
+            <entry/>
+          </row>
+          <row>
+            <entry>Note Number</entry>
+            <entry>NO</entry>
+            <entry>36-127</entry>
+            <entry>Depends on drum kit.</entry>
+          </row>
+          <row>
+            <entry>Note Velocity</entry>
+            <entry>NO</entry>
+            <entry>0-127</entry>
+            <entry/>
+          </row>
+          <row>
+            <entry>Polyphonic After Touch</entry>
+            <entry>NO</entry>
+            <entry>NO</entry>
+            <entry/>
+          </row>
+          <row>
+            <entry>Channel After Touch</entry>
+            <entry>NO</entry>
+            <entry>NO</entry>
+            <entry/>
+          </row>
+          <row>
+            <entry>Control Change</entry>
+            <entry>NO</entry>
+            <entry>0,7,32,39</entry>
+            <entry/>
+          </row>
+          <row>
+            <entry>Program Change</entry>
+            <entry>NO</entry>
+            <entry>0-127</entry>
+            <entry>User-defined presets</entry>
+          </row>
+          <row>
+            <entry>System Exclusive</entry>
+            <entry>NO</entry>
+            <entry>NO</entry>
+            <entry/>
+          </row>
+          <row>
+            <entry>System Common</entry>
+            <entry>NO</entry>
+            <entry>NO</entry>
+            <entry/>
+          </row>
+          <row>
+            <entry>System Real Time</entry>
+            <entry>NO</entry>
+            <entry>NO</entry>
+            <entry/>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+  </refsect1>
+
+  <refsect1>
+    <title>KNOWN BUGS</title>
+
+    <para>The System Realtime RESET (0xFF) message is not recognized, but should
+    be.</para>
+  </refsect1>
+
+  <refsect1>
+    <title>See Also</title>
+
+    <para>composite_sampler(1)</para>
+  </refsect1>
+</refentry>
