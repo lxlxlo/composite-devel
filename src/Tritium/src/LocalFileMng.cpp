@@ -485,8 +485,10 @@ namespace Tritium
 
             for ( int i = 0; i < fileList.size(); ++i ) {
                 QString sFile = fileList.at( i ).fileName();
-                if ( ( sFile == "." ) || ( sFile == ".." ) || ( sFile == "CVS" )  || ( sFile == ".svn" ) ||
-                     (sFile =="songs" ) || ( sFile == "patterns" )  || (sFile == "drumkits" || sFile == "playlists" ) || (sFile == "scripts" )) {
+                if ( ( sFile == "." ) || ( sFile == ".." ) || ( sFile == "CVS" )
+		     || ( sFile == ".svn" ) || (sFile =="songs" ) || ( sFile == "patterns" )
+		     || (sFile == "drumkits") || (sFile == "playlists" ) || (sFile == "scripts" )
+		     || (sFile == "presets") ) {
                     continue;
                 }
                 if(! sDirectory.endsWith("/")) sDirectory = sDirectory + "/";
