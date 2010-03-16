@@ -36,8 +36,6 @@
 #include "test_macros.hpp"
 #include "test_config.hpp"
 
-namespace Tritium {}  // please compile! :-)
-
 using namespace Tritium;
 
 namespace THIS_NAMESPACE
@@ -68,14 +66,14 @@ TEST_CASE( 020_fuzz )
      * See if it crashes.
      */
     std::vector<uint8_t> noise;
-    int k;
+    unsigned k;
     bool rv;
 
     for( k=0 ; k<4096 ; ++k ) {
 	noise.push_back( rand() & 0xFF );
     }
 
-    int pos;
+    unsigned pos;
     for( pos=0 ; pos < noise.size() ; pos += k ) {
 	k = rand() % 6;
 	if( (pos+k) > noise.size() ) {
