@@ -31,6 +31,7 @@ IF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
     t_Sample
     t_ObjectBundle
     t_MidiImplementationBase
+    t_DefaultMidiImplementation
     )
 
   ADD_DEFINITIONS("-DBOOST_TEST_DYN_LINK")
