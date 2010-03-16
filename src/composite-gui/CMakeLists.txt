@@ -3,7 +3,7 @@
 ### http://gabe.is-a-geek.org/composite/                           ###
 ######################################################################
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
 ######################################################################
 ### REQUIRED LIBRARIES                                             ###
@@ -45,7 +45,7 @@ FILE(GLOB_RECURSE composite_SRCS *.cpp)
 FILE(GLOB_RECURSE composite_H *.hpp)
 
 QT4_WRAP_UI(composite_UIS_H ${composite_UIS})
-QT4_WRAP_CPP(composite_MOC ${composite_H} OPTIONS -nw) 
+QT4_WRAP_CPP(composite_MOC ${composite_H}) 
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/src/Tritium
@@ -72,9 +72,9 @@ MESSAGE("\n"
 MACRO(lib_report name)
   IF(${name}_FOUND)
     message("ENABLED..... ${name}")
-  ELSE()
+  ELSE(${name}_FOUND)
     message("disabled.... ${name}")
-  ENDIF()
+  ENDIF(${name}_FOUND)
 ENDMACRO(lib_report)
 
 lib_report(QT4)

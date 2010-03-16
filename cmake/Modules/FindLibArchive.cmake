@@ -12,7 +12,7 @@ INCLUDE(TritiumPackageHelper)
 
 TPH_FIND_PACKAGE(LibArchive "" archive.h archive)
 
-INCLUDE(FindPackageHandleStandardArgs)
+INCLUDE(TritiumFindPackageHandleStandardArgs)
 
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(LibArchive DEFAULT_MSG LibArchive_LIBRARIES LibArchive_INCLUDE_DIRS)
 

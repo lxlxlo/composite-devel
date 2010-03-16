@@ -3,7 +3,7 @@
 ### http://gabe.is-a-geek.org/composite/                           ###
 ######################################################################
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
 ######################################################################
 ### REQUIRED LIBRARIES                                             ###

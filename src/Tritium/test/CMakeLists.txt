@@ -2,7 +2,7 @@
 ### Tritium Build Script (CMake)                                   ###
 ### http://gabe.is-a-geek.org/composite/                           ###
 ######################################################################
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
 ######################################################################
 ### TEST SOURCES AND BUILD                                         ###

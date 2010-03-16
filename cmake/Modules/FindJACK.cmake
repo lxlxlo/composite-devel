@@ -10,7 +10,7 @@ INCLUDE(TritiumPackageHelper)
 
 TPH_FIND_PACKAGE(JACK jack jack/midiport.h jack)
 
-INCLUDE(FindPackageHandleStandardArgs)
+INCLUDE(TritiumFindPackageHandleStandardArgs)
 
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(JACK DEFAULT_MSG JACK_LIBRARIES JACK_INCLUDE_DIRS)
 

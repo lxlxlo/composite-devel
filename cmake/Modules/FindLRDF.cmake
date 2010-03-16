@@ -12,7 +12,7 @@ INCLUDE(TritiumPackageHelper)
 
 TPH_FIND_PACKAGE(LRDF lrdf lrdf.h lrdf)
 
-INCLUDE(FindPackageHandleStandardArgs)
+INCLUDE(TritiumFindPackageHandleStandardArgs)
 
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(LRDF DEFAULT_MSG LRDF_LIBRARIES LRDF_INCLUDE_DIRS)
 

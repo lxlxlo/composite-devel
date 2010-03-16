@@ -2,7 +2,7 @@
 ### Tritium Build Script (CMake)                                   ###
 ### http://gabe.is-a-geek.org/composite/                           ###
 ######################################################################
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
 ######################################################################
 ### REQUIRED LIBRARIES                                             ###
@@ -60,22 +60,22 @@ set(LIBS ${LIBS} ${LibSndfile_LIBRARIES})
 IF(NOT WANT_LIBARCHIVE)
   find_package(LibTar)
   find_package(ZLIB)
-ENDIF()
+ENDIF(NOT WANT_LIBARCHIVE)
 IF(LibTar_FOUND AND ZLIB_FOUND)
 	include_directories(${LibTar_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
 	set(LIBS ${LIBS} ${LibTar_LIBRARIES} ${ZLIB_LIBRARIES})
-ENDIF()
+ENDIF(LibTar_FOUND AND ZLIB_FOUND)
 
 ###
 ### libarchive http://code.google.com/p/libarchive/
 ###
 IF(LibTar_FOUND AND ZLIB_FOUND)
-ELSE()
+ELSE(LibTar_FOUND AND ZLIB_FOUND)
        find_package(LibArchive REQUIRED)
        include_directories(${LibArchive_INCLUDE_DIRS})
        set(LIBS ${LIBS} ${LibArchive_LIBRARIES})
        add_definitions(-DLIBARCHIVE_SUPPORT)
-ENDIF()
+ENDIF(LibTar_FOUND AND ZLIB_FOUND)
 
 ###
 ### Boost Framework http://www.boost.org/
@@ -132,9 +132,9 @@ MESSAGE("\n"
 MACRO(lib_report name)
   IF(${name}_FOUND)
     message("ENABLED..... ${name}")
-  ELSE()
+  ELSE(${name}_FOUND)
     message("disabled.... ${name}")
-  ENDIF()
+  ENDIF(${name}_FOUND)
 ENDMACRO(lib_report)
 
 lib_report(QT4)

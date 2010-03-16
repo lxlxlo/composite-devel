@@ -12,7 +12,7 @@ INCLUDE(TritiumPackageHelper)
 
 TPH_FIND_PACKAGE(LibTar "" libtar.h tar)
 
-INCLUDE(FindPackageHandleStandardArgs)
+INCLUDE(TritiumFindPackageHandleStandardArgs)
 
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(LibTar DEFAULT_MSG LibTar_LIBRARIES LibTar_INCLUDE_DIRS)
 
