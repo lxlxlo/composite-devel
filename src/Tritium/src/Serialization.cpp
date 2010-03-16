@@ -1269,9 +1269,9 @@ T<Song>::shared_ptr SerializationQueue::handle_load_song_node(
     QString m_sSongVersion = LocalFileMng::readXmlString( songNode , "version", "Unknown version" );
 
     if ( m_sSongVersion != QString( get_version().c_str() ) ) {
-        WARNINGLOG( "Trying to load a song created with a different "
-                    "version of Hydrogen/Tritium/Composite." );
-        WARNINGLOG( "Song was saved with version " + m_sSongVersion );
+        DEBUGLOG( "Trying to load a song created with a different "
+		  "version of Hydrogen/Tritium/Composite." );
+        DEBUGLOG( "Song was saved with version " + m_sSongVersion );
     }
 
     float fBpm = LocalFileMng::readXmlFloat( songNode, "bpm", 120 );
