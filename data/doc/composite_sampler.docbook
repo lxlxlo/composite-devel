@@ -35,6 +35,146 @@
   </refsect1>
 
   <refsect1>
+    <title>Ports</title>
+
+    <para>The sampler includes the following ports:</para>
+
+    <informaltable>
+      <tgroup cols='5' colsep='1' rowsep='1'>
+        <colspec colname='c0'/>
+        <colspec colname='c1'/>
+        <colspec colname='c2'/>
+        <colspec colname='c3'/>
+        <colspec colname='c4'/>
+        <thead>
+          <row>
+            <entry>Name</entry>
+            <entry>LV2 Port</entry>
+            <entry>Type</entry>
+            <entry>Flow</entry>
+            <entry>Description</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>Left</entry>
+            <entry>out_left</entry>
+            <entry>AudioPort</entry>
+            <entry>Output</entry>
+            <entry>Left stereo channel output</entry>
+          </row>
+          <row>
+            <entry>Right</entry>
+            <entry>out_right</entry>
+            <entry>AudioPort</entry>
+            <entry>Output</entry>
+            <entry>Right stereo channel output</entry>
+          </row>
+          <row>
+            <entry>MIDI</entry>
+            <entry>midi</entry>
+            <entry>EventPort</entry>
+            <entry>Input</entry>
+            <entry>Main MIDI Input</entry>
+          </row>
+          <row>
+            <entry>Volume</entry>
+            <entry>volume</entry>
+            <entry>ControlPort</entry>
+            <entry>Input</entry>
+            <entry>Master volume [0.0-1.0]</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+  </refsect1>
+
+  <refsect1>
+    <title>Controlling the Sampler</title>
+
+    <para>The primary way to control the sampler is over MIDI.  See
+    composite_midi(7) for complete documentation on the MIDI
+    implementation.</para>
+  </refsect1>
+
+  <refsect1>
+    <title>Drumkits</title>
+
+    <para>The drumkits for Composite are the same as for Hydrogen.  To reuse
+    your Hydrogen drumkits, copy or symlink them to
+    $HOME/.composite/data/drumkits/</para>
+
+  </refsect1>
+
+  <refsect1>
+    <title>Presets</title>
+
+    <para>The sampler responds to MIDI Program Change events.  Based on the
+    event that it receives, it will load up another file (e.g. a drumkit).  This
+    is how you can select the drumkit that you wish to use.</para>
+
+    <para>The presets are defined in a file
+    <filename>$HOME/.composite/data/presets/default.xml</filename>.  For the
+    sampler plugin, you can override this by using default-presets.xml, but at
+    the current time there is no need to.  When you first load the sampler, it
+    will check for this file.  If it doesn't exist, it will create one based on
+    all your user drumkits.</para>
+
+    <para>The presets file is a simple XML file that allows you to define MIDI
+    banks, and assign different resources for each program change.</para>
+
+  </refsect1>
+  
+  <refsect1>
+    <title>LV2 Extensions</title>
+
+    <para>This plugin uses the following extensions, and they must be supported
+    by any program (host) that wishes to use this plugin.  If the host does not
+    support them, the plugin will fail to load.</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Events &lt;http://lv2plug.in/ns/ext/event#&gt;</para>
+      </listitem>
+      <listitem>
+        <para>Midi Events &lt;http://lv2plug.in/ns/ext/midi#MidiEvent&gt;</para>
+      </listitem>
+    </itemizedlist>
+
+  </refsect1>
+
+  <refsect1>
+    <title>Files</title>
+
+    <para><emphasis>/usr/share/composite/data/</emphasis> &mdash; This is the
+    main folder where system data (drumkits, presets, etc.) are stored for
+    Composite and Composite Sampler.</para>
+
+    <para><emphasis>$HOME/.composite/data/</emphasis> &mdash; This is the main
+    folder where user data (drumkits, presets, etc.) are stored for Composite
+    and Composite Sampler.</para>
+
+    <para><emphasis>$HOME/.composite/data/drumkits/</emphasis> &mdash; This is
+    the main folder where user drumkits are stored.  Each drumkit has its own
+    folder, and each folder has a file 'drumkit.xml' that describes the
+    drumkit.</para>
+
+    <para><emphasis>$HOME/.composite/data/presets/default.xml</emphasis> &mdash;
+    This is the default presets file for Composite.  If it does not exist, it
+    will be created automatically using all of your installed drumkits.</para>
+
+
+    <para><emphasis>$HOME/.composite/data/presets/default.xml</emphasis> &mdash;
+    This is the default presets file for Composite.  If it does not exist, it
+    will be created automatically using all of your installed drumkits.</para>
+
+    <para><emphasis>$HOME/.composite/data/presets/default-plugin.xml</emphasis>
+    &mdash; This is the default presets file for the Composite Sampler.  If it
+    does not exist, then $HOME/.composite/data/presets/default.xml is
+    used.</para>
+
+  </refsect1>
+  <refsect1>
     <title>See Also</title>
 
     <para>composite_midi(7), lv2_jack_host(1)</para>
