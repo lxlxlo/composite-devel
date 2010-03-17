@@ -321,9 +321,11 @@ bool SerializationQueue::ensure_default_exists(const QUrl& uri)
 	}
 	fp.close();
     }
+    f_info.refresh();
     if( f_info.exists() && f_info.isFile() ) {
 	return true;
     }
+    ERRORLOG("Could not ensure presets default exists.");
     return false;
 }
 
