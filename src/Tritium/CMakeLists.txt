@@ -87,6 +87,7 @@ IF(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 2.6)
 	# CMake 2.4 didn't support module detection.  Turn it on
 	# and hope for the best.  Don't know about 2.5.
 	set(Boost_UNIT_TEST_FRAMEWORK_FOUND ON)
+	set(Boost_UNIT_TEST_FRAMEWORK_LIBRARIES -lboost_unit_test_framework)
 ENDIF(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 2.6)
 
 ######################################################################
