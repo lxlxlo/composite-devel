@@ -61,7 +61,7 @@ IF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
       )
 
     ADD_TEST(${T} ${T})
-  ENDFOREACH()
+  ENDFOREACH(T ${test_LIST})
 
   ######################################################################
   ### CONFIGURATION SUMMARY                                          ###
@@ -75,9 +75,9 @@ IF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
   MACRO(lib_report name)
     IF(${name}_FOUND)
       message("ENABLED..... ${name}")
-    ELSE()
+    ELSE(${name}_FOUND)
       message("disabled.... ${name}")
-    ENDIF()
+    ENDIF(${name}_FOUND)
   ENDMACRO(lib_report)
 
   lib_report(Boost)

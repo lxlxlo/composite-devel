@@ -39,6 +39,11 @@ INCLUDE(${QT_USE_FILE})
 ###
 find_package(Boost 1.33 COMPONENTS unit_test_framework REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
+IF(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 2.6)
+	# CMake 2.4 didn't support module detection.  Turn it on
+	# and hope for the best.  Don't know about 2.5.
+	set(Boost_UNIT_TEST_FRAMEWORK_FOUND ON)
+ENDIF(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 2.6)
 
 ######################################################################
 ### LIBRARY SOURCES AND BUILD                                      ###
