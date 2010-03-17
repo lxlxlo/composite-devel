@@ -105,14 +105,19 @@ After you have all the prerequisites, building and installing will
 look like this:
 
 	$ tar xjf composite-0.006.tar.bz2
-        $ mkdir sandbox
-	$ cd sandbox
-	$ cmake ../composite-0.006 \
+	$ cd composite-0.006
+        $ mkdir build
+	$ cd build
+	$ cmake .. \
 		-DCMAKE_BUILD_TYPE=Debug \
 		-DCMAKE_INSTALL_PREFIX=/usr/local \
 		-DWANT_LRDF=ON
 	$ make
         $ sudo make install
+
+     +---------------------------------------------------+
+     | NOTICE:  BUILDING WITH 'cmake .' IS NOT SUPPORTED |
+     +---------------------------------------------------+
 
 On GNU/Linux and other unix-like systems, you'll also need to run:
 
