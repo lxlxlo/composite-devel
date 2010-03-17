@@ -56,7 +56,7 @@ AudioPort::Float* AudioPortImpl::get_buffer(unsigned chan)
     set_zero_flag(false);
     if(chan == 0) {
 	return &_left.front();
-    } else if (chan == 1) {
+    } else if (chan == 1 && _right.size()) {
 	return &_right.front();
     } else {
 	return 0;
