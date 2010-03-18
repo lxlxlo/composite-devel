@@ -1,3 +1,10 @@
+composite (0.006) experimental; urgency=low
+
+  * Mark LV2 Sampler as production/stable
+  * Add documentation for LV2 Sampler.
+
+ -- Gabriel M. Beddingfield <gabriel@teuton.org>  Thu, 18 Mar 2010 12:00:00 +0000
+
 composite (0.005) experimental; urgency=low
 
   * Development between 0.004 and 0.006
