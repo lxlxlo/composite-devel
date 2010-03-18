@@ -172,11 +172,15 @@ namespace Tritium
 	    dest.fdata = float(_volume)/16383.0f;
 	    rv = true;
 	    break;
-	case 120: // All Sound Off (See [1])
+	case 120: // All Sound Off
+	    dest.type = SeqEvent::ALL_OFF;
+	    rv = true;
 	    break;
 	case 121: // All Controllers Off (go to default values)
 	    break;
-	case 123: // All Notes Off (See [1])
+	case 123: // All Notes Off
+	    dest.type = SeqEvent::ALL_OFF;
+	    rv = true;
 	    break;
 	case 124: // Omni Mode Off
 	    break;
@@ -185,15 +189,6 @@ namespace Tritium
 	default:
 	    rv = false;
 	}
-
-	/* [1] - All Sound Off and All Notes Off are supposed to
-	 *       silence everything except notes being played by the
-	 *       local keyboard.  I'm not sure what this means for
-	 *       Composite/Tritium.  It also says that if we can't
-	 *       distinguish between notes being played by the local
-	 *       keyboard and "other" notes... then we should not
-	 *       implement this controller.
-	 */
 
 	assert( _volume == (_volume & 0x3FFF) );
 
@@ -218,4 +213,13 @@ namespace Tritium
 	return rv;
     } // DefaultMidiImplementation::handle_program_change()
 
+    bool DefaultMidiImplementation::handle_system_reset(
+	SeqEvent& dest,
+	uint32_t size,
+	const uint8_t *midi
+	)
+    {
+	dest.type = SeqEvent::ALL_OFF;
+	return true;
+    }
 } // namespace Tritium

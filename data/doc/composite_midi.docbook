@@ -96,7 +96,7 @@
             <entry/>
           </row>
           <row>
-            <entry morerows='3'>Control Change</entry>
+            <entry morerows='5'>Control Change</entry>
             <entry>0</entry>
             <entry>NO</entry>
             <entry>0-127</entry>
@@ -119,6 +119,18 @@
             <entry>NO</entry>
             <entry>0(min)-127(max)</entry>
             <entry>Volume (fine)</entry>
+          </row>
+          <row>
+            <entry>120</entry>
+            <entry>NO</entry>
+            <entry>0-127</entry>
+            <entry>All Sound Off (value is ignored)</entry>
+          </row>
+          <row>
+            <entry>123</entry>
+            <entry>NO</entry>
+            <entry>0-127</entry>
+            <entry>All Sound Off (value is ignored)</entry>
           </row>
           <row>
             <entry spanname='fcn'>Program Change</entry>
@@ -149,12 +161,10 @@
     </informaltable>
   </refsect1>
 
-  <refsect1>
+  <!-- refsect1>
     <title>KNOWN BUGS</title>
 
-    <para>The System Realtime RESET (0xFF) message is not recognized, but should
-    be.</para>
-  </refsect1>
+  </refsect1 -->
 
   <refsect1>
     <title>See Also</title>

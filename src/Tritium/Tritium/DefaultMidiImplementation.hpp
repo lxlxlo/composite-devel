@@ -43,6 +43,7 @@ namespace Tritium
 	bool handle_note_on(SeqEvent& dest, uint32_t size, const uint8_t *midi);
 	bool handle_control_change(SeqEvent& dest, uint32_t size, const uint8_t *midi);
 	bool handle_program_change(SeqEvent& dest, uint32_t size, const uint8_t *midi);
+	bool handle_system_reset(SeqEvent& dest, uint32_t size, const uint8_t *midi);
 
 	T<Sampler>::shared_ptr sampler() {
 	    return _sampler;
