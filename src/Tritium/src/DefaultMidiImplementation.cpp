@@ -219,6 +219,11 @@ namespace Tritium
 	const uint8_t *midi
 	)
     {
+	/* XXX TODO A system reset should set us back to a "default
+	 * state."  (I.e. set volume and banks to default, set patch
+	 * to default, etc.)  However, this requires a new SeqEvent
+	 * type.  This will need to be done later.
+	 */
 	dest.type = SeqEvent::ALL_OFF;
 	return true;
     }
