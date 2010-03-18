@@ -29,9 +29,9 @@
   <refsect1>
     <title>Description</title>
 
-    <para>The Composite sampler is an audio plugin (LV2) that provides
-    a simple sampling engine.  It is identified by the URI
-    'http://gabe.is-a-geek.org/composite/plugins/sampler/1'</para>
+    <para>The Composite sampler is an audio plugin (LV2) that provides a simple
+    sampling engine.  It is identified by the URI
+    <quote>http://gabe.is-a-geek.org/composite/plugins/sampler/1</quote></para>
   </refsect1>
 
   <refsect1>
@@ -102,7 +102,8 @@
 
     <para>The drumkits for Composite are the same as for Hydrogen.  To reuse
     your Hydrogen drumkits, copy or symlink them to
-    $HOME/.composite/data/drumkits/</para>
+    $HOME/.composite/data/drumkits/.  You can create and edit drumkits with
+    composite-gui (or Hydrogen).</para>
 
   </refsect1>
 
@@ -121,7 +122,46 @@
     all your user drumkits.</para>
 
     <para>The presets file is a simple XML file that allows you to define MIDI
-    banks, and assign different resources for each program change.</para>
+    banks, and assign different resources for each program change.  An example
+    file is as follows:</para>
+
+    <programlisting><![CDATA[<?xml version="1.0"?>
+<T:tritium xmlns:T="http://gabe.is-a-geek.org/tritium/xml/1/">
+    <T:presets>
+        <T:bank coarse="0" fine="0">
+            <T:program>
+                <T:midi_number>0</T:midi_number>
+                <T:resource>tritium:drumkits/GMkit</T:resource>
+            </T:program>
+            <T:program>
+                <T:midi_number>1</T:midi_number>
+                <T:resource>tritium:drumkits/TR808EmulationKit</T:resource>
+            </T:program>
+        </T:bank>
+    </T:presets>
+</T:tritium>]]></programlisting>
+
+    <para>You can define several &lt;bank> elements for the MIDI banks.  The
+    attributes <varname>coarse</varname> and <varname>fine</varname> correspond
+    to the MIDI CC's 0 and 32.  Each &lt;program> section is a preset.  The
+    &lt;midi_number> corresponds to the number in the PC message.</para>
+
+    <para>The &lt;resource> element holds a URI/URL to the thing you want
+    loaded.  This will typically be a drum kit, but can be any kind of file that
+    Composite supports (like a .h2song, .h2pattern, etc.  The URL's supported
+    are file://, tritium:, and file names.</para>
+
+    <para>The tritium: scheme is designed to create portable URL's to things
+    like drum kits.  For example, the URL <quote>tritium:drumkits/GMkit</quote>
+    will load the drumkit <quote>GMkit</quote>, whether it's installed in the
+    user directory
+    (<filename>$HOME/.composite/data/drumkits/GMkit/drumkit.xml</filename>) or
+    in the system directory
+    (<filename>/usr/share/composite/data/drumkits/GMkit/drumkit.xml</filename>).</para>
+
+    <note><para>The XML namespace declaration
+    <quote>http://gabe.is-a-geek.org/tritium/xml/1/</quote> is not
+    optional.</para></note>
 
   </refsect1>
   
