@@ -72,7 +72,10 @@ ENABLE_TESTING()
 
 INSTALL(DIRECTORY data DESTINATION ${DATA_PATH}/..)
 INSTALL(FILES ${CMAKE_BINARY_DIR}/composite.desktop DESTINATION "${CMAKE_INSTALL_PREFIX}/share/applications")
-
+INSTALL(FILES ${CMAKE_SOURCE_DIR}/data/doc/composite_sampler.1
+        DESTINATION share/man/man1)
+INSTALL(FILES ${CMAKE_SOURCE_DIR}/data/doc/composite_midi.7
+        DESTINATION share/man/man7)
 INCLUDE(InstallRequiredSystemLibraries)
 
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Composite - Live performance sequencing, sampling, and looping")
