@@ -151,10 +151,41 @@
             <entry/>
           </row>
           <row>
-            <entry spanname='fcn'>System Real Time</entry>
+            <entry morerows='5'>System Real Time</entry>
+            <entry>0xF8</entry>
             <entry>NO</entry>
             <entry>NO</entry>
-            <entry/>
+            <entry>Clock Pulse</entry>
+          </row>
+          <row>
+            <entry>0xFA</entry>
+            <entry>NO</entry>
+            <entry>NO</entry>
+            <entry>Start</entry>
+          </row>
+          <row>
+            <entry>0xFB</entry>
+            <entry>NO</entry>
+            <entry>NO</entry>
+            <entry>Continue</entry>
+          </row>
+          <row>
+            <entry>0xFC</entry>
+            <entry>NO</entry>
+            <entry>NO</entry>
+            <entry>Stop</entry>
+          </row>
+          <row>
+            <entry>0xFE</entry>
+            <entry>NO</entry>
+            <entry>NO</entry>
+            <entry>Active Sensing</entry>
+          </row>
+          <row>
+            <entry>0xFF</entry>
+            <entry>NO</entry>
+            <entry>YES</entry>
+            <entry>System Reset/Panic</entry>
           </row>
         </tbody>
       </tgroup>
