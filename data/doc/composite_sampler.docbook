@@ -148,8 +148,10 @@
 
     <para>The &lt;resource> element holds a URI/URL to the thing you want
     loaded.  This will typically be a drum kit, but can be any kind of file that
-    Composite supports (like a .h2song, .h2pattern, etc.  The URL's supported
-    are file://, tritium:, and file names.</para>
+    Composite supports (like a .h2song, .h2pattern, etc.).  The sampler will do
+    the Right Thing.  (For example, when loading an .h2song, the drumkit stored
+    in the song will be loaded.)  The URL's supported are file://, tritium:, and
+    file names.</para>
 
     <para>The tritium: scheme is designed to create portable URL's to things
     like drum kits.  For example, the URL <quote>tritium:drumkits/GMkit</quote>
@@ -213,6 +215,12 @@
     does not exist, then $HOME/.composite/data/presets/default.xml is
     used.</para>
 
+  </refsect1>
+  <refsect1>
+    <title>Known Bugs</title>
+
+    <para>Loading a .h2song through the presets is not happening in a real-time
+    safe manner.  Loading drumkits works fine.</para>
   </refsect1>
   <refsect1>
     <title>See Also</title>
