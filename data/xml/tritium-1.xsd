@@ -23,7 +23,31 @@
 	   xmlns:T='http://gabe.is-a-geek.org/tritium/xml/1/'
 	   elementFormDefault='qualified' >
 
-  <!-- IN-PROCESS VERSION 1 OF SCHEMA, THIS SCHEMA IS NOT FINALIZED  -->
+  <!-- Version 1.0
+
+       Version Policy: The version of this schema has no relationship
+       to the version of Composite or libTritium.  It will be in the
+       format MAJOR.MINOR.
+
+       When comparing versions or documents:
+
+       * If the MAJOR versions DO NOT match, then the schemas are not
+         at all compatable.  Note that the MAJOR version shall match
+         the last component of the namespace URI.
+
+       * If the MAJOR versions DO match, then the schemas are
+         compatable as explained below for MINOR version numbers.
+
+       * MINOR versions:  Suppose you have schemas 1.A and 1.B where
+         A < B.  All documents that validate with 1.B shall also
+         validate under 1.A.  All documents that validate under 1.A
+         shall validate under 1.B.  If an application only supports
+         1.A it shall still load 1.B without error, however any new
+         components will be ignored.
+
+       Note that there is liberal use of <xs:any> and <xs:anyAttribute>
+       in this Schema in order to aid forward-compatibility.
+  -->
 
   <xs:annotation>
     <xs:documentation xml:lang='en'>
