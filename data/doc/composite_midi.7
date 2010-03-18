@@ -1,0 +1,267 @@
+'\" t
+.\"     Title: composite_midi
+.\"    Author: Gabriel M. Beddingfield
+.\" Generator: DocBook XSL Stylesheets v1.75.1 <http://docbook.sf.net/>
+.\"      Date: 03/18/2010
+.\"    Manual: Reference
+.\"    Source: Composite
+.\"  Language: English
+.\"
+.TH "COMPOSITE_MIDI" "7" "03/18/2010" "Composite" "Reference"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+composite_midi \- Default MIDI Implementation for Composite
+.SH "DESCRIPTION"
+.PP
+The default MIDI implementation for Composite is a fixed MIDI implementation\&. Future versions of Composite will allow you to redefine the MIDI implementation, but a default MIDI Implementation will always be provided\&.
+.PP
+This description of the MIDI implementation
+\fBonly covers the sampler plugin\fR\&. At this time it does not apply to the composite\-gui\&.
+.SH "MIDI IMPLEMENTATION"
+.TS
+allbox center tab(:);
+cB s cB cB cB.
+T{
+Function
+T}:T{
+Transmitted
+T}:T{
+Recognized
+T}:T{
+Remarks
+T}
+.T&
+c s c c c
+c s c c c
+c s c c c
+c s c c c
+c s c c c
+c s c c c
+c c c c c
+^ c c c c
+^ c c c c
+^ c c c c
+^ c c c c
+^ c c c c
+c s c c c
+c s c c c
+c s c c c
+c c c c c
+^ c c c c
+^ c c c c
+^ c c c c
+^ c c c c
+^ c c c c.
+T{
+Basic Channel
+T}:T{
+NO
+T}:T{
+1\-16
+T}:T{
+Always listens in OMNI mode, will change in future\&.
+T}
+T{
+Mode
+T}:T{
+NO
+T}:T{
+NO
+T}:T{
+\ \&
+T}
+T{
+Note Number
+T}:T{
+NO
+T}:T{
+36\-127
+T}:T{
+Depends on drum kit\&.
+T}
+T{
+Note Velocity
+T}:T{
+NO
+T}:T{
+0\-127
+T}:T{
+\ \&
+T}
+T{
+Polyphonic After Touch
+T}:T{
+NO
+T}:T{
+NO
+T}:T{
+\ \&
+T}
+T{
+Channel After Touch
+T}:T{
+NO
+T}:T{
+NO
+T}:T{
+\ \&
+T}
+T{
+Control Change
+T}:T{
+0
+T}:T{
+NO
+T}:T{
+0\-127
+T}:T{
+Bank (coarse)
+T}
+:T{
+7
+T}:T{
+NO
+T}:T{
+0(min)\-127(max)
+T}:T{
+Volume (coarse)
+T}
+:T{
+32
+T}:T{
+NO
+T}:T{
+0\-127
+T}:T{
+Bank (fine)
+T}
+:T{
+39
+T}:T{
+NO
+T}:T{
+0(min)\-127(max)
+T}:T{
+Volume (fine)
+T}
+:T{
+120
+T}:T{
+NO
+T}:T{
+0\-127
+T}:T{
+All Sound Off (value is ignored)
+T}
+:T{
+123
+T}:T{
+NO
+T}:T{
+0\-127
+T}:T{
+All Sound Off (value is ignored)
+T}
+T{
+Program Change
+T}:T{
+NO
+T}:T{
+0\-127
+T}:T{
+User\-defined presets, depends on the bank setting (CC #0, 32)
+T}
+T{
+System Exclusive
+T}:T{
+NO
+T}:T{
+NO
+T}:T{
+\ \&
+T}
+T{
+System Common
+T}:T{
+NO
+T}:T{
+NO
+T}:T{
+\ \&
+T}
+T{
+System Real Time
+T}:T{
+0xF8
+T}:T{
+NO
+T}:T{
+NO
+T}:T{
+Clock Pulse
+T}
+:T{
+0xFA
+T}:T{
+NO
+T}:T{
+NO
+T}:T{
+Start
+T}
+:T{
+0xFB
+T}:T{
+NO
+T}:T{
+NO
+T}:T{
+Continue
+T}
+:T{
+0xFC
+T}:T{
+NO
+T}:T{
+NO
+T}:T{
+Stop
+T}
+:T{
+0xFE
+T}:T{
+NO
+T}:T{
+NO
+T}:T{
+Active Sensing
+T}
+:T{
+0xFF
+T}:T{
+NO
+T}:T{
+YES
+T}:T{
+System Reset/Panic
+T}
+.TE
+.sp 1
+.SH "SEE ALSO"
+.PP
+composite_sampler(1)
+.SH "AUTHOR"
+.PP
+\fBGabriel M\&. Beddingfield\fR
+.RS 4
+<gabriel@teuton\&.org>
+.RE

@@ -1,0 +1,219 @@
+'\" t
+.\"     Title: composite_sampler
+.\"    Author: Gabriel M. Beddingfield
+.\" Generator: DocBook XSL Stylesheets v1.75.1 <http://docbook.sf.net/>
+.\"      Date: 03/18/2010
+.\"    Manual: Audio Plugins
+.\"    Source: Composite
+.\"  Language: English
+.\"
+.TH "COMPOSITE_SAMPLER" "1" "03/18/2010" "Composite" "Audio Plugins"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+composite_sampler \- audio sampler/synth plugin (LV2)
+.SH "DESCRIPTION"
+.PP
+The Composite sampler is an audio plugin (LV2) that provides a simple sampling engine\&. It is identified by the URI
+\(lqhttp://gabe\&.is\-a\-geek\&.org/composite/plugins/sampler/1\(rq
+.SH "PORTS"
+.PP
+The sampler includes the following ports:
+.TS
+allbox tab(:);
+lB lB lB lB lB.
+T{
+Name
+T}:T{
+LV2 Port
+T}:T{
+Type
+T}:T{
+Flow
+T}:T{
+Description
+T}
+.T&
+l l l l l
+l l l l l
+l l l l l
+l l l l l.
+T{
+Left
+T}:T{
+out_left
+T}:T{
+AudioPort
+T}:T{
+Output
+T}:T{
+Left stereo channel output
+T}
+T{
+Right
+T}:T{
+out_right
+T}:T{
+AudioPort
+T}:T{
+Output
+T}:T{
+Right stereo channel output
+T}
+T{
+MIDI
+T}:T{
+midi
+T}:T{
+EventPort
+T}:T{
+Input
+T}:T{
+Main MIDI Input
+T}
+T{
+Volume
+T}:T{
+volume
+T}:T{
+ControlPort
+T}:T{
+Input
+T}:T{
+Master volume [0\&.0\-1\&.0]
+T}
+.TE
+.sp 1
+.SH "CONTROLLING THE SAMPLER"
+.PP
+The primary way to control the sampler is over MIDI\&. See composite_midi(7) for complete documentation on the MIDI implementation\&.
+.SH "DRUMKITS"
+.PP
+The drumkits for Composite are the same as for Hydrogen\&. To reuse your Hydrogen drumkits, copy or symlink them to $HOME/\&.composite/data/drumkits/\&. You can create and edit drumkits with composite\-gui (or Hydrogen)\&.
+.SH "PRESETS"
+.PP
+The sampler responds to MIDI Program Change events\&. Based on the event that it receives, it will load up another file (e\&.g\&. a drumkit)\&. This is how you can select the drumkit that you wish to use\&.
+.PP
+The presets are defined in a file
+$HOME/\&.composite/data/presets/default\&.xml\&. For the sampler plugin, you can override this by using default\-presets\&.xml, but at the current time there is no need to\&. When you first load the sampler, it will check for this file\&. If it doesn\'t exist, it will create one based on all your user drumkits\&.
+.PP
+The presets file is a simple XML file that allows you to define MIDI banks, and assign different resources for each program change\&. An example file is as follows:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+<?xml version="1\&.0"?>
+<T:tritium xmlns:T="http://gabe\&.is\-a\-geek\&.org/tritium/xml/1/">
+    <T:presets>
+        <T:bank coarse="0" fine="0">
+            <T:program>
+                <T:midi_number>0</T:midi_number>
+                <T:resource>tritium:drumkits/GMkit</T:resource>
+            </T:program>
+            <T:program>
+                <T:midi_number>1</T:midi_number>
+                <T:resource>tritium:drumkits/TR808EmulationKit</T:resource>
+            </T:program>
+        </T:bank>
+    </T:presets>
+</T:tritium>
+.fi
+.if n \{\
+.RE
+.\}
+.PP
+You can define several <bank> elements for the MIDI banks\&. The attributes
+\fIcoarse\fR
+and
+\fIfine\fR
+correspond to the MIDI CC\'s 0 and 32\&. Each <program> section is a preset\&. The <midi_number> corresponds to the number in the PC message\&.
+.PP
+The <resource> element holds a URI/URL to the thing you want loaded\&. This will typically be a drum kit, but can be any kind of file that Composite supports (like a \&.h2song, \&.h2pattern, etc\&.)\&. The sampler will do the Right Thing\&. (For example, when loading an \&.h2song, the drumkit stored in the song will be loaded\&.) The URL\'s supported are file://, tritium:, and file names\&.
+.PP
+The tritium: scheme is designed to create portable URL\'s to things like drum kits\&. For example, the URL
+\(lqtritium:drumkits/GMkit\(rq
+will load the drumkit
+\(lqGMkit\(rq, whether it\'s installed in the user directory ($HOME/\&.composite/data/drumkits/GMkit/drumkit\&.xml) or in the system directory (/usr/share/composite/data/drumkits/GMkit/drumkit\&.xml)\&.
+.if n \{\
+.sp
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.PP
+The XML namespace declaration
+\(lqhttp://gabe\&.is\-a\-geek\&.org/tritium/xml/1/\(rq
+is not optional\&.
+.sp .5v
+.RE
+.SH "LV2 EXTENSIONS"
+.PP
+This plugin uses the following extensions, and they must be supported by any program (host) that wishes to use this plugin\&. If the host does not support them, the plugin will fail to load\&.
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Events <http://lv2plug\&.in/ns/ext/event#>
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Midi Events <http://lv2plug\&.in/ns/ext/midi#MidiEvent>
+.RE
+.SH "FILES"
+.PP
+\fI/usr/share/composite/data/\fR
+\(em This is the main folder where system data (drumkits, presets, etc\&.) are stored for Composite and Composite Sampler\&.
+.PP
+\fI$HOME/\&.composite/data/\fR
+\(em This is the main folder where user data (drumkits, presets, etc\&.) are stored for Composite and Composite Sampler\&.
+.PP
+\fI$HOME/\&.composite/data/drumkits/\fR
+\(em This is the main folder where user drumkits are stored\&. Each drumkit has its own folder, and each folder has a file \'drumkit\&.xml\' that describes the drumkit\&.
+.PP
+\fI$HOME/\&.composite/data/presets/default\&.xml\fR
+\(em This is the default presets file for Composite\&. If it does not exist, it will be created automatically using all of your installed drumkits\&.
+.PP
+\fI$HOME/\&.composite/data/presets/default\&.xml\fR
+\(em This is the default presets file for Composite\&. If it does not exist, it will be created automatically using all of your installed drumkits\&.
+.PP
+\fI$HOME/\&.composite/data/presets/default\-plugin\&.xml\fR
+\(em This is the default presets file for the Composite Sampler\&. If it does not exist, then $HOME/\&.composite/data/presets/default\&.xml is used\&.
+.SH "KNOWN BUGS"
+.PP
+Loading a \&.h2song through the presets is not happening in a real\-time safe manner\&. Loading drumkits works fine\&.
+.SH "SEE ALSO"
+.PP
+composite_midi(7), lv2_jack_host(1)
+.SH "AUTHOR"
+.PP
+\fBGabriel M\&. Beddingfield\fR
+.RS 4
+<gabriel@teuton\&.org>
+.RE
