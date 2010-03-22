@@ -1,3 +1,9 @@
+composite (0.007) experimental; urgency=low
+
+  * Development between 0.006 and 0.008
+
+ -- Gabriel M. Beddingfield <gabriel@teuton.org>  Thu, 18 Mar 2010 12:00:00 +0000
+
 composite (0.006) experimental; urgency=low
 
   * Mark LV2 Sampler as production/stable
