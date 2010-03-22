@@ -40,8 +40,8 @@ OPTION(WANT_LRDF
   )
 
 OPTION(WANT_LIBARCHIVE
-  "Enable use of libarchive instead of libtar and libz.  Windows builds will usually want to set this one."
-  OFF )
+  "Enable use of libarchive instead of libtar and libz.  This is now the default."
+  ON )
 
 
 ######################################################################

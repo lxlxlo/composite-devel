@@ -80,10 +80,7 @@ installed on your system, and the development header files.
 	* JACK (jack1 >= 0.109.0, jack2 >= 1.9.3, earlier ones may
           work on some systems)
 	* libsndfile >=1.0.17
-	* zlib and libtar -OR- libarchive
-	  Linux: You probably already have zlib and libtar.
-	  OS X: You will probably need to build libarchive from source.
-	  Windows: You will probably want to use libarchive.
+	* libarchive (Optional: libtar and libz)
 	* OS X: Xcode
 	* libFLAC for handling FLAC sound files.
         * The boost libraries and the boost unit test framework.
