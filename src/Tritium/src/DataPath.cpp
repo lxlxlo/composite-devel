@@ -28,7 +28,7 @@
 #include <Tritium/DataPath.hpp>
 
 #include <QFile>
-#include <QApplication>
+#include <QCoreApplication>
 
 //#ifdef Q_OS_MACX
 //#  include <Carbon.h>

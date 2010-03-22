@@ -43,7 +43,7 @@
 #include "version.h"
 
 #include <QDir>
-#include <QApplication>
+#include <QCoreApplication>
 
 namespace Tritium
 {

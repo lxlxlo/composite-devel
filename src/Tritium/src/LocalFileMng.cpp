@@ -51,7 +51,7 @@
 #include <ctype.h>
 
 #include <QDir>
-#include <QApplication>
+#include <QCoreApplication>
 #include <QVector>
 #include <QDomDocument>
 #include <QLocale>
