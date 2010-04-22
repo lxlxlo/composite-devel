@@ -2,12 +2,12 @@ Source: composite
 Section: Multimedia
 Priority: optional
 Maintainer: Gabriel Beddingfield <gabriel@teuton.org>
-Build-Depends: cdbs, debhelper (>= 4.0.0), libsndfile1-dev, libjack-dev, libflac++-dev, libarchive-dev, libqt4-dev, libboost-dev, libboost-test-dev, liblrdf-dev, cmake
+Build-Depends: cdbs, debhelper (>= 4.0.0), libsndfile1-dev, libjack-dev, jackd, libflac++-dev, libarchive-dev, libqt4-dev, libboost-dev, libboost-test-dev, liblrdf-dev, cmake
 Standards-Version: 3.6.2
 
 Package: composite
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: jackd, ${shlibs:Depends}, ${misc:Depends}
 Description: Live performance sequencer
  Composite is a program for live-performance sequencing, sampling,
  and looping.  See http://gabe.is-a-geek.org/composite/ for details.
