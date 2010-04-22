@@ -2,3 +2,8 @@
 ## ---------------
 *.[oa]
 *~
+
+## For debian package building
+## ---------------------------
+
+obj-*-linux-gnu/

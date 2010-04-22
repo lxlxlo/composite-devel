@@ -1,1 +1,9 @@
-build/
+composite-dbg.debhelper.log
+composite-dbg.substvars
+composite-dbg/
+composite.debhelper.log
+composite.substvars
+composite/
+files
+stamp-makefile-build
+stamp-makefile-install
