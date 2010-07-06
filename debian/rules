@@ -1,0 +1,15 @@
+#!/usr/bin/make -f
+
+%:
+	dh --buildsystem=cmake $@
+
+override_dh_auto_configure:
+	dh_auto_configure -- -DWANT_LRDF=ON \
+		-DCMAKE_BUILD_TYPE=RelWithoutDebInfo
+
+override_dh_auto_install:
+	dh_auto_install
+	cd debian/tmp/usr/share/composite/data/i18n/ && \
+		rm updateTranslations.sh stats.py
+
+override_dh_auto_test:

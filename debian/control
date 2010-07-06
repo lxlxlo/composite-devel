@@ -1,0 +1,43 @@
+Source: composite
+Section: sound
+Priority: optional
+Maintainer: Debian Multimedia Maintainers <pkg-multimedia-maintainers@lists.alioth.debian.org>
+Uploaders: Alessio Treglia <alessio@debian.org>
+Build-Depends: debhelper (>= 7.0.50~),
+ cmake,
+ libsndfile1-dev,
+ libjack-dev,
+ lv2core,
+ libflac++-dev,
+ libtar-dev,
+ libqt4-dev,
+ libboost-dev,
+ libboost-test-dev,
+ liblrdf-dev
+Standards-Version: 3.9.0
+Vcs-Git: git://git.debian.org/git/pkg-multimedia/composite.git
+Vcs-Browser: http://git.debian.org/?p=pkg-multimedia/composite.git
+Homepage: http://gabe.is-a-geek.org/composite/
+
+Package: composite
+Architecture: any
+Depends: ${shlibs:Depends},
+ composite-data (>= ${source:Version}),
+ ${misc:Depends}
+Provides: lv2-plugin
+Description: Live performance sequencer
+ Composite is a program for live-performance sequencing, sampling,
+ and looping.  See http://gabe.is-a-geek.org/composite/ for details.
+ .
+ This package contains the Composite Sampler Plugin (LV2) and the
+ main GUI (composite-gui).
+
+Package: composite-data
+Architecture: all
+Depends: ${misc:Depends}
+Suggests: composite
+Description: Live performance sequencer (data files)
+ Composite is a program for live-performance sequencing, sampling,
+ and looping.  See http://gabe.is-a-geek.org/composite/ for details.
+ .
+ This package contains the data files for Composite.

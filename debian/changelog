@@ -1,0 +1,5 @@
+composite (0.006-1) unstable; urgency=low
+
+  * Initial release (Closes: #588289).
+
+ -- Alessio Treglia <alessio@debian.org>  Tue, 06 Jul 2010 15:26:09 +0200
