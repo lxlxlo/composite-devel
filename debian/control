@@ -41,3 +41,15 @@ Description: Live performance sequencer (data files)
  and looping.  See http://gabe.is-a-geek.org/composite/ for details.
  .
  This package contains the data files for Composite.
+
+Package: composite-dbg
+Section: debug
+Priority: extra
+Architecture: any
+Depends: composite (= ${binary:Version}),
+ ${misc:Depends}
+Description: Live performance sequencer (debugging symbols)
+ Composite is a program for live-performance sequencing, sampling,
+ and looping.  See http://gabe.is-a-geek.org/composite/ for details.
+ .
+ This package contains the debugging symbols.
