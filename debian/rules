@@ -12,4 +12,7 @@ override_dh_auto_install:
 	cd debian/tmp/usr/share/composite/data/i18n/ && \
 		rm updateTranslations.sh stats.py
 
+override_dh_strip:
+	dh_strip --dbg-package=composite-dbg
+
 override_dh_auto_test:
