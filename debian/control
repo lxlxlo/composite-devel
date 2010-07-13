@@ -26,8 +26,10 @@ Depends: ${shlibs:Depends},
  ${misc:Depends}
 Provides: lv2-plugin
 Description: Live performance sequencer
- Composite is a program for live-performance sequencing, sampling,
- and looping.  See http://gabe.is-a-geek.org/composite/ for details.
+ Composite is a software application/system for real-time, in-performance
+ sequencing, sampling, and looping. It has a strong emphasis on the needs
+ of live performance improvisation. It is built around the Tritium audio
+ engine, which also includes LV2 plugins.
  .
  This package contains the Composite Sampler Plugin (LV2) and the
  main GUI (composite-gui).
@@ -37,8 +39,10 @@ Architecture: all
 Depends: ${misc:Depends}
 Suggests: composite
 Description: Live performance sequencer (data files)
- Composite is a program for live-performance sequencing, sampling,
- and looping.  See http://gabe.is-a-geek.org/composite/ for details.
+ Composite is a software application/system for real-time, in-performance
+ sequencing, sampling, and looping. It has a strong emphasis on the needs
+ of live performance improvisation. It is built around the Tritium audio
+ engine, which also includes LV2 plugins.
  .
  This package contains the data files for Composite.
 
@@ -49,7 +53,9 @@ Architecture: any
 Depends: composite (= ${binary:Version}),
  ${misc:Depends}
 Description: Live performance sequencer (debugging symbols)
- Composite is a program for live-performance sequencing, sampling,
- and looping.  See http://gabe.is-a-geek.org/composite/ for details.
+ Composite is a software application/system for real-time, in-performance
+ sequencing, sampling, and looping. It has a strong emphasis on the needs
+ of live performance improvisation. It is built around the Tritium audio
+ engine, which also includes LV2 plugins.
  .
  This package contains the debugging symbols.
