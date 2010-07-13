@@ -1,0 +1,3 @@
+version=3
+http://gabe.is-a-geek.org/composite/releases/ \
+	composite-(.*)\.tar\.bz2

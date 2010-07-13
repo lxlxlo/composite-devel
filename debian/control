@@ -1,29 +1,61 @@
 Source: composite
-Section: Multimedia
+Section: sound
 Priority: optional
-Maintainer: Gabriel Beddingfield <gabriel@teuton.org>
-Build-Depends: cdbs, debhelper (>= 5.0.0), libsndfile1-dev, libjack-dev, jackd, libflac++-dev, libarchive-dev, libqt4-dev, libboost-dev, libboost-test-dev, liblrdf-dev, cmake
-Standards-Version: 3.6.2
+Maintainer: Debian Multimedia Maintainers <pkg-multimedia-maintainers@lists.alioth.debian.org>
+Uploaders: Alessio Treglia <alessio@debian.org>
+Build-Depends: debhelper (>= 7.0.50~),
+ cmake,
+ libsndfile1-dev,
+ libjack-dev,
+ lv2core,
+ libflac++-dev,
+ libtar-dev,
+ libqt4-dev,
+ libboost-dev,
+ libboost-test-dev,
+ liblrdf-dev
+Standards-Version: 3.9.0
+Vcs-Git: git://git.debian.org/git/pkg-multimedia/composite.git
+Vcs-Browser: http://git.debian.org/?p=pkg-multimedia/composite.git
+Homepage: http://gabe.is-a-geek.org/composite/
 
 Package: composite
 Architecture: any
-Depends: jackd, ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends},
+ composite-data (>= ${source:Version}),
+ ${misc:Depends}
+Provides: lv2-plugin
 Description: Live performance sequencer
- Composite is a program for live-performance sequencing, sampling,
- and looping.  See http://gabe.is-a-geek.org/composite/ for details.
+ Composite is a software application/system for real-time, in-performance
+ sequencing, sampling, and looping. It has a strong emphasis on the needs
+ of live performance improvisation. It is built around the Tritium audio
+ engine, which also includes LV2 plugins.
  .
  This package contains the Composite Sampler Plugin (LV2) and the
  main GUI (composite-gui).
+
+Package: composite-data
+Architecture: all
+Depends: ${misc:Depends}
+Suggests: composite
+Description: Live performance sequencer (data files)
+ Composite is a software application/system for real-time, in-performance
+ sequencing, sampling, and looping. It has a strong emphasis on the needs
+ of live performance improvisation. It is built around the Tritium audio
+ engine, which also includes LV2 plugins.
  .
- Warning: this package contains the development version (potentially
- unstable) released for testing purpose only.
+ This package contains the data files for Composite.
 
 Package: composite-dbg
-Architecture: any
 Section: debug
-Depends: jackd, ${shlibs:Depends}, ${misc:Depends}
-Description: Live performance sequencer
- Composite is a program for live-performance sequencing, sampling,
- and looping.  See http://gabe.is-a-geek.org/composite/ for details.
+Priority: extra
+Architecture: any
+Depends: composite (= ${binary:Version}),
+ ${misc:Depends}
+Description: Live performance sequencer (debugging symbols)
+ Composite is a software application/system for real-time, in-performance
+ sequencing, sampling, and looping. It has a strong emphasis on the needs
+ of live performance improvisation. It is built around the Tritium audio
+ engine, which also includes LV2 plugins.
  .
- This package contains the debugging symbols for composite.
+ This package contains the debugging symbols.
