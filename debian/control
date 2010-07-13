@@ -44,7 +44,7 @@ Description: Live performance sequencer (data files)
  of live performance improvisation. It is built around the Tritium audio
  engine, which also includes LV2 plugins.
  .
- This package contains the data files for Composite.
+ This package contains the data files for Composite.
 
 Package: composite-dbg
 Section: debug
