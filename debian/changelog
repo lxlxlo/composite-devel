@@ -2,9 +2,9 @@ composite (0.006-2) unstable; urgency=low
 
   * Add -DBG binary package.
   * Improve package description.
-  * Pass --dbg-package parameter to dh_strip explicitely.
+  * Pass --dbg-package parameter to dh_strip explicitly.
 
- -- Alessio Treglia <alessio@debian.org>  Wed, 14 Jul 2010 09:43:14 +0200
+ -- Alessio Treglia <alessio@debian.org>  Wed, 14 Jul 2010 10:00:38 +0200
 
 composite (0.006-1) unstable; urgency=low
 
