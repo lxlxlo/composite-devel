@@ -1,3 +1,11 @@
+composite (0.006-3) unstable; urgency=low
+
+  * Ignore .pc directory.
+  * Install a symlink to libTritium.so in to /usr/lib.
+  * Add patch to fix spelling errors.
+
+ -- Alessio Treglia <alessio@debian.org>  Fri, 16 Jul 2010 19:54:42 +0200
+
 composite (0.006-2) unstable; urgency=low
 
   * Add -DBG binary package.
