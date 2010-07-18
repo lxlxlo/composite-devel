@@ -1,0 +1,54 @@
+Author: Alessio Treglia <alessio@debian.org>
+Description: Fix spelling errors.
+Forwarded: gabrbedd@gmail.com
+---
+ data/xml/tritium-1.xsd            |    2 +-
+ src/Tritium/src/LocalFileMng.cpp  |    2 +-
+ src/Tritium/src/Preferences.cpp   |    2 +-
+ src/Tritium/src/Serialization.cpp |    2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+
+--- composite.orig/data/xml/tritium-1.xsd
++++ composite/data/xml/tritium-1.xsd
+@@ -61,7 +61,7 @@
+ 
+   <xs:annotation>
+     <xs:documentation xml:lang='en'>
+-      The lax structure is mostly done for future-compatability.  The
++      The lax structure is mostly done for future-compatibility.  The
+       namespace above will be used until a non-backwards-compatable
+       change is made.  For example, when first published the only
+       elements was &lt;presets&gt;.  Because &lt;tritium&gt; has a lax
+--- composite.orig/src/Tritium/src/LocalFileMng.cpp
++++ composite/src/Tritium/src/LocalFileMng.cpp
+@@ -960,7 +960,7 @@ namespace Tritium
+             return false;
+         } else  {
+             WARNINGLOG( QString("File '%1' is being read in "
+-                                "TinyXML compatability mode")
++                                "TinyXML compatibility mode")
+                         .arg(filename) );
+             return true;
+         }
+--- composite.orig/src/Tritium/src/Preferences.cpp
++++ composite/src/Tritium/src/Preferences.cpp
+@@ -68,7 +68,7 @@ Preferences::Preferences()
+ 
+ 	char * ladpath = getenv( "LADSPA_PATH" );	// read the Environment variable LADSPA_PATH
+ 	if ( ladpath ) {
+-		DEBUGLOG( "Found LADSPA_PATH enviroment variable" );
++		DEBUGLOG( "Found LADSPA_PATH environment variable" );
+ 		QString sLadspaPath = QString::fromLocal8Bit(ladpath);
+ 		int pos;
+ 		while ( ( pos = sLadspaPath.indexOf( ":" ) ) != -1 ) {
+--- composite.orig/src/Tritium/src/Serialization.cpp
++++ composite/src/Tritium/src/Serialization.cpp
+@@ -1402,7 +1402,7 @@ void SerializationQueue::handle_load_ins
+     QDomNode filenameNode = instrumentNode.firstChildElement( "filename" );
+ 
+     if( !filenameNode.isNull() ) {
+-        // Backward compatability mode (Hydrogen <= 0.9.0)
++        // Backward compatibility mode (Hydrogen <= 0.9.0)
+         // Only one layer.
+         QString sFilename = LocalFileMng::readXmlString( instrumentNode, "filename", "" );
+ 
