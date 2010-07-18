@@ -960,7 +960,7 @@ namespace Tritium
             return false;
         } else  {
             WARNINGLOG( QString("File '%1' is being read in "
-                                "TinyXML compatability mode")
+                                "TinyXML compatibility mode")
                         .arg(filename) );
             return true;
         }

@@ -1402,7 +1402,7 @@ void SerializationQueue::handle_load_instrument_node(
     QDomNode filenameNode = instrumentNode.firstChildElement( "filename" );
 
     if( !filenameNode.isNull() ) {
-        // Backward compatability mode (Hydrogen <= 0.9.0)
+        // Backward compatibility mode (Hydrogen <= 0.9.0)
         // Only one layer.
         QString sFilename = LocalFileMng::readXmlString( instrumentNode, "filename", "" );
 

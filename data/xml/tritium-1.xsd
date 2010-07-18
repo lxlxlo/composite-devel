@@ -61,7 +61,7 @@
 
   <xs:annotation>
     <xs:documentation xml:lang='en'>
-      The lax structure is mostly done for future-compatability.  The
+      The lax structure is mostly done for future-compatibility.  The
       namespace above will be used until a non-backwards-compatable
       change is made.  For example, when first published the only
       elements was &lt;presets&gt;.  Because &lt;tritium&gt; has a lax
