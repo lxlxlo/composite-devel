@@ -78,6 +78,20 @@ INSTALL(FILES ${CMAKE_SOURCE_DIR}/data/doc/composite_midi.7
         DESTINATION share/man/man7)
 INCLUDE(InstallRequiredSystemLibraries)
 
+######################################################################
+### UTILS FOR MAKING OFFICIAL RELEASES                             ###
+######################################################################
+
+# Note that this assumes a Git archive, and packages
+# Git HEAD.
+ADD_CUSTOM_TARGET(dist
+  git archive --format=tar --prefix=composite-${VERSION}/ HEAD
+     | gzip -9
+     > ${CMAKE_BINARY_DIR}/composite_${VERSION}.orig.tar.gz
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  COMMENT "Making composite_${VERSION}.orig.tar.gz"
+  )
+
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Composite - Live performance sequencing, sampling, and looping")
 SET(CPACK_PACKAGE_VENDOR "Composite Developers")
 SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/README.txt")
@@ -118,7 +132,6 @@ SET(MACOSX_BUNDLE_COPYRIGHT "Jérémy Zurcher, 2009")
 #SET(CPACK_SOURCE_PACKAGE_FILE_NAME "composite-${VERSION}")
 #INCLUDE(CPack)
 
-add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
 
 ######################################################################
 ### CONFIGURATION SUMMARY                                          ###
