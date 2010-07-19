@@ -1,9 +1,12 @@
 composite (0.007) experimental; urgency=low
 
-  * Change default to libarchive (instead of libtar, libz).
   * Development between 0.006 and 0.008
+  * Change default to libarchive (instead of libtar, libz).
+  * Remove debian/ folder from official tarball releases.
+  * Apply debian patch 01-spelling_errors.patch
+  * Fixed build error for QString(int).
 
- -- Gabriel M. Beddingfield <gabriel@teuton.org>  Thu, 18 Mar 2010 12:00:00 +0000
+ -- Gabriel M. Beddingfield <gabriel@teuton.org>  Mon, 19 Jul 2010 12:30:36 -0500
 composite (0.006-3) unstable; urgency=low
 
   * Ignore .pc directory.
