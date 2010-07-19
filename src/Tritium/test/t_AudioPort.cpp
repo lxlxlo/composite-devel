@@ -43,7 +43,7 @@ using namespace Tritium;
 namespace THIS_NAMESPACE
 {
     bool feq(float a, float b) {
-	const float eps = 1.0e-45;
+	const float eps = 12.0e-8;
 	return fabs(a-b) < eps;
     }
 
@@ -136,7 +136,7 @@ TEST_CASE( 020_write_read )
 	    left[k] = val;
 	    val += dt;
 	    if(right) {
-		right[k] = (1.0f/left[k]);
+		right[k] = (1e-6f * left[k]);
 	    }
 	}
     }
@@ -152,7 +152,7 @@ TEST_CASE( 020_write_read )
 	    CK( feq(left[k], val) );
 	    val += dt;
 	    if(right) {
-		CK( feq(right[k], (1.0f/left[k])) );
+		CK( feq(right[k], (1e-6f * left[k])) );
 	    }
 	}
     }
@@ -183,7 +183,7 @@ TEST_CASE( 030_write_then_zero )
 	    left[k] = val;
 	    val += dt;
 	    if(right) {
-		right[k] = (1.0f/left[k]);
+		right[k] = (1e-6f * left[k]);
 	    }
 	}
     }
@@ -237,7 +237,7 @@ TEST_CASE( 040_write_then_zero_64 )
 	    left[k] = val;
 	    val += dt;
 	    if(right) {
-		right[k] = (1.0f/left[k]);
+		right[k] = (1e-6f * left[k]);
 	    }
 	}
     }
@@ -267,7 +267,7 @@ TEST_CASE( 040_write_then_zero_64 )
 	    CK( feq(left[k], val) );
 	    val += dt;
 	    if(right) {
-		CK( feq(right[k], (1.0f/left[k])) );
+		CK( feq(right[k], (1e-6f * left[k])) );
 	    }
 	}
     }
@@ -298,7 +298,7 @@ TEST_CASE( 050_write_then_zero_size )
 	    left[k] = val;
 	    val += dt;
 	    if(right) {
-		right[k] = (1.0f/left[k]);
+		right[k] = (1e-6 * left[k]);
 	    }
 	}
     }
