@@ -439,7 +439,7 @@ namespace Tritium
 	song->set_humanize_velocity_value( 0.0 );
 	song->set_swing_factor( 0.0 );
 
-	T<Instrument>::shared_ptr inst( new Instrument( QString(0), "New instrument", new ADSR ) );
+	T<Instrument>::shared_ptr inst( new Instrument( QString("0"), "New instrument", new ADSR ) );
 	T<Sampler>::shared_ptr sampler = engine->get_sampler();
 	sampler->clear();
 	sampler->add_instrument( inst );
