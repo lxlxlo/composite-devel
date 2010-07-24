@@ -1,9 +1,38 @@
-TO-DO LIST FOR TRANSPORT REDESIGN
+COMPOSITE TO-DO LIST
 =================================
-2009-04-27
 
-REDESIGNING THE REDESIGN
-------------------------
+INLINE TODO MARKERS
+-------------------
+
+While coding, these are the markers used for "FIX ME LATER":
+
+    #warning "SOME MESSAGE ABOUT FIXING THIS LATER"
+
+    assert(false)
+
+    // TODO: some message
+
+    /* TODO: some message
+     */
+
+As of this writing (2009-05-25), the status is:
+
+    #warning:       13 locations
+    assert(false):   6 locations
+    TODO comment:   19 locations
+
+MISC TODO'S
+-----------------------------------------
+
+(.) Move libTritium.so from /usr/lib to /usr/share/composite/ (or
+    something like that).  Since libTritium is not yet a public API it
+    belongs in the share folder.  This is policy on some distributions
+    like Debian.  To do this, will need to have `composite` become a
+    shell script that sets LD_LIBRARY_PATH before calling composite.
+    There are some other alternatives, too.
+
+REDESIGNING THE REDESIGN OF THE TRANSPORT
+-----------------------------------------
 
 This list is a specific list of things that should be done as a result
 of the mailing list discussion from 24 July 2009 through August 2009.
@@ -41,26 +70,6 @@ of the mailing list discussion from 24 July 2009 through August 2009.
 
 (.) I think my diagrams have arrows that are opposite of what you're
     supposed to do in UML.  Need to change those.
-
-INLINE TODO MARKERS
--------------------
-
-While coding, these are the markers used for "FIX ME LATER":
-
-    #warning "SOME MESSAGE ABOUT FIXING THIS LATER"
-
-    assert(false)
-
-    // TODO: some message
-
-    /* TODO: some message
-     */
-
-As of this writing (2009-05-25), the status is:
-
-    #warning:       13 locations
-    assert(false):   6 locations
-    TODO comment:   19 locations
 
 SPECIFIC TASKS
 --------------
@@ -101,28 +110,28 @@ SPECIFIC TASKS
 (.) Delete this file when all the tasks are complete.  :-)
 
 TODO FOR JACK MIDI
-==================
+------------------
 
-* Sconstruct doesn't support jackdmp & Jack MIDI.  Only supports
-  "classic" jack (e.g. 0.109.2).  Need to either add support for
-  jackdmp versions, or drop support for anything not conforming
-  to the 0.105.0 API.
-  (gabe 2/19/09)
+(.) Sconstruct doesn't support jackdmp & Jack MIDI.  Only supports
+    "classic" jack (e.g. 0.109.2).  Need to either add support for
+    jackdmp versions, or drop support for anything not conforming
+    to the 0.105.0 API.
+    (gabe 2/19/09)
+  
+(.) Merging r594 (lookahead code) -- make sure we didn't
+    introduce a regression.  TEST! TEST! TEST!
+    We didn't.  THE WHOLE BRANCH IS A REGRESSION!!
+    Need to fix MIDI record on the jack MIDI branch.
+    (gabe 2/19/09)
 
-* Merging r594 (lookahead code) -- make sure we didn't
-  introduce a regression.  TEST! TEST! TEST!
-  We didn't.  THE WHOLE BRANCH IS A REGRESSION!!
-  Need to fix MIDI record on the jack MIDI branch.
-  (gabe 2/19/09)
+(.) There's a fix for jack_output.cpp that tests if the
+    'client' variable is NULL.  I don't think this got
+    ported over in the latest merge.  It needs to be.
+    (gabe 2/19/09)
 
-* There's a fix for jack_output.cpp that tests if the
-  'client' variable is NULL.  I don't think this got
-  ported over in the latest merge.  It needs to be.
-  (gabe 2/19/09)
+(.) Need to do some sample-accuracy tests.
 
-* Need to do some sample-accuracy tests.
-
-Composite/Tritium Wish List
+WISH LIST ITEMS
 ---------------------------
 
 DRUM KITS: Conceptually, the Mixer volume of each instrument of a drum
