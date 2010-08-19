@@ -92,47 +92,6 @@ ADD_CUSTOM_TARGET(dist
   COMMENT "Making composite_${VERSION}.orig.tar.gz"
   )
 
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Composite - Live performance sequencing, sampling, and looping")
-SET(CPACK_PACKAGE_VENDOR "Composite Developers")
-SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/README.txt")
-SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING")
-
-SET(CPACK_PACKAGE_VERSION_MAJOR "${VERSION_MAJOR}")
-SET(CPACK_PACKAGE_VERSION_MINOR "${VERSION_MINOR}")
-SET(CPACK_PACKAGE_VERSION_PATCH "${VERSION_PATCH}")
-IF(VERSION_SUFFIX)
-    SET(CPACK_PACKAGE_VERSION_PATCH "${VERSION_PATCH}-${VERSION_SUFFIX}")
-ENDIF(VERSION_SUFFIX)
-
-#SET(CPACK_PACKAGE_INSTALL_DIRECTORY "LMMS ${VERSION}")
-#IF(WIN32)
-    #SET(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/data\\\\nsis_branding.bmp")
-    #SET(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/data\\\\lmms.ico")
-    #SET(CPACK_NSIS_INSTALLED_ICON_NAME "lmms.exe")
-    #SET(CPACK_NSIS_DISPLAY_NAME "Linux MultiMedia Studio (LMMS)")
-    #SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\lmms.sourceforge.net")
-    #SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\lmms.sourceforge.net")
-    #SET(CPACK_NSIS_CONTACT "lmms-devel@lists.sourceforge.net")
-    #SET(CPACK_PACKAGE_EXECUTABLES "lmms.exe;Linux MultiMedia Studio")
-    #SET(CPACK_NSIS_MENU_LINKS "lmms.exe;Linux MultiMedia Studio")
-#ELSE(WIN32)
-#    SET(CPACK_STRIP_FILES "bin/lmms;${PLUGIN_DIR}/*.so")
-#    SET(CPACK_PACKAGE_EXECUTABLES "composite-gui" "Composite binary")
-#ENDIF(WIN32)
-
-SET(MACOSX_BUNDLE_ICON_FILE "${CMAKE_SOURCE_DIR}/data/img/gray/icon.svg")
-SET(MACOSX_BUNDLE_GUI_IDENTIFIER "Composite")
-SET(MACOSX_BUNDLE_LONG_VERSION_STRING "${VERSION}")
-SET(MACOSX_BUNDLE_BUNDLE_NAME "Composite Sequencer")
-SET(MACOSX_BUNDLE_SHORT_VERSION_STRING "${VERSION}")
-SET(MACOSX_BUNDLE_BUNDLE_VERSION "${VERSION}")
-SET(MACOSX_BUNDLE_COPYRIGHT "Jérémy Zurcher, 2009")
-
-#SET(CPACK_SOURCE_GENERATOR "TBZ2")
-#SET(CPACK_SOURCE_PACKAGE_FILE_NAME "composite-${VERSION}")
-#INCLUDE(CPack)
-
-
 ######################################################################
 ### CONFIGURATION SUMMARY                                          ###
 ######################################################################
