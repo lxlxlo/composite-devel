@@ -14,3 +14,8 @@ override_dh_auto_install:
 
 override_dh_strip:
 	dh_strip --dbg-package=composite-dbg
+
+override_dh_auto_test:
+	jackd -d dummy -r 48000 -p 512 &
+	dh_auto_test
+	pkill jackd
