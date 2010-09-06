@@ -35,6 +35,7 @@
 //#endif
 
 #include <iostream>
+#include <cstdlib>
 using namespace std;
 
 #include "config.h"
@@ -42,34 +43,49 @@ using namespace std;
 namespace Tritium
 {
 
-QString DataPath::__data_path;
+    QString DataPath::__data_path;
 
-QString DataPath::get_data_path()
-{
-	#warning "TODO: QApplication used in libTritium"
-#ifdef Q_OS_MACX
+    /**
+     * \brief Find the directory where things like drum kits are stored.
+     *
+     * This function only evaluates once per session.  After that, the
+     * value is cached.
+     *
+     * The function searches for the directory in this order:
+     *
+     *   1. Looks for "COMPOSITE_DATA_PATH" environment variable.
+     *   2. Looks for the directory "data" in the same folder as
+     *      the executable.
+     *   3. Uses the compiled-in value (usually $PREFIX/share/composite/data/
+     *
+     * \return Path to the data directory.
+     */
+    #warning "TODO: QApplication used in libTritium"
+    QString DataPath::get_data_path()
+    {
+	if( ! __data_path.isEmpty() ) return __data_path;
 
-	QString qStringPath = qApp->applicationDirPath() + QString ( "/../Resources/data" ) ;
-	return qStringPath;
-#elif WIN32
+	QString tmp;
+	QFileInfo fi;
 
-	QString qStringPath = qApp->applicationDirPath() + QString ( "/data" ) ;
-	return qStringPath;
-
-#else
-	if ( __data_path.isEmpty() ) {
-		QString qStringPath = qApp->applicationDirPath() + QString ( "/data" ) ;
-		__data_path = qStringPath;
-
-		QFile file( __data_path );
-		if ( !file.exists() ) {
-			// try using the system wide data dir
-			__data_path = DATA_PATH;
-		}
+	char* env = getenv("COMPOSITE_DATA_PATH");
+	if(env) {
+	    fi.setFile( QString(env) );
+	    if( fi.exists() ) {
+		__data_path = fi.absoluteFilePath();
+	    }
+	    return __data_path;
 	}
+
+	tmp = qApp->applicationDirPath() + QString("/data");
+	fi.setFile( tmp );
+	if( fi.exists() ) {
+	    __data_path = fi.absoluteFilePath();
+	    return __data_path;
+	}
+
+	__data_path = DATA_PATH;
 	return __data_path;
-#endif
-}
+    }
 
-};
-
+} // namespace Tritium
