@@ -16,4 +16,4 @@ TryExec=composite-gui
 Terminal=false
 StartupNotify=true
 
-Icon=composite-icon
+Icon=@DATA_PATH@/img/gray/composite-icon.png
