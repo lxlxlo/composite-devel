@@ -1,10 +1,15 @@
-composite (0.007) experimental; urgency=low
+composite (0.008-0) experimental; urgency=low
 
-  * Development between 0.006 and 0.008
   * Change default to libarchive (instead of libtar, libz).
   * Remove debian/ folder from official tarball releases.
   * Apply debian patch 01-spelling_errors.patch
   * Fixed build error for QString(int).
+
+ -- Gabriel Beddingfield <gabriel@teuton.org>  Sun, 05 Sep 2010 21:44:32 -0500
+
+composite (0.007) experimental; urgency=low
+
+  * Development between 0.006 and 0.008.  See 0.008 for changes.
 
  -- Gabriel M. Beddingfield <gabriel@teuton.org>  Mon, 19 Jul 2010 12:30:36 -0500
 composite (0.006-3) unstable; urgency=low

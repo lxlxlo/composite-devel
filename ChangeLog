@@ -1,3 +1,109 @@
+commit 60c37e7fdb4595406471678265b23eee2e38cbaf
+Author: Gabriel M. Beddingfield <gabriel@teuton.org>
+Date:   Mon Sep 6 17:31:44 2010 -0500
+
+    Override dh_auto_test to start/stop jack for test.
+
+M	debian/rules
+
+commit 5683b10b631ab5bdc47a506f5c0a7d5ee7412440
+Author: Gabriel M. Beddingfield <gabriel@teuton.org>
+Date:   Mon Sep 6 11:20:51 2010 -0500
+
+    composite.desktop.in: Update path to icon.
+
+M	composite.desktop.in
+
+commit 7663ddc1ad63377555db1ac0fcbeadeb4084ba94
+Author: Gabriel M. Beddingfield <gabriel@teuton.org>
+Date:   Mon Sep 6 08:57:12 2010 -0500
+
+    t_Serialization: Set environment variable for data path for tests.
+    
+    Tests were failing if composite not installed.  Deb package not building
+    because tests were failing.  Catch-22.
+
+M	src/Tritium/test/t_Serialization.cpp
+M	src/Tritium/test/test_config.hpp.in
+
+commit b7a61404e3dd1a9475828ccb2255a0130a1fb58c
+Author: Gabriel M. Beddingfield <gabriel@teuton.org>
+Date:   Mon Sep 6 08:56:04 2010 -0500
+
+    Add environment variable "COMPOSITE_DATA_PATH" to find drumkits etc.
+    
+    This is for the system-wide (not user) data path.  This is so that
+    the tests (esp. serialization) will work without actually having
+    composite installed.
+
+M	src/Tritium/src/DataPath.cpp
+
+commit 9322cd445a988b6855731e15710934978ab52e5a
+Author: Gabriel M. Beddingfield <gabriel@teuton.org>
+Date:   Sun Sep 5 22:27:04 2010 -0500
+
+    debian/control: Replace libtar-dev with libarchive-dev for deps.
+
+M	debian/control
+
+commit 9c18c7a07bea0246c3b4c55d85d5320c3c336483
+Author: Gabriel M. Beddingfield <gabriel@teuton.org>
+Date:   Thu Aug 19 12:31:08 2010 -0500
+
+    Delete all the CPack stuff.
+    
+    I never used it, and I tried once to use it on Windows.  I hated it.
+    You have to do so much platform-specific stuff and overrides, you
+    might as well package it for each platform.  In addition, the installer
+    for CPack on windows in Nullsoft -- which I was very unhappy with.
+    I prefer an MSI installer (like WiX) because it handles uninstalls
+    much better.
+
+M	CMakeLists.txt
+
+commit 0e62a20c32084d2867643f2b64466a5483b9fc6c
+Author: Gabriel M. Beddingfield <gabriel@teuton.org>
+Date:   Fri Jul 23 21:59:16 2010 -0500
+
+    Add a TODO regarding libTritium being in /usr/lib.
+
+M	Documentation/TODO.txt
+
+commit d71ba5cdd7f436b9558b1f705684d6e5b47b4669
+Author: Gabriel M. Beddingfield <gabriel@teuton.org>
+Date:   Fri Jul 23 21:53:02 2010 -0500
+
+    Rename TRANSPORT_REDESIGN_TODO.txt to TODO.txt
+
+A	Documentation/TODO.txt
+D	Documentation/TRANSPORT_REDESIGN_TODO.txt
+
+commit e6aa125ce92a5af68cb6ebfb7748ed9b6fead567
+Author: Gabriel M. Beddingfield <gabriel@teuton.org>
+Date:   Fri Jul 23 21:51:37 2010 -0500
+
+    Consolidate TODO's into TRANSPORT_REDESIGN_TODO.txt
+
+D	Documentation/TODO.jackMidi
+M	Documentation/TRANSPORT_REDESIGN_TODO.txt
+D	Documentation/Wish_List.txt
+
+commit 4e5473c36cc35261adc992248bdb31b8e541a6a6
+Author: Gabriel M. Beddingfield <gabriel@teuton.org>
+Date:   Fri Jul 23 21:48:08 2010 -0500
+
+    Clean out some complete jackMidi tasks.
+
+M	Documentation/TODO.jackMidi
+
+commit 4253536a95889f44b4aadb25a28998d760369e6a
+Author: Gabriel M. Beddingfield <gabriel@teuton.org>
+Date:   Mon Jul 19 12:31:57 2010 -0500
+
+    Convert ChangeLog from Debian style to git-log.
+
+M	ChangeLog
+
 commit b22cd60faa004beb21d097bf233d8e9e00fded05
 Author: Gabriel M. Beddingfield <gabriel@teuton.org>
 Date:   Mon Jul 19 12:31:13 2010 -0500
