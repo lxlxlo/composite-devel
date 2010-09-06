@@ -81,6 +81,7 @@ namespace THIS_NAMESPACE
 	void operator()() { done = true; }
     };
 
+    const char app_data_dir[] = TEST_ROOT_DIR "/data";
     const char temp_dir[] = "t_Serialization_tmp";
     const char song_file_name[] = TEST_DATA_DIR "/t_Serialization.h2song";
     const char song_master_default_name[] = TEST_BIN_DIR "/t_Serialization-default.h2song";
@@ -127,7 +128,15 @@ namespace THIS_NAMESPACE
         // SETUP AND TEARDOWN OBJECTS FOR YOUR TESTS.
         T<Serializer>::auto_ptr s;
         T<Engine>::auto_ptr engine;
+	QString _old_composite_data_env;
         Fixture() : s(0) {
+	    char *data_dir = getenv("COMPOSITE_DATA_PATH");
+	    if(data_dir) {
+		_old_composite_data_env = QString(data_dir);
+	    } else {
+		_old_composite_data_env = QString();
+	    }
+	    setenv("COMPOSITE_DATA_PATH", app_data_dir, 1);
             Logger::create_instance();
             T<Preferences>::shared_ptr prefs(new Preferences );
             engine.reset( new Engine(prefs) );
@@ -138,6 +147,12 @@ namespace THIS_NAMESPACE
             BOOST_REQUIRE( rv == 0 );
         }
         ~Fixture() {
+	    // Clean the environment:
+	    if(_old_composite_data_env.isEmpty()) {
+		unsetenv("COMPOSITE_DATA_PATH");
+	    } else {
+		setenv("COMPOSITE_DATA_PATH", _old_composite_data_env.toLocal8Bit(), 1);
+	    }
 	    bool has_error;
 	    QDir td(temp_dir);
 	    has_error = RemoveDirectory(td);
