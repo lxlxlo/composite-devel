@@ -42,16 +42,16 @@ OVERVIEW
      .               |              |     Transport     .
      .               V              |     Back-Ends     .
      .     +----> Sequencer <-------+           |       .
-     .     |         |  |                       +--------> Poss. External
-     .     |         |  +-----> MIDI-Out ---------+     .  Transport Model
-     .     |         V                            |     .
-     .   MIDI      Sampler      ...............   |     .
-     .    IN         |          .             .   |     .
-     .     A         V          . Preferences .   |     .
-     .     |     Instruments    ...............   |     .
-     .     |         |                            |     .
-     .     |         V                            |     .
-     .     |       Mixer                          |     .
+     .     |       |  | |                       +--------> Poss. External
+     .     |       |  | +-----> MIDI-Out ---------+     .  Transport Model
+     .     |       V  +----+                      |     .
+     .   MIDI    Sampler   V    ...............   |     .
+     .    IN       |   Aud.PrMix.             .   |     .
+     .     A       V        |   . Preferences .   |     .
+     .     |   Instruments  V   ...............   |     .
+     .     |       |   Aud.Stretch                |     .
+     .     |       V        |                     |     .
+     .     |       Mixer <--+                     |     .
      .     |         |                            |     .
      .     |         V                            |     .
      .     |      AudioOut                        |     .
@@ -64,12 +64,12 @@ OVERVIEW
      ....................................................
 
 
-The Sequencer becomes the central information router.  What *was* the
-audioEngine_process() callback will effectively become Sequencer::process().
-The Sequencer::process() method will resemble the JACK call graph, like the
-following pseudo-code template.
+The "Engine" is effectively the Sequencer -- and it becomes the
+central information router.  What *was* the audioEngine_process()
+callback is Engine::process().  The Engine::process() method will
+resemble the JACK call graph, like the following pseudo-code template.
 
-int Sequencer::process(uint32_t nframes)
+int Engine::process(uint32_t nframes)
 {
     UPDATE TRANSPORT POSITION;
 
@@ -91,18 +91,19 @@ position to map their clocks and models to frames.  Then, it feeds events to the
 sequencer with timestamps that are offset from the first frame of the current
 process() cycle.
 
-The sampler routes the events from the Sequencer and triggers the instruments
-accordingly.  The instruments feed their data to the mixer, which mixes all th
-signals for the audio outputs.  (**)
+The sampler/engine routes events from the inputs (songs, MIDI, GUI,
+etc.) and triggers instruments, audio clips, etc.  The instruments and
+the audio sections feed their data to the mixer, which mixes all the
+signals for audio outputs. (**)
 
-The so-called "Hydrogen API" is how the Hydrogen GUI interfaces with the audio
-engine.  The public interface of H2Core::Hydrogen becomes the basis of the
-public API.  Any classes that are part of this interface become part of the
-public API.
+The so-called "Tritium API" is how the Composite GUI interfaces with
+the audio engine.  The public interface of Tritium::Engine becomes
+the basis of the public API.  Any classes that are part of this
+interface become part of the public API.
 
 While the GUI needs to manipulate every parameter, the intention is that the
 classes of the public API be *Interfaces*.  That is, pure virtual classes.  The
-implementations can be chosen and mixed by Hydrogen without disturbing the GUI
+implementations can be chosen and mixed by Tritium without disturbing the GUI
 code... even at run time.  In some cases it may make more sense to feed heavy
 objects to the API... but it's still the goal.  This may also make other
 front-ends (e.g. CLI and plug-ins) more feasible.
@@ -128,7 +129,7 @@ dynamic_cast<Transport>                  JackTimebaseCallback |
 H2Transport <-- Transport <----------------+-InternalTransportMaster
      | (private)       (interface)         |
      |                                     +-JackTransportMaster (++)
-     V                                     |                     
+     V                                     |
 TransportPosition (Struct/class)           +-MiscTransportMaster
             | (analog to jack_position_t)  |
             |                              .
@@ -202,10 +203,10 @@ THE SEQUENCER
 The Sequencer requires inputs to convert their data into an event that
 will be put in a queue (SeqScript).  The queue will be fed to
 Sequencer output, which is to respond to the events.  This is very
-much like MIDI.  The Sequencer::process() should look something like
-this:
+much like MIDI.  The Sequencer's process method (Engine::process())
+should look something like this:
 
-    sequencer_process(uint32_t nframes)
+    int Engine::process(uint32_t nframes)
     {
         SeqScript seq;
         TransportPosition pos;
@@ -213,6 +214,7 @@ this:
         SeqInputInterface* pMidiInput;
         SeqInputInterface* pGuiInput;
         SeqOutputInterface* pSampler; // i.e. H2Core::Sampler
+        SeqOutputInterface* pAudio;   // NEW - time-stretched audio
         SeqOutputInterface* pMidiOut; // i.e. H2Core::MidiOutput
 
         // Get events from input sources
@@ -227,6 +229,10 @@ this:
                           seq.end_const(nframes),
                           pos,
                           nframes);
+        pAudio->process(seq.begin_const(),
+                        seq.end_const(nframes),
+                        pos,
+                        nframes);
         pMidiOut->process(seq.begin_const(),
                           seq.end_const(nframes),
                           pos,
@@ -284,7 +290,7 @@ Sampler
  | |  | | | | | | |
  V V  V V V V V V V
 .....................
-.   Audio Driver    . 
+.   Audio Driver    .
 .....................
 
 This is quite a bit different from how Hydrogen currently does things.
