@@ -1,3 +1,9 @@
+composite (0.009) experimental; urgency=low
+
+  * Development between 0.008 and 0.009.
+
+ -- Gabriel Beddingfield <gabriel@teuton.org>  Tue, 07 Sep 2010 06:18:20 -0500
+
 composite (0.008-0) experimental; urgency=low
 
   * Change default to libarchive (instead of libtar, libz).
