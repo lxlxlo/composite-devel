@@ -1,6 +1,9 @@
 THE NEW TRANSPORT AND AUDIO ENGINE DESIGN
 =========================================
 
+NOTE: This document is once again in flux as it converts the design
+intended for Hydrogen into the one needed for Composite.
+
 ABSTRACT
 --------
 
@@ -46,10 +49,10 @@ OVERVIEW
      .     |       |  | +-----> MIDI-Out ---------+     .  Transport Model
      .     |       V  +----+                      |     .
      .   MIDI    Sampler   V    ...............   |     .
-     .    IN       |   Aud.PrMix.             .   |     .
+     .    IN       |   Elas.Aud..             .   |     .
      .     A       V        |   . Preferences .   |     .
-     .     |   Instruments  V   ...............   |     .
-     .     |       |   Aud.Stretch                |     .
+     .     |   Instruments  |   ...............   |     .
+     .     |       |        |                     |     .
      .     |       V        |                     |     .
      .     |       Mixer <--+                     |     .
      .     |         |                            |     .
@@ -113,8 +116,56 @@ processing is highly parallel number crunching.  If this proves to be a
 bottle-neck, it's possible to implement parallel processing here for the
 instruments and the mixer.
 
+FUNDAMENTAL PLAYBACK TYPES
+==========================
+
+All songs, sequences, etc. boil down to the generation of audio data
+and control (e.g. MIDI) data.  To organize how these are created, the
+following fundamental (atomic) types are established in composite.
+
+  AUDIO SAMPLE - This is a short or long clip of audio that is played
+  back with any normal manner of processing EXCEPT time stretching.
+  This can be a sample in a beat-sliced loop, drum kit, or a random
+  clip that the user added.
+
+  ELASTIC AUDIO - This is a short or long clip of audio that, when
+  played back, must be time-synchronized with the transport (in some
+  capacity).  Because of the complexity of synchronization and the
+  amount of calculation required to do time-stretching, this type is
+  distinguied from an audio sample.
+
+  CONTROL EVENT - This is a digital, MIDI-like event.  It is generally
+  expected to be small and easy to copy.
+
+These basic types can happen at any time.  The arrangement of these is
+controlled by the sequencer, which determines when they occur and when
+they stop.  Therefore, the sequencer more or less uses these concepts
+to collect them:
+
+  SIMPLE SEQUENCE - An array that pairs the atomic types with timing
+  data so that their playback may be scheduled.  This is more or less
+  implemented as Tritium::SeqScript.
+
+At the user level, Composite requires a recursive "clip" type that is
+conceptually:
+
+  CLIP := { (CLIP | SIMPLE SEQUENCE | SAMPLE | ELASTIC | EVENT)* }
+
+Thus, a clip is more of a "compound sequence."
+
+With a little processing, a CLIP can be normalized down to a simple
+sequence.  Thus, the processing model would be something like:
+
+  CLIPS, CONTROL INPUTS ==> SIMPLE SEQUENCE
+  SIMPLE SEQUENCE ==> AUDIO PROCESSING
+
+The expectation is that "AUDIO PROCESSING" is made of at least 3
+machines: a sampler (for simple samples), an elastic audio machine, a
+"control output" machine (e.g. MIDI output).  The place of plugins is
+at this point undetermined.
+
 THE TRANSPORT
--------------
+=============
 
 A conceptual model of the transport looks like this:
 
