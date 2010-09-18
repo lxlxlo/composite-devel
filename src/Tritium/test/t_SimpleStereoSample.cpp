@@ -29,10 +29,10 @@
 // YOUR INCLUDES HERE
 
 // CHANGE THIS TO MATCH YOUR FILE:
-#define THIS_NAMESPACE t_Sample
+#define THIS_NAMESPACE t_SimplesStereoSample
 #include "test_macros.hpp"
 #include "test_config.hpp"
-#include <Tritium/Sample.hpp>
+#include <Tritium/SimpleStereoSample.hpp>
 #include <Tritium/memory.hpp>
 #include <cmath>
 
@@ -67,14 +67,14 @@ namespace THIS_NAMESPACE
     struct Fixture
     {
 	// SETUP AND TEARDOWN OBJECTS FOR YOUR TESTS.
-	T<Sample>::shared_ptr sine_wav, sine_flac;
-	T<Sample>::shared_ptr tri_wav, tri_flac;
+	T<SimpleStereoSample>::shared_ptr sine_wav, sine_flac;
+	T<SimpleStereoSample>::shared_ptr tri_wav, tri_flac;
 
 	Fixture() {
-	    sine_wav = Sample::load(sine_wav_file);
-	    sine_flac = Sample::load(sine_flac_file);
-	    tri_wav = Sample::load(triangle_wav_file);
-	    tri_flac = Sample::load(triangle_flac_file);
+	    sine_wav = SimpleStereoSample::load(sine_wav_file);
+	    sine_flac = SimpleStereoSample::load(sine_flac_file);
+	    tri_wav = SimpleStereoSample::load(triangle_wav_file);
+	    tri_flac = SimpleStereoSample::load(triangle_flac_file);
 	}
 	~Fixture() {
 	    CK( sine_wav.use_count() == 1 );
@@ -111,17 +111,17 @@ TEST_BEGIN( Fixture );
 
 TEST_CASE( 010_defaults )
 {
-    T<Sample>::shared_ptr null;
-    T<Sample>::shared_ptr samples[] = {
+    T<SimpleStereoSample>::shared_ptr null;
+    T<SimpleStereoSample>::shared_ptr samples[] = {
 	sine_wav,
 	sine_flac,
 	tri_wav,
 	tri_flac,
 	null };
-    T<Sample>::shared_ptr *iter = samples;
+    T<SimpleStereoSample>::shared_ptr *iter = samples;
 
     while(*iter) {
-	T<Sample>::shared_ptr that = *iter;
+	T<SimpleStereoSample>::shared_ptr that = *iter;
 
 	CK(that);
 	CK(that->get_data_l());
@@ -141,20 +141,20 @@ TEST_CASE( 010_defaults )
 
 TEST_CASE( 020_no_clipping )
 {
-    T<Sample>::shared_ptr null;
-    T<Sample>::shared_ptr samples[] = {
+    T<SimpleStereoSample>::shared_ptr null;
+    T<SimpleStereoSample>::shared_ptr samples[] = {
 	sine_wav,
 	sine_flac,
 	tri_wav,
 	tri_flac,
 	null };
-    T<Sample>::shared_ptr *iter = samples;
+    T<SimpleStereoSample>::shared_ptr *iter = samples;
 
     float *left, *right;
     unsigned long k;
 
     while(*iter) {
-	T<Sample>::shared_ptr that = *iter;
+	T<SimpleStereoSample>::shared_ptr that = *iter;
 
 	CK(that);
 	left = that->get_data_l();

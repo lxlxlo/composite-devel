@@ -19,7 +19,7 @@
  *
  */
 
-#include <Tritium/Sample.hpp>
+#include <Tritium/SimpleStereoSample.hpp>
 #include <Tritium/Logger.hpp>
 #include <Tritium/Preferences.hpp>
 #include "FLACFile.hpp"
@@ -32,7 +32,7 @@ using namespace std;
 namespace Tritium
 {
 
-Sample::Sample(
+SimpleStereoSample::SimpleStereoSample(
 	unsigned frames,
 	const QString& filename,
 	unsigned sample_rate,
@@ -50,17 +50,21 @@ Sample::Sample(
 
 
 
-Sample::~Sample()
+SimpleStereoSample::~SimpleStereoSample()
 {
 	delete[] __data_l;
 	delete[] __data_r;
 	//DEBUGLOG( "DESTROY " + m_sFilename);
 }
 
+const QUrl& SimpleStereoSample::source_url()
+{
+    __url = QUrl::fromLocalFile(__filename);
+    return __url;
+}
 
 
-
-T<Sample>::shared_ptr Sample::load( const QString& filename )
+T<SimpleStereoSample>::shared_ptr SimpleStereoSample::load( const QString& filename )
 {
 	// is it a flac file?
 	if ( ( filename.endsWith( "flac") ) || ( filename.endsWith( "FLAC" )) ) {
@@ -73,32 +77,32 @@ T<Sample>::shared_ptr Sample::load( const QString& filename )
 
 
 /// load a FLAC file
-T<Sample>::shared_ptr Sample::load_flac( const QString& filename )
+T<SimpleStereoSample>::shared_ptr SimpleStereoSample::load_flac( const QString& filename )
 {
 #ifdef FLAC_SUPPORT
 	FLACFile file;
-	return file.load( filename );
+	return file.load_simple( filename );
 #else
 	ERRORLOG("[loadFLAC] FLAC support was disabled during compilation");
-	return T<Sample>::shared_ptr();
+	return T<SimpleStereoSample>::shared_ptr();
 #endif
 }
 
 
 
-T<Sample>::shared_ptr Sample::load_wave( const QString& filename )
+T<SimpleStereoSample>::shared_ptr SimpleStereoSample::load_wave( const QString& filename )
 {
 	// file exists?
 	if ( QFile( filename ).exists() == false ) {
-		ERRORLOG( QString( "[Sample::load] Load sample: File %1 not found" ).arg( filename ) );
-		return T<Sample>::shared_ptr();
+		ERRORLOG( QString( "[SimpleStereoSample::load] Load sample: File %1 not found" ).arg( filename ) );
+		return T<SimpleStereoSample>::shared_ptr();
 	}
 
 
 	SF_INFO soundInfo;
 	SNDFILE* file = sf_open( filename.toLocal8Bit(), SFM_READ, &soundInfo );
 	if ( !file ) {
-		ERRORLOG( QString( "[Sample::load] Error loading file %1" ).arg( filename ) );
+		ERRORLOG( QString( "[SimpleStereoSample::load] Error loading file %1" ).arg( filename ) );
 	}
 
 
@@ -125,8 +129,8 @@ T<Sample>::shared_ptr Sample::load_wave( const QString& filename )
 	delete[] pTmpBuffer;
 
 
-	T<Sample>::shared_ptr pSample(
-	    new Sample(
+	T<SimpleStereoSample>::shared_ptr pSample(
+	    new SimpleStereoSample(
 		soundInfo.frames,
 		filename,
 		soundInfo.samplerate,
@@ -138,36 +142,6 @@ T<Sample>::shared_ptr Sample::load_wave( const QString& filename )
 }
 
 
-/*
-void Sample::save( const string& sFilename )
-{
-	errorLog( "[save] not implemented yet" );
-	infoLog( "saving " + sFilename );
 
-	SF_INFO soundInfo;
-	soundInfo.samplerate = m_nSampleRate;
-	soundInfo.channels = 2;
-	soundInfo.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-
-	SNDFILE* file = sf_open( sFilename.c_str(), SFM_WRITE, &soundInfo );
-
-	float *pData = new float[ getNFrames() * 2 ];	// always stereo
-
-	// prepare the interleaved buffer
-	for ( unsigned i = 0; i < getNFrames(); i++ ) {
-		pData[ i * 2 ] = m_pData_L[ i ];
-		pData[ i * 2 + 1 ] = m_pData_R[ i ];
-	}
-
-	sf_writef_float( file, pData, getNFrames() );
-
-	sf_close( file );
-
-	delete[] pData;
-}
-*/
-
-
-
-};
+} // namespace Tritium
 

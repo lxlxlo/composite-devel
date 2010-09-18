@@ -34,4 +34,6 @@
 
 const char TRITIUM_XML[] = "http://gabe.is-a-geek.org/tritium/xml/1/";
 
+#define TRITIUM_DEPRECATED __attribute__((__deprecated__))
+
 #endif // TRITIUM_GLOBALS_HPP

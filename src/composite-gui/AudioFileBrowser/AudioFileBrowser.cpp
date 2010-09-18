@@ -28,7 +28,7 @@
 
 #include <Tritium/DataPath.hpp>
 #include <Tritium/Preferences.hpp>
-#include <Tritium/Sample.hpp>
+#include <Tritium/SimpleStereoSample.hpp>
 #include <Tritium/Logger.hpp>
 #include <Tritium/Engine.hpp>
 #include <Tritium/Sampler.hpp>
@@ -101,7 +101,7 @@ AudioFileBrowser::AudioFileBrowser ( QWidget* pParent )
 
 AudioFileBrowser::~AudioFileBrowser()
 {
-	T<Sample>::shared_ptr pNewSample = Sample::load( sEmptySampleFilename );
+	T<SimpleStereoSample>::shared_ptr pNewSample = SimpleStereoSample::load( sEmptySampleFilename );
 	g_engine->get_sampler()->preview_sample( pNewSample, 100 );
 	DEBUGLOG ( "DESTROY" );
 }
@@ -248,7 +248,7 @@ void AudioFileBrowser::browseTree( const QModelIndex& index )
 		) {
 	
 			filelineedit->setText( fleTxt );
-			T<Sample>::shared_ptr pNewSample = Sample::load( path2 );
+			T<SimpleStereoSample>::shared_ptr pNewSample = SimpleStereoSample::load( path2 );
 
 			if ( pNewSample ) {
 				m_pNBytesLable->setText( trUtf8( "Size: %1 bytes" ).arg( pNewSample->get_size() / 2 ) );
@@ -299,7 +299,7 @@ void AudioFileBrowser::on_m_pPlayBtn_clicked()
 	if( QFile( m_psamplefilename ).exists() == false )
 		return;
 	m_pStopBtn->setEnabled( true );
-	T<Sample>::shared_ptr pNewSample = Sample::load( m_psamplefilename );
+	T<SimpleStereoSample>::shared_ptr pNewSample = SimpleStereoSample::load( m_psamplefilename );
 	if ( pNewSample ){
 		int length = ( ( pNewSample->get_n_frames() / pNewSample->get_sample_rate() + 1) * 100 );
 		g_engine->get_sampler()->preview_sample( pNewSample, length );
@@ -310,7 +310,7 @@ void AudioFileBrowser::on_m_pPlayBtn_clicked()
 
 void AudioFileBrowser::on_m_pStopBtn_clicked()
 {
-	T<Sample>::shared_ptr pNewSample = Sample::load( sEmptySampleFilename );
+	T<SimpleStereoSample>::shared_ptr pNewSample = SimpleStereoSample::load( sEmptySampleFilename );
 	g_engine->get_sampler()->preview_sample( pNewSample, 100 );
 	m_pStopBtn->setEnabled( false );
 }

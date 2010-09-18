@@ -27,6 +27,7 @@
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/ADSR.hpp>
 #include <Tritium/Sample.hpp>
+#include <Tritium/SimpleStereoSample.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/LocalFileMng.hpp>
 #include <Tritium/SoundLibrary.hpp>
@@ -155,7 +156,7 @@ void Instrument::load_from_placeholder( Engine* engine, T<Instrument>::shared_pt
 	    if( !samp_file.exists() ) {
 		samp_file.setFile( path + pNewSample->get_filename() );
 	    }
-	    T<Sample>::shared_ptr pSample = Sample::load( samp_file.absoluteFilePath() );
+	    T<SimpleStereoSample>::shared_ptr pSample = SimpleStereoSample::load( samp_file.absoluteFilePath() );
 	    InstrumentLayer *pOldLayer = this->get_layer( nLayer );
 
 	    if ( pSample == NULL ) {

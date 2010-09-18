@@ -31,6 +31,7 @@
 #include <Tritium/Pattern.hpp>
 #include <Tritium/EngineInterface.hpp>
 #include <Tritium/Sample.hpp>
+#include <Tritium/SimpleStereoSample.hpp>
 #include <Tritium/Sampler.hpp>
 #include <Tritium/Mixer.hpp>
 #include <Tritium/Note.hpp>
@@ -1409,14 +1410,14 @@ void SerializationQueue::handle_load_instrument_node(
         if ( !drumkitPath.isEmpty() ) {
             sFilename = drumkitPath + "/" + sFilename;
         }
-        T<Sample>::shared_ptr pSample = Sample::load( sFilename );
+        T<SimpleStereoSample>::shared_ptr pSample = SimpleStereoSample::load( sFilename );
         if ( ! pSample ) {
             // When switching between 0.8.2 and 0.9.0 the default
             // drumkit was changed.  If loading the sample fails, try
             // again by adding ".flac" to the file name.
             sFilename = sFilename.left( sFilename.length() - 4 );
             sFilename += ".flac";
-            pSample = Sample::load( sFilename );
+            pSample = SimpleStereoSample::load( sFilename );
         }
         if ( ! pSample ) {
             ERRORLOG( "Error loading sample: " + sFilename + " not found" );
@@ -1443,7 +1444,7 @@ void SerializationQueue::handle_load_instrument_node(
             if ( !drumkitPath.isEmpty() ) {
                 sFilename = drumkitPath + "/" + sFilename;
             }
-            T<Sample>::shared_ptr pSample = Sample::load( sFilename );
+            T<SimpleStereoSample>::shared_ptr pSample = SimpleStereoSample::load( sFilename );
             if ( ! pSample ) {
                 ERRORLOG( "Error loading sample: " + sFilename + " not found" );
                 pInstrument->set_muted( true );

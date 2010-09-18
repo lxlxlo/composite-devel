@@ -37,7 +37,7 @@
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/InstrumentLayer.hpp>
 #include <Tritium/Mixer.hpp>
-#include <Tritium/Sample.hpp>
+#include <Tritium/SimpleStereoSample.hpp>
 #include <Tritium/Sampler.hpp>
 #include <Tritium/SoundLibrary.hpp>
 #include <Tritium/Preferences.hpp>
@@ -291,7 +291,8 @@ TEST_CASE( 010_load_song_check_song )
         InstrumentLayer *lay = 0;
 	Mixer::Channel& chan = **ch;
 
-        T<Sample>::shared_ptr samp;
+        T<SimpleStereoSample>::shared_ptr samp;
+	T<Sample>::shared_ptr tmp_samp;
         switch(k) {
         case 0:
             CK( in.get_id() == "0" );
@@ -311,7 +312,8 @@ TEST_CASE( 010_load_song_check_song )
             CK( lay->get_max_velocity() == 1.0f );
             CK( lay->get_gain() == 1.0 );
             CK( lay->get_pitch() == 0.0 );
-            samp = lay->get_sample();
+	    tmp_samp = lay->get_sample();
+	    samp = boost::dynamic_pointer_cast<SimpleStereoSample, Sample>(tmp_samp);
             CK( samp );
             CK( samp->get_filename().endsWith( "kick_Dry_b.flac" ) );
             CK( samp->get_sample_rate() == 44100U );
@@ -335,7 +337,8 @@ TEST_CASE( 010_load_song_check_song )
             CK( lay->get_max_velocity() == 1.0f );
             CK( lay->get_gain() == 1.0 );
             CK( lay->get_pitch() == 0.0 );
-            samp = lay->get_sample();
+	    tmp_samp = lay->get_sample();
+	    samp = boost::dynamic_pointer_cast<SimpleStereoSample, Sample>(tmp_samp);
             CK( samp );
             CK( samp->get_filename().endsWith( "stick_Woody.flac" ) );
             CK( samp->get_sample_rate() == 44100U );
@@ -359,7 +362,8 @@ TEST_CASE( 010_load_song_check_song )
             CK( lay->get_max_velocity() == 1.0f );
             CK( lay->get_gain() == 1.0 );
             CK( lay->get_pitch() == 0.0 );
-            samp = lay->get_sample();
+	    tmp_samp = lay->get_sample();
+	    samp = boost::dynamic_pointer_cast<SimpleStereoSample, Sample>(tmp_samp);
             CK( samp );
             CK( samp->get_filename().endsWith( "cra_Rock_a.flac" ) );
             CK( samp->get_sample_rate() == 44100U );
@@ -383,7 +387,8 @@ TEST_CASE( 010_load_song_check_song )
             CK( lay->get_max_velocity() == 1.0f );
             CK( lay->get_gain() == 1.0 );
             CK( lay->get_pitch() == 0.0 );
-            samp = lay->get_sample();
+	    tmp_samp = lay->get_sample();
+	    samp = boost::dynamic_pointer_cast<SimpleStereoSample, Sample>(tmp_samp);
             CK( samp );
             CK( samp->get_filename().endsWith( "emptySample.flac" ) );
             CK( samp->get_sample_rate() == 44100U );
@@ -401,13 +406,14 @@ TEST_CASE( 010_load_song_check_song )
             CK( chan.send_gain(1) == 0.0f );
             CK( chan.send_gain(2) == 0.0f );
             CK( chan.send_gain(3) == 0.0f );
-            lay = in.get_layer(0);
+	    lay = in.get_layer(0);
             CK( lay );
             CK( lay->get_min_velocity() == 0.0f );
             CK( lay->get_max_velocity() == 1.0f );
             CK( lay->get_gain() == 1.0 );
             CK( lay->get_pitch() == 0.0 );
-            samp = lay->get_sample();
+	    tmp_samp = lay->get_sample();
+	    samp = boost::dynamic_pointer_cast<SimpleStereoSample, Sample>(tmp_samp);
             CK( samp );
             CK( samp->get_filename().endsWith( "emptySample.flac" ) );
             CK( samp->get_sample_rate() == 44100U );

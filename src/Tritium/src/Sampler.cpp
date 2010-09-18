@@ -38,6 +38,7 @@
 #include <Tritium/InstrumentLayer.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/Sample.hpp>
+#include <Tritium/SimpleStereoSample.hpp>
 #include <Tritium/SeqScriptIterator.hpp>
 #include <Tritium/Logger.hpp>
 
@@ -120,7 +121,7 @@ Sampler::Sampler(T<AudioPortManager>::shared_ptr apm)
     // instrument used in file preview
     QString sEmptySampleFilename = DataPath::get_data_path() + "/emptySample.wav";
     d->preview_instrument.reset( new Instrument( sEmptySampleFilename, "preview", new ADSR() ) );
-    d->preview_instrument->set_layer( new InstrumentLayer( Sample::load( sEmptySampleFilename ) ), 0 );
+    d->preview_instrument->set_layer( new InstrumentLayer( SimpleStereoSample::load( sEmptySampleFilename ) ), 0 );
 }
 
 
@@ -223,7 +224,7 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
 	return 1;
     }
 
-    if ( note.m_fSamplePosition >= pSample->get_n_frames() ) {
+    if ( note.m_fSamplePosition >= pSample->size() ) {
 	WARNINGLOG( "sample position out of bounds. The layer has been resized during note play?" );
 	return 1;
     }
@@ -268,7 +269,7 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
     //DEBUGLOG( "total pitch: " + to_string( fTotalPitch ) );
 
     if ( fTotalPitch == 0.0
-	 && pSample->get_sample_rate() == frame_rate ) {
+	 && pSample->sample_rate() == frame_rate ) {
 	// NO RESAMPLE
 	return render_note_no_resample(
 	    pSample,
@@ -304,7 +305,7 @@ int SamplerPrivate::render_note_no_resample(
 {
     int retValue = 1; // the note is ended
 
-    int nAvail_bytes = pSample->get_n_frames() - ( int )note.m_fSamplePosition;   // verifico 
+    int nAvail_bytes = pSample->size() - ( int )note.m_fSamplePosition;   // verifico 
 
     if ( nAvail_bytes > nFrames - note.m_nSilenceOffset ) {   // il sample e' piu' grande del buff
 	// imposto il numero dei bytes disponibili uguale al buffersize
@@ -325,8 +326,8 @@ int SamplerPrivate::render_note_no_resample(
     float fResonance = note.get_instrument()->get_filter_resonance();
     float fCutoff = note.get_instrument()->get_filter_cutoff();
 
-    float *pSample_data_L = pSample->get_data_l();
-    float *pSample_data_R = pSample->get_data_r();
+    float *pSample_data_L = pSample->data(0);
+    float *pSample_data_R = pSample->data(1);
 
     float fInstrPeak_L = note.get_instrument()->get_peak_l(); // this value will be reset to 0 by the mixer..
     float fInstrPeak_R = note.get_instrument()->get_peak_r(); // this value will be reset to 0 by the mixer..
@@ -416,9 +417,9 @@ int SamplerPrivate::render_note_resample(
 
     // 2^(1/12) is a musical half-step in pitch.  If A=440, A#=440 * 2^1/12
     float fStep = pow( 1.0594630943593, ( double )fNotePitch );  // i.e. pow( 2, fNotePitch/12.0 )
-    fStep *= ( float )pSample->get_sample_rate() / frame_rate; // Adjust for audio driver sample rate
+    fStep *= ( float )pSample->sample_rate() / frame_rate; // Adjust for audio driver sample rate
 
-    int nAvail_bytes = ( int )( ( float )( pSample->get_n_frames() - note.m_fSamplePosition ) / fStep );	// verifico il numero di frame disponibili ancora da eseguire
+    int nAvail_bytes = ( int )( ( float )( pSample->size() - note.m_fSamplePosition ) / fStep );	// verifico il numero di frame disponibili ancora da eseguire
 
     int retValue = 1; // the note is ended
     if ( nAvail_bytes > nFrames - note.m_nSilenceOffset ) {	// il sample e' piu' grande del buffersize
@@ -440,8 +441,8 @@ int SamplerPrivate::render_note_resample(
     float fResonance = note.get_instrument()->get_filter_resonance();
     float fCutoff = note.get_instrument()->get_filter_cutoff();
 
-    float *pSample_data_L = pSample->get_data_l();
-    float *pSample_data_R = pSample->get_data_r();
+    float *pSample_data_L = pSample->data(0);
+    float *pSample_data_R = pSample->data(1);
 
     float fInstrPeak_L = note.get_instrument()->get_peak_l(); // this value will be reset to 0 by the mixer..
     float fInstrPeak_R = note.get_instrument()->get_peak_r(); // this value will be reset to 0 by the mixer..
@@ -449,7 +450,7 @@ int SamplerPrivate::render_note_resample(
     float fADSRValue = 1.0;
     float fVal_L;
     float fVal_R;
-    int nSampleFrames = pSample->get_n_frames();
+    int nSampleFrames = pSample->size();
 
     /*
      * nInstrument could be -1 if the instrument is not found in the current drumset.

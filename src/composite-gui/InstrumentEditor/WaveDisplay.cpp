@@ -95,12 +95,12 @@ void WaveDisplay::updateDisplay( Tritium::InstrumentLayer *pLayer )
 
 //		DEBUGLOG( "[updateDisplay] sample: " + m_sSampleName  );
 
-		int nSampleLength = pLayer->get_sample()->get_n_frames();
+		int nSampleLength = pLayer->get_sample()->size();
 		float nScaleFactor = nSampleLength / width();
 
 		float fGain = height() / 2.0 * pLayer->get_gain();
 
-		float *pSampleData = pLayer->get_sample()->get_data_l();
+		float *pSampleData = pLayer->get_sample()->data(0);
 
 		int nSamplePos =0;
 		int nVal;

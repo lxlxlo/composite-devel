@@ -28,7 +28,7 @@ IF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
     t_SimpleTransportMaster
     t_Song
     t_TransportPosition
-    t_Sample
+    t_SimpleStereoSample
     t_ObjectBundle
     t_MidiImplementationBase
     t_DefaultMidiImplementation

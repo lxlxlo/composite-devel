@@ -20,7 +20,7 @@
  */
 #include "config.h"
 
-#include <Tritium/Sample.hpp>
+#include <Tritium/SimpleStereoSample.hpp>
 #include <Tritium/Song.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/Logger.hpp>
@@ -87,7 +87,7 @@ void SampleWaveDisplay::paintEvent(QPaintEvent *ev)
 void SampleWaveDisplay::updateDisplay( QString filename )
 {
 
-	T<Sample>::shared_ptr pNewSample = Sample::load( filename );
+	T<SimpleStereoSample>::shared_ptr pNewSample = SimpleStereoSample::load( filename );
 
 	if ( pNewSample ) {
 		// Extract the filename from the complete path

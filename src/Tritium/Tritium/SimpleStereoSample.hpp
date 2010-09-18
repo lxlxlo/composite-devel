@@ -19,77 +19,102 @@
  *
  */
 
-#ifndef TRITIUM_SAMPLE_HPP
-#define TRITIUM_SAMPLE_HPP
+#ifndef TRITIUM_SIMPLESTEREOSAMPLE_HPP
+#define TRITIUM_SIMPLESTEREOSAMPLE_HPP
 
 #include <Tritium/globals.hpp>
 #include <Tritium/memory.hpp>
-#include <QString>
+#include <Tritium/Sample.hpp>
+#include <QtCore/QString>
+#include <QtCore/QUrl>
 
 namespace Tritium
 {
 
-/**
-\ingroup H2CORE
-*/
-class Sample
+class SimpleStereoSample : public Sample
 {
 public:
-	Sample(
-		unsigned frames,
-		const QString& filename,
-		unsigned sample_rate,
-		float* data_L = NULL,
-		float* data_R = NULL
-		);
+    SimpleStereoSample(
+	unsigned frames,
+	const QString& filename,
+	unsigned sample_rate,
+	float* data_L = NULL,
+	float* data_R = NULL
+	);
 
-	~Sample();
+    virtual ~SimpleStereoSample();
 
-	float* get_data_l() {
-		return __data_l;
+    // Tritium::Sample interface:
+    virtual int channel_count() { return 2; }
+    virtual unsigned size() { return __n_frames; }
+
+    virtual float* data(int chan) {
+	if(chan == 0) {
+	    return __data_l;
+	} else if (chan == 1) {
+	    return __data_r;
 	}
-	float* get_data_r() {
-		return __data_r;
-	}
+	return 0;
+    }
 
-	unsigned get_sample_rate() {
-		return __sample_rate;
-	}
+    virtual float sample_rate() { return float(__sample_rate); }
+    virtual const QUrl& source_url();
 
-	const QString get_filename() {
-		return __filename;
-	}
+    TRITIUM_DEPRECATED
+    virtual QString get_filename() {
+	return __filename;
+    }
 
 
-	/// Returns the bytes number ( 2 channels )
-	unsigned get_size() {
-		return __n_frames * sizeof( float ) * 2;
-	}
+    // Old Hydrogen::Sample interface
 
-	/// Loads a sample from disk
-	static T<Sample>::shared_ptr load( const QString& filename );
+    TRITIUM_DEPRECATED
+    float* get_data_l() {
+	return __data_l;
+    }
 
-	unsigned get_n_frames() {
-		return __n_frames;
-	}
+    TRITIUM_DEPRECATED
+    float* get_data_r() {
+	return __data_r;
+    }
+
+    TRITIUM_DEPRECATED
+    unsigned get_sample_rate() {
+	return unsigned( sample_rate() + 0.5f );
+    }
+
+    /// Returns the bytes number ( 2 channels )
+    TRITIUM_DEPRECATED
+    unsigned get_size() {
+	return size() * sizeof( float ) * 2;
+    }
+
+    TRITIUM_DEPRECATED
+    unsigned get_n_frames() {
+	return size();
+    }
+
+    /// Loads a sample from disk
+    static T<SimpleStereoSample>::shared_ptr load( const QString& filename );
 
 private:
-	float *__data_l;	///< Left channel data
-	float *__data_r;	///< Right channel data
+    float *__data_l;	///< Left channel data
+    float *__data_r;	///< Right channel data
 
-	unsigned __sample_rate;		///< samplerate for this sample
-	QString __filename;		///< filename associated with this sample
-	unsigned __n_frames;		///< Total number of frames in this sample.
+    unsigned __sample_rate;		///< samplerate for this sample
+    QUrl __url;
+    QString __filename;		///< filename associated with this sample
+    unsigned __n_frames;		///< Total number of frames in this sample.
 
-	//static int __total_used_bytes;
+    //static int __total_used_bytes;
 
-	/// loads a wave file
-	static T<Sample>::shared_ptr load_wave( const QString& filename );
+    /// loads a wave file
+    static T<SimpleStereoSample>::shared_ptr load_wave( const QString& filename );
 
-	/// loads a FLAC file
-	static T<Sample>::shared_ptr load_flac( const QString& filename );
-};
+    /// loads a FLAC file
+    static T<SimpleStereoSample>::shared_ptr load_flac( const QString& filename );
+}; // class SimpleStereoSample
 
-};
+} // namespace Tritium
 
-#endif // TRITIUM_SAMPLE_HPP
+#endif // TRITIUM_SIMPLESTEREOSAMPLE_HPP

@@ -79,6 +79,7 @@
 #include <Tritium/InstrumentLayer.hpp>
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/Sample.hpp>
+#include <Tritium/SimpleStereoSample.hpp>
 #include <Tritium/Engine.hpp>
 #include <Tritium/Pattern.hpp>
 #include <Tritium/Note.hpp>
@@ -189,7 +190,7 @@ namespace Tritium
             new Instrument( sMetronomeFilename, "metronome", new ADSR() )
 	    );
         m_pMetronomeInstrument->set_layer(
-            new InstrumentLayer( Sample::load( sMetronomeFilename ) ),
+            new InstrumentLayer( SimpleStereoSample::load( sMetronomeFilename ) ),
             0
             );
 

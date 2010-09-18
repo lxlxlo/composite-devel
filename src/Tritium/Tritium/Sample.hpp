@@ -23,73 +23,55 @@
 #define TRITIUM_SAMPLE_HPP
 
 #include <Tritium/globals.hpp>
-#include <Tritium/memory.hpp>
-#include <QString>
+#include <QtCore/QString>
+
+class QUrl;
 
 namespace Tritium
 {
 
 /**
-\ingroup H2CORE
-*/
+ * Standard interface for accessing an audio sample.
+ *
+ */
 class Sample
 {
 public:
-	Sample(
-		unsigned frames,
-		const QString& filename,
-		unsigned sample_rate,
-		float* data_L = NULL,
-		float* data_R = NULL
-		);
+    virtual ~Sample() {}
 
-	~Sample();
+    /**
+     * Number of channels for the audio data. (e.g. 2 for Stereo)
+     */
+    virtual int channel_count() = 0;
 
-	float* get_data_l() {
-		return __data_l;
-	}
-	float* get_data_r() {
-		return __data_r;
-	}
+    /**
+     * Returns the length (number of frames) of the sample.
+     */
+    virtual unsigned size() = 0;
 
-	unsigned get_sample_rate() {
-		return __sample_rate;
-	}
+    /**
+     * Returns a pointer to the start of the audio data for given channel.
+     */
+    virtual float* data(int chan) = 0;
 
-	const QString get_filename() {
-		return __filename;
-	}
+    /**
+     * Returns the sample rate for the audio data.
+     */
+    virtual float sample_rate() = 0;
 
+    /**
+     * Returns the name of the file that sourced the data
+     */
+    virtual const QUrl& source_url() = 0;
 
-	/// Returns the bytes number ( 2 channels )
-	unsigned get_size() {
-		return __n_frames * sizeof( float ) * 2;
-	}
+    /**
+     * Returns a file name for the source data.
+     */
+    TRITIUM_DEPRECATED
+    virtual QString get_filename() = 0;
 
-	/// Loads a sample from disk
-	static T<Sample>::shared_ptr load( const QString& filename );
+}; // class Sample
 
-	unsigned get_n_frames() {
-		return __n_frames;
-	}
-
-private:
-	float *__data_l;	///< Left channel data
-	float *__data_r;	///< Right channel data
-
-	unsigned __sample_rate;		///< samplerate for this sample
-	QString __filename;		///< filename associated with this sample
-	unsigned __n_frames;		///< Total number of frames in this sample.
-
-	//static int __total_used_bytes;
-
-	/// loads a wave file
-	static T<Sample>::shared_ptr load_wave( const QString& filename );
-
-	/// loads a FLAC file
-	static T<Sample>::shared_ptr load_flac( const QString& filename );
-};
-
-};
+} // namespace Tritium
 
 #endif // TRITIUM_SAMPLE_HPP

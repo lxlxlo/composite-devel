@@ -30,6 +30,7 @@ namespace Tritium
 {
 
     class Sample;
+    class SimpleStereoSample;
 
     /// \todo: impostare il samplerate in load()
     /// Class for FLAC file handling
@@ -39,7 +40,7 @@ namespace Tritium
 	FLACFile();
 	~FLACFile();
 
-	T<Sample>::shared_ptr load( const QString& sFilename );
+	T<SimpleStereoSample>::shared_ptr load_simple( const QString& sFilename );
     };
 
 } // namespace Tritium

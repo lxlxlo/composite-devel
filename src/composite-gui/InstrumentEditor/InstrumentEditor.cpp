@@ -30,6 +30,7 @@
 #include <Tritium/globals.hpp>
 #include <Tritium/ADSR.hpp>
 #include <Tritium/Sample.hpp>
+#include <Tritium/SimpleStereoSample.hpp>
 #include <Tritium/Sampler.hpp>
 #include <Tritium/Instrument.hpp>
 #include <Tritium/InstrumentLayer.hpp>
@@ -601,7 +602,7 @@ void InstrumentEditor::loadLayer()
 		{
 			if( i-2 >= MAX_LAYERS ) break;
 
-			T<Sample>::shared_ptr newSample = Sample::load( filename[i] );
+			T<SimpleStereoSample>::shared_ptr newSample = SimpleStereoSample::load( filename[i] );
 	
 			T<Instrument>::shared_ptr pInstr;
 	

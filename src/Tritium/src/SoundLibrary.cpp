@@ -26,6 +26,7 @@
 #include <Tritium/InstrumentLayer.hpp>
 #include <Tritium/InstrumentList.hpp>
 #include <Tritium/Sample.hpp>
+#include <Tritium/SimpleStereoSample.hpp>
 #include <Tritium/Sampler.hpp>
 #include <Tritium/LocalFileMng.hpp>
 #include <Tritium/H2Exception.hpp>
@@ -272,7 +273,7 @@ void Drumkit::save( EngineInterface* engine, const QString& sName, const QString
 			if ( pOldLayer ) {
 				T<Sample>::shared_ptr pSample = pOldLayer->get_sample();
 				// Following is not a real sample, it contains only the filename information
-				T<Sample>::shared_ptr pNewSample( new Sample( 0, pSample->get_filename(), 0 ) );
+				T<SimpleStereoSample>::shared_ptr pNewSample( new SimpleStereoSample( 0, pSample->get_filename(), 0 ) );
 				InstrumentLayer *pLayer = new InstrumentLayer( pNewSample );
 				pLayer->set_gain( pOldLayer->get_gain() );
 				pLayer->set_pitch( pOldLayer->get_pitch() );

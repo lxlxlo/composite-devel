@@ -28,7 +28,7 @@
 #include "string.h"
 
 #include <Tritium/Engine.hpp>
-#include <Tritium/Sample.hpp>
+#include <Tritium/SimpleStereoSample.hpp>
 #include <Tritium/Sampler.hpp>
 #include <Tritium/Logger.hpp>
 #include <Tritium/memory.hpp>
@@ -237,7 +237,7 @@ void FileBrowser::on_fileList_ItemActivated( QListWidgetItem* item )
 			if ( !fileInfo.isDir() ) {
 
 				// FIXME: evitare di caricare il sample, visualizzare solo le info del file
-				T<Sample>::shared_ptr pNewSample = Sample::load( fileInfo.absoluteFilePath() );
+				T<SimpleStereoSample>::shared_ptr pNewSample = SimpleStereoSample::load( fileInfo.absoluteFilePath() );
 				if (pNewSample) {
 					updateFileInfo( fileInfo.absoluteFilePath(), pNewSample->get_sample_rate(), pNewSample->get_size() );
 					g_engine->get_sampler()->preview_sample(pNewSample, 192);
