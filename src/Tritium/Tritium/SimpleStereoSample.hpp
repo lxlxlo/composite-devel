@@ -45,8 +45,8 @@ public:
     virtual ~SimpleStereoSample();
 
     // Tritium::Sample interface:
-    virtual int channel_count() { return 2; }
-    virtual unsigned size() { return __n_frames; }
+    virtual int channel_count() const { return 2; }
+    virtual unsigned size() const { return __n_frames; }
 
     virtual float* data(int chan) {
 	if(chan == 0) {
@@ -56,12 +56,15 @@ public:
 	}
 	return 0;
     }
+    virtual const float* data(int chan) const {
+	return data(chan);
+    }
 
-    virtual float sample_rate() { return float(__sample_rate); }
-    virtual const QUrl& source_url();
+    virtual float sample_rate() const { return float(__sample_rate); }
+    virtual const QUrl& source_url() const;
 
     TRITIUM_DEPRECATED
-    virtual QString get_filename() {
+    virtual QString get_filename() const {
 	return __filename;
     }
 

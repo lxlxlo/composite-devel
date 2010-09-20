@@ -45,7 +45,7 @@ SimpleStereoSample::SimpleStereoSample(
 	, __filename( filename )
 	, __n_frames( frames )
 {
-		//DEBUGLOG("INIT " + m_sFilename + ". nFrames: " + toString( nFrames ) );
+    __url = QUrl::fromLocalFile(__filename);
 }
 
 
@@ -57,9 +57,8 @@ SimpleStereoSample::~SimpleStereoSample()
 	//DEBUGLOG( "DESTROY " + m_sFilename);
 }
 
-const QUrl& SimpleStereoSample::source_url()
+const QUrl& SimpleStereoSample::source_url() const
 {
-    __url = QUrl::fromLocalFile(__filename);
     return __url;
 }
 

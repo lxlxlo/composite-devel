@@ -42,33 +42,34 @@ public:
     /**
      * Number of channels for the audio data. (e.g. 2 for Stereo)
      */
-    virtual int channel_count() = 0;
+    virtual int channel_count() const = 0;
 
     /**
      * Returns the length (number of frames) of the sample.
      */
-    virtual unsigned size() = 0;
+    virtual unsigned size() const = 0;
 
     /**
      * Returns a pointer to the start of the audio data for given channel.
      */
     virtual float* data(int chan) = 0;
+    virtual const float* data(int chan) const = 0;
 
     /**
      * Returns the sample rate for the audio data.
      */
-    virtual float sample_rate() = 0;
+    virtual float sample_rate() const = 0;
 
     /**
      * Returns the name of the file that sourced the data
      */
-    virtual const QUrl& source_url() = 0;
+    virtual const QUrl& source_url() const = 0;
 
     /**
      * Returns a file name for the source data.
      */
     TRITIUM_DEPRECATED
-    virtual QString get_filename() = 0;
+    virtual QString get_filename() const = 0;
 
 }; // class Sample
 
