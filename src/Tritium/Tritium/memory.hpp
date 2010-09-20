@@ -39,6 +39,30 @@ namespace Tritium
 	typedef boost::weak_ptr<X> weak_ptr;
     };
 
+    inline bool not_power_of_2(unsigned val) {
+	return ((val-1)&val);
+    }
+
+    inline bool is_power_of_2(unsigned val) {
+	return ! not_power_of_2(val);
+    }
+
+    inline bool not_aligned_N(void *ptr, int N) {
+	return (((int)ptr) % N);
+    }
+
+    inline bool is_aligned_N(void *ptr, int N) {
+	return ! not_aligned_N(ptr, N);
+    }
+
+    inline bool not_aligned_16(void *ptr) {
+	return not_aligned_N(ptr, 16);
+    }
+
+    inline bool is_aligned_16(void *ptr) {
+	return ! not_aligned_16(ptr);
+    }
+
 } // namespace Tritium
 
 #endif // TRITIUM_MEMORY_HPP
