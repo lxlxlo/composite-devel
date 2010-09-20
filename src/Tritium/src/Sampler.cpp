@@ -38,12 +38,12 @@
 #include <Tritium/InstrumentLayer.hpp>
 #include <Tritium/Note.hpp>
 #include <Tritium/Sample.hpp>
-#include <Tritium/SimpleStereoSample.hpp>
 #include <Tritium/SeqScriptIterator.hpp>
 #include <Tritium/Logger.hpp>
 
 #include <Tritium/fx/Effects.hpp>
 #include <Tritium/Sampler.hpp>
+#include <Tritium/SimpleSample.hpp>
 #include <Tritium/TransportPosition.hpp>
 #include <Tritium/memory.hpp>
 
@@ -121,7 +121,7 @@ Sampler::Sampler(T<AudioPortManager>::shared_ptr apm)
     // instrument used in file preview
     QString sEmptySampleFilename = DataPath::get_data_path() + "/emptySample.wav";
     d->preview_instrument.reset( new Instrument( sEmptySampleFilename, "preview", new ADSR() ) );
-    d->preview_instrument->set_layer( new InstrumentLayer( SimpleStereoSample::load( sEmptySampleFilename ) ), 0 );
+    d->preview_instrument->set_layer( new InstrumentLayer( SimpleSample::empty_sample(2) ), 0 );
 }
 
 
