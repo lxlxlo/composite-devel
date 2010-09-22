@@ -46,7 +46,7 @@ namespace Tritium
 	pos = _data.find(key);
 	if( pos == _data.end() ) {
 	    assert( false );
-	    throw std::invalid_argument("Invalid key to SampleBank::pop()");
+	    throw std::out_of_range("Invalid key to SampleBank::pop()");
 	}
 	SampleBank::value_t val = _data[key];
 	_data.erase(pos);
@@ -63,6 +63,7 @@ namespace Tritium
 	if( pos == _data.end() ) {
 	    // New element
 	    key_t key = _next_key.fetchAndAddAcquire(1);
+	    assert( key != NO_KEY );
 	    _data[key] = sample;
 	    return key;
 	}
