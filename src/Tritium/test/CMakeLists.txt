@@ -9,11 +9,17 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 ######################################################################
 
 IF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
-  FILE(GLOB_RECURSE test_HEADERS *.h ../Tritium/*.h ../src/*.h)
+  FILE(GLOB_RECURSE tritium_INCLUDES ../Tritium/*.h ../src/*.h)
 
   CONFIGURE_FILE(test_config.hpp.in ${CMAKE_CURRENT_BINARY_DIR}/test_config.hpp @ONLY)
   CONFIGURE_FILE(t_Serialization-default.h2song.in ${CMAKE_CURRENT_BINARY_DIR}/t_Serialization-default.h2song)
   INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+
+  LIST(APPEND test_INCLUDES
+    ${CMAKE_CURRENT_BINARY_DIR}/test_config.hpp
+    test_macros.hpp
+    test_utils.hpp
+    )
 
   LIST(APPEND test_LIST
     t_TestTemplate

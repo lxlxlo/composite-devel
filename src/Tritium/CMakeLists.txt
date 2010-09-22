@@ -106,14 +106,158 @@ ENDIF(WANT_LRDF)
 ### LIBRARY SOURCES AND BUILD                                      ###
 ######################################################################
 
-FILE(GLOB_RECURSE tritium_SOURCES src/*.cpp src/*.cc src/*.c)
-LIST(APPEND tritium_SOURCES ${CMAKE_SOURCE_DIR}/version.cpp)
+LIST(APPEND tritium_SOURCES
+  ${CMAKE_BINARY_DIR}/version.cpp
+  src/ADSR.cpp
+  src/Action.cpp
+  src/AudioPortImpl.cpp
+  src/BeatCounter.cpp
+  src/DataPath.cpp
+  src/DefaultMidiImplementation.cpp
+  src/Engine.cpp
+  src/EventQueue.cpp
+  src/FLACFile.cpp
+  src/IO/DiskWriterDriver.cpp
+  src/IO/FakeDriver.cpp
+  src/IO/JackClient.cpp
+  src/IO/JackMidiDriver.cpp
+  src/IO/JackOutput.cpp
+  src/IO/MidiInput.cpp
+  src/IO/NullDriver.cpp
+  src/Instrument.cpp
+  src/InstrumentLayer.cpp
+  src/InstrumentList.cpp
+  src/LocalFileMng.cpp
+  src/Logger.cpp
+  src/MidiMap.cpp
+  src/MixerImpl.cpp
+  src/Note.cpp
+  src/Pattern.cpp
+  src/Playlist.cpp
+  src/Preferences.cpp
+  src/Presets.cpp
+  src/SampleBank.cpp
+  src/Sampler.cpp
+  src/SeqEvent.cpp
+  src/SeqScript.cpp
+  src/SeqScriptIterator.cpp
+  src/SeqScriptPrivate.cpp
+  src/Serialization.cpp
+  src/SimpleSample.cpp
+  src/SimpleStereoSample.cpp
+  src/Song.cpp
+  src/SongSequencer.cpp
+  src/SoundLibrary.cpp
+  src/TritiumXml.cpp
+  src/WorkerThread.cpp
+  src/fx/Effects.cpp
+  src/fx/LadspaFX.cpp
+  src/smf/SMF.cpp
+  src/smf/SMFEvent.cpp
+  src/timehelper.cpp
+  src/transport/H2Transport.cpp
+  src/transport/JackTimeMaster.cpp
+  src/transport/JackTransportMaster.cpp
+  src/transport/SimpleTransportMaster.cpp
+  src/transport/TransportPosition.cpp
+  src/util.cpp
+  )
 
-FILE(GLOB_RECURSE tritium_INCLUDES Tritium/*.hpp src/*.hpp)
-LIST(APPEND tritium_INCLUDES ${CMAKE_SOURCE_DIR}/version.h ${CMAKE_SOURCE_DIR}/config.h)
+LIST(APPEND tritium_INCLUDES
+  ${CMAKE_SOURCE_DIR}/version.h
+  ${CMAKE_SOURCE_DIR}/config.h
+  Tritium/ADSR.hpp
+  Tritium/Action.hpp
+  Tritium/AudioPort.hpp
+  Tritium/AudioPortManager.hpp
+  Tritium/DataPath.hpp
+  Tritium/DefaultMidiImplementation.hpp
+  Tritium/Engine.hpp
+  Tritium/EngineInterface.hpp
+  Tritium/EventQueue.hpp
+  Tritium/H2Exception.hpp
+  Tritium/IO/AudioOutput.hpp
+  Tritium/IO/JackOutput.hpp
+  Tritium/IO/MidiInput.hpp
+  Tritium/IO/NullDriver.hpp
+  Tritium/Instrument.hpp
+  Tritium/InstrumentLayer.hpp
+  Tritium/InstrumentList.hpp
+  Tritium/JackTimeMasterEvents.hpp
+  Tritium/LocalFileMng.hpp
+  Tritium/Logger.hpp
+  Tritium/MidiImplementation.hpp
+  Tritium/MidiImplementationBase.hpp
+  Tritium/MidiMap.hpp
+  Tritium/Mixer.hpp
+  Tritium/MixerImpl.hpp
+  Tritium/Note.hpp
+  Tritium/ObjectBundle.hpp
+  Tritium/Pattern.hpp
+  Tritium/Playlist.hpp
+  Tritium/Preferences.hpp
+  Tritium/Presets.hpp
+  Tritium/RingBuffer.hpp
+  Tritium/RingBufferNPT.hpp
+  Tritium/Sample.hpp
+  Tritium/SampleBank.hpp
+  Tritium/Sampler.hpp
+  Tritium/SeqEvent.hpp
+  Tritium/SeqScript.hpp
+  Tritium/SeqScriptIterator.hpp
+  Tritium/Serialization.hpp
+  Tritium/SimpleSample.hpp
+  Tritium/SimpleStereoSample.hpp
+  Tritium/Song.hpp
+  Tritium/SoundLibrary.hpp
+  Tritium/Transport.hpp
+  Tritium/TransportPosition.hpp
+  Tritium/fx/Effects.hpp
+  Tritium/fx/LadspaFX.hpp
+  Tritium/fx/ladspa.h
+  Tritium/globals.hpp
+  Tritium/memory.hpp
+  Tritium/smf/SMF.hpp
+  Tritium/smf/SMFEvent.hpp
+  Tritium/timehelper.hpp
+  Tritium/util.hpp
+  )
+
+LIST(APPEND tritium_src_INCLUDES
+  src/AudioPortImpl.hpp
+  src/BeatCounter.hpp
+  src/EnginePrivate.hpp
+  src/FLACFile.hpp
+  src/IO/DiskWriterDriver.hpp
+  src/IO/FakeDriver.hpp
+  src/IO/JackClient.hpp
+  src/IO/JackMidiDriver.hpp
+  src/InstrumentPrivate.hpp
+  src/LoggerPrivate.hpp
+  src/MixerImplPrivate.hpp
+  src/PatternModeList.hpp
+  src/PatternModeManager.hpp
+  src/SamplerPrivate.hpp
+  src/SeqScriptPrivate.hpp
+  src/SerializationPrivate.hpp
+  src/SongPrivate.hpp
+  src/SongSequencer.hpp
+  src/TritiumXml.hpp
+  src/WorkerThread.hpp
+  src/table/TableExponential.hpp
+  src/table/getTableValue.hpp
+  src/transport/H2Transport.hpp
+  src/transport/JackTimeMaster.hpp
+  src/transport/JackTransportMaster.hpp
+  src/transport/SimpleTransportMaster.hpp
+  )
 
 INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR} .)
-ADD_LIBRARY(Tritium SHARED ${tritium_SOURCES} ${CMAKE_BINARY_DIR}/version.cpp)
+ADD_LIBRARY(Tritium SHARED
+  ${tritium_SOURCES}
+  ${tritium_INCLUDES}
+  ${tritium_src_INCLUDES}
+  )
 
 TARGET_LINK_LIBRARIES(Tritium
   ${QT_LIBRARIES}
