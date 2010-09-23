@@ -25,20 +25,48 @@
 
 namespace Tritium
 {
+    /**
+     * \brief Constructs an empty SampleBank.
+     */
     SampleBank::SampleBank() :
 	_next_key(1)
     {
     }
 
+    /**
+     * \brief Destroys SampleBank.
+     *
+     * It unrefs all of the samples.  Whether or not they are deleted
+     * depends on their internal reference counts.
+     */
+
     SampleBank::~SampleBank()
     {
     }
 
+    /**
+     * \brief Returns the number of elements in the continaer
+     *
+     * Complexity: O(N)
+     * RT-Safe: yes
+     *
+     * \return Number of elements in container
+     */
     size_t SampleBank::size() const
     {
 	return _data.size();
     }
 
+    /**
+     * \brief Removes a sample from the container.
+     *
+     * Complexity: O(log(N))
+     * RT-Safe: no
+     *
+     * \param key The key for the sample that should be removed.
+     * \return Pointer to the sample removed.
+     * \throw std::out_of_range() if key doesn't match any.
+     */
     SampleBank::value_t SampleBank::pop(SampleBank::key_t key)
     {
 	iterator pos;
@@ -52,6 +80,16 @@ namespace Tritium
 	return val;
     }
 
+    /**
+     * \brief Adds a sample to the bank.
+     *
+     * Complexity: O(log(N))
+     * RT-Safe: no
+     *
+     * \param sample The sample to add to the bank.
+     * \return On success, returns the key for the sample.  On
+     *         failure returns 0.
+     */
     SampleBank::key_t SampleBank::push(SampleBank::value_t sample)
     {
 	iterator pos;
@@ -70,6 +108,16 @@ namespace Tritium
 	return pos->first;
     }
 
+    /**
+     * \brief Retrieves the sample by key.
+     *
+     * Complexity: O(log(N))
+     * RT-Safe: yes
+     *
+     * \param key The key that was assigned to the sample.
+     * \return Pointer to the sample assigned to key.
+     * \throw std::out_of_range() if key doesn't match any.
+     */
     SampleBank::value_t SampleBank::get(SampleBank::key_t key)
     {
 	SampleBank::value_t rv;
@@ -84,6 +132,16 @@ namespace Tritium
 	return rv;
     }
 
+    /**
+     * \brief Retrieves the sample by key, if it exists.
+     *
+     * Complexity: O(log(N))
+     * RT-Safe: yes
+     *
+     * \param key The key to search for.
+     * \return Pointer to sample assigned to key, or null pointer.
+     * \throw none
+     */
     SampleBank::value_t SampleBank::find(SampleBank::key_t key)
     {
 	// Same code as get(), but no exception.
@@ -95,6 +153,15 @@ namespace Tritium
 	return rv;
     }
 
+    /**
+     * \brief Finds the key for the given sample
+     *
+     * Complexity: O(N)
+     * RT-Safe: yes
+     *
+     * \param sample The sample whose key we would like to find.
+     * \return Either the key, or 0 if the sample isn't found.
+     */
     SampleBank::key_t SampleBank::find_key(SampleBank::value_t sample)
     {
 	iterator pos;
@@ -108,12 +175,24 @@ namespace Tritium
 	return pos->first;
     }
 
+    /**
+     * \brief Erases everything from the bank.
+     *
+     * Complexity: O(N)
+     * RT-Safe: no
+     */
     void SampleBank::clear()
     {
 	QMutexLocker lk( &_data_mutex );
 	_data.clear();
     }
 
+    /* \brief Returns read-write iterator that points to the first sample.
+     *
+     * RT-Safe: yes
+     *
+     * \returns iterator with value type std::pair<key_t, value_t>
+     */
     SampleBank::iterator SampleBank::begin()
     {
 	iterator pos;
@@ -122,6 +201,12 @@ namespace Tritium
 	return pos;
     }
 
+    /* \brief Returns read-only iterator that points to the first sample.
+     *
+     * RT-Safe: yes
+     *
+     * \returns iterator with value type const std::pair<key_t, value_t>
+     */
     SampleBank::const_iterator SampleBank::begin() const
     {
 	const_iterator pos;
@@ -130,6 +215,12 @@ namespace Tritium
 	return pos;
     }
 
+    /* \brief Returns read-write iterator that points to one past the last sample.
+     *
+     * RT-Safe: yes
+     *
+     * \returns iterator with value type std::pair<key_t, value_t>
+     */
     SampleBank::iterator SampleBank::end()
     {
 	iterator pos;
@@ -138,6 +229,12 @@ namespace Tritium
 	return pos;
     }
 
+    /* \brief Returns read-only iterator that points to one past the last sample.
+     *
+     * RT-Safe: yes
+     *
+     * \returns iterator with value type std::pair<key_t, value_t>
+     */
     SampleBank::const_iterator SampleBank::end() const
     {
 	const_iterator pos;

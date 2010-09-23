@@ -51,113 +51,19 @@ public:
     SampleBank();
     virtual ~SampleBank();
 
-    /**
-     * \brief Returns the number of elements in the continaer
-     *
-     * Complexity: O(N)
-     * RT-Safe: yes
-     *
-     * \return Number of elements in container
-     */
+    // Misc manip
     size_t size() const;
-
-    /**
-     * \brief Removes a sample from the container.
-     *
-     * Complexity: O(log(N))
-     * RT-Safe: no
-     *
-     * \param key The key for the sample that should be removed.
-     * \return Pointer to the sample removed.
-     * \throw std::out_of_range() if key doesn't match any.
-     */
     value_t pop(key_t key);
-
-    /**
-     * \brief Adds a sample to the bank.
-     *
-     * Complexity: O(log(N))
-     * RT-Safe: no
-     *
-     * \param sample The sample to add to the bank.
-     * \return On success, returns the key for the sample.  On
-     *         failure returns 0.
-     */
     key_t push(value_t sample);
-
-    /**
-     * \brief Retrieves the sample by key.
-     *
-     * Complexity: O(log(N))
-     * RT-Safe: yes
-     *
-     * \param key The key that was assigned to the sample.
-     * \return Pointer to the sample assigned to key.
-     * \throw std::out_of_range() if key doesn't match any.
-     */
-    value_t get(key_t key);
-
-    /**
-     * \brief Retrieves the sample by key, if it exists.
-     *
-     * Complexity: O(log(N))
-     * RT-Safe: yes
-     *
-     * \param key The key to search for.
-     * \return Pointer to sample assigned to key, or null pointer.
-     * \throw none
-     */
-    value_t find(key_t key);
-
-    /**
-     * \brief Finds the key for the given sample
-     *
-     * Complexity: O(N)
-     * RT-Safe: yes
-     *
-     * \param sample The sample whose key we would like to find.
-     * \return Either the key, or 0 if the sample isn't found.
-     */
+    value_t get(key_t key); // throws std::out_of_range
+    value_t find(key_t key); // no throw
     key_t find_key(value_t sample);
-
-    /**
-     * \brief Erases everything from the bank.
-     *
-     * Complexity: O(N)
-     * RT-Safe: no
-     */
     void clear();
 
-    /* \brief Returns read-write iterator that points to the first sample.
-     *
-     * RT-Safe: yes
-     *
-     * \returns iterator with value type std::pair<key_t, value_t>
-     */
+    // Iterators
     iterator begin();
-
-    /* \brief Returns read-only iterator that points to the first sample.
-     *
-     * RT-Safe: yes
-     *
-     * \returns iterator with value type const std::pair<key_t, value_t>
-     */
     const_iterator begin() const;
-
-    /* \brief Returns read-write iterator that points to one past the last sample.
-     *
-     * RT-Safe: yes
-     *
-     * \returns iterator with value type std::pair<key_t, value_t>
-     */
     iterator end();
-
-    /* \brief Returns read-only iterator that points to one past the last sample.
-     *
-     * RT-Safe: yes
-     *
-     * \returns iterator with value type std::pair<key_t, value_t>
-     */
     const_iterator end() const;
 
 private:
