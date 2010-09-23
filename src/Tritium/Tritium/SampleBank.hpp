@@ -76,7 +76,7 @@ public:
     /**
      * \brief Adds a sample to the bank.
      *
-     * Complexity: O(1)
+     * Complexity: O(log(N))
      * RT-Safe: no
      *
      * \param sample The sample to add to the bank.
@@ -88,7 +88,7 @@ public:
     /**
      * \brief Retrieves the sample by key.
      *
-     * Complexity: O(1)
+     * Complexity: O(log(N))
      * RT-Safe: yes
      *
      * \param key The key that was assigned to the sample.
@@ -96,6 +96,18 @@ public:
      * \throw std::out_of_range() if key doesn't match any.
      */
     value_t get(key_t key);
+
+    /**
+     * \brief Retrieves the sample by key, if it exists.
+     *
+     * Complexity: O(log(N))
+     * RT-Safe: yes
+     *
+     * \param key The key to search for.
+     * \return Pointer to sample assigned to key, or null pointer.
+     * \throw none
+     */
+    value_t find(key_t key);
 
     /**
      * \brief Finds the key for the given sample

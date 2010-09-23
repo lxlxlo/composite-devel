@@ -45,7 +45,6 @@ namespace Tritium
 	QMutexLocker lk( &_data_mutex );
 	pos = _data.find(key);
 	if( pos == _data.end() ) {
-	    assert( false );
 	    throw std::out_of_range("Invalid key to SampleBank::pop()");
 	}
 	SampleBank::value_t val = _data[key];
@@ -74,8 +73,25 @@ namespace Tritium
     SampleBank::value_t SampleBank::get(SampleBank::key_t key)
     {
 	SampleBank::value_t rv;
+	SampleBank::iterator pos;
 	QMutexLocker lk( &_data_mutex );
-	rv = _data[key];
+	pos = _data.find(key);
+	if( pos == _data.end() ) {
+	    throw std::out_of_range("Invalid key to SampleBank::get()");
+	} else {
+	    rv = pos->second;
+	}
+	return rv;
+    }
+
+    SampleBank::value_t SampleBank::find(SampleBank::key_t key)
+    {
+	// Same code as get(), but no exception.
+	SampleBank::value_t rv;
+	SampleBank::iterator pos;
+	QMutexLocker lk( &_data_mutex );
+	pos = _data.find(key);
+	if( pos != _data.end() ) rv = pos->second;
 	return rv;
     }
 
