@@ -187,7 +187,8 @@ namespace Tritium
 	_data.clear();
     }
 
-    /* \brief Returns read-write iterator that points to the first sample.
+    /**
+     * \brief Returns read-write iterator that points to the first sample.
      *
      * RT-Safe: yes
      *
@@ -201,7 +202,8 @@ namespace Tritium
 	return pos;
     }
 
-    /* \brief Returns read-only iterator that points to the first sample.
+    /**
+     * \brief Returns read-only iterator that points to the first sample.
      *
      * RT-Safe: yes
      *
@@ -215,7 +217,8 @@ namespace Tritium
 	return pos;
     }
 
-    /* \brief Returns read-write iterator that points to one past the last sample.
+    /**
+     * \brief Returns read-write iterator that points to one past the last sample.
      *
      * RT-Safe: yes
      *
@@ -229,7 +232,8 @@ namespace Tritium
 	return pos;
     }
 
-    /* \brief Returns read-only iterator that points to one past the last sample.
+    /**
+     * \brief Returns read-only iterator that points to one past the last sample.
      *
      * RT-Safe: yes
      *
