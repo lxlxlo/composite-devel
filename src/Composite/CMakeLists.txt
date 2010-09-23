@@ -43,12 +43,20 @@ FILE(GLOB_RECURSE libcomposite_EXTRA_HEADERS
   ${CMAKE_SOURCE_DIR}/src/Tritium/Tritium/*
   )
 
-INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR} .)
+INCLUDE_DIRECTORIES(
+  ${CMAKE_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_SOURCE_DIR}/src/Composite
+  ${CMAKE_SOURCE_DIR}/src/Tritium
+  )
+
+QT4_WRAP_CPP(libcomposite_MOC ${libcomposite_MOC_HEADERS})
 
 ADD_LIBRARY(Composite SHARED
   ${libcomposite_SOURCES}
   ${libcomposite_HEADERS}
   ${libcomposite_EXTRA_HEADERS}
+  ${libcomposite_MOC}
   )
 
 TARGET_LINK_LIBRARIES(Composite
