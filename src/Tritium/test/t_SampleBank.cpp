@@ -105,7 +105,7 @@ TEST_CASE( 020_push_pop )
     }
 }
 
-TEST_CASE( 020_value_integrity )
+TEST_CASE( 030_value_integrity )
 {
     unsigned vals[] = { 0x7a7b42c3, 0x0ef40b83, 0x1d8e9844, 0x42cf363a,
 			0x68c5a0aa, 0x4bb233c6, 0x0ae29622, 0x044ef6f6,
@@ -167,6 +167,88 @@ TEST_CASE( 020_value_integrity )
 	CK( sit->use_count() == 1 );
     }
    
+}
+
+TEST_CASE( 040_iterators )
+{
+    unsigned vals[] = { 0x7a7b42c3, 0x0ef40b83, 0x1d8e9844, 0x42cf363a,
+			0x68c5a0aa, 0x4bb233c6, 0x0ae29622, 0x044ef6f6,
+			0x41ab4d45, 0x6c08187f, 0x67a9f64d, 0x65a7b89b,
+			0x0c104bb0, 0x23f35304, 0x3ed9fc94, 0x3665d570,
+			0xb92cbe2d, 0xf7da0f7e, 0x40c7ced4, 0x2f455865,
+			0x1ea63252, 0x46bff81c, 0x646e40ca, 0xd3995c53,
+			0x0f72bdbb, 0xe4703cdf, 0xc4ed168e, 0xb1584216,
+			0xff03505c, 0x48cbd37d, 0xae7eabfe, 0xbea37bc8,
+			0x0 };
+
+    // Create a bunch of samples
+    typedef std::deque< T<Sample>::shared_ptr > sample_array_t;
+    sample_array_t sample_array;
+
+    unsigned *vi;
+    for( vi = vals ; *vi ; ++vi ) {
+	T<Sample>::shared_ptr tmp( new Sample );
+	tmp->val = *vi;
+	sample_array.push_back(tmp);
+    }
+    CK( sample_array.size() == ((sizeof(vals)-1)/sizeof(unsigned)) );
+
+    SampleBank::key_t key;
+    sample_array_t::iterator sit;
+    for( sit = sample_array.begin() ; sit != sample_array.end() ; ++sit ) {
+	SampleBank::key_t key;
+	key = a.push( *sit );
+	CK( key != 0 );
+	CK( (*sit)->val == a.get(key)->val );
+    }
+
+    // Note that this test presumes that the keys are implemented
+    // by assigning them in sequential order.  If that implementation
+    // changes, this test will break... but it's not necc. a bug.
+    SampleBank::const_iterator mit;
+    SampleBank::key_t last_key;
+    for( last_key = 0, sit = sample_array.begin(), mit = a.begin() ;
+	 mit != a.end() ;
+	 ++sit, ++mit ) {
+	CK( sit != sample_array.end() );
+	key = mit->first;
+	CK( last_key < key );
+	CK( (*sit)->val == mit->second->val );
+    }
+
+}
+
+TEST_CASE( 050_exceptions )
+{
+    T<Sample>::shared_ptr s;
+
+    try {
+	a.pop(0xDEADBEEF);
+	CK( false );
+    } catch ( std::out_of_range& e ) {
+	CK( true );
+    } catch ( ... ) {
+	CK( false );
+    }
+
+    try {
+	a.get(0xDEADBEEF);
+	CK( false );
+    } catch ( std::out_of_range& e ) {
+
+	CK( true );
+    } catch ( ... ) {
+	CK( false );
+    }
+
+    try {
+	s = a.find(0xDEADBEEF);
+	CK( ! s );
+    } catch ( std::out_of_range& e ) {
+	CK( false );
+    } catch ( ... ) {
+	CK( false );
+    }
 }
 
 TEST_END()
