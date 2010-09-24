@@ -38,7 +38,7 @@ namespace Looks
 	    _dpi(dpi)
 	    {}
 
-	float inches() {
+	float inches() const {
 	    return _inches;
 	}
 
@@ -46,7 +46,7 @@ namespace Looks
 	    _inches = val;
 	}
 
-	float dpi() {
+	float dpi() const {
 	    return _dpi;
 	}
 	void dpi(float val) {
@@ -54,7 +54,7 @@ namespace Looks
 	    _dpi = val;
 	}
 
-	float pixels() {
+	float pixels() const {
 	    return _inches * _dpi;
 	}
 
@@ -63,7 +63,7 @@ namespace Looks
 	    _inches = val / _dpi;
 	}
 
-	float mm() {
+	float mm() const {
 	    return inches() * 25.4f;
 	}
 
