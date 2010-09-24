@@ -29,6 +29,14 @@ LIST(APPEND libcomposite_HEADERS
   ${CMAKE_BINARY_DIR}/config.h
   Composite/Main/MainWindow.hpp
   Composite/Main/MainWidget.hpp
+
+  Composite/Looks/Sizes.hpp
+
+  Composite/Util/Length.hpp
+  Composite/Util/Property.hpp
+  Composite/Util/ReadOnlyProperty.hpp
+
+  src/Main/MainWidgetPrivate.hpp
   )
 
 # These must also appear in libcomposite_HEADERS
@@ -40,6 +48,8 @@ LIST(APPEND libcomposite_MOC_HEADERS
 LIST(APPEND libcomposite_SOURCES
   src/Main/MainWindow.cpp
   src/Main/MainWidget.cpp
+
+  src/Looks/Sizes.cpp
   )
 
 FILE(GLOB_RECURSE libcomposite_EXTRA_HEADERS

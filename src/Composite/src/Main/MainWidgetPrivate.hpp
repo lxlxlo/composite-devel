@@ -18,41 +18,65 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef COMPOSITE_MAIN_MAINWIDGET_HPP
-#define COMPOSITE_MAIN_MAINWIDGET_HPP
 
-#include <QtGui/QWidget>
-#include <Tritium/memory.hpp>
+#include <QtCore/QString>
+
+class QAction;
+class QToolButton;
+class QToolBar;
+class QWidget;
 
 namespace Composite
 {
 namespace Main
 {
-    class MainWidgetPrivate;
 
-    /**
-     * \brief The central workspace for Composite
-     */
-    class MainWidget : public QWidget
+    class MainWidgetPrivate
     {
-	Q_OBJECT
-    private:
-	MainWidgetPrivate * const _d;
+    public:
+	MainWidgetPrivate(MainWidget *parent) :
+	    _p(parent)
+	    {}
 
     public:
-	MainWidget(QWidget *parent = 0);
-	virtual ~MainWidget();
+	MainWidget * const _p;
 
-    public slots:
-	void go_matrix();
-	void go_edit();
+	struct actions_t {
+	    // Go to...
+	    QAction *go_matrix;
+	    QAction *go_edit;
 
-	void x_play();
-	void x_stop();
+	    // Transport
+	    QAction *x_play;
+	    QAction *x_stop;
+	} _act;
 
+	struct tool_buttons_t {
+	    // Go to...
+	    QToolButton *go_matrix;
+	    QToolButton *go_edit;
+
+	    // Transport
+	    QToolButton *x_play;
+	    QToolButton *x_stop;
+	} _tbtn;
+
+	struct tool_bar_t {
+	    QToolBar *main;
+	} _tbar;
+
+    public:
+	void setup_actions();
+	void setup_widgets();
+	void layout_widgets();
+	void setup_signals_and_slots();
+
+    public:
+	QString tr(const char * sourceText, const char * disambiguation = 0, int n = -1 ) {
+	    return QObject::tr(sourceText, disambiguation, n);
+	}
     };
 
 } // namespace Main
 } // namespace Composite
 
-#endif // COMPOSITE_MAIN_MAINWIDGET_HPP

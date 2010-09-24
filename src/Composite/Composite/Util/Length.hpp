@@ -18,41 +18,65 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef COMPOSITE_MAIN_MAINWIDGET_HPP
-#define COMPOSITE_MAIN_MAINWIDGET_HPP
+#ifndef COMPOSITE_UTIL_LENGTH_HPP
+#define COMPOSITE_UTIL_LENGTH_HPP
 
-#include <QtGui/QWidget>
-#include <Tritium/memory.hpp>
+#include <cassert>
 
 namespace Composite
 {
-namespace Main
+namespace Looks
 {
-    class MainWidgetPrivate;
-
     /**
-     * \brief The central workspace for Composite
+     * \brief Manages a unit of length, with conversions.
      */
-    class MainWidget : public QWidget
+    class Length
     {
-	Q_OBJECT
-    private:
-	MainWidgetPrivate * const _d;
-
     public:
-	MainWidget(QWidget *parent = 0);
-	virtual ~MainWidget();
+	Length(float inches = 0.0, float dpi = 96.0) :
+	    _inches(inches),
+	    _dpi(dpi)
+	    {}
 
-    public slots:
-	void go_matrix();
-	void go_edit();
+	float inches() {
+	    return _inches;
+	}
 
-	void x_play();
-	void x_stop();
+	void inches(float val) {
+	    _inches = val;
+	}
 
+	float dpi() {
+	    return _dpi;
+	}
+	void dpi(float val) {
+	    assert(val >= 1e-5f);
+	    _dpi = val;
+	}
+
+	float pixels() {
+	    return _inches * _dpi;
+	}
+
+	void pixels(float val) {
+	    assert(_dpi >= 1e-5f);
+	    _inches = val / _dpi;
+	}
+
+	float mm() {
+	    return inches() * 25.4f;
+	}
+
+	void mm(float val) {
+	    inches( val / 25.4f );
+	}
+
+    private:
+	float _inches;
+	float _dpi;
     };
 
-} // namespace Main
+} // namespace Looks
 } // namespace Composite
 
-#endif // COMPOSITE_MAIN_MAINWIDGET_HPP
+#endif // COMPOSITE_UTIL_LENGTH_HPP

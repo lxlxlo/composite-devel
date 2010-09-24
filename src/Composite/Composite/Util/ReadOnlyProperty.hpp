@@ -18,41 +18,33 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef COMPOSITE_MAIN_MAINWIDGET_HPP
-#define COMPOSITE_MAIN_MAINWIDGET_HPP
+#ifndef COMPOSITE_UTIL_READONLYPROPERTY_HPP
+#define COMPOSITE_UTIL_READONLYPROPERTY_HPP
 
-#include <QtGui/QWidget>
-#include <Tritium/memory.hpp>
+#include <cassert>
 
 namespace Composite
 {
-namespace Main
+namespace Looks
 {
-    class MainWidgetPrivate;
-
     /**
-     * \brief The central workspace for Composite
+     * \brief Provides a Read/Write class property
      */
-    class MainWidget : public QWidget
+    template <typename T>
+    class ReadOnlyProperty
     {
-	Q_OBJECT
-    private:
-	MainWidgetPrivate * const _d;
-
     public:
-	MainWidget(QWidget *parent = 0);
-	virtual ~MainWidget();
+	ReadOnlyProperty(T& v) :
+	    _d(v)
+	    {}
 
-    public slots:
-	void go_matrix();
-	void go_edit();
+	const T& operator()() const { return _d; }
 
-	void x_play();
-	void x_stop();
-
+    private:
+	T& _d;
     };
 
-} // namespace Main
+} // namespace Util
 } // namespace Composite
 
-#endif // COMPOSITE_MAIN_MAINWIDGET_HPP
+#endif // COMPOSITE_UTIL_READONLYPROPERTY_HPP

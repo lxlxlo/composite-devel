@@ -18,41 +18,30 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef COMPOSITE_MAIN_MAINWIDGET_HPP
-#define COMPOSITE_MAIN_MAINWIDGET_HPP
 
-#include <QtGui/QWidget>
-#include <Tritium/memory.hpp>
+#include <Composite/Looks/Sizes.hpp>
 
 namespace Composite
 {
-namespace Main
+namespace Looks
 {
-    class MainWidgetPrivate;
 
-    /**
-     * \brief The central workspace for Composite
-     */
-    class MainWidget : public QWidget
+    Sizes::Sizes(float dpi) :
+	_dpi(dpi),
+	_minimum_button(.375f, _dpi),
+	minimum_button(_minimum_button)
     {
-	Q_OBJECT
-    private:
-	MainWidgetPrivate * const _d;
+    }
 
-    public:
-	MainWidget(QWidget *parent = 0);
-	virtual ~MainWidget();
+    Sizes::~Sizes()
+    {
+    }
 
-    public slots:
-	void go_matrix();
-	void go_edit();
+    void Sizes::dpi(float dpi)
+    {
+	_dpi = dpi;
+	_minimum_button.dpi(_dpi);
+    }
 
-	void x_play();
-	void x_stop();
-
-    };
-
-} // namespace Main
+} // namespace Looks
 } // namespace Composite
-
-#endif // COMPOSITE_MAIN_MAINWIDGET_HPP
