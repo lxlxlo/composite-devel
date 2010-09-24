@@ -25,7 +25,7 @@
 int main(int argc, char* argv[])
 {
     QApplication qapp(argc, argv);
-    Composite::Main::MainWidget mainwin;
+    Composite::Main::MainWidget mainwin(argc, argv);
 
     mainwin.show();
 

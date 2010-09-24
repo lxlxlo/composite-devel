@@ -36,7 +36,7 @@ namespace Composite
 namespace Main
 {
 
-    MainWidget::MainWidget(QWidget *parent) :
+    MainWidget::MainWidget(int /*argc*/, char* /*argv*/ [], QWidget *parent) :
         QWidget(parent),
         _d( new MainWidgetPrivate(this) )
     {

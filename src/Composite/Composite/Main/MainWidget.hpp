@@ -42,7 +42,7 @@ namespace Main
 	MainWidgetPrivate * const _d;
 
     public:
-	MainWidget(QWidget *parent = 0);
+	MainWidget(int argc = 0, char* argv[] = 0, QWidget *parent = 0);
 	virtual ~MainWidget();
 
     public slots:
