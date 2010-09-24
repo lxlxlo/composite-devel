@@ -20,12 +20,12 @@
  */
 
 #include <QtGui/QApplication>
-#include <Composite/Main/MainWindow.hpp>
+#include <Composite/Main/MainWidget.hpp>
 
 int main(int argc, char* argv[])
 {
     QApplication qapp(argc, argv);
-    Composite::Main::MainWindow mainwin;
+    Composite::Main::MainWidget mainwin;
 
     mainwin.show();
 

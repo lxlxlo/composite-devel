@@ -27,7 +27,6 @@ INCLUDE(${QT_USE_FILE})
 
 LIST(APPEND libcomposite_HEADERS
   ${CMAKE_BINARY_DIR}/config.h
-  Composite/Main/MainWindow.hpp
   Composite/Main/MainWidget.hpp
 
   Composite/Looks/Sizes.hpp
@@ -41,12 +40,10 @@ LIST(APPEND libcomposite_HEADERS
 
 # These must also appear in libcomposite_HEADERS
 LIST(APPEND libcomposite_MOC_HEADERS
-  Composite/Main/MainWindow.hpp
   Composite/Main/MainWidget.hpp
   )
 
 LIST(APPEND libcomposite_SOURCES
-  src/Main/MainWindow.cpp
   src/Main/MainWidget.cpp
 
   src/Looks/Sizes.cpp
