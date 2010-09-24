@@ -20,6 +20,7 @@
  */
 
 #include <QtCore/QString>
+#include <Composite/Looks/Sizes.hpp>
 
 class QAction;
 class QToolButton;
@@ -40,6 +41,7 @@ namespace Main
 
     public:
 	MainWidget * const _p;
+	Composite::Looks::Sizes _sizes;
 
 	struct actions_t {
 	    // Go to...

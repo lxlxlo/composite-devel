@@ -25,6 +25,7 @@
 #include <QtGui/QAction>
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QMessageBox>
+#include <QtGui/QPainter>
 #include <QtGui/QToolBar>
 #include <QtGui/QToolButton>
 
@@ -86,6 +87,33 @@ namespace Main
     void MainWidget::x_stop()
     {
         QMessageBox::information(this, "x_stop()", "x_stop()");
+    }
+
+    void MainWidget::paintEvent(QPaintEvent *event)
+    {
+	QPainter painter(this);
+
+	QColor bg(0, 0, 0x70);
+	QColor side(0xEE, 0, 0);
+
+	float px = _d->_sizes.minimum_button().pixels();
+
+	QBrush bg_brush( bg );
+	QPen bg_pen( bg );
+
+	QBrush s_brush( side );
+	QPen s_pen( side );
+
+	painter.setBrush( bg_brush );
+	painter.setPen( bg_pen );
+	painter.drawRect( 0, 0, width(), height() );
+
+	painter.setBrush( s_brush );
+	painter.setPen( s_pen );
+	painter.drawRect( 0, 0, px, height() );
+	painter.drawRect( 0, height()-px, width(), height() );
+
+	QWidget::paintEvent(event);
     }
 
     /*#############################################################

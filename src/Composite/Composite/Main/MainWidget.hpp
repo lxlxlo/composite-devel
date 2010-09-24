@@ -24,6 +24,8 @@
 #include <QtGui/QWidget>
 #include <Tritium/memory.hpp>
 
+class QPaintEvent;
+
 namespace Composite
 {
 namespace Main
@@ -49,6 +51,9 @@ namespace Main
 
 	void x_play();
 	void x_stop();
+
+    protected:
+	virtual void paintEvent(QPaintEvent *event);
 
     };
 
