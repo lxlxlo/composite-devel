@@ -1,5 +1,5 @@
 ######################################################################
-### Tritium Build Script (CMake)                                   ###
+### Composite Build Script (CMake)                                 ###
 ### http://gabe.is-a-geek.org/composite/                           ###
 ######################################################################
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
@@ -7,6 +7,16 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
+
+######################################################################
+### SUBPROJECTS                                                    ###
+######################################################################
+
+# art generation has its own CMake file:
+ADD_SUBDIRECTORY(img)
+
+SET(BINDIR ${CMAKE_CURRENT_BINARY_DIR})
+SET(SRCDIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 ######################################################################
 ### REQUIRED LIBRARIES                                             ###
@@ -65,6 +75,8 @@ INCLUDE_DIRECTORIES(
   )
 
 QT4_WRAP_CPP(libcomposite_MOC ${libcomposite_MOC_HEADERS})
+CONFIGURE_FILE(composite.qrc.in composite.qrc)
+QT4_ADD_RESOURCES(composite_qrc ${CMAKE_CURRENT_BINARY_DIR}/composite.qrc)
 
 ADD_LIBRARY(Composite SHARED
   ${libcomposite_SOURCES}
@@ -72,6 +84,7 @@ ADD_LIBRARY(Composite SHARED
   ${libcomposite_MOC_HEADERS}
   ${libcomposite_EXTRA_HEADERS}
   ${libcomposite_MOC}
+  ${composite_qrc}
   )
 
 TARGET_LINK_LIBRARIES(Composite

@@ -19,8 +19,10 @@
  *
  */
 
-#include <QtCore/QString>
 #include <Composite/Looks/Sizes.hpp>
+
+#include <QtCore/QString>
+#include <QtGui/QIcon>
 
 class QAction;
 class QToolButton;
@@ -74,7 +76,15 @@ namespace Main
 	    Widgets::Toolbar *bottom;
 	} _tbar;
 
+	struct icon_t {
+	    QIcon go_matrix;
+
+	    QIcon x_play;
+	    QIcon x_stop;
+	} _ico;
+
     public:
+	void load_icons();
 	void setup_actions();
 	void setup_widgets();
 	void layout_widgets();

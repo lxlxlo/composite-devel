@@ -50,6 +50,7 @@ namespace Main
 
 	resize(600, 400);
 
+	_d->load_icons();
         _d->setup_actions();
         _d->setup_widgets();
         _d->layout_widgets();
@@ -117,10 +118,10 @@ namespace Main
 	painter.setBrush( s_brush );
 	painter.setPen( s_pen );
 	painter.drawRect( 0, 0, px, height() );
-	painter.drawRect( 0, height()-px, width(), height() );
+	painter.drawRect( 0, height()-px-1, width(), height() );
 
 	_d->_tbar.left->setGeometry( 0, 0, px, height()-px );
-	_d->_tbar.bottom->setGeometry( px, height()-px, width()-px, px );
+	_d->_tbar.bottom->setGeometry( px+1, height()-px-1, width()-px-1, px );
 
 	QWidget::paintEvent(event);
     }
@@ -133,12 +134,25 @@ namespace Main
     */
 
     /**
+     * \brief Load all the icons that we need
+     */
+    void MainWidgetPrivate::load_icons()
+    {
+	_ico.go_matrix.addFile(":img/icon_matrix.png");
+	_ico.x_play.addFile(":img/icon_play.png");
+	_ico.x_stop.addFile(":img/icon_stop.png");
+    }
+
+    /**
      * \brief Create and connect generic actions
      */
     void MainWidgetPrivate::setup_actions()
     {
+	QSize max(128, 128);
+
         _act.go_matrix = new QAction( "M", _p );
         _act.go_matrix->setToolTip( tr("Go to matrix view") );
+	_act.go_matrix->setIcon( _ico.go_matrix );
         _p->addAction( _act.go_matrix );
         _p->connect( _act.go_matrix, SIGNAL(triggered()),
                      _p, SLOT(go_matrix()) );
@@ -151,12 +165,14 @@ namespace Main
 
         _act.x_play = new QAction( "P", _p );
         _act.x_play->setToolTip( tr("Start playing") );
+	_act.x_play->setIcon( _ico.x_play );
         _p->addAction( _act.x_play );
         _p->connect( _act.x_play, SIGNAL(triggered()),
                      _p, SLOT(x_play()) );
 
         _act.x_stop = new QAction( "S", _p );
         _act.x_stop->setToolTip( tr("Stop playing") );
+	_act.x_stop->setIcon( _ico.x_stop );
         _p->addAction( _act.x_stop );
         _p->connect( _act.x_stop, SIGNAL(triggered()),
                      _p, SLOT(x_stop()) );
@@ -169,14 +185,16 @@ namespace Main
 	(*dest)->setDefaultAction(act);
 	(*dest)->setAutoRaise(true);
 	(*dest)->setContentsMargins(0, 0, 0, 0);
+	(*dest)->setIconSize( QSize(128, 128) );
+	(*dest)->setFocusPolicy( Qt::NoFocus );
     }
 
     void MainWidgetPrivate::setup_widgets()
     {
 	setup_tool_button( &_tbtn.go_matrix, _act.go_matrix, _p );
 	setup_tool_button( &_tbtn.go_edit,   _act.go_edit,   _p );
-	setup_tool_button( &_tbtn.x_play,   _act.x_play,   _p );
-	setup_tool_button( &_tbtn.x_stop,   _act.x_stop,   _p );
+	setup_tool_button( &_tbtn.x_play,    _act.x_play,    _p );
+	setup_tool_button( &_tbtn.x_stop,    _act.x_stop,    _p );
     }
 
     void MainWidgetPrivate::layout_widgets()

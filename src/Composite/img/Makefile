@@ -12,7 +12,7 @@ clean:
 	-rm *~
 
 icons.png: icons.svg
-	convert -background none $< $@
+	convert -background none -bordercolor none $< $@
 
 ##
 ## ICONS CONFIG

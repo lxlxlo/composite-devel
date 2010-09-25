@@ -1,0 +1,7 @@
+<!DOCTYPE RCC><RCC version='1.0'>
+<qresource>
+    <file alias='img/icon_play.png'>@BINDIR@/img/icon_play.png</file>
+    <file alias='img/icon_stop.png'>@BINDIR@/img/icon_stop.png</file>
+    <file alias='img/icon_matrix.png'>@BINDIR@/img/icon_matrix.png</file>
+</qresource>
+</RCC>
