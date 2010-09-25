@@ -53,6 +53,7 @@ namespace Main
 	MainWidget * const _p;
 	Composite::Looks::Sizes _sizes;
 	QWidget *_central_widget;
+	QWidget *_library_widget;
 
 	struct actions_t {
 	    // Go to...

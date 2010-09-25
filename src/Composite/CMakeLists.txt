@@ -52,6 +52,7 @@ LIST(APPEND libcomposite_HEADERS
 LIST(APPEND libcomposite_MOC_HEADERS
   Composite/Main/MainWidget.hpp
   Composite/Main/MatrixView.hpp
+  Composite/Main/LibraryView.hpp
 
   Composite/Widgets/Toolbar.hpp
   )
@@ -59,6 +60,7 @@ LIST(APPEND libcomposite_MOC_HEADERS
 LIST(APPEND libcomposite_SOURCES
   src/Main/MainWidget.cpp
   src/Main/MatrixView.cpp
+  src/Main/LibraryView.cpp
 
   src/Looks/Sizes.cpp
 

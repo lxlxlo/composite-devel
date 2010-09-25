@@ -25,6 +25,7 @@
 #include <Composite/Widgets/Toolbar.hpp>
 
 #include <Composite/Main/MatrixView.hpp>
+#include <Composite/Main/LibraryView.hpp>
 
 #include <QtGui/QAction>
 #include <QtGui/QHBoxLayout>
@@ -102,10 +103,29 @@ namespace Main
     {
 	QPainter painter(this);
 
+	//
+	// Establish partitions
+	//
+	float px = _d->_sizes.minimum_button().pixels();
+	float h1, h2; // horizontal boundaries
+	float v1; // vertical boundaries
+	h1 = px;
+	h2 = width() * 3.0 / 4.0;
+	v1 = height() - px;
+
+	//
+	// Set regions
+	//
+	QRectF left, right, bottom, corner, central;
+	left.setCoords(     0,  0,      h1,       v1 );
+	right.setCoords(   h2,  0, width(), height() );
+	bottom.setCoords(  h1, v1,      h2, height() );
+	corner.setCoords(   0, v1,      h1, height() );
+	central.setCoords( h1,  0,      h2,       v1 );
+
 	QColor bg(0, 0, 0x70);
 	QColor side(0xEE, 0, 0);
 
-	float px = _d->_sizes.minimum_button().pixels();
 
 	QBrush bg_brush( bg );
 	QPen bg_pen( bg );
@@ -119,13 +139,14 @@ namespace Main
 
 	painter.setBrush( s_brush );
 	painter.setPen( s_pen );
-	painter.drawRect( 0, 0, px, height() );
-	painter.drawRect( 0, height()-px-1, width(), height() );
+	painter.drawRect( left );
+	painter.drawRect( bottom );
+	painter.drawRect( corner );
 
-	_d->_tbar.left->setGeometry( 0, 0, px, height()-px );
-	_d->_tbar.bottom->setGeometry( px+1, height()-px-1, width()-px-1, px );
-
-	_d->_central_widget->setGeometry( px+1, 0, width()-px-1, height()-px-1);
+	_d->_tbar.left->setGeometry( left.toRect() );
+	_d->_tbar.bottom->setGeometry( bottom.toRect() );
+	_d->_central_widget->setGeometry( central.toRect() );
+	_d->_library_widget->setGeometry( right.toRect() );
 
 	QWidget::paintEvent(event);
     }
@@ -201,6 +222,7 @@ namespace Main
 	setup_tool_button( &_tbtn.x_stop,    _act.x_stop,    _p );
 
 	_mode.matrix = new MatrixView(_p);
+	_library_widget = new LibraryView(_p);
     }
 
     void MainWidgetPrivate::layout_widgets()

@@ -18,32 +18,41 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef COMPOSITE_MAIN_MATRIXVIEW_HPP
-#define COMPOSITE_MAIN_MATRIXVIEW_HPP
 
-#include <QtGui/QWidget>
-#include <Tritium/memory.hpp>
+#include <Composite/Main/LibraryView.hpp>
 
-class QPaintEvent;
+#include <QtGui/QPainter>
+
+#include <stdexcept>
 
 namespace Composite
 {
 namespace Main
 {
-    /**
-     * \brief A central workspace with a matrix-ey feel.
-     */
-    class MatrixView : public QWidget
+
+    LibraryView::LibraryView(QWidget *parent) :
+	QWidget(parent)
     {
-	Q_OBJECT
+    }
 
-    public:
-	MatrixView(QWidget *parent = 0);
-	virtual ~MatrixView();
+    LibraryView::~LibraryView()
+    {
+    }
 
-    };
+    void LibraryView::paintEvent(QPaintEvent *)
+    {
+	QPainter painter(this);
+
+	QBrush br( QColor(0xff, 0xff, 0xff) );
+	QPen pen( QColor(0, 0, 0) );
+	pen.setWidth( 1 );
+
+	painter.setBrush( br );
+	painter.setPen( pen );
+
+	painter.drawRect( 0, 0, width()-1, height()-1 );
+    }
 
 } // namespace Main
 } // namespace Composite
 
-#endif // COMPOSITE_MAIN_MATRIXVIEW_HPP

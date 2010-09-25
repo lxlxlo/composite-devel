@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef COMPOSITE_MAIN_MATRIXVIEW_HPP
-#define COMPOSITE_MAIN_MATRIXVIEW_HPP
+#ifndef COMPOSITE_MAIN_LIBRARYVIEW_HPP
+#define COMPOSITE_MAIN_LIBRARYVIEW_HPP
 
 #include <QtGui/QWidget>
 #include <Tritium/memory.hpp>
@@ -31,19 +31,22 @@ namespace Composite
 namespace Main
 {
     /**
-     * \brief A central workspace with a matrix-ey feel.
+     * \brief Widget for accessing resources
      */
-    class MatrixView : public QWidget
+    class LibraryView : public QWidget
     {
 	Q_OBJECT
 
     public:
-	MatrixView(QWidget *parent = 0);
-	virtual ~MatrixView();
+	LibraryView(QWidget *parent = 0);
+	virtual ~LibraryView();
+
+    protected:
+	virtual void paintEvent(QPaintEvent *ev);
 
     };
 
 } // namespace Main
 } // namespace Composite
 
-#endif // COMPOSITE_MAIN_MATRIXVIEW_HPP
+#endif // COMPOSITE_MAIN_LIBRARYVIEW_HPP
