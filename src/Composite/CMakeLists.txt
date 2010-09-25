@@ -51,12 +51,14 @@ LIST(APPEND libcomposite_HEADERS
 # These do NOT need to also appear in libcomposite_HEADERS
 LIST(APPEND libcomposite_MOC_HEADERS
   Composite/Main/MainWidget.hpp
+  Composite/Main/MatrixView.hpp
 
   Composite/Widgets/Toolbar.hpp
   )
 
 LIST(APPEND libcomposite_SOURCES
   src/Main/MainWidget.cpp
+  src/Main/MatrixView.cpp
 
   src/Looks/Sizes.cpp
 

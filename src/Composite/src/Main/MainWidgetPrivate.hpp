@@ -39,17 +39,20 @@ namespace Widgets
 
 namespace Main
 {
+    class MatrixView;
 
     class MainWidgetPrivate
     {
     public:
 	MainWidgetPrivate(MainWidget *parent) :
-	    _p(parent)
+	    _p(parent),
+	    _central_widget(0)
 	    {}
 
     public:
 	MainWidget * const _p;
 	Composite::Looks::Sizes _sizes;
+	QWidget *_central_widget;
 
 	struct actions_t {
 	    // Go to...
@@ -82,6 +85,10 @@ namespace Main
 	    QIcon x_play;
 	    QIcon x_stop;
 	} _ico;
+
+	struct mode_t {
+	    MatrixView *matrix;
+	} _mode;
 
     public:
 	void load_icons();

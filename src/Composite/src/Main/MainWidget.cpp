@@ -24,6 +24,8 @@
 
 #include <Composite/Widgets/Toolbar.hpp>
 
+#include <Composite/Main/MatrixView.hpp>
+
 #include <QtGui/QAction>
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QMessageBox>
@@ -123,6 +125,8 @@ namespace Main
 	_d->_tbar.left->setGeometry( 0, 0, px, height()-px );
 	_d->_tbar.bottom->setGeometry( px+1, height()-px-1, width()-px-1, px );
 
+	_d->_central_widget->setGeometry( px+1, 0, width()-px-1, height()-px-1);
+
 	QWidget::paintEvent(event);
     }
 
@@ -195,6 +199,8 @@ namespace Main
 	setup_tool_button( &_tbtn.go_edit,   _act.go_edit,   _p );
 	setup_tool_button( &_tbtn.x_play,    _act.x_play,    _p );
 	setup_tool_button( &_tbtn.x_stop,    _act.x_stop,    _p );
+
+	_mode.matrix = new MatrixView(_p);
     }
 
     void MainWidgetPrivate::layout_widgets()
@@ -209,6 +215,8 @@ namespace Main
 	_tbar.bottom->orientation( Toolbar::HORIZONTAL );
 	_tbar.bottom->addWidget( _tbtn.x_play );
 	_tbar.bottom->addWidget( _tbtn.x_stop );
+
+	_central_widget = _mode.matrix;
     }
 
     void MainWidgetPrivate::setup_signals_and_slots()
