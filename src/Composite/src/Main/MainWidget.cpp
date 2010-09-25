@@ -22,6 +22,8 @@
 #include <Composite/Main/MainWidget.hpp>
 #include "MainWidgetPrivate.hpp"
 
+#include <Composite/Widgets/Toolbar.hpp>
+
 #include <QtGui/QAction>
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QMessageBox>
@@ -30,6 +32,8 @@
 #include <QtGui/QToolButton>
 
 #include <stdexcept>
+
+using Composite::Widgets::Toolbar;
 
 namespace Composite
 {
@@ -113,6 +117,9 @@ namespace Main
 	painter.drawRect( 0, 0, px, height() );
 	painter.drawRect( 0, height()-px, width(), height() );
 
+	_d->_tbar.left->setGeometry( 0, 0, px, height()-px );
+	_d->_tbar.bottom->setGeometry( px, height()-px, width()-px, px );
+
 	QWidget::paintEvent(event);
     }
 
@@ -170,15 +177,16 @@ namespace Main
 
     void MainWidgetPrivate::layout_widgets()
     {
-        QHBoxLayout *lay = new QHBoxLayout;
+	_tbar.left = new Toolbar(_p);
+	_tbar.left->orientation( Toolbar::VERTICAL );
+	_tbar.left->addWidget( _tbtn.go_matrix );
+	_tbar.left->addStretch();
+	_tbar.left->addWidget( _tbtn.go_edit );
 
-        lay->addWidget(_tbtn.go_matrix);
-        lay->addWidget(_tbtn.go_edit);
-        lay->addStretch();
-        lay->addWidget(_tbtn.x_play);
-        lay->addWidget(_tbtn.x_stop);
-
-        _p->setLayout(lay);
+	_tbar.bottom = new Toolbar(_p);
+	_tbar.bottom->orientation( Toolbar::HORIZONTAL );
+	_tbar.bottom->addWidget( _tbtn.x_play );
+	_tbar.bottom->addWidget( _tbtn.x_stop );
     }
 
     void MainWidgetPrivate::setup_signals_and_slots()

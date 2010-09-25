@@ -29,6 +29,12 @@ class QWidget;
 
 namespace Composite
 {
+
+namespace Widgets
+{
+    class Toolbar;
+}
+
 namespace Main
 {
 
@@ -64,7 +70,8 @@ namespace Main
 	} _tbtn;
 
 	struct tool_bar_t {
-	    QToolBar *main;
+	    Widgets::Toolbar *left;
+	    Widgets::Toolbar *bottom;
 	} _tbar;
 
     public:

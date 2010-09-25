@@ -25,9 +25,9 @@ INCLUDE(${QT_USE_FILE})
 ### LIBRARY SOURCES AND BUILD                                      ###
 ######################################################################
 
+# See also libcomposite_MOC_HEADERS
 LIST(APPEND libcomposite_HEADERS
   ${CMAKE_BINARY_DIR}/config.h
-  Composite/Main/MainWidget.hpp
 
   Composite/Looks/Sizes.hpp
 
@@ -38,15 +38,19 @@ LIST(APPEND libcomposite_HEADERS
   src/Main/MainWidgetPrivate.hpp
   )
 
-# These must also appear in libcomposite_HEADERS
+# These do NOT need to also appear in libcomposite_HEADERS
 LIST(APPEND libcomposite_MOC_HEADERS
   Composite/Main/MainWidget.hpp
+
+  Composite/Widgets/Toolbar.hpp
   )
 
 LIST(APPEND libcomposite_SOURCES
   src/Main/MainWidget.cpp
 
   src/Looks/Sizes.cpp
+
+  src/Widgets/Toolbar.cpp
   )
 
 FILE(GLOB_RECURSE libcomposite_EXTRA_HEADERS
@@ -65,6 +69,7 @@ QT4_WRAP_CPP(libcomposite_MOC ${libcomposite_MOC_HEADERS})
 ADD_LIBRARY(Composite SHARED
   ${libcomposite_SOURCES}
   ${libcomposite_HEADERS}
+  ${libcomposite_MOC_HEADERS}
   ${libcomposite_EXTRA_HEADERS}
   ${libcomposite_MOC}
   )
