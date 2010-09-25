@@ -48,6 +48,8 @@ namespace Main
             throw std::runtime_error("Could not allocate MainWidgetPrivate");
         }
 
+	resize(600, 400);
+
         _d->setup_actions();
         _d->setup_widgets();
         _d->layout_widgets();
@@ -160,19 +162,21 @@ namespace Main
                      _p, SLOT(x_stop()) );
     }
 
+    static
+    void setup_tool_button(QToolButton **dest, QAction *act, QWidget *parent)
+    {
+	*dest = new QToolButton(parent);
+	(*dest)->setDefaultAction(act);
+	(*dest)->setAutoRaise(true);
+	(*dest)->setContentsMargins(0, 0, 0, 0);
+    }
+
     void MainWidgetPrivate::setup_widgets()
     {
-        _tbtn.go_matrix = new QToolButton(_p);
-        _tbtn.go_matrix->setDefaultAction(_act.go_matrix);
-
-        _tbtn.go_edit = new QToolButton(_p);
-        _tbtn.go_edit->setDefaultAction(_act.go_edit);
-
-        _tbtn.x_play = new QToolButton(_p);
-        _tbtn.x_play->setDefaultAction(_act.x_play);
-
-        _tbtn.x_stop = new QToolButton(_p);
-        _tbtn.x_stop->setDefaultAction(_act.x_stop);
+	setup_tool_button( &_tbtn.go_matrix, _act.go_matrix, _p );
+	setup_tool_button( &_tbtn.go_edit,   _act.go_edit,   _p );
+	setup_tool_button( &_tbtn.x_play,   _act.x_play,   _p );
+	setup_tool_button( &_tbtn.x_stop,   _act.x_stop,   _p );
     }
 
     void MainWidgetPrivate::layout_widgets()

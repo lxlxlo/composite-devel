@@ -22,9 +22,6 @@
 #include <Composite/Widgets/Toolbar.hpp>
 #include <deque>
 
-#include <QtGui/QBoxLayout>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
 #include <QtGui/QWidget>
 
 namespace Composite
@@ -36,28 +33,18 @@ namespace Widgets
     {
     public:
 	ToolbarPrivate() :
-	    orientation( Toolbar::HORIZONTAL ),
-	    layout( 0 )
+	    orientation( Toolbar::HORIZONTAL )
 	    {
-		reset();
 	    }
 
     public:
 	typedef std::deque<QWidget*> seq_t;
 
 	Toolbar::orientation_t orientation;
-	QBoxLayout *layout;
 
 	/* A null pointer indicates "stretch":
 	 */
 	seq_t widgets;
-
-    public:
-
-	/**
-	 * Re-lay out because of config (orientation) change
-	 */
-	void reset();
     };
 
 } // namespace Widgets

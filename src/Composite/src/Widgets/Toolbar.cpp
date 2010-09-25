@@ -24,6 +24,8 @@
 
 #include <QtGui/QWidget>
 
+#include <cassert>
+
 namespace Composite
 {
 namespace Widgets
@@ -46,9 +48,7 @@ namespace Widgets
     void Toolbar::orientation(Toolbar::orientation_t o)
     {
 	if( _d->orientation != o ) {
-	    delete layout();
-	    _d->reset();
-	    setLayout( _d->layout );
+	    _d->orientation = o;
 	    update();
 	}
     }
@@ -66,25 +66,37 @@ namespace Widgets
 
     void Toolbar::paintEvent(QPaintEvent *event)
     {
-	QWidget::paintEvent(event);
-    }
+	int w, h, pos;
+	ToolbarPrivate::seq_t::iterator it;
 
-    void ToolbarPrivate::reset()
-    {
-	if(orientation == Toolbar::HORIZONTAL) {
-	    layout = new QHBoxLayout;
+	w = width();
+	h = height();
+	pos = 0;
+
+	if( _d->orientation == HORIZONTAL ) {
+	    for( it = _d->widgets.begin() ; it != _d->widgets.end() ; ++it ) {
+		if( *it ) {
+		    (*it)->resize( h, h );
+		    (*it)->move( pos, 0 );
+		    pos += (*it)->size().width();
+		} else {
+		    pos += h/2;
+		}
+	    }
 	} else {
-	    layout = new QVBoxLayout;
-	}
-
-	seq_t::iterator it;
-	for( it = widgets.begin() ; it != widgets.end() ; ++it ) {
-	    if( *it ) {
-		layout->addWidget( *it );
-	    } else {
-		layout->addStretch();
+	    assert( _d->orientation == VERTICAL );
+	    for( it = _d->widgets.begin() ; it != _d->widgets.end() ; ++it ) {
+		if( *it ) {
+		    (*it)->resize( w, w );
+		    (*it)->move( 0, pos );
+		    pos += (*it)->size().height();
+		} else {
+		    pos += w/2;
+		}
 	    }
 	}
+
+	QWidget::paintEvent(event);
     }
 
 } // namespace Widgets
