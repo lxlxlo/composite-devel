@@ -30,8 +30,8 @@ SET(SRCDIR ${CMAKE_CURRENT_SOURCE_DIR})
 SET(BINDIR ${CMAKE_CURRENT_BINARY_DIR})
 
 ADD_CUSTOM_TARGET(composite_artwork ALL
-  COMMAND touch ${BINDIR}/composite_artwork
-  DEPENDS ${BINDIR}/composite_icons
+  COMMAND touch ${BINDIR}/stamp-composite_artwork
+  DEPENDS ${BINDIR}/stamp-composite_icons
   )
 
 ######################################################################
@@ -46,8 +46,8 @@ ADD_CUSTOM_TARGET(composite_artwork ALL
 ### The file `icons.svg` is a horizontal strip of 128x128 icons.   ###
 ######################################################################
 
-ADD_CUSTOM_TARGET(composite_icons
-  COMMAND touch ${BINDDIR}/composite_icons
+ADD_CUSTOM_COMMAND(OUTPUT stamp-composite_icons
+  COMMAND touch ${BINDIR}/stamp-composite_icons
   DEPENDS
   icons.svg
   ${BINDIR}/icons.png

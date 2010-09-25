@@ -87,6 +87,11 @@ ADD_LIBRARY(Composite SHARED
   ${composite_qrc}
   )
 
+# Depend on the img/ folder
+ADD_DEPENDENCIES(Composite
+  composite_artwork
+  )
+
 TARGET_LINK_LIBRARIES(Composite
   Tritium
   ${QT_LIBRARIES}
