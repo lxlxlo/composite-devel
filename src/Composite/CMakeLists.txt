@@ -79,7 +79,7 @@ INCLUDE_DIRECTORIES(
   )
 
 QT4_WRAP_CPP(libcomposite_MOC ${libcomposite_MOC_HEADERS})
-CONFIGURE_FILE(composite.qrc.in composite.qrc)
+CONFIGURE_FILE(composite.qrc.in ${CMAKE_CURRENT_BINARY_DIR}/composite.qrc)
 QT4_ADD_RESOURCES(composite_qrc ${CMAKE_CURRENT_BINARY_DIR}/composite.qrc)
 
 ADD_LIBRARY(Composite SHARED
