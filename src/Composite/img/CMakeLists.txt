@@ -20,7 +20,19 @@ endif(COMMAND cmake_policy)
 ###
 
 FIND_PACKAGE(ImageMagick COMPONENTS convert REQUIRED)
-SET(CONVERT_CMD ${ImageMagick_convert_EXECUTABLE})
+
+IF( "${ImageMagick_convert_EXECUTABLE}" STREQUAL "" )
+  # I.e. we're using a pre-2.8 CMake version of FindImageMagick
+  SET(CONVERT_CMD ${IMAGEMAGICK_CONVERT_EXECUTABLE})
+ELSE( "${ImageMagick_convert_EXECUTABLE}" STREQUAL "" )
+  SET(CONVERT_CMD ${ImageMagick_convert_EXECUTABLE})
+ENDIF( "${ImageMagick_convert_EXECUTABLE}" STREQUAL "" )
+
+IF( CONVERT_CMD STREQUAL "" )
+  MESSAGE(FATAL_ERROR "Could not find ImageMagick's `convert` tool")
+ENDIF( CONVERT_CMD STREQUAL "" )
+
+MESSAGE( "ImageMagick convert command is: ${CONVERT_CMD}" )
 
 ######################################################################
 ### BUILD RULES                                                    ###
