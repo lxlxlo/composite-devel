@@ -24,6 +24,7 @@
 #include <memory>
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
+#include <stdint.h>
 
 /**
  * \brief Header file with smart pointers, etc.
@@ -48,7 +49,7 @@ namespace Tritium
     }
 
     inline bool not_aligned_N(void *ptr, int N) {
-	return (((int)ptr) % N);
+	return (((intptr_t)ptr) % N);
     }
 
     inline bool is_aligned_N(void *ptr, int N) {
