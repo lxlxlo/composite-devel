@@ -21,7 +21,7 @@
 
 #include <Composite/Main/LibraryView.hpp>
 
-#include <QtGui/QPainter>
+#include <QtGui/QFileSystemModel>
 
 #include <stdexcept>
 
@@ -31,26 +31,19 @@ namespace Main
 {
 
     LibraryView::LibraryView(QWidget *parent) :
-	QWidget(parent)
+	QTreeView(parent)
     {
+	QFileSystemModel *mod = new QFileSystemModel(this);
+	mod->setRootPath("/");
+	setModel(mod);
+	for( int k = 1; k < mod->columnCount() ; ++k ) {
+	    setColumnHidden(k, true);
+	}
+	setDragDropMode(QAbstractItemView::DragOnly);
     }
 
     LibraryView::~LibraryView()
     {
-    }
-
-    void LibraryView::paintEvent(QPaintEvent *)
-    {
-	QPainter painter(this);
-
-	QBrush br( QColor(0xff, 0xff, 0xff) );
-	QPen pen( QColor(0, 0, 0) );
-	pen.setWidth( 1 );
-
-	painter.setBrush( br );
-	painter.setPen( pen );
-
-	painter.drawRect( 0, 0, width()-1, height()-1 );
     }
 
 } // namespace Main

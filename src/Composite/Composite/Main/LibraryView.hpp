@@ -21,7 +21,7 @@
 #ifndef COMPOSITE_MAIN_LIBRARYVIEW_HPP
 #define COMPOSITE_MAIN_LIBRARYVIEW_HPP
 
-#include <QtGui/QWidget>
+#include <QtGui/QTreeView>
 #include <Tritium/memory.hpp>
 
 class QPaintEvent;
@@ -33,16 +33,13 @@ namespace Main
     /**
      * \brief Widget for accessing resources
      */
-    class LibraryView : public QWidget
+    class LibraryView : public QTreeView
     {
 	Q_OBJECT
 
     public:
 	LibraryView(QWidget *parent = 0);
 	virtual ~LibraryView();
-
-    protected:
-	virtual void paintEvent(QPaintEvent *ev);
 
     };
 
