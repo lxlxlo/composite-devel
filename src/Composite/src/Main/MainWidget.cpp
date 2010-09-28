@@ -33,6 +33,7 @@
 #include <QtGui/QPainter>
 #include <QtGui/QToolBar>
 #include <QtGui/QToolButton>
+#include <QtGui/QPushButton>
 
 #include <stdexcept>
 
@@ -72,7 +73,10 @@ namespace Main
      */
     void MainWidget::go_matrix()
     {
-        QMessageBox::information(this, "go_matrix()", "go_matrix()");
+	_d->_central_widget->hide();
+	_d->_central_widget = _d->_mode.matrix;
+	_d->_central_widget->show();
+	update();
     }
 
     /**
@@ -80,7 +84,10 @@ namespace Main
      */
     void MainWidget::go_edit()
     {
-        QMessageBox::information(this, "go_edit()", "go_edit()");
+	_d->_central_widget->hide();
+	_d->_central_widget = _d->_mode.edit;
+	_d->_central_widget->show();
+	update();
     }
 
     /**
@@ -225,6 +232,9 @@ namespace Main
 	setup_tool_button( &_tbtn.x_stop,    _act.x_stop,    _p );
 
 	_mode.matrix = new MatrixView(_p);
+	_mode.matrix->hide();
+	_mode.edit = new QPushButton("EDIT ME!!", _p);
+	_mode.edit->hide();
 	_library_widget = new LibraryView(_p);
 	_bot_left_widget = _tbtn.go_edit;
     }
@@ -241,6 +251,7 @@ namespace Main
 	_tbar.bottom->addWidget( _tbtn.x_stop );
 
 	_central_widget = _mode.matrix;
+	_central_widget->show();
     }
 
     void MainWidgetPrivate::setup_signals_and_slots()

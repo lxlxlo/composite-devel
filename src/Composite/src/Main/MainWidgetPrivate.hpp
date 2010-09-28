@@ -91,6 +91,7 @@ namespace Main
 
 	struct mode_t {
 	    MatrixView *matrix;
+	    QWidget *edit;
 	} _mode;
 
     public:
