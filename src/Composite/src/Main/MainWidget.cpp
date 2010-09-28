@@ -147,6 +147,7 @@ namespace Main
 	_d->_tbar.bottom->setGeometry( bottom.toRect() );
 	_d->_central_widget->setGeometry( central.toRect() );
 	_d->_library_widget->setGeometry( right.toRect() );
+	_d->_bot_left_widget->setGeometry( corner.toRect() );
 
 	QWidget::paintEvent(event);
     }
@@ -164,6 +165,7 @@ namespace Main
     void MainWidgetPrivate::load_icons()
     {
 	_ico.go_matrix.addFile(":img/icon_matrix.png");
+	_ico.go_edit.addFile(":img/icon_edit.png");
 	_ico.x_play.addFile(":img/icon_play.png");
 	_ico.x_stop.addFile(":img/icon_stop.png");
     }
@@ -184,6 +186,7 @@ namespace Main
 
         _act.go_edit = new QAction( "E", _p );
         _act.go_edit->setToolTip( tr("Go to edit view") );
+	_act.go_edit->setIcon( _ico.go_edit );
         _p->addAction( _act.go_edit );
         _p->connect( _act.go_edit, SIGNAL(triggered()),
                      _p, SLOT(go_edit()) );
@@ -223,6 +226,7 @@ namespace Main
 
 	_mode.matrix = new MatrixView(_p);
 	_library_widget = new LibraryView(_p);
+	_bot_left_widget = _tbtn.go_edit;
     }
 
     void MainWidgetPrivate::layout_widgets()
@@ -230,8 +234,6 @@ namespace Main
 	_tbar.left = new Toolbar(_p);
 	_tbar.left->orientation( Toolbar::VERTICAL );
 	_tbar.left->addWidget( _tbtn.go_matrix );
-	_tbar.left->addStretch();
-	_tbar.left->addWidget( _tbtn.go_edit );
 
 	_tbar.bottom = new Toolbar(_p);
 	_tbar.bottom->orientation( Toolbar::HORIZONTAL );

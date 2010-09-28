@@ -54,6 +54,7 @@ namespace Main
 	Composite::Looks::Sizes _sizes;
 	QWidget *_central_widget;
 	QWidget *_library_widget;
+	QWidget *_bot_left_widget;
 
 	struct actions_t {
 	    // Go to...
@@ -82,6 +83,7 @@ namespace Main
 
 	struct icon_t {
 	    QIcon go_matrix;
+	    QIcon go_edit;
 
 	    QIcon x_play;
 	    QIcon x_stop;
