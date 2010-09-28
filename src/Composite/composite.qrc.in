@@ -3,5 +3,6 @@
     <file alias='img/icon_play.png'>@BINDIR@/img/icon_play.png</file>
     <file alias='img/icon_stop.png'>@BINDIR@/img/icon_stop.png</file>
     <file alias='img/icon_matrix.png'>@BINDIR@/img/icon_matrix.png</file>
+    <file alias='img/icon_edit.png'>@BINDIR@/img/icon_edit.png</file>
 </qresource>
 </RCC>

@@ -66,6 +66,7 @@ ADD_CUSTOM_COMMAND(OUTPUT stamp-composite_icons
   ${BINDIR}/icon_play.png
   ${BINDIR}/icon_stop.png
   ${BINDIR}/icon_matrix.png
+  ${BINDIR}/icon_edit.png
   )
 
 ADD_CUSTOM_COMMAND(OUTPUT icons.png
@@ -85,5 +86,10 @@ ADD_CUSTOM_COMMAND(OUTPUT icon_stop.png
 
 ADD_CUSTOM_COMMAND(OUTPUT icon_matrix.png
   COMMAND ${CONVERT_CMD} ${BINDIR}/icons.png -crop 128x128+256+0 ${BINDIR}/icon_matrix.png
+  DEPENDS ${BINDIR}/icons.png
+  )
+
+ADD_CUSTOM_COMMAND(OUTPUT icon_edit.png
+  COMMAND ${CONVERT_CMD} ${BINDIR}/icons.png -crop 128x128+384+0 ${BINDIR}/icon_edit.png
   DEPENDS ${BINDIR}/icons.png
   )
