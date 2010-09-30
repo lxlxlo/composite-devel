@@ -21,6 +21,7 @@
 
 #include <Tritium/SampleBank.hpp>
 #include <QtCore/QMutexLocker>
+#include <deque>
 #include <stdexcept>
 
 namespace Tritium
@@ -245,6 +246,29 @@ namespace Tritium
 	QMutexLocker lk( &_data_mutex );
 	pos = _data.end();
 	return pos;
+    }
+
+    /**
+     * \brief Delete all objects not being used
+     *
+     * RT-Safe: no
+     */
+    void SampleBank::garbage_collect()
+    {
+	std::deque< value_t > death_row;
+	iterator it, tmp;
+
+	it = begin();
+	while( it != end() ) {
+	    if( (*it).second.unique() ) {
+		death_row.push_back( (*it).second );
+		tmp = it;
+		++it;
+		_data.erase(tmp);
+	    } else {
+		++it;
+	    }
+	}
     }
 
 } // namespace Tritium

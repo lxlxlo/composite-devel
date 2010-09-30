@@ -35,8 +35,13 @@ namespace Tritium
 class Sample;
 
 /**
- * Central container for all audio samples.
+ * \brief Central container for all audio samples.
  *
+ * This is a central clearing-house for audio samples.  The intention
+ * is that references to a sample can be passed around reliably as an
+ * integer.  However, end-users of the samples need to maintain a copy
+ * of the actual sample pointer to keep it from being garbage
+ * collected.
  */
 class SampleBank
 {
@@ -65,6 +70,8 @@ public:
     const_iterator begin() const;
     iterator end();
     const_iterator end() const;
+
+    void garbage_collect();
 
 private:
 

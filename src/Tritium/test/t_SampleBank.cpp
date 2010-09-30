@@ -251,4 +251,52 @@ TEST_CASE( 050_exceptions )
     }
 }
 
+TEST_CASE( 060_garbage_collection )
+{
+    unsigned vals[] = { 0x7a7b42c3, 0x0ef40b83, 0x1d8e9844, 0x42cf363a,
+			0x68c5a0aa, 0x4bb233c6, 0x0ae29622, 0x044ef6f6,
+			0x41ab4d45, 0x6c08187f, 0x67a9f64d, 0x65a7b89b,
+			0x0c104bb0, 0x23f35304, 0x3ed9fc94, 0x3665d570,
+			0xb92cbe2d, 0xf7da0f7e, 0x40c7ced4, 0x2f455865,
+			0x1ea63252, 0x46bff81c, 0x646e40ca, 0xd3995c53,
+			0x0f72bdbb, 0xe4703cdf, 0xc4ed168e, 0xb1584216,
+			0xff03505c, 0x48cbd37d, 0xae7eabfe, 0xbea37bc8,
+			0x0 };
+
+    // Create a bunch of samples
+    typedef std::deque< T<Sample>::shared_ptr > sample_array_t;
+    sample_array_t sample_array;
+
+    unsigned *vi;
+    for( vi = vals ; *vi ; ++vi ) {
+	T<Sample>::shared_ptr tmp( new Sample );
+	tmp->val = *vi;
+	sample_array.push_back(tmp);
+    }
+    CK( sample_array.size() == ((sizeof(vals)-1)/sizeof(unsigned)) );
+
+    SampleBank::key_t key;
+    sample_array_t::iterator sit;
+    T<Sample>::shared_ptr saver;
+    for( sit = sample_array.begin() ; sit != sample_array.end() ; ++sit ) {
+	SampleBank::key_t key;
+	key = a.push( *sit );
+	if( (*sit)->val == 0x23f35304 ) {
+	    saver = *sit;
+	}
+	CK( key != 0 );
+	CK( (*sit)->val == a.get(key)->val );
+    }
+    CK( saver.get() != 0 );
+    CK( a.find_key( saver ) != 0 );
+
+    sample_array.clear();
+    a.garbage_collect();
+    CK( a.size() == 1 );
+    CK( a.find_key( saver ) != 0 );
+    saver.reset();
+    a.garbage_collect();
+    CK( a.size() == 0 );
+}
+
 TEST_END()
