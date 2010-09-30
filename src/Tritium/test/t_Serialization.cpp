@@ -551,7 +551,6 @@ TEST_CASE( 020_load_pattern_check_pattern )
 	    CK(N->get_pan_l() == 0.5f);
 	    CK(N->get_pan_r() == 0.5f);
 	    CK(N->get_pitch() == 0.0f);
-	    CK(Note::keyToString(N->m_noteKey) == "C0");
 	    CK(N->get_length() == -1);
 	} else if (inst == i_list->get(5)) {
 	    CK(N->get_velocity() == 0.71f);
@@ -559,7 +558,6 @@ TEST_CASE( 020_load_pattern_check_pattern )
 	    CK(N->get_pan_l() == 0.5f);
 	    CK(N->get_pan_r() == 0.5f);
 	    CK(N->get_pitch() == 0.0f);
-	    CK(Note::keyToString(N->m_noteKey) == "C0");
 	    CK(N->get_length() == -1);
 	} else if (inst == i_list->get(13)) {
 	    CK(N->get_velocity() == 0.8f);
@@ -567,7 +565,6 @@ TEST_CASE( 020_load_pattern_check_pattern )
 	    CK(N->get_pan_l() == 0.5f);
 	    CK(N->get_pan_r() == 0.5f);
 	    CK(N->get_pitch() == 0.0f);
-	    CK(Note::keyToString(N->m_noteKey) == "C0");
 	    CK(N->get_length() == -1);
 	} else {
 	    BOOST_ERROR("Pattern references invalid instrument");
@@ -587,7 +584,6 @@ TEST_CASE( 020_load_pattern_check_pattern )
 	    CK(N->get_pan_l() == 0.5f);
 	    CK(N->get_pan_r() == 0.5f);
 	    CK(N->get_pitch() == 0.0f);
-	    CK(Note::keyToString(N->m_noteKey) == "C0");
 	    CK(N->get_length() == -1);
 	} else if (inst == i_list->get(8)) {
 	    CK(N->get_velocity() == 0.46f);
@@ -595,7 +591,6 @@ TEST_CASE( 020_load_pattern_check_pattern )
 	    CK(N->get_pan_l() == 0.5f);
 	    CK(N->get_pan_r() == 0.5f);
 	    CK(N->get_pitch() == 0.0f);
-	    CK(Note::keyToString(N->m_noteKey) == "C0");
 	    CK(N->get_length() == -1);
 	} else {
 	    BOOST_ERROR("Pattern references invalid instrument");
@@ -615,7 +610,6 @@ TEST_CASE( 020_load_pattern_check_pattern )
 	    CK(N->get_pan_l() == 0.5f);
 	    CK(N->get_pan_r() == 0.5f);
 	    CK(N->get_pitch() == 0.0f);
-	    CK(Note::keyToString(N->m_noteKey) == "C0");
 	    CK(N->get_length() == -1);
 	} else {
 	    BOOST_ERROR("Pattern references invalid instrument");
@@ -635,7 +629,6 @@ TEST_CASE( 020_load_pattern_check_pattern )
 	    CK(N->get_pan_l() == 0.5f);
 	    CK(N->get_pan_r() == 0.5f);
 	    CK(N->get_pitch() == 0.0f);
-	    CK(Note::keyToString(N->m_noteKey) == "C0");
 	    CK(N->get_length() == -1);
 	} else if (inst == i_list->get(8)) {
 	    CK(N->get_velocity() == 0.54f);
@@ -643,7 +636,6 @@ TEST_CASE( 020_load_pattern_check_pattern )
 	    CK(N->get_pan_l() == 0.5f);
 	    CK(N->get_pan_r() == 0.5f);
 	    CK(N->get_pitch() == 0.0f);
-	    CK(Note::keyToString(N->m_noteKey) == "C0");
 	    CK(N->get_length() == -1);
 	} else {
 	    BOOST_ERROR("Pattern references invalid instrument");

@@ -31,43 +31,7 @@
 namespace Tritium
 {
 
-class ADSR;
 class Instrument;
-
-class NoteKey
-{
-public:
-	enum Key {
-		C = 0,
-		Cs,
-		D,
-		Ef,
-		E,
-		F,
-		Fs,
-		G,
-		Af,
-		A,
-		Bf,
-		B,
-	};
-
-	Key m_key;
-	int m_nOctave;
-
-	NoteKey() {
-		m_key = C;
-		m_nOctave = 0;
-	}
-
-	NoteKey( const NoteKey& key ) {
-		m_key = key.m_key;
-		m_nOctave = key.m_nOctave;
-	}
-
-
-};
-
 
 /**
 
@@ -82,7 +46,6 @@ public:
 	uint32_t m_nSilenceOffset; ///< Used when scheduling note start in process() cycle
 	uint32_t m_nReleaseOffset; ///< Used when scheduling not lengths.
 	float m_fSamplePosition; ///< Place marker for overlapping process() cycles
-	NoteKey m_noteKey;
 	ADSR m_adsr;
 	// Low pass resonant filter
 	float m_fCutoff;		///< Filter cutoff (0..1)
@@ -102,8 +65,7 @@ public:
 	    float fPan_L = 1.0,
 	    float fPan_R = 1.0,
 	    int nLength = -1,                 // Length is in *ticks*
-	    float fPitch = 0.0,               // 0.0 is no pitch adjustement. +1.0 is 1 half-step sharp.
-	    NoteKey key = NoteKey()
+	    float fPitch = 0.0                // 0.0 is no pitch adjustement. +1.0 is 1 half-step sharp.
 	);
 
 	/// Copy constructor
@@ -119,8 +81,6 @@ public:
 	}
 
 	void dumpInfo() const;
-	static NoteKey stringToKey( const QString& sKey );
-	static QString keyToString( NoteKey key );
 
 
 	/// Return the note velocity

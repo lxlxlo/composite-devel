@@ -567,7 +567,6 @@ void SerializationQueue::handle_save_song(SerializationQueue::event_data_t& ev, 
 	    LocalFileMng::writeXmlString( noteNode, "pan_R", QString("%1").arg( pNote->get_pan_r() ) );
 	    LocalFileMng::writeXmlString( noteNode, "pitch", QString("%1").arg( pNote->get_pitch() ) );
 
-	    LocalFileMng::writeXmlString( noteNode, "key", Note::keyToString( pNote->m_noteKey ) );
 
 	    LocalFileMng::writeXmlString( noteNode, "length", QString("%1").arg( pNote->get_length() ) );
 	    LocalFileMng::writeXmlString( noteNode, "instrument", pNote->get_instrument()->get_id() );
@@ -889,8 +888,6 @@ void SerializationQueue::handle_save_pattern(SerializationQueue::event_data_t& e
 	LocalFileMng::writeXmlString( noteNode, "pan_L", QString("%1").arg( pNote->get_pan_l() ) );
 	LocalFileMng::writeXmlString( noteNode, "pan_R", QString("%1").arg( pNote->get_pan_r() ) );
 	LocalFileMng::writeXmlString( noteNode, "pitch", QString("%1").arg( pNote->get_pitch() ) );
-
-	LocalFileMng::writeXmlString( noteNode, "key", Note::keyToString( pNote->m_noteKey ) );
 
 	LocalFileMng::writeXmlString( noteNode, "length", QString("%1").arg( pNote->get_length() ) );
 	LocalFileMng::writeXmlString( noteNode, "instrument", pNote->get_instrument()->get_id() );
@@ -1626,7 +1623,7 @@ T<Pattern>::shared_ptr SerializationQueue::handle_load_pattern_node_094(
             ERRORLOG( "Instrument with ID: '" + instrId + "' not found. Note skipped." );
         }
 
-        pNote = new Note( instrRef, fVelocity, fPan_L, fPan_R, nLength, nPitch, Note::stringToKey( sKey ) );
+        pNote = new Note( instrRef, fVelocity, fPan_L, fPan_R, nLength, nPitch );
         pNote->set_leadlag(fLeadLag);
         pPattern->note_map.insert( std::make_pair( nPosition, pNote ) );
 

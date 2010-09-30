@@ -262,8 +262,7 @@ int SamplerPrivate::render_note( Note& note, uint32_t nFrames, uint32_t frame_ra
     //	constant^12 = 2, so constant = 2^(1/12) = 1.059463.
     //	float nStep = 1.0;1.0594630943593
 
-    float fTotalPitch = note.m_noteKey.m_nOctave * 12 + note.m_noteKey.m_key;
-    fTotalPitch += note.get_pitch();
+    float fTotalPitch = note.get_pitch();
     fTotalPitch += fLayerPitch;
 
     //DEBUGLOG( "total pitch: " + to_string( fTotalPitch ) );
@@ -411,7 +410,6 @@ int SamplerPrivate::render_note_resample(
     )
 {
     float fNotePitch = note.get_pitch() + fLayerPitch;
-    fNotePitch += note.m_noteKey.m_nOctave * 12 + note.m_noteKey.m_key;
 
     //DEBUGLOG( "pitch: " + to_string( fNotePitch ) );
 

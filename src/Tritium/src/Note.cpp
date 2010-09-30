@@ -35,13 +35,11 @@ Note::Note(
     float fPan_L,
     float fPan_R,
     int nLength,
-    float fPitch,
-    NoteKey key
+    float fPitch
 )
 		: m_nSilenceOffset( 0 )
 		, m_nReleaseOffset( 0 )
 		, m_fSamplePosition( 0.0 )
-		, m_noteKey( key )
 		, m_fCutoff( 1.0 )
 		, m_fResonance( 0.0 )
 		, m_fBandPassFilterBuffer_L( 0.0 )
@@ -68,7 +66,6 @@ Note::Note( const Note* pNote )
 	m_nSilenceOffset          = pNote->m_nSilenceOffset;
 	m_nReleaseOffset          = pNote->m_nReleaseOffset;
 	m_fSamplePosition         = pNote->m_fSamplePosition;
-	m_noteKey                 = pNote->m_noteKey;
 	// m_adsr copied in set_instrument()
 	m_fCutoff                 = pNote->m_fCutoff;
 	m_fResonance              = pNote->m_fResonance;
@@ -126,110 +123,13 @@ void Note::set_instrument( T<Instrument>::shared_ptr instrument )
 
 void Note::dumpInfo() const
 {
-    DEBUGLOG( QString("humanize offset%2\t instr: %3\t key: %4\t pitch: %5")
+    DEBUGLOG( QString("humanize offset%2\t instr: %3\t pitch: %4")
 	      .arg( m_nHumanizeDelay )
 	      .arg( __instrument->get_name() )
-	      .arg( keyToString( m_noteKey ) )
 	      .arg( get_pitch() )
 	);
 }
 
-
-
-NoteKey Note::stringToKey( const QString& str )
-{
-	NoteKey key;
-
-	QString sKey = str.left( str.length() - 1 );
-	QString sOct = str.mid( str.length() - 1, str.length() );
-	int nOctave = sOct.toInt();
-
-//	DEBUGLOG( "skey: " + sKey );
-//	DEBUGLOG( "sOct: " + sOct );
-//	DEBUGLOG( "nOctave: " + to_string( nOctave ) );
-
-	if ( sKey == "C" ) {
-		key.m_key = NoteKey::C;
-	} else if ( sKey == "Cs" ) {
-		key.m_key = NoteKey::Cs;
-	} else if ( sKey == "D" ) {
-		key.m_key = NoteKey::D;
-	} else if ( sKey == "Ef" ) {
-		key.m_key = NoteKey::Ef;
-	} else if ( sKey == "E" ) {
-		key.m_key = NoteKey::E;
-	} else if ( sKey == "F" ) {
-		key.m_key = NoteKey::F;
-	} else if ( sKey == "Fs" ) {
-		key.m_key = NoteKey::Fs;
-	} else if ( sKey == "G" ) {
-		key.m_key = NoteKey::G;
-	} else if ( sKey == "Af" ) {
-		key.m_key = NoteKey::Af;
-	} else if ( sKey == "A" ) {
-		key.m_key = NoteKey::A;
-	} else if ( sKey == "Bf" ) {
-		key.m_key = NoteKey::Bf;
-	} else if ( sKey == "B" ) {
-		key.m_key = NoteKey::B;
-	} else {
-		ERRORLOG( "Unhandled key: " + sKey );
-	}
-	key.m_nOctave = nOctave;
-
-	return key;
-}
-
-
-
-QString Note::keyToString( NoteKey key )
-{
-	QString sKey;
-
-	switch ( key.m_key ) {
-	case NoteKey::C:
-		sKey = "C";
-		break;
-	case NoteKey::Cs:
-		sKey = "Cs";
-		break;
-	case NoteKey::D:
-		sKey = "D";
-		break;
-	case NoteKey::Ef:
-		sKey = "Ef";
-		break;
-	case NoteKey::E:
-		sKey = "E";
-		break;
-	case NoteKey::F:
-		sKey = "F";
-		break;
-	case NoteKey::Fs:
-		sKey = "Fs";
-		break;
-	case NoteKey::G:
-		sKey = "G";
-		break;
-	case NoteKey::Af:
-		sKey = "Af";
-		break;
-	case NoteKey::A:
-		sKey = "A";
-		break;
-	case NoteKey::Bf:
-		sKey = "Bf";
-		break;
-	case NoteKey::B:
-		sKey = "B";
-		break;
-
-	}
-
-	sKey = sKey + QString("%1").arg( key.m_nOctave );
-
-	return sKey;
-}
 
 
 Note* Note::copy()
@@ -240,8 +140,7 @@ Note* Note::copy()
 	    get_pan_l(),
 	    get_pan_r(),
 	    get_length(),
-	    get_pitch(),
-	    m_noteKey
+	    get_pitch()
 	);
 
 	note->set_leadlag(get_leadlag());
