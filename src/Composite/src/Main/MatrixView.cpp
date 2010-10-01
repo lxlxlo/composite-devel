@@ -32,24 +32,57 @@ namespace Main
 {
 
     MatrixView::MatrixView(QWidget *parent) :
-	QWidget(parent)
+	QAbstractItemView(parent)
     {
-	QGridLayout *lay = new QGridLayout;
-
-	QPushButton *pb = 0;
-	int j,k;
-	for(j=0; j<8; ++j) {
-	    for(k=0; k<8; ++k) {
-		pb = new QPushButton(this);
-		lay->addWidget(pb, j, k);
-	    }
-	}
-	setLayout(lay);
     }
 
     MatrixView::~MatrixView()
     {
     }
+
+    QModelIndex MatrixView::indexAt(const QPoint& point) const
+    {
+	return QModelIndex();
+    }
+
+    void MatrixView::scrollTo(const QModelIndex& index, ScrollHint hint )
+    {
+    }
+
+    QRect MatrixView::visualRect(const QModelIndex& index) const
+    {
+	return QRect();
+    }
+
+    int MatrixView::horizontalOffset() const
+    {
+	return 0;
+    }
+
+    int MatrixView::verticalOffset() const
+    {
+	return 0;
+    }
+
+    bool MatrixView::isIndexHidden(const QModelIndex& index) const
+    {
+	return false;
+    }
+
+    QModelIndex MatrixView::moveCursor(CursorAction cursorAction, Qt::KeyboardModifiers modifiers)
+    {
+	return QModelIndex();
+    }
+
+    void MatrixView::setSelection(const QRect& rect, QItemSelectionModel::SelectionFlags flags)
+    {
+    }
+
+    QRegion MatrixView::visualRegionForSelection(const QItemSelection& selection) const
+    {
+	return QRegion();
+    }
+
 
 } // namespace Main
 } // namespace Composite

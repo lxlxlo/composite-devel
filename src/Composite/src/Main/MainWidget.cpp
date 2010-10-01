@@ -27,6 +27,8 @@
 #include <Composite/Main/MatrixView.hpp>
 #include <Composite/Main/LibraryView.hpp>
 
+#include <Composite/Models/AudioEngine.hpp>
+
 #include <QtGui/QAction>
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QMessageBox>
@@ -53,6 +55,8 @@ namespace Main
         }
 
 	resize(600, 400);
+
+	_d->_engine.reset( new Composite::Models::AudioEngine );
 
 	_d->load_icons();
         _d->setup_actions();
@@ -233,6 +237,7 @@ namespace Main
 
 	_mode.matrix = new MatrixView(_p);
 	_mode.matrix->hide();
+	_mode.matrix->setModel( _engine.get() );
 	_mode.edit = new QPushButton("EDIT ME!!", _p);
 	_mode.edit->hide();
 	_library_widget = new LibraryView(_p);

@@ -24,6 +24,8 @@
 #include <QtCore/QString>
 #include <QtGui/QIcon>
 
+#include <Tritium/memory.hpp>
+
 class QAction;
 class QToolButton;
 class QToolBar;
@@ -31,6 +33,11 @@ class QWidget;
 
 namespace Composite
 {
+
+namespace Models
+{
+    class AudioEngine;
+}
 
 namespace Widgets
 {
@@ -55,6 +62,8 @@ namespace Main
 	QWidget *_central_widget;
 	QWidget *_library_widget;
 	QWidget *_bot_left_widget;
+
+	Tritium::T<Models::AudioEngine>::shared_ptr _engine;
 
 	struct actions_t {
 	    // Go to...

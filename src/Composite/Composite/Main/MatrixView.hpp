@@ -21,7 +21,7 @@
 #ifndef COMPOSITE_MAIN_MATRIXVIEW_HPP
 #define COMPOSITE_MAIN_MATRIXVIEW_HPP
 
-#include <QtGui/QWidget>
+#include <QtGui/QAbstractItemView>
 #include <Tritium/memory.hpp>
 
 class QPaintEvent;
@@ -33,13 +33,30 @@ namespace Main
     /**
      * \brief A central workspace with a matrix-ey feel.
      */
-    class MatrixView : public QWidget
+    class MatrixView : public QAbstractItemView
     {
 	Q_OBJECT
 
     public:
 	MatrixView(QWidget *parent = 0);
 	virtual ~MatrixView();
+
+	// QAbstractItemView required methods:
+	virtual QModelIndex indexAt( const QPoint& point ) const;
+	virtual void scrollTo( const QModelIndex & index,
+			       ScrollHint hint = EnsureVisible );
+	virtual QRect visualRect( const QModelIndex & index ) const;
+
+    protected:
+	// QAbstractItemView required methods:
+	virtual int horizontalOffset() const;
+	virtual int verticalOffset() const;
+	virtual bool isIndexHidden( const QModelIndex& index ) const;
+	virtual QModelIndex moveCursor( CursorAction cursorAction,
+					Qt::KeyboardModifiers modifiers );
+	virtual void setSelection ( const QRect & rect,
+				    QItemSelectionModel::SelectionFlags flags );
+	virtual QRegion visualRegionForSelection ( const QItemSelection & selection ) const;
 
     };
 
