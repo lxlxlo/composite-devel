@@ -46,6 +46,8 @@ LIST(APPEND libcomposite_HEADERS
   Composite/Util/ReadOnlyProperty.hpp
 
   src/Main/MainWidgetPrivate.hpp
+
+  src/Models/AudioEnginePrivate.hpp
   )
 
 # These do NOT need to also appear in libcomposite_HEADERS
@@ -53,6 +55,8 @@ LIST(APPEND libcomposite_MOC_HEADERS
   Composite/Main/MainWidget.hpp
   Composite/Main/MatrixView.hpp
   Composite/Main/LibraryView.hpp
+
+  Composite/Models/AudioEngine.hpp
 
   Composite/Widgets/Toolbar.hpp
   )
@@ -63,6 +67,8 @@ LIST(APPEND libcomposite_SOURCES
   src/Main/LibraryView.cpp
 
   src/Looks/Sizes.cpp
+
+  src/Models/AudioEngine.cpp
 
   src/Widgets/Toolbar.cpp
   )
