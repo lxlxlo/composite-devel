@@ -36,6 +36,7 @@
 #include <QtGui/QToolBar>
 #include <QtGui/QToolButton>
 #include <QtGui/QPushButton>
+#include <QtGui/QPalette>
 
 #include <stdexcept>
 
@@ -134,9 +135,12 @@ namespace Main
 	corner.setCoords(   0, v1,      h1, height() );
 	central.setCoords( h1,  0,      h2,       v1 );
 
-	QColor bg(0, 0, 0x70);
-	QColor side(0xEE, 0, 0);
+	QPalette pal = palette();
+	QColor bg = pal.color( QPalette::Active, QPalette::Window );
+	QColor side = pal.color( QPalette::Active, QPalette::Dark );
 
+	//QColor bg(0, 0, 0x70);
+	//QColor side(0xEE, 0, 0);
 
 	QBrush bg_brush( bg );
 	QPen bg_pen( bg );

@@ -39,6 +39,7 @@ INCLUDE(${QT_USE_FILE})
 LIST(APPEND libcomposite_HEADERS
   ${CMAKE_BINARY_DIR}/config.h
 
+  Composite/Looks/Colors.hpp
   Composite/Looks/Sizes.hpp
 
   Composite/Util/Length.hpp
@@ -66,6 +67,7 @@ LIST(APPEND libcomposite_SOURCES
   src/Main/MatrixView.cpp
   src/Main/LibraryView.cpp
 
+  src/Looks/Colors.cpp
   src/Looks/Sizes.cpp
 
   src/Models/AudioEngine.cpp

@@ -18,20 +18,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#ifndef COMPOSITE_LOOKS_COLORS_HPP
+#define COMPOSITE_LOOKS_COLORS_HPP
 
-#include <QtGui/QApplication>
-#include <Composite/Main/MainWidget.hpp>
-#include <Composite/Looks/Colors.hpp>
+#include <QtGui/QPalette>
 
-int main(int argc, char* argv[])
+namespace Composite
 {
-    QApplication qapp(argc, argv);
-    Composite::Main::MainWidget mainwin(argc, argv);
+namespace Looks
+{
 
-    QPalette pal = Composite::Looks::create_default_palette();
-    qapp.setPalette(pal);
+    QPalette create_default_palette();
 
-    mainwin.show();
+} // namespace Looks
+} // namespace Composite
 
-    return qapp.exec();
-}
+#endif // COMPOSITE_LOOKS_COLORS_HPP
