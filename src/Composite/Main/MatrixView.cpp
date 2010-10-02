@@ -22,6 +22,7 @@
 #include <Composite/Main/MatrixView.hpp>
 
 #include <QtGui/QGridLayout>
+#include <QtGui/QPainter>
 #include <QtGui/QPushButton>
 
 #include <stdexcept>
@@ -83,6 +84,42 @@ namespace Main
 	return QRegion();
     }
 
+    void MatrixView::paintEvent(QPaintEvent * /*event*/ )
+    {
+	QAbstractItemModel *mod = model();
+	QPalette pal = palette();
+	QPainter painter( viewport() );
+
+	pal.setCurrentColorGroup( QPalette::Active );
+
+	painter.setBrush( pal.window() );
+	painter.drawRect( 0, 0, width(), height() );
+
+	if( !mod )
+	    return;
+
+	int cols = mod->columnCount();
+	int rows = mod->rowCount();
+
+	float col_wid = float(width()) / cols;
+	float row_ht = float(height()) / rows;
+
+	// Draw a grid
+	painter.setBrush( pal.mid() );
+	painter.setPen( pal.mid() );
+	int x, y;
+	y = 0;
+	for( int k = 0 ; k <= cols ; ++k ) {
+	    x = ( col_wid * k ) + 0.5f;
+	    painter.drawLine( x, y, x, height() );
+	}
+	x = 0;
+	for( int k = 0 ; k <= rows ; ++k ) {
+	    y = ( row_ht * k ) + 0.5f;
+	    painter.drawLine( x, y, width(), y );
+	}
+
+    }
 
 } // namespace Main
 } // namespace Composite

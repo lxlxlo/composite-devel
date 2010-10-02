@@ -58,6 +58,7 @@ namespace Main
 				    QItemSelectionModel::SelectionFlags flags );
 	virtual QRegion visualRegionForSelection ( const QItemSelection & selection ) const;
 
+	virtual void paintEvent(QPaintEvent *event);
     };
 
 } // namespace Main
