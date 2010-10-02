@@ -56,6 +56,11 @@ namespace Models
 				    int column,
 				    const QModelIndex & parent = QModelIndex() ) const ;
 	virtual QModelIndex parent( const QModelIndex & index ) const;
+
+    public slots:
+	void trigger( const QModelIndex& target, float velocity );
+	void release( const QModelIndex& target );
+
     };
 
 } // namespace Models

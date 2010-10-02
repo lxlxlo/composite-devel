@@ -20,8 +20,10 @@
  */
 
 #include <Composite/Main/MatrixView.hpp>
+#include <Composite/Models/AudioEngine.hpp>
 
 #include <QtGui/QGridLayout>
+#include <QtGui/QMouseEvent>
 #include <QtGui/QPainter>
 #include <QtGui/QPushButton>
 
@@ -43,7 +45,16 @@ namespace Main
 
     QModelIndex MatrixView::indexAt(const QPoint& point) const
     {
-	return QModelIndex();
+	QAbstractItemModel *mod = model();
+	float x, y;
+	x = float(point.x()) / float(width());
+	y = float(point.y()) / float(height());
+
+	int col, row;
+	col = x * mod->columnCount();
+	row = y * mod->rowCount();
+
+	return mod->index(row, col);
     }
 
     void MatrixView::scrollTo(const QModelIndex& index, ScrollHint hint )
@@ -84,6 +95,32 @@ namespace Main
 	return QRegion();
     }
 
+    void MatrixView::mousePressEvent(QMouseEvent *ev)
+    {
+	QModelIndex ix = indexAt( ev->pos() );
+	Composite::Models::AudioEngine *mod = dynamic_cast<Composite::Models::AudioEngine*>( model() );
+	if( !mod ) {
+	    ev->ignore();
+	    return;
+	}
+
+	mod->trigger(ix, 1.0f);
+	ev->accept();
+    }
+
+    void MatrixView::mouseReleaseEvent(QMouseEvent *ev)
+    {
+	QModelIndex ix = indexAt( ev->pos() );
+	Composite::Models::AudioEngine *mod = dynamic_cast<Composite::Models::AudioEngine*>( model() );
+	if( !mod ) {
+	    ev->ignore();
+	    return;
+	}
+
+	mod->release(ix);
+	ev->accept();
+    }
+
     void MatrixView::paintEvent(QPaintEvent * /*event*/ )
     {
 	QAbstractItemModel *mod = model();
@@ -106,7 +143,7 @@ namespace Main
 
 	// Draw a grid
 	painter.setBrush( pal.mid() );
-	painter.setPen( pal.mid() );
+	painter.setPen( pal.color(QPalette::Mid) );
 	int x, y;
 	y = 0;
 	for( int k = 0 ; k <= cols ; ++k ) {

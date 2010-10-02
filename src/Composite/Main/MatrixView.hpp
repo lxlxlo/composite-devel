@@ -59,6 +59,11 @@ namespace Main
 	virtual QRegion visualRegionForSelection ( const QItemSelection & selection ) const;
 
 	virtual void paintEvent(QPaintEvent *event);
+
+    protected:
+	virtual void mousePressEvent(QMouseEvent *event);
+	virtual void mouseReleaseEvent(QMouseEvent *event);
+
     };
 
 } // namespace Main

@@ -23,6 +23,9 @@
 
 #include "AudioEnginePrivate.hpp"
 
+#include <iostream>
+using namespace std;
+
 namespace Composite
 {
 namespace Models
@@ -58,12 +61,23 @@ namespace Models
 				    int column,
 				    const QModelIndex & parent ) const
     {
-	return QModelIndex();
+	QModelIndex ix = createIndex(row, column, 0);
+	return ix;
     }
 
     QModelIndex AudioEngine::parent( const QModelIndex & index ) const
     {
 	return QModelIndex();
+    }
+
+    void AudioEngine::trigger( const QModelIndex& target, float velocity )
+    {
+	cout << "trigger (" << target.row() << "," << target.column() << ")" << endl;
+    }
+
+    void AudioEngine::release( const QModelIndex& target )
+    {
+	cout << "release (" << target.row() << "," << target.column() << ")" << endl;
     }
 
     ////////////////////////////////////////////////////////////////////
