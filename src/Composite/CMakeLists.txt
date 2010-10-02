@@ -39,40 +39,40 @@ INCLUDE(${QT_USE_FILE})
 LIST(APPEND libcomposite_HEADERS
   ${CMAKE_BINARY_DIR}/config.h
 
-  Composite/Looks/Colors.hpp
-  Composite/Looks/Sizes.hpp
+  Looks/Colors.hpp
+  Looks/Sizes.hpp
 
-  Composite/Util/Length.hpp
-  Composite/Util/Property.hpp
-  Composite/Util/ReadOnlyProperty.hpp
+  Util/Length.hpp
+  Util/Property.hpp
+  Util/ReadOnlyProperty.hpp
 
-  src/Main/MainWidgetPrivate.hpp
+  Main/MainWidgetPrivate.hpp
 
-  src/Models/AudioEnginePrivate.hpp
+  Models/AudioEnginePrivate.hpp
   )
 
 # These do NOT need to also appear in libcomposite_HEADERS
 LIST(APPEND libcomposite_MOC_HEADERS
-  Composite/Main/MainWidget.hpp
-  Composite/Main/MatrixView.hpp
-  Composite/Main/LibraryView.hpp
+  Main/MainWidget.hpp
+  Main/MatrixView.hpp
+  Main/LibraryView.hpp
 
-  Composite/Models/AudioEngine.hpp
+  Models/AudioEngine.hpp
 
-  Composite/Widgets/Toolbar.hpp
+  Widgets/Toolbar.hpp
   )
 
 LIST(APPEND libcomposite_SOURCES
-  src/Main/MainWidget.cpp
-  src/Main/MatrixView.cpp
-  src/Main/LibraryView.cpp
+  Main/MainWidget.cpp
+  Main/MatrixView.cpp
+  Main/LibraryView.cpp
 
-  src/Looks/Colors.cpp
-  src/Looks/Sizes.cpp
+  Looks/Colors.cpp
+  Looks/Sizes.cpp
 
-  src/Models/AudioEngine.cpp
+  Models/AudioEngine.cpp
 
-  src/Widgets/Toolbar.cpp
+  Widgets/Toolbar.cpp
   )
 
 FILE(GLOB_RECURSE libcomposite_EXTRA_HEADERS
@@ -82,7 +82,7 @@ FILE(GLOB_RECURSE libcomposite_EXTRA_HEADERS
 INCLUDE_DIRECTORIES(
   ${CMAKE_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_SOURCE_DIR}/src/Composite
+  ${CMAKE_SOURCE_DIR}/src
   ${CMAKE_SOURCE_DIR}/src/Tritium
   )
 

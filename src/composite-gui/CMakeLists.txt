@@ -43,7 +43,7 @@ QT4_WRAP_CPP(composite_gui_MOC ${composite_gui_MOC_HEADERS})
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/src/Tritium
-    ${CMAKE_SOURCE_DIR}/src/Composite
+    ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR})
 
