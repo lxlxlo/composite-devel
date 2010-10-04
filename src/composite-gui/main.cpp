@@ -23,6 +23,15 @@
 #include <Composite/Main/MainWidget.hpp>
 #include <Composite/Looks/Colors.hpp>
 
+#include <Tritium/Engine.hpp>
+#include <Tritium/Logger.hpp>
+#include <Tritium/Preferences.hpp>
+
+// Temporary header:
+#include <Tritium/LocalFileMng.hpp>
+
+#include <cassert>
+
 int main(int argc, char* argv[])
 {
     QApplication qapp(argc, argv);
@@ -30,6 +39,39 @@ int main(int argc, char* argv[])
 
     QPalette pal = Composite::Looks::create_default_palette();
     qapp.setPalette(pal);
+
+    // Set up audio engine
+    Tritium::Logger::create_instance();
+    Tritium::Logger::get_instance()->set_logging_level( "Debug" );
+    Tritium::T<Tritium::Preferences>::shared_ptr prefs( new Tritium::Preferences() );
+    Tritium::Engine engine(prefs);
+
+    /////////////////////////////////////////////
+    // Temporary code to get GMkit loaded
+    /////////////////////////////////////////////
+    {
+	Tritium::LocalFileMng loc( &engine );
+	QString gmkit;
+	std::vector<QString>::iterator it;
+	std::vector<QString> list;
+	list = loc.getSystemDrumkitList();
+	for( it = list.begin() ; it < list.end() ; ++it ) {
+	    if( (*it).endsWith("GMkit") ) {
+		gmkit = *it;
+	    }
+	    break;
+	}
+	assert( ! gmkit.isNull() );
+	Tritium::T<Tritium::Drumkit>::shared_ptr dk = loc.loadDrumkit( gmkit );
+	assert( dk );
+	engine.loadDrumkit( dk );
+    }
+
+    /////////////////////////////////////////////
+    // End of temporary code
+    /////////////////////////////////////////////
+
+    mainwin.set_audio_engine( &engine );
 
     mainwin.show();
 

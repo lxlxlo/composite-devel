@@ -26,6 +26,13 @@
 #include <Tritium/memory.hpp>
 
 class QPaintEvent;
+class QString;
+class QUrl;
+
+namespace Tritium
+{
+    class Engine;
+}
 
 namespace Composite
 {
@@ -43,7 +50,7 @@ namespace Models
 	AudioEnginePrivate * const _d;
 
     public:
-	AudioEngine(int argc = 0, char* argv[] = 0, QObject *parent = 0);
+	AudioEngine( Tritium::Engine *engine = 0, QObject *parent = 0);
 	virtual ~AudioEngine();
 
 	// Reimplementing QAbstractItemModel methods
@@ -60,7 +67,6 @@ namespace Models
     public slots:
 	void trigger( const QModelIndex& target, float velocity );
 	void release( const QModelIndex& target );
-
     };
 
 } // namespace Models

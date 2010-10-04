@@ -21,20 +21,29 @@
 
 #include <Composite/Models/AudioEngine.hpp>
 
+#include <Tritium/Engine.hpp>
+#include <Tritium/Instrument.hpp>
+#include <Tritium/InstrumentList.hpp>
+#include <Tritium/Note.hpp>
+#include <Tritium/Sampler.hpp>
+
 #include "AudioEnginePrivate.hpp"
 
 #include <iostream>
 using namespace std;
+
+using namespace Tritium;
 
 namespace Composite
 {
 namespace Models
 {
 
-    AudioEngine::AudioEngine(int argc, char* argv[], QObject *parent) :
+    AudioEngine::AudioEngine(Tritium::Engine *eng, QObject *parent) :
 	QAbstractItemModel(parent),
 	_d( new AudioEnginePrivate(this) )
     {
+	_d->_engine = eng;
     }
 
     AudioEngine::~AudioEngine()
@@ -72,12 +81,30 @@ namespace Models
 
     void AudioEngine::trigger( const QModelIndex& target, float velocity )
     {
-	cout << "trigger (" << target.row() << "," << target.column() << ")" << endl;
+	T<Sampler>::shared_ptr samp = _d->_engine->get_sampler();
+	T<InstrumentList>::shared_ptr insts = samp->get_instrument_list();
+	T<Instrument>::shared_ptr sound;
+
+	int index = 4*target.row() + target.column();
+	if( index < insts->get_size() ) {
+	    sound = insts->get( index );
+	    Note *n = new Note( sound, velocity );
+	    _d->_engine->midi_noteOn(n);
+	}
     }
 
     void AudioEngine::release( const QModelIndex& target )
     {
-	cout << "release (" << target.row() << "," << target.column() << ")" << endl;
+	T<Sampler>::shared_ptr samp = _d->_engine->get_sampler();
+	T<InstrumentList>::shared_ptr insts = samp->get_instrument_list();
+	T<Instrument>::shared_ptr sound;
+
+	int index = 4*target.row() + target.column();
+	if( index < insts->get_size() ) {
+	    sound = insts->get( index );
+	    Note *n = new Note( sound, 0.0f );
+	    _d->_engine->midi_noteOff(n);
+	}
     }
 
     ////////////////////////////////////////////////////////////////////

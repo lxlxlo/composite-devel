@@ -21,6 +21,11 @@
 #ifndef COMPOSITE_MODELS_AUDIOENGINEPRIVATE_HPP
 #define COMPOSITE_MODELS_AUDIOENGINEPRIVATE_HPP
 
+namespace Tritium
+{
+    class Engine;
+}
+
 namespace Composite
 {
 namespace Models
@@ -34,6 +39,7 @@ namespace Models
 	~AudioEnginePrivate();
 
 	AudioEngine * const _parent;
+	Tritium::Engine *_engine;
 
     };
 

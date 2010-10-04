@@ -57,7 +57,7 @@ namespace Main
 
 	resize(600, 400);
 
-	_d->_engine.reset( new Composite::Models::AudioEngine );
+	_d->_engine.reset( new Composite::Models::AudioEngine(0, this) );
 
 	_d->load_icons();
         _d->setup_actions();
@@ -71,6 +71,13 @@ namespace Main
     MainWidget::~MainWidget()
     {
         delete _d;
+    }
+
+    void MainWidget::set_audio_engine( Tritium::Engine *eng )
+    {
+	Tritium::T<Models::AudioEngine>::shared_ptr mod( new Models::AudioEngine(eng, this) );
+	_d->_mode.matrix->setModel( mod.get() );
+	_d->_engine = mod;
     }
 
     /**

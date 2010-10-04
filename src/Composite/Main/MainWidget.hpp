@@ -26,6 +26,11 @@
 
 class QPaintEvent;
 
+namespace Tritium
+{
+    class Engine;
+}
+
 namespace Composite
 {
 namespace Main
@@ -44,6 +49,8 @@ namespace Main
     public:
 	MainWidget(int argc = 0, char* argv[] = 0, QWidget *parent = 0);
 	virtual ~MainWidget();
+
+	void set_audio_engine( Tritium::Engine *eng );
 
     public slots:
 	void go_matrix();
