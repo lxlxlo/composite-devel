@@ -905,6 +905,11 @@ namespace Tritium
     {
         return d->m_effects;
     }
+#else
+    T<Effects>::shared_ptr Engine::get_effects()
+    {
+        return T<Effects>::shared_ptr();
+    }
 #endif
 
     void Engine::lock( const char* file, unsigned int line, const char* function )

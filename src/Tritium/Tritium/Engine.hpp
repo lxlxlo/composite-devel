@@ -83,9 +83,7 @@ namespace Tritium
 	T<Mixer>::shared_ptr get_mixer();
 	T<EventQueue>::shared_ptr get_event_queue();
         Playlist& get_playlist();
-#ifdef LADSPA_SUPPORT
 	T<Effects>::shared_ptr get_effects();
-#endif
 
 	///////////////////////////////////////
 	// ENGINE STATE AND ERRORS
