@@ -26,7 +26,7 @@
 #include <fstream>
 #include <vector>
 
-#include <QDomDocument>
+#include <QtXml/QDomDocument>
 #include <Tritium/memory.hpp>
 #include <Tritium/ObjectBundle.hpp>
 
