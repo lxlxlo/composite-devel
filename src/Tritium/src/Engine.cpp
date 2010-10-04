@@ -1267,7 +1267,7 @@ namespace Tritium
                 // The instrument isn't playing yet; no need for locking
                 // :-) - Jakob Lund.  lock(
                 // "Engine::loadDrumkit" );
-                currInstrList->add( pInstr );
+                d->m_sampler->add_instrument( pInstr );
                 // unlock();
             }
 
