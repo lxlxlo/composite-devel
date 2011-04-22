@@ -55,10 +55,15 @@ IF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
       PROPERTIES
       COMPILE_FLAGS "-DBOOST_TEST_MAIN"
       )
+    # Applications that use Tritium should /not/ have to
+    # link to QtCore.  However, in order to scaffold some
+    # of the tests, the link is necc.  (E.g. in t_AudioPort
+    # where we include a private header).
     TARGET_LINK_LIBRARIES(${T}
       Tritium
       test_utils_Tritium
       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARIES}
+      -lQtCore
       )
 
     ADD_TEST(${T} ${T})
