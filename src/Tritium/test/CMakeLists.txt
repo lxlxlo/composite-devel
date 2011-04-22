@@ -4,6 +4,13 @@
 ######################################################################
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
+if(COMMAND cmake_policy)
+  # Libraries linked via full path no longer produce linker search
+  # paths.
+  cmake_policy(SET CMP0003 NEW)
+endif(COMMAND cmake_policy)
+
+
 ######################################################################
 ### TEST SOURCES AND BUILD                                         ###
 ######################################################################
@@ -63,7 +70,7 @@ IF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
       Tritium
       test_utils_Tritium
       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARIES}
-      -lQtCore
+      ${QT_LIBRARIES}
       )
 
     ADD_TEST(${T} ${T})
