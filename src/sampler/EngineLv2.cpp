@@ -42,6 +42,8 @@
 #include <event.lv2/event-helpers.h>
 #include <cstring>
 
+#include <QCoreApplication>
+
 #define PLUGIN_URI "http://gabe.is-a-geek.org/composite/plugins/sampler/1"
 #define EVENT_URI "http://lv2plug.in/ns/ext/event"
 // Sanity check
@@ -56,6 +58,10 @@ namespace Composite
 {
 namespace Plugin
 {
+
+static T<QCoreApplication>::auto_ptr g_qapp;
+static const char g_bogus_appname[] = "composite_sampler";
+static char* g_qapp_argv[] = { 0, 0 };
 
 void EngineLv2::connect_port(LV2_Handle instance,
 			     uint32_t port,
@@ -488,6 +494,10 @@ static void plugin_init()
 {
     LV2_Descriptor *d;
     typedef EngineLv2 p;
+    int argc = 1;
+    g_qapp_argv[0] = const_cast<char*>(g_bogus_appname);
+
+    g_qapp.reset( new QCoreApplication(argc, g_qapp_argv) );
 
     pluginDescriptor = new LV2_Descriptor;
     d = pluginDescriptor;
