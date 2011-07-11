@@ -60,6 +60,7 @@ namespace Plugin
 {
 
 static T<QCoreApplication>::auto_ptr g_qapp;
+static T<Logger>::auto_ptr g_logger;
 static const char g_bogus_appname[] = "composite_sampler";
 static char* g_qapp_argv[] = { 0, 0 };
 
@@ -91,7 +92,6 @@ void EngineLv2::cleanup(LV2_Handle instance)
     EngineLv2* i;
     i = static_cast<EngineLv2*>(instance);
     delete i;
-    delete Logger::get_instance();
 }
 
 EngineLv2::EngineLv2() :
@@ -116,7 +116,6 @@ LV2_Handle EngineLv2::instantiate(const LV2_Descriptor * /*descriptor*/,
 				  const char * /*bundle_path*/,
 				  const LV2_Feature * const * features)
 {
-    Logger::create_instance();
     T<EngineLv2>::auto_ptr inst( new EngineLv2 );
     if( inst.get() ) {
 	inst->set_sample_rate( sample_rate );
@@ -129,7 +128,6 @@ LV2_Handle EngineLv2::instantiate(const LV2_Descriptor * /*descriptor*/,
 	}
 	return ((LV2_Handle) inst.release());
     }
-    Logger::set_logging_level("Info");
     return 0;
 }
 
@@ -498,6 +496,10 @@ static void plugin_init()
     g_qapp_argv[0] = const_cast<char*>(g_bogus_appname);
 
     g_qapp.reset( new QCoreApplication(argc, g_qapp_argv) );
+
+    Logger::create_instance();
+    g_logger.reset(Logger::get_instance());
+    Logger::set_logging_level("Info");
 
     pluginDescriptor = new LV2_Descriptor;
     d = pluginDescriptor;
