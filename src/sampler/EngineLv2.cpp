@@ -40,6 +40,7 @@
 #include <lv2.h>
 #include <event.lv2/event.h>
 #include <event.lv2/event-helpers.h>
+#include <uri-map.lv2/uri-map.h>
 #include <cstring>
 
 #include <QCoreApplication>
@@ -124,6 +125,9 @@ LV2_Handle EngineLv2::instantiate(const LV2_Descriptor * /*descriptor*/,
 	    if( 0 == strncmp(EVENT_URI, feat->URI, strnlen(EVENT_URI, MAX_URI_LEN)) ) {
 		inst->_event_feature = static_cast<const LV2_Event_Feature*>(feat->data);
 	    }
+	    if( 0 == strncmp(LV2_URI_MAP_URI, feat->URI, strnlen(LV2_URI_MAP_URI, MAX_URI_LEN)) ) {
+		inst->_uri_map_feature = static_cast<const LV2_URI_Map_Feature*>(feat->data);
+	    }
 	    ++features;
 	}
 	return ((LV2_Handle) inst.release());
@@ -162,6 +166,14 @@ void EngineLv2::_activate()
     _serializer.reset( Serialization::Serializer::create_standalone(this) );
     _obj_bdl.reset( new Composite::Plugin::ObjectBundle );
     _presets.reset( new Presets );
+    _lv2_midi_event_id = _uri_map_feature->uri_to_id(_uri_map_feature->callback_data,
+						     0,
+						     "http://lv2plug.in/ns/ext/midi#MidiEvent");
+    if(0 == _lv2_midi_event_id) {
+	ERRORLOG("Could not map MIDI Event URI <http://lv2plug.in/ns/ext/midi#MidiEvent>"
+		 " -- Midi Events will not be recognized.");
+    }
+						     
     if( _obj_bdl->loading() ) {
 	_serializer->load_uri("tritium:default/presets-plugin", *_obj_bdl, this);
 	while( _obj_bdl->state() != ObjectBundle::Ready ) {
@@ -406,7 +418,7 @@ void EngineLv2::process_events(uint32_t nframes)
 		_event_feature->callback_data,
 		&ev
 		);
-	} else {
+	} else if (_lv2_midi_event_id == ev.type ) {
 	    if( _midi_imp->translate(sev, ev.size, data) ) {
 		_seq->insert(sev);
 	    }

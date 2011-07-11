@@ -23,6 +23,7 @@
 
 #include <lv2.h>
 #include <event.lv2/event.h>
+#include <uri-map.lv2/uri-map.h>
 
 #include <Tritium/memory.hpp>
 #include <Tritium/EngineInterface.hpp>
@@ -120,6 +121,8 @@ namespace Composite
 	    float _vol_midi; // Master volume, updated over MIDI (MIDI takes precedence)
 	    bool _vol_midi_updated; // Received MIDI volume update on this cycle.
 	    const LV2_Event_Feature *_event_feature; // Host's Event callbacks.
+	    const LV2_URI_Map_Feature *_uri_map_feature;
+	    uint32_t _lv2_midi_event_id;
 	    Tritium::T<Tritium::Preferences>::shared_ptr _prefs;
 	    Tritium::T<Tritium::MixerImpl>::shared_ptr _mixer;
 	    Tritium::T<Tritium::Sampler>::shared_ptr _sampler;
