@@ -1,3 +1,17 @@
+composite (0.006.1) experimental; urgency=low
+
+  * Fix FTBFS: t_AudioPort test missing link to QtCore
+  * Replace -lQtCore with ${QT_LIBRARIES}
+  * Fix FTBFS Song.cpp: Replace using of QString(int) with
+    QString(const char*)
+  * LV2 Sampler: Initialize QCoreApplication
+  * LV2 Sampler: Fix crash by moving Logger instance to module level
+  * LV2 Sampler: Check LV2 Event types and add extenstion metadata
+  * tests: t_AudioPort had a degenerate test
+  * tests: t_SeqScript now passes (was failing as dev reminder)
+
+ -- Gabriel M. Beddingfield <gabrbedd@gmail.com>  Thu, 14 Jul 2011 22:13:10 -0500
+
 composite (0.006) experimental; urgency=low
 
   * Mark LV2 Sampler as production/stable
