@@ -15,7 +15,7 @@
  <swing_factor>0</swing_factor>
  <instrumentList>
   <instrument>
-   <id></id>
+   <id>0</id>
    <drumkit></drumkit>
    <name>New instrument</name>
    <volume>1</volume>
