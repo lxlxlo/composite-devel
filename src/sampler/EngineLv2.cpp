@@ -103,7 +103,8 @@ EngineLv2::EngineLv2() :
     _vol_port(0),
     _vol_midi(1.0f),
     _vol_midi_updated(false),
-    _event_feature(0)
+    _event_feature(0),
+    _uri_map_feature(0)
 {
 }
 
@@ -166,9 +167,13 @@ void EngineLv2::_activate()
     _serializer.reset( Serialization::Serializer::create_standalone(this) );
     _obj_bdl.reset( new Composite::Plugin::ObjectBundle );
     _presets.reset( new Presets );
-    _lv2_midi_event_id = _uri_map_feature->uri_to_id(_uri_map_feature->callback_data,
+    if(_uri_map_feature) {
+        _lv2_midi_event_id = _uri_map_feature->uri_to_id(_uri_map_feature->callback_data,
 						     0,
 						     "http://lv2plug.in/ns/ext/midi#MidiEvent");
+    } else {
+        _lv2_midi_event_id = 0;
+    }
     if(0 == _lv2_midi_event_id) {
 	ERRORLOG("Could not map MIDI Event URI <http://lv2plug.in/ns/ext/midi#MidiEvent>"
 		 " -- Midi Events will not be recognized.");
@@ -418,7 +423,8 @@ void EngineLv2::process_events(uint32_t nframes)
 		_event_feature->callback_data,
 		&ev
 		);
-	} else if (_lv2_midi_event_id == ev.type ) {
+	} else if (_lv2_midi_event_id == ev.type
+            || _lv2_midi_event_id == 0) {
 	    if( _midi_imp->translate(sev, ev.size, data) ) {
 		_seq->insert(sev);
 	    }
