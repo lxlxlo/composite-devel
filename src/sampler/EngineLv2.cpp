@@ -46,7 +46,7 @@
 #include <QCoreApplication>
 
 #define PLUGIN_URI "http://gabe.is-a-geek.org/composite/plugins/sampler/1"
-#define EVENT_URI "http://lv2plug.in/ns/ext/event"
+#define LV2_MIDI_EVENT_URI "http://lv2plug.in/ns/ext/midi#MidiEvent"
 // Sanity check
 #define MAX_URI_LEN 128
 
@@ -123,7 +123,7 @@ LV2_Handle EngineLv2::instantiate(const LV2_Descriptor * /*descriptor*/,
 	inst->set_sample_rate( sample_rate );
 	while(*features) {
 	    const LV2_Feature *feat = *features;
-	    if( 0 == strncmp(EVENT_URI, feat->URI, strnlen(EVENT_URI, MAX_URI_LEN)) ) {
+	    if( 0 == strncmp(LV2_EVENT_URI, feat->URI, strnlen(LV2_EVENT_URI, MAX_URI_LEN)) ) {
 		inst->_event_feature = static_cast<const LV2_Event_Feature*>(feat->data);
 	    }
 	    if( 0 == strncmp(LV2_URI_MAP_URI, feat->URI, strnlen(LV2_URI_MAP_URI, MAX_URI_LEN)) ) {
@@ -169,14 +169,14 @@ void EngineLv2::_activate()
     _presets.reset( new Presets );
     if(_uri_map_feature) {
         _lv2_midi_event_id = _uri_map_feature->uri_to_id(_uri_map_feature->callback_data,
-						     0,
-						     "http://lv2plug.in/ns/ext/midi#MidiEvent");
+                                                         LV2_EVENT_URI,
+                                                         LV2_MIDI_EVENT_URI);
     } else {
         _lv2_midi_event_id = 0;
     }
     if(0 == _lv2_midi_event_id) {
-	ERRORLOG("Could not map MIDI Event URI <http://lv2plug.in/ns/ext/midi#MidiEvent>"
-		 " -- Midi Events will not be recognized.");
+	ERRORLOG("Could not map MIDI Event URI <" LV2_MIDI_EVENT_URI ">"
+		 " -- Midi Events may not be recognized properly.");
     }
 						     
     if( _obj_bdl->loading() ) {
