@@ -1,3 +1,12 @@
+composite (0.006.2) experimental; urgency=low
+
+  * LV2 Sampler: Fix logic error with uri-map by passing
+    the Event URI as the `map` parameter.  This also works
+    around crashes in slv2 and zynjacku (which is a bug on
+    their part).
+
+ -- Gabriel M. Beddingfield <gabrbedd@gmail.com>  Sat, 23 Jul 2011 12:02:39 -0500
+
 composite (0.006.1) experimental; urgency=low
 
   * Fix FTBFS: t_AudioPort test missing link to QtCore

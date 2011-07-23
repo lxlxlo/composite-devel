@@ -104,8 +104,8 @@ about 2 min. to do a parallel build.
 After you have all the prerequisites, building and installing will
 look like this:
 
-	$ tar xjf composite-0.006.1.tar.bz2
-	$ cd composite-0.006.1
+	$ tar xjf composite-0.006.2.tar.bz2
+	$ cd composite-0.006.2
         $ mkdir build
 	$ cd build
 	$ cmake .. \
@@ -150,8 +150,8 @@ In order to create a .deb package for Debian or Debian-based systems
 
 To build the Composite package:
 
-	$ tar xjf composite-0.006.1.tar
-	$ cd composite-0.006.1
+	$ tar xjf composite-0.006.2.tar
+	$ cd composite-0.006.2
 	$ cd linux
 	$ fakeroot dpkg-buildpackage
 
@@ -166,7 +166,7 @@ Unfortunately, CMake doesn't have something that works exactly like
 './configure --help' that will show you all the configuration
 options.  The best way to see the standard options is to run:
 
-	$ ccmake /path/to/sources/composite-0.006.1
+	$ ccmake /path/to/sources/composite-0.006.2
 
 Which will give you a listing of the options from the CMakeLists.txt
 file.  You have the following commands (and more) available:
@@ -194,7 +194,10 @@ out-of date as things change:
 7. INSTALL.txt Changelog
 ------------------------
 
-2011-06-14 Gabriel M. Beddingfield <gabrbedd@gmail.com>
+2011-07-23 Gabriel M. Beddingfield <gabrbedd@gmail.com>
+        * Update all versions to 0.006.2
+
+2011-07-14 Gabriel M. Beddingfield <gabrbedd@gmail.com>
         *  Update all versions to 0.006.1
 
 2010-03-14 Gabriel M. Beddingfield <gabriel@teuton.org>

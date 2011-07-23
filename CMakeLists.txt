@@ -12,7 +12,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 PROJECT(composite)
 SET(VERSION_MAJOR "0")
 SET(VERSION_MINOR "006")
-SET(VERSION_PATCH "1")
+SET(VERSION_PATCH "2")
 SET(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 ######################################################################
