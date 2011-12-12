@@ -141,13 +141,14 @@ void MixerImpl::mix_down(uint32_t nframes, float* left, float* right, float* pea
     #warning "This is the prosaic approach.  Need an optimized one."
     MixerImplPrivate::port_list_t::iterator it;
     bool zero = true;
+    T<AudioPort>::shared_ptr port;
 
     /* See below for
      * the "Theory of Pan"
      */
     for(it=d->_in_ports.begin() ; it!=d->_in_ports.end() ; ++it) {
 	Channel& chan = **it;
-	T<AudioPort>::shared_ptr port = chan.port();
+        port = chan.port();
 	if( port->zero_flag() ) continue;
 	if( port->type() == AudioPort::MONO ) {
 	    float gL, gR, pan, gain;
@@ -197,9 +198,10 @@ void MixerImpl::mix_down(uint32_t nframes, float* left, float* right, float* pea
     if(plugin_count > d->_fx_count) {
 	plugin_count = d->_fx_count;
     }
+    T<LadspaFX>::shared_ptr effect;
     for(k=0 ; k<plugin_count ; ++k) {
 	assert(d->_fx);
-	T<LadspaFX>::shared_ptr effect = d->_fx->getLadspaFX(k);
+	effect = d->_fx->getLadspaFX(k);
 	if(!effect) continue;
 	if(!effect->isEnabled()) continue;
 	MixerImplPrivate::mix_buffer_with_gain(left, effect->m_pBuffer_L, nframes, effect->getVolume());
@@ -210,10 +212,10 @@ void MixerImpl::mix_down(uint32_t nframes, float* left, float* right, float* pea
 	}
     }
     if(peak_left) {
-	(*peak_left) = MixerImplPrivate::clip_buffer_get_peak(left, nframes);
+	(*peak_left) = MixerImplPrivate::get_peak(left, nframes);
     }
     if(peak_right) {
-	(*peak_right) = MixerImplPrivate::clip_buffer_get_peak(right, nframes);
+	(*peak_right) = MixerImplPrivate::get_peak(right, nframes);
     }
 }
 
@@ -405,6 +407,23 @@ float MixerImplPrivate::clip_buffer_get_peak(float* buf, uint32_t nframes)
     }
     min = -min;
     if(min > max) max = min;
+    return max;
+}
+
+float MixerImplPrivate::get_peak(float* buf, uint32_t nframes)
+{
+    float max = 0.0, tmp;
+
+    assert(nframes);
+
+    while(nframes--) {
+	tmp = buf[nframes];
+        if(tmp > max) {
+            max = tmp;
+        } else if (-tmp > max) {
+            max = -tmp;
+        }
+    }
     return max;
 }
 

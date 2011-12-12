@@ -59,6 +59,7 @@ namespace Tritium
 	static void mix_buffer_no_gain(float* dst, float* src, uint32_t nframes);
 	static void mix_buffer_with_gain(float* dst, float* src, uint32_t nframes, float gain);
 	static float clip_buffer_get_peak(float* buf, uint32_t nframes);
+	static float get_peak(float* buf, uint32_t nframes);
 
 	struct mult_gain : public std::unary_function<float, float>
 	{
