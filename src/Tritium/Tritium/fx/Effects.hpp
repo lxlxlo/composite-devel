@@ -48,7 +48,7 @@ public:
 	T<LadspaFX>::shared_ptr getLadspaFX( int nFX );
 	void  setLadspaFX( T<LadspaFX>::shared_ptr pFX, int nFX );
 
-	std::vector<LadspaFXInfo*> getPluginList();
+	std::vector<LadspaFXInfo*>& getPluginList();
 	LadspaFXGroup* getLadspaFXGroup();
 
 private:
@@ -56,7 +56,8 @@ private:
 	std::vector<LadspaFXInfo*> m_pluginList;
 	LadspaFXGroup* m_pRootGroup;
 	LadspaFXGroup* m_pRecentGroup;
-	
+        bool m_plugin_list_cached;
+
 	void updateRecentGroup();
 
 	T<LadspaFX>::shared_ptr m_FXList[ MAX_FX ];

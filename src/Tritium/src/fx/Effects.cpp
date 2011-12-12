@@ -44,7 +44,8 @@ namespace Tritium
 Effects::Effects(Engine* parent) :
 	m_engine(parent),
 	m_pRootGroup( NULL ),
-	m_pRecentGroup( NULL )
+	m_pRecentGroup( NULL ),
+        m_plugin_list_cached( false )
 {
 	assert(parent);
 	getPluginList();
@@ -94,11 +95,22 @@ void  Effects::setLadspaFX( T<LadspaFX>::shared_ptr pFX, int nFX )
 ///
 /// Loads only usable plugins
 ///
-std::vector<LadspaFXInfo*> Effects::getPluginList()
+std::vector<LadspaFXInfo*>& Effects::getPluginList()
 {
+        // TODO: This is not RT-safe on the first invocation, but is
+        // being called from MixerImpl::mix_down().  Subsequent calls
+        // are OK because the information has been cached.
+        static std::vector<LadspaFXInfo*> default_rv;
+
 	if ( m_pluginList.size() != 0 ) {
 		return m_pluginList;
 	}
+
+        if ( m_plugin_list_cached ) {
+                return default_rv;
+        }
+
+        m_plugin_list_cached = true;
 
 	vector<QString> ladspaPathVect = m_engine->get_preferences()->getLadspaPath();
 	DEBUGLOG( QString( "PATHS: %1" ).arg( ladspaPathVect.size() ) );
