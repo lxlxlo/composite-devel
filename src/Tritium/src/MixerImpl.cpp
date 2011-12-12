@@ -34,8 +34,8 @@ using namespace Tritium;
 ////////////////////////////////////////////////////////////
 
 MixerImpl::MixerImpl(uint32_t max_buffer,
-		     T<Effects>::shared_ptr fx_man,
-		     uint32_t fx_count)
+                     T<Effects>::shared_ptr fx_man,
+                     uint32_t fx_count)
 {
     d = new MixerImplPrivate();
     d->_max_buf = max_buffer;
@@ -59,13 +59,13 @@ T<AudioPort>::shared_ptr MixerImpl::allocate_port(
     T<Mixer::Channel>::shared_ptr tmp(new Mixer::Channel(d->_fx_count));
     tmp->gain( 1.0f );
     if( type == AudioPort::MONO ) {
-	tmp->port() = d->new_mono_port();
-	tmp->pan_L( 0.5f );
+        tmp->port() = d->new_mono_port();
+        tmp->pan_L( 0.5f );
     } else {
-	assert(type == AudioPort::STEREO);
-	tmp->port() = d->new_stereo_port();
-	tmp->pan_L( 0.0f );
-	tmp->pan_R( 1.0f );
+        assert(type == AudioPort::STEREO);
+        tmp->port() = d->new_stereo_port();
+        tmp->pan_L( 0.0f );
+        tmp->pan_R( 1.0f );
     }
     QMutexLocker lk(&d->_in_ports_mutex);
     d->_in_ports.push_back(tmp);
@@ -95,44 +95,44 @@ void MixerImpl::mix_send_return(uint32_t nframes)
 
     uint32_t k;
     for(k=0 ; k<count; ++k) {
-	T<LadspaFX>::shared_ptr effect = d->_fx->getLadspaFX(k);
-	if( !effect ) continue;
-	memset(effect->m_pBuffer_L, 0, nframes * sizeof(float));
-	if( effect->getPluginType() == LadspaFX::STEREO_FX ) {
-	    memset(effect->m_pBuffer_R, 0, nframes * sizeof(float));
-	}
+        T<LadspaFX>::shared_ptr effect = d->_fx->getLadspaFX(k);
+        if( !effect ) continue;
+        memset(effect->m_pBuffer_L, 0, nframes * sizeof(float));
+        if( effect->getPluginType() == LadspaFX::STEREO_FX ) {
+            memset(effect->m_pBuffer_R, 0, nframes * sizeof(float));
+        }
     }
 
     MixerImplPrivate::port_list_t::iterator it;
     for(it=d->_in_ports.begin() ; it != d->_in_ports.end() ; ++it) {
-	Mixer::Channel& chan = **it;
-	T<AudioPort>::shared_ptr port = chan.port();
-	if(port->zero_flag()) continue;
-	for(k=0 ; k<count ; ++k) {
-	    if(chan.send_gain(k) == 0.0f) continue;
-	    T<LadspaFX>::shared_ptr effect = d->_fx->getLadspaFX(k);
-	    if(!effect) continue;
-	    float *L, *R;
-	    L = port->get_buffer();
-	    if(port->type() == AudioPort::STEREO) {
-		R = port->get_buffer(1);
-	    } else {
-		R = L;
-	    }
-	    MixerImplPrivate::mix_buffer_with_gain(effect->m_pBuffer_L, L, nframes, chan.send_gain(k));
-	    if(effect->getPluginType() == LadspaFX::STEREO_FX) {
-		MixerImplPrivate::mix_buffer_with_gain(effect->m_pBuffer_R, R, nframes, chan.send_gain(k));
-	    } else if (port->type() == AudioPort::STEREO) {
-		MixerImplPrivate::mix_buffer_with_gain(effect->m_pBuffer_L, R, nframes, chan.send_gain(k));
-	    }
-	}
+        Mixer::Channel& chan = **it;
+        T<AudioPort>::shared_ptr port = chan.port();
+        if(port->zero_flag()) continue;
+        for(k=0 ; k<count ; ++k) {
+            if(chan.send_gain(k) == 0.0f) continue;
+            T<LadspaFX>::shared_ptr effect = d->_fx->getLadspaFX(k);
+            if(!effect) continue;
+            float *L, *R;
+            L = port->get_buffer();
+            if(port->type() == AudioPort::STEREO) {
+                R = port->get_buffer(1);
+            } else {
+                R = L;
+            }
+            MixerImplPrivate::mix_buffer_with_gain(effect->m_pBuffer_L, L, nframes, chan.send_gain(k));
+            if(effect->getPluginType() == LadspaFX::STEREO_FX) {
+                MixerImplPrivate::mix_buffer_with_gain(effect->m_pBuffer_R, R, nframes, chan.send_gain(k));
+            } else if (port->type() == AudioPort::STEREO) {
+                MixerImplPrivate::mix_buffer_with_gain(effect->m_pBuffer_L, R, nframes, chan.send_gain(k));
+            }
+        }
     }
 
     for(k=0 ; k<count ; ++k) {
-	T<LadspaFX>::shared_ptr effect = d->_fx->getLadspaFX(k);
-	if(effect) {
-	    effect->processFX(nframes);
-	}
+        T<LadspaFX>::shared_ptr effect = d->_fx->getLadspaFX(k);
+        if(effect) {
+            effect->processFX(nframes);
+        }
     }
 }
 
@@ -147,84 +147,84 @@ void MixerImpl::mix_down(uint32_t nframes, float* left, float* right, float* pea
      * the "Theory of Pan"
      */
     for(it=d->_in_ports.begin() ; it!=d->_in_ports.end() ; ++it) {
-	Channel& chan = **it;
+        Channel& chan = **it;
         port = chan.port();
-	if( port->zero_flag() ) continue;
-	if( port->type() == AudioPort::MONO ) {
-	    float gL, gR, pan, gain;
-	    gain = chan.gain() * d->_gain;
-	    pan = chan.pan();
-	    MixerImplPrivate::eval_pan(gain, pan, gL, gR);
-	    if(zero) {
-		MixerImplPrivate::copy_buffer_with_gain(left, port->get_buffer(), nframes, gL);
-		MixerImplPrivate::copy_buffer_with_gain(right, port->get_buffer(), nframes, gR);
-	    } else {
-		MixerImplPrivate::mix_buffer_with_gain(left, port->get_buffer(), nframes, gL);
-		MixerImplPrivate::mix_buffer_with_gain(right, port->get_buffer(), nframes, gR);
-	    }
-	} else {
-	    assert( port->type() == AudioPort::STEREO );
-	    float gL, gR, pan, gain;
+        if( port->zero_flag() ) continue;
+        if( port->type() == AudioPort::MONO ) {
+            float gL, gR, pan, gain;
+            gain = chan.gain() * d->_gain;
+            pan = chan.pan();
+            MixerImplPrivate::eval_pan(gain, pan, gL, gR);
+            if(zero) {
+                MixerImplPrivate::copy_buffer_with_gain(left, port->get_buffer(), nframes, gL);
+                MixerImplPrivate::copy_buffer_with_gain(right, port->get_buffer(), nframes, gR);
+            } else {
+                MixerImplPrivate::mix_buffer_with_gain(left, port->get_buffer(), nframes, gL);
+                MixerImplPrivate::mix_buffer_with_gain(right, port->get_buffer(), nframes, gR);
+            }
+        } else {
+            assert( port->type() == AudioPort::STEREO );
+            float gL, gR, pan, gain;
 
-	    // Left
-	    gain = chan.gain() * d->_gain;
-	    pan = chan.pan_L();
-	    MixerImplPrivate::eval_pan(gain, pan, gL, gR);
-	    if(zero) {
-		MixerImplPrivate::copy_buffer_with_gain(left, port->get_buffer(), nframes, gL);
-		MixerImplPrivate::copy_buffer_with_gain(right, port->get_buffer(), nframes, gR);
-	    } else {
-		MixerImplPrivate::mix_buffer_with_gain(left, port->get_buffer(), nframes, gL);
-		MixerImplPrivate::mix_buffer_with_gain(right, port->get_buffer(), nframes, gR);
-	    }
-	    pan = chan.pan_R();
-	    MixerImplPrivate::eval_pan(gain, pan, gL, gR);
-	    MixerImplPrivate::mix_buffer_with_gain(left, port->get_buffer(1), nframes, gL);
-	    MixerImplPrivate::mix_buffer_with_gain(right, port->get_buffer(1), nframes, gR);
-	}
-	zero = false;
+            // Left
+            gain = chan.gain() * d->_gain;
+            pan = chan.pan_L();
+            MixerImplPrivate::eval_pan(gain, pan, gL, gR);
+            if(zero) {
+                MixerImplPrivate::copy_buffer_with_gain(left, port->get_buffer(), nframes, gL);
+                MixerImplPrivate::copy_buffer_with_gain(right, port->get_buffer(), nframes, gR);
+            } else {
+                MixerImplPrivate::mix_buffer_with_gain(left, port->get_buffer(), nframes, gL);
+                MixerImplPrivate::mix_buffer_with_gain(right, port->get_buffer(), nframes, gR);
+            }
+            pan = chan.pan_R();
+            MixerImplPrivate::eval_pan(gain, pan, gL, gR);
+            MixerImplPrivate::mix_buffer_with_gain(left, port->get_buffer(1), nframes, gL);
+            MixerImplPrivate::mix_buffer_with_gain(right, port->get_buffer(1), nframes, gR);
+        }
+        zero = false;
     }
     if(zero) {
-	memset(left, 0, nframes * sizeof(float));
-	memset(right, 0, nframes * sizeof(float));
+        memset(left, 0, nframes * sizeof(float));
+        memset(right, 0, nframes * sizeof(float));
     }
 
     uint32_t k, plugin_count;
     if(d->_fx) {
-	plugin_count = d->_fx->getPluginList().size();
+        plugin_count = d->_fx->getPluginList().size();
     } else {
-	plugin_count = 0;
+        plugin_count = 0;
     }
     if(plugin_count > d->_fx_count) {
-	plugin_count = d->_fx_count;
+        plugin_count = d->_fx_count;
     }
     T<LadspaFX>::shared_ptr effect;
     for(k=0 ; k<plugin_count ; ++k) {
-	assert(d->_fx);
-	effect = d->_fx->getLadspaFX(k);
-	if(!effect) continue;
-	if(!effect->isEnabled()) continue;
-	MixerImplPrivate::mix_buffer_with_gain(left, effect->m_pBuffer_L, nframes, effect->getVolume());
-	if(effect->getPluginType() == LadspaFX::STEREO_FX) {
-	    MixerImplPrivate::mix_buffer_with_gain(right, effect->m_pBuffer_R, nframes, effect->getVolume());
-	} else {
-	    MixerImplPrivate::mix_buffer_with_gain(right, effect->m_pBuffer_L, nframes, effect->getVolume());
-	}
+        assert(d->_fx);
+        effect = d->_fx->getLadspaFX(k);
+        if(!effect) continue;
+        if(!effect->isEnabled()) continue;
+        MixerImplPrivate::mix_buffer_with_gain(left, effect->m_pBuffer_L, nframes, effect->getVolume());
+        if(effect->getPluginType() == LadspaFX::STEREO_FX) {
+            MixerImplPrivate::mix_buffer_with_gain(right, effect->m_pBuffer_R, nframes, effect->getVolume());
+        } else {
+            MixerImplPrivate::mix_buffer_with_gain(right, effect->m_pBuffer_L, nframes, effect->getVolume());
+        }
     }
     if(peak_left) {
-	(*peak_left) = MixerImplPrivate::get_peak(left, nframes);
+        (*peak_left) = MixerImplPrivate::get_peak(left, nframes);
     }
     if(peak_right) {
-	(*peak_right) = MixerImplPrivate::get_peak(right, nframes);
+        (*peak_right) = MixerImplPrivate::get_peak(right, nframes);
     }
 }
 
 void MixerImpl::gain(float gain)
 {
     if(gain < 0.0) {
-	d->_gain = 0.0;
+        d->_gain = 0.0;
     } else {
-	d->_gain = gain;
+        d->_gain = gain;
     }
 }
 
@@ -282,7 +282,7 @@ void MixerImplPrivate::delete_port(MixerImplPrivate::port_ref_t port)
 T<Mixer::Channel>::shared_ptr MixerImplPrivate::channel_for_port(const MixerImplPrivate::port_ref_t port)
 {
     for(uint32_t k; k<_in_ports.size() ; ++k) {
-	if( _in_ports[k]->port() == port ) return _in_ports[k];
+        if( _in_ports[k]->port() == port ) return _in_ports[k];
     }
     return T<Mixer::Channel>::shared_ptr();
 }
@@ -346,17 +346,17 @@ void MixerImplPrivate::eval_pan(float gain, float pan, float& left, float& right
 {
     float L = 0.0f, R = 0.0f;
     if( (pan > 1.0f) || (pan < 0.0f) ) {
-	left = L;
-	right = R;
-	return;
+        left = L;
+        right = R;
+        return;
     }
 
     if(pan < .5) {
-	R = pan * gain / (1.0f - pan);
-	L = gain;
+        R = pan * gain / (1.0f - pan);
+        L = gain;
     } else {
-	L = gain * (1.0f - pan) / pan;
-	R = gain;
+        L = gain * (1.0f - pan) / pan;
+        R = gain;
     }
     if( gain > 1.0e-6 ) assert( ::fabs(pan - (R / (R+L))) < 1.0e-6 );
     left = L;
@@ -392,18 +392,18 @@ float MixerImplPrivate::clip_buffer_get_peak(float* buf, uint32_t nframes)
     float max = 0.0, min = 0.0, tmp;
 
     while(nframes--) {
-	tmp = buf[nframes];
-	if(tmp > 1.0f) {
-	    max = 1.0f;
-	    buf[nframes] = 1.0f;
-	} else if (tmp > max) {
-	    max = tmp;
-	} else if (tmp < -1.0f) {
-	    min = -1.0f;
-	    buf[nframes] = -1.0f;
-	} else if (tmp < min) {
-	    min = tmp;
-	}
+        tmp = buf[nframes];
+        if(tmp > 1.0f) {
+            max = 1.0f;
+            buf[nframes] = 1.0f;
+        } else if (tmp > max) {
+            max = tmp;
+        } else if (tmp < -1.0f) {
+            min = -1.0f;
+            buf[nframes] = -1.0f;
+        } else if (tmp < min) {
+            min = tmp;
+        }
     }
     min = -min;
     if(min > max) max = min;
@@ -417,7 +417,7 @@ float MixerImplPrivate::get_peak(float* buf, uint32_t nframes)
     assert(nframes);
 
     while(nframes--) {
-	tmp = buf[nframes];
+        tmp = buf[nframes];
         if(tmp > max) {
             max = tmp;
         } else if (-tmp > max) {
@@ -486,9 +486,9 @@ float Mixer::Channel::gain() const
 void Mixer::Channel::gain(float gain)
 {
     if(gain < 0.0f) {
-	d->_gain = 0.0f;
+        d->_gain = 0.0f;
     } else {
-	d->_gain = gain;
+        d->_gain = gain;
     }
 }
 
