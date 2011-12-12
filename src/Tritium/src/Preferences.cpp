@@ -43,7 +43,6 @@
 #include "version.h"
 
 #include <QDir>
-#include <QCoreApplication>
 
 namespace Tritium
 {
@@ -79,7 +78,7 @@ Preferences::Preferences()
 		m_ladspaPathVect.push_back( sLadspaPath );
 	} else {
 #ifdef Q_OS_MACX
-		m_ladspaPathVect.push_back( qApp->applicationDirPath() + "/../Resources/plugins" );
+                /* m_ladspaPathVect.push_back( qApp->applicationDirPath() + "/../Resources/plugins" ); */
 		m_ladspaPathVect.push_back( "/Library/Audio/Plug-Ins/LADSPA/" );
 		m_ladspaPathVect.push_back( QDir::homePath().append( "/Library/Audio/Plug-Ins/LADSPA" ));
 #else

@@ -28,7 +28,6 @@
 #include <Tritium/DataPath.hpp>
 
 #include <QFile>
-#include <QCoreApplication>
 
 //#ifdef Q_OS_MACX
 //#  include <Carbon.h>
@@ -54,13 +53,10 @@ namespace Tritium
      * The function searches for the directory in this order:
      *
      *   1. Looks for "COMPOSITE_DATA_PATH" environment variable.
-     *   2. Looks for the directory "data" in the same folder as
-     *      the executable.
-     *   3. Uses the compiled-in value (usually $PREFIX/share/composite/data/
+     *   2. Uses the compiled-in value (usually $PREFIX/share/composite/data/
      *
      * \return Path to the data directory.
      */
-    #warning "TODO: QApplication used in libTritium"
     QString DataPath::get_data_path()
     {
 	if( ! __data_path.isEmpty() ) return __data_path;
@@ -74,13 +70,6 @@ namespace Tritium
 	    if( fi.exists() ) {
 		__data_path = fi.absoluteFilePath();
 	    }
-	    return __data_path;
-	}
-
-	tmp = qApp->applicationDirPath() + QString("/data");
-	fi.setFile( tmp );
-	if( fi.exists() ) {
-	    __data_path = fi.absoluteFilePath();
 	    return __data_path;
 	}
 
