@@ -513,7 +513,32 @@ static void plugin_init()
     int argc = 1;
     g_qapp_argv[0] = const_cast<char*>(g_bogus_appname);
 
-    g_qapp.reset( new QCoreApplication(argc, g_qapp_argv) );
+    /* WORKAROUND: If the host application is Qt, then creating a new
+     * instance of QCoreApplication breaks the rules and causes a
+     * crash.  This following code fixes that situation.
+     *
+     * This is a workaround because there are still situations where
+     * this is the wrong behavior.  For example:
+     *
+     * 1. Composite plugin is loaded and creates QCoreApplication.
+     * 2. Another plugin is loaded and re-uses QCoreApplication.
+     * 3. Composite plugin is unloaded, which deletes QCoreApplication.
+     * 4. Other plugin references QCoreApplication ==> SIGSEGV.
+     *
+     * The /real/ solution is to not use QCoreApplication.  But this
+     * change will not happen on the 0.006 branch.  An alternate
+     * solution is to /not/ instantiate QCoreApplication.  This breaks
+     * the rules but usually works.  (At one time this was believed to
+     * be crashing Ardour, but that was a red herring for a bug with
+     * the Logger instance(s) and 2 instances of Composite).
+     *
+     * Leaving QCoreApplication un-deleted is /not/ an option.  Not
+     * only does it leak memory, but can also cause a crash when the
+     * Qt libs are unloaded when this plugin is unloaded.
+     */
+    if(!QCoreApplication::instance()) {
+        g_qapp.reset( new QCoreApplication(argc, g_qapp_argv) );
+    }
 
     Logger::create_instance();
     g_logger.reset(Logger::get_instance());
