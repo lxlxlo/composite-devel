@@ -19,6 +19,9 @@
   doap:name "Composite Sampler";
   doap:homepage <http://gabe.is-a-geek.org/composite/>;
   doap:license <http://usefulinc.com/doap/licenses/gpl>;
+  lv2:property lv2:hardRtCapable;
+  lv2:requiredFeature <http://lv2plug.in/ns/ext/event>;
+  lv2:requiredFeature <http://lv2plug.in/ns/ext/uri-map>; # Req'd by event
 
   lv2:port
   [
