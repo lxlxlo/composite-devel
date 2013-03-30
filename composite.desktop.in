@@ -1,10 +1,10 @@
 [Desktop Entry]
+Version=1.0
+
 Name=Composite
 Comment=Live performance sequencer, sampler, looper
 
 GenericName=Sequencer
-
-Version=@VERSION@
 
 Type=Application
 Categories=AudioVideo;X-Sound;Audio;Qt;
