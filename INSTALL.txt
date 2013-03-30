@@ -77,8 +77,10 @@ installed on your system, and the development header files.
 	* Qt 4 SDK (moc, uic, etc.)
 	* GNU g++ compiler (>=4.0, 3.x might work)
 	* CMake (>= 2.6, earlier might work)
+	* pkg-config (Building without pkg-config may work, but
+	  it's unsupported)
 	* JACK (jack1 >= 0.109.0, jack2 >= 1.9.3, earlier ones may
-          work on some systems)
+	  work on some systems)
 	* libsndfile >=1.0.17
 	* libarchive (Optional: libtar and libz)
 	* OS X: Xcode
